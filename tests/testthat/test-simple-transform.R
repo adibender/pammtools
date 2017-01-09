@@ -6,7 +6,7 @@ leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=c(0:5, 10, 40), id=
 
 test_that("Output as expected", {
 	expect_equal(nrow(leuk.ped), 246)
-	expect_equal(ncol(leuk.ped), 7)
+	expect_equal(ncol(leuk.ped), 11)
 	expect_is(leuk.ped, "ped")
 	expect_is(leuk.ped, "data.frame")
 	expect_true(all(c("time", "status", "id", "tstart", "tend", "interval", "intlen", 

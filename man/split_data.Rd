@@ -31,9 +31,11 @@ format
 data("leuk2", package="bpcp")
 head(leuk2)
 leuk.ped <- split_data(Surv(time, status)~treatment, data=leuk2, 
-   cut=c(0:5, 10, 40))
+   cut=c(0:5, 10, 40), id="id")
 head(leuk.ped)
-nrow(leuk.ped)
 class(leuk.ped) # class ped (piece-wise exponential data)
+}
+\seealso{
+\code{\link[survival]{survSplit}}
 }
 
