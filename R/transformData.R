@@ -1,5 +1,5 @@
-#' Function to transform data of simple structure into piece-wise exponential data
-#' format
+#' Function to transform data without time-dependent covariates into piece-wise 
+#' exponential data format
 #'
 #' @inheritParams survival::survSplit
 #' @param ... Further arguments passed to \code{\link[survival]{survSplit}}
@@ -90,7 +90,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   ## rearrange columns 
   move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",
     "time", "status")
-  if(is.character(id.var)) move <- c(id.var, move)
+  if(exists("id.var")) move <- c(id.var, move)
   split.data <- select(split.data, one_of(move), everything())
 
   ## set class and return

@@ -1,13 +1,25 @@
 context("Simple transformation to PED data")
 
 data("leuk2", package="bpcp")
-leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=c(0:5, 10, 40), id="id")
 
 
-test_that("Output as expected", {
+test_that("Output as expected without id", {
+	expect_is(leuk.ped <- split_data(Surv(time, status)~., data=leuk2, 
+		cut=c(0:5, 10, 40)), "ped")
+	expect_equal(nrow(leuk.ped), 246)
+	expect_equal(ncol(leuk.ped), 10)
+	expect_is(leuk.ped, "data.frame")
+	expect_true(all(c("time", "status", "tstart", "tend", "interval", "intlen", 
+		"offset") %in% names(leuk.ped)))
+})
+
+
+
+test_that("Output as expected with id", {
+	expect_is(leuk.ped <- split_data(Surv(time, status)~., data=leuk2, 
+		cut=c(0:5, 10, 40), id="id"), "ped")
 	expect_equal(nrow(leuk.ped), 246)
 	expect_equal(ncol(leuk.ped), 11)
-	expect_is(leuk.ped, "ped")
 	expect_is(leuk.ped, "data.frame")
 	expect_true(all(c("time", "status", "id", "tstart", "tend", "interval", "intlen", 
 		"offset") %in% names(leuk.ped)))
@@ -28,7 +40,7 @@ test_that("Error on wrong input", {
 # summary(pem)
 # coef(cph)
 # coef(pem)["treatmentplacebo"]
-# summary(cph.ped <- coxph(Surv(time, status)~treatment, data=leuk.ped))
+# # summary(cph.ped <- coxph(Surv(time, status)~treatment, data=leuk.ped))
 
 # cut=unique(leuk2$time)
 # leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=cut)
@@ -37,7 +49,7 @@ test_that("Error on wrong input", {
 # summary(pem)
 
 
-# ## compare baselines 
+# # ## compare baselines 
 # cph.base <- basehaz(cph, center=FALSE)
 # plot(cph.base$time, cph.base$hazard, type="s")
 # b <- coef(pem)
