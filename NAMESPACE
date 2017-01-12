@@ -2,5 +2,5 @@
 
 export(split_data)
 import(checkmate)
+import(dplyr)
 import(survival)
-importFrom(dplyr,left_join)

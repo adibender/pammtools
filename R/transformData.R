@@ -6,8 +6,7 @@
 #' @param max.end logical. Should the last interval span until the last 
 #' observed censoring or event time (if larger than the largest specified 
 #' cut point).
-#' @import survival checkmate
-#' @importFrom dplyr left_join
+#' @import survival checkmate dplyr
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
 #' data("leuk2", package="bpcp")
