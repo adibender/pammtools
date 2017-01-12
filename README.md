@@ -1,1 +1,1 @@
-# Piece-wise exponential additive model 
+PAM: Utility functions for *p*iece-wise exponential *a*dditive *m*odels 
