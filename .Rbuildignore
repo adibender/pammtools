@@ -2,4 +2,4 @@
 ^\.Rproj\.user$
 
 ## travis
-.travis.yml
+^\.travis\.yml$
