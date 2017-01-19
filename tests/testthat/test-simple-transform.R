@@ -20,9 +20,19 @@ test_that("Output as expected with id", {
 		cut=c(0:5, 10, 40), id="id"), "ped")
 	expect_equal(nrow(leuk.ped), 246)
 	expect_equal(ncol(leuk.ped), 11)
-	expect_is(leuk.ped, "data.frame")
-	expect_true(all(c("time", "status", "id", "tstart", "tend", "interval", "intlen", 
-		"offset") %in% names(leuk.ped)))
+})
+
+test_that("ID kept when id variable excluded in formula", {
+	expect_is(leuk.ped <- split_data(Surv(time, status)~treatment, data=leuk2, 
+		cut=c(0:5, 10, 40), id="id"), "ped")
+	expect_equal(nrow(leuk.ped), 246)
+	expect_equal(ncol(leuk.ped), 10)
+})
+
+
+test_that("Attributes returned", {
+	expect_is(attr(leuk.ped, "cut"), "numeric")
+	expect_is(attr(leuk.ped, "intvars"), "character")
 })
 
 
