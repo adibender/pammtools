@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{modus}
 \alias{modus}
-\title{Returns the modus of a variable}
+\title{Calculate the modus}
 \usage{
 modus(var)
 }
@@ -10,6 +10,6 @@ modus(var)
 \item{var}{A atomic vector}
 }
 \description{
-Returns the modus of a variable
+Calculate the modus
 }
 
