@@ -1,9 +1,5 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2017-01-19 17:53:32
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-01-19 19:02:32
-
-#' Returns the modus of a variable
+#' Calculate the modus
+#' 
 #' @param var A atomic vector
 #' @importFrom checkmate assert_atomic_vector
 modus <- function(var) {
@@ -28,16 +24,16 @@ modus <- function(var) {
 #' Extract information of the sample contained in a data set 
 #' 
 #' Given a data set and grouping variables, this function returns median values 
-#' for numeric variables and modus for characters and factors. One row 
+#' for numeric variables and modus for characters and factors.
 #' 
 #' @param x A data frame (or object that inherits from \code{data.frame}).
 #' @param ... Further arguments passed to specialized methods.
+#' @importFrom stats median
 #' @export
 #' @rdname sample_info
 sample_info <- function(x, ...) {
 	UseMethod("sample_info", x)
 }
-
 
 #' @inheritParams sample_info
 #' @import checkmate dplyr
