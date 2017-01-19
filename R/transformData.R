@@ -104,22 +104,3 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   return(split.data)
 
 }
-
-
-#' Add one row to a data frame for step plots.
-#' 
-#' @param intdf A data frame containing interval (and hazard intformation).
-#' @import checkmate dplyr
-#' @export 
-pad_last <- function(intdf) {
-
-  assert_data_frame(intdf)
-
-  last.row <- slice(intdf, n())
-  last.row$tstart <- last.row$tend 
-  last.row$tend <- last.row$intmid <- Inf 
-  last.row$interval <- NA
-
-  return(bind_rows(intdf, last.row))
-
-}
