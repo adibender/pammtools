@@ -7,7 +7,6 @@
 #' observed censoring or event time (if larger than the largest specified 
 #' cut point).
 #' @import survival checkmate dplyr
-#' @importFrom ldatools int_info
 #' @importFrom stats as.formula setNames update
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
@@ -31,6 +30,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
 
   ## extract names for event time and status variables
+  vars <- ifelse("." %in% all.vars(formula), colnames(data), all.vars(formula))
   tvars     <- all.vars(update(formula, .~0))
   if(length(tvars)!=2) {
     stop(
@@ -69,7 +69,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   # id variable for later rearrangment 
   if(!is.null(dots$id)) {
     id.var <- dots$id
-    if(id.var %in% names(dots$data) ) {
+    if(id.var %in% names(dots$data) & id.var %in% vars) {
       dots$id <- NULL
     }
   }
@@ -94,28 +94,12 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   if(exists("id.var")) move <- c(id.var, move)
   split.data <- select(split.data, one_of(move), everything())
 
-  ## set class and return
+  ## set class and and attributes
   class(split.data) <- c("ped", class(split.data))
+  attr(split.data, "cut") <- cut 
+  attr(split.data, "intvars") <- c("id", "tstart", "tend", "intlen", "intmid", 
+    "interval", "offset", "time", "status")
 
   return(split.data)
-
-}
-
-
-#' Add one row to a data frame for step plots.
-#' 
-#' @param intdf A data frame containing interval (and hazard intformation).
-#' @import checkmate dplyr
-#' @export 
-pad_last <- function(intdf) {
-
-  assert_data_frame(intdf)
-
-  last.row <- slice(intdf, n())
-  last.row$tstart <- last.row$tend 
-  last.row$tend <- last.row$intmid <- Inf 
-  last.row$interval <- NA
-
-  return(bind_rows(intdf, last.row))
 
 }
