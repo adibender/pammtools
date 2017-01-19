@@ -19,7 +19,7 @@ sample_info(x, ...)
 }
 \description{
 Given a data set and grouping variables, this function returns median values 
-for numeric variables and modus for characters and factors. One row
+for numeric variables and modus for characters and factors.
 }
 \seealso{
 \code{\link[pam]{split_data}}

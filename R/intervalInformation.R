@@ -1,7 +1,7 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2016-12-12 16:11:27
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-01-19 21:03:23
+# @Last Modified time: 2017-01-19 21:15:40
 
 #' Create start/end times and interval information
 #'
@@ -140,21 +140,20 @@ ped_info <- function(ped) {
 #' Extract information for plotting step functions
 #' 
 #' 
-#' @param pinf A data frame as returned by \code{\link[pam]{ped_info}} and 
+#' @param pinfo A data frame as returned by \code{\link[pam]{ped_info}} and 
 #' potentially additional information from predictions, etc. 
 #' @examples
 #' data("leuk2", package="bpcp")
 #' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
 #' pem <- glm(status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
-#' pinf <- ped_info(leuk.ped)
-#' pinf$basehaz <- predict(pem, newdata=pinf, type="response")
-#' plot.inf <- plot_info(pinf)
-#' 
-#' 
+#' pinfo <- ped_info(leuk.ped)
+#' pinfo$basehaz <- predict(pem, newdata=pinfo, type="response")
+#' plot.inf <- plot_df(pinfo)
+#' @import dplyr
+#' @export
+plot_df <- function(pinfo) {
 
-plot_df <- function(pinf) {
-
-  pinf <- bind_rows(pinf, pinf[nrow(pinf), ]) %>% 
+  pinfo <- bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
     mutate(
       tend = lag(tend, default = min(tstart)), 
       intlen = lag(intlen, default = intlen[1])) %>% 
