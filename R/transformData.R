@@ -7,7 +7,6 @@
 #' observed censoring or event time (if larger than the largest specified 
 #' cut point).
 #' @import survival checkmate dplyr
-#' @importFrom ldatools int_info
 #' @importFrom stats as.formula setNames update
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
