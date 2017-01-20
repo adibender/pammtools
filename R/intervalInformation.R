@@ -1,8 +1,3 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2016-12-12 16:11:27
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-01-19 21:15:40
-
 #' Create start/end times and interval information
 #'
 #' Given interval breaks points, retuns data frame with information on 
@@ -153,7 +148,7 @@ ped_info <- function(ped) {
 #' @export
 plot_df <- function(pinfo) {
 
-  pinfo <- bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
+  bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
     mutate(
       tend = lag(tend, default = min(tstart)), 
       intlen = lag(intlen, default = intlen[1])) %>% 

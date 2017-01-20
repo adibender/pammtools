@@ -44,8 +44,8 @@ sample_info.data.frame <- function(x, ...) {
 	assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
 	bind_cols(
-		summarize_if(x, .predicate=function(x) is.numeric(x), funs(median(., na.rm=TRUE))),
-		summarize_if(x, .predicate=function(x) !is.numeric(x), modus))
+		summarize_if(x, .predicate=function(column) is.numeric(column), funs(median(., na.rm=TRUE))),
+		summarize_if(x, .predicate=function(column) !is.numeric(column), modus))
 
 }
 
