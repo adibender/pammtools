@@ -30,7 +30,11 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
 
   ## extract names for event time and status variables
-  vars <- ifelse("." %in% all.vars(formula), colnames(data), all.vars(formula))
+  vars <- if("." %in% all.vars(formula)) {
+      colnames(data)
+    } else {
+      all.vars(formula)
+    } 
   tvars     <- all.vars(update(formula, .~0))
   if(length(tvars)!=2) {
     stop(

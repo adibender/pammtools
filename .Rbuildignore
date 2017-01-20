@@ -3,3 +3,4 @@
 
 ## travis
 ^\.travis\.yml$
+^sandbox$
