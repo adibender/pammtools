@@ -5,7 +5,8 @@
 \alias{add_hazard}
 \title{Add predicted hazard to data set}
 \usage{
-add_hazard(newdata, object, se.fit = TRUE, type = "response", ...)
+add_hazard(newdata, object, se.fit = TRUE, type = c("response", "link"),
+  ...)
 
 add_cumhazard(newdata, object, se.fit = TRUE, type = "response", ...)
 }

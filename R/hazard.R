@@ -15,18 +15,26 @@
 #' @export 
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
 #' @rdname add_hazard
-add_hazard <- function(newdata, object, se.fit=TRUE, type="response", ...)  {
+add_hazard <- function(newdata, object, se.fit=TRUE, type=c("response", "link"), ...)  {
 
 	assert_data_frame(newdata, all.missing=FALSE) 
 	assert_class(object, classes = c("gam", "glm", "lm"))
+	type <- match.arg(type)
+
 	pred <- predict(object=object, newdata=newdata, se.fit=se.fit, type=type, ...)
 	stopifnot(length(pred$fit) == nrow(newdata))
 
-	newdata %>% mutate(
-		hazard = pred$fit,
-		lower  = pred$fit - 2*pred$se.fit,
-		upper  = pred$fit + 2*pred$se.fit)
+	fit <- as.numeric(pred$fit)
+	newdata %<>% mutate(hazard=fit)
+	if(se.fit) {
+		se <- as.numeric(pred$se.fit) 
+		newdata %<>% mutate(
+			lower  = hazard - 2*se, 
+			upper  = hazard + 2*se)
+	}
 
+	return(newdata)
+	
 }
 
 
