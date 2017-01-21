@@ -7,10 +7,10 @@
 get_intervals(brks, x, ...)
 }
 \arguments{
-\item{brks}{A numeric vector of cut points in which the follow-up should be
-partitioned in or object of class \code{ped}.}
+\item{brks}{Vector of values for which interval information should be returned.}
 
-\item{x}{Vector of values for which interval information should be returned.}
+\item{x}{A numeric vector of cut points in which the follow-up should be
+partitioned in or object of class \code{ped}.}
 
 \item{...}{Further arguments passed to \code{\link[base]{findInterval}}.}
 }

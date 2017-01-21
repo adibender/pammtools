@@ -90,7 +90,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   filter(!(tstart==time))
 
   ## combine data with general interval info
-  split.data <- left_join(split.data, int_info(brks=cut), by=c("tstart"="tstart"))
+  split.data <- left_join(split.data, int_info(cut), by=c("tstart"="tstart"))
 
   ## rearrange columns 
   move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",
