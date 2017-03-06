@@ -2,6 +2,8 @@
 
 S3method(int_info,default)
 S3method(int_info,ped)
+S3method(sample_info,data.frame)
+S3method(sample_info,ped)
 export(add_cumhazard)
 export(add_hazard)
 export(add_term)

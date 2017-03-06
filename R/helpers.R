@@ -9,7 +9,7 @@ modus <- function(var) {
 
 	# calculate modus 
   freqs <- table(var)
-  mod <- names(freqs)[which.max(freqs)]
+  mod   <- names(freqs)[which.max(freqs)]
   
   # factors should be returned as factors with all factor levels
   if(is.factor(var)) {
@@ -38,13 +38,15 @@ sample_info <- function(x, ...) {
 #' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom magrittr %<>%
+#' @export 
 #' @rdname sample_info
 sample_info.data.frame <- function(x, ...) {
 
 	assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
 	bind_cols(
-		summarize_if(x, .predicate=function(column) is.numeric(column), funs(median(., na.rm=TRUE))),
+		summarize_if(x, .predicate=function(column) is.numeric(column), 
+			funs(median(., na.rm=TRUE))),
 		summarize_if(x, .predicate=function(column) !is.numeric(column), modus))
 
 }
@@ -53,6 +55,7 @@ sample_info.data.frame <- function(x, ...) {
 #' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom magrittr %<>%
+#' @export 
 #' @rdname sample_info
 #' @seealso \code{\link[pam]{split_data}}
 sample_info.ped <- function(x, ...) {
