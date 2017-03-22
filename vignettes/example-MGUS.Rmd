@@ -1,0 +1,81 @@
+---
+title: "Example MGUS"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{splines}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align = "center",
+  cache=TRUE, 
+  message=FALSE, 
+  fig.height=5, 
+  fig.width=5
+)
+```
+
+# Spline terms 
+## Example MGUS data 
+
+In this vignette we show the usage of spline smooth terms using example data 
+presented in the respective vignette in the `survival` package 
+(see `vignette("splines", package="survival")`)
+
+The example presented in the vignette goes as follows, using the standard 
+base R workflow and `termplot` for visualization: 
+
+```{r}
+library(pam)
+library(mgcv)
+library(survival)
+data("mgus", package="survival")
+mfit <- coxph(Surv(futime, death)~sex + pspline(age, df=4), data=mgus)
+mfit
+termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+```
+
+The equivalent fit using PAMs requieres one additional step of transforming the 
+data into suitable format, afterwards we use the `mgcv::gam` function to fit 
+the model: 
+
+```{r}
+mgus.ped <- split_data(Surv(futime, death)~sex + age, data=mgus, id="id")
+head(mgus.ped)
+pamfit <- gam(status ~ s(tend) + sex + s(age, bs="ps"), data = mgus.ped, method="REML", 
+	family=poisson(), offset=offset)
+summary(pamfit)
+```
+
+For visualization of the smooth effects we can use the default `mgcv::plot.gam` 
+function: 
+
+```{r, fig.width = 7, fig.height=3.5}
+layout(matrix(1:2, nrow=1))
+termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+plot(pamfit, select=2, se=TRUE, ylim=c(-4, 3.5))
+```
+
+In this example the PAM approach estimates an linear effect of age, which is 
+consistet with the estimation using `coxph`, as there is not much non-linearity.
+
+Another example from the same vignette shows that estimated non-linear effect 
+are very similar, when the effect of the covariate is in fact non-linear: 
+
+```{r}
+fit <- coxph(Surv(futime, death) ~ age + pspline(hgb, 4), mgus2)
+mgus2.ped <- split_data(Surv(futime, death)~age + hgb, data=mgus2, id="id")
+pamfit2 <- gam(status~s(tend) + age + s(hgb), data=mgus2.ped, 
+	family=poisson(), offset=offset)
+```
+  
+```{r, fig.width=7, fig.height=3.5}
+layout(matrix(1:2, nrow=1))
+termplot(fit, term=2, se=TRUE, col.term=1, col.se=1)
+plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
+```

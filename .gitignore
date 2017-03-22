@@ -5,3 +5,8 @@ sandbox
 # RStudio
 .Rproj.user
 pam.Rproj
+
+# vignette by-products
+*cache/
+*files/
+*.html

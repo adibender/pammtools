@@ -1,7 +1,7 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-03-20 19:16:16
+# @Last Modified time: 2017-03-22 12:55:19
 
 
 #' @importFrom dplyr filter
@@ -125,26 +125,26 @@ summarise_.ped <- function(ped, ...) {
 }
 
 
-#' @importFrom dplyr sample_n
+#' @import dplyr 
 #' @export
-sample_n_.ped <- function(ped, ...) {
+sample_n.ped <- function(ped, ...) {
 
 	ped.class  <- class(ped)[1]
 	class(ped) <- class(ped)[-1]
-	ped        <- sample_n_(ped, ...)
+	ped        <- sample_n(ped, ...)
 	class(ped) <- c(ped.class, class(ped))
 
 	return(ped)
 
 } 
 
-#' @importFrom dplyr sample_frac
+#' @import dplyr
 #' @export
-sample_frac_.ped <- function(ped, ...) {
+sample_frac.ped <- function(ped, ...) {
 
 	ped.class  <- class(ped)[1]
 	class(ped) <- class(ped)[-1]
-	ped        <- sample_frac_(ped, ...)
+	ped        <- sample_frac(ped, ...)
 	class(ped) <- c(ped.class, class(ped))
 
 	return(ped)
