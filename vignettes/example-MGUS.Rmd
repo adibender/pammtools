@@ -1,6 +1,6 @@
 ---
-title: "Example MGUS"
-author: "Vignette Author"
+title: "Splines"
+author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
