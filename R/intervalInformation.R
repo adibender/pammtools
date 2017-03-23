@@ -100,7 +100,7 @@ get_intervals <- function(brks, x, ...) {
   assert_numeric(x, finite = TRUE, all.missing = FALSE)
 
   int.df <- int_info(brks)
-  int <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
+  int    <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
 
   int.df %>% 
     slice(int)      %>%
@@ -130,9 +130,11 @@ ped_info <- function(ped) {
   assert_class(ped, classes="ped")
 
   int.df <- int_info(ped)
-  sdf <- sample_info(ped)
+  sdf    <- sample_info(ped)
 
-  bind_cols(int.df, sdf[rep(1, nrow(int.df)), ])
+  bind_cols(
+    int.df[rep(seq_len(nrow(int.df)), times=nrow(sdf)), ], 
+    sdf[rep(seq_len(nrow(sdf)), each=nrow(int.df)), ])
 
 }
 
