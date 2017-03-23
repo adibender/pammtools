@@ -79,3 +79,26 @@ layout(matrix(1:2, nrow=1))
 termplot(fit, term=2, se=TRUE, col.term=1, col.se=1)
 plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
 ```
+
+## Monotonicity constraints
+The vignette in the survival package further discusses enforcing monotonicity 
+contraints on the effect of `hgb`. These can be achieved here much more easily 
+using the functionality provided in the `scam` package (see also Pya 2015). The 
+usage is exactly the same as before, replacing the call to `gam` with a 
+cal to `scam` and specifying `bs="mpd": 
+
+```{r}
+library(scam)
+mpam <- scam(status ~ s(tend) + age + s(hgb, bs="mpd"), data=mgus2.ped, 
+  family=poisson(), offset=offset)
+```
+
+```{r, fig.height=3, fig.width=9}
+layout(matrix(1:3, nrow=1))
+termplot(fit, term=2, se=TRUE, col.term=1, col.se=1, ylim=c(-0.5, 2))
+plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
+# 1.72 = intercept difference between pamfit2 and mpam
+const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
+plot(mpam, select=2, se=TRUE, shift=const, 
+  ylim=c(-0.5-const, 2-const))
+```
