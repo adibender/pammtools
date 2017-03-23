@@ -4,7 +4,8 @@
 #' smooth terms contained in the model. If more than one smooth is present, the 
 #' different smooth are faceted. 
 #' 
-#' @inheritParams get_terms
+#' @inheritParams get_term
+#' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
 #' @seealso \code{\link[mgcvtools]{tidy_smooth}}
 #' @return A \code{\link[ggplot2]{ggplot2}} object.

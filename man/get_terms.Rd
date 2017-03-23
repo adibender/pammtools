@@ -10,9 +10,7 @@ get_terms(data, fit, terms, ...)
 \item{data}{Any data frame containing variables used to fit the model. Only
 first row will be used.}
 
-\item{fit}{
-    the result of fitting a Cox regression model, using the \code{coxph} function. 
-  }
+\item{fit}{A fitted object of class \code{gam}.}
 
 \item{terms}{A character vector (can be length one). Specifies the terms
 for which partial effects will be returned}
@@ -28,7 +26,7 @@ Extract the partial effects of non-linear model terms
 \examples{
 library(survival)
 fit <- coxph(Surv(time, status) ~ pspline(karno, df=4), data=veteran)
-term.karno <- get_terms(fit, veteran, terms="karno")
+term.karno <- get_terms(veteran, fit, terms="karno")
 }
 \seealso{
 \code{\link[survival]{coxph}}

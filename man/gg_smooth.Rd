@@ -6,6 +6,14 @@
 \usage{
 gg_smooth(data, fit, ...)
 }
+\arguments{
+\item{data}{Any data frame containing variables used to fit the model. Only
+first row will be used.}
+
+\item{fit}{A fitted object of class \code{gam}.}
+
+\item{...}{Further arguments passed to \code{\link{get_terms}}}
+}
 \value{
 A \code{\link[ggplot2]{ggplot2}} object.
 }
