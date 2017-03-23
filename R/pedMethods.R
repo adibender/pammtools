@@ -1,7 +1,7 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-03-22 12:55:19
+# @Last Modified time: 2017-03-23 18:51:15
 
 
 #' @importFrom dplyr filter
@@ -145,6 +145,20 @@ sample_frac.ped <- function(ped, ...) {
 	ped.class  <- class(ped)[1]
 	class(ped) <- class(ped)[-1]
 	ped        <- sample_frac(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+
+#' @importFrom dplyr group_by
+#' @export
+group_by_.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- group_by_(ped, ...)
 	class(ped) <- c(ped.class, class(ped))
 
 	return(ped)
