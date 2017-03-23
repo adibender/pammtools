@@ -12,12 +12,11 @@ vignette: >
 ```{r, echo=FALSE}
 library(knitr)
 opts_chunk$set(
-  fig.align = "center",
-  cache=TRUE, 
-  message=FALSE, 
-  fig.height=5, 
-  fig.width=5
-)
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5)
 ```
 
 # Spline terms 
@@ -37,6 +36,9 @@ library(survival)
 data("mgus", package="survival")
 mfit <- coxph(Surv(futime, death)~sex + pspline(age, df=4), data=mgus)
 mfit
+```
+
+```{r, figcox}
 termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
 ```
 
@@ -55,7 +57,7 @@ summary(pamfit)
 For visualization of the smooth effects we can use the default `mgcv::plot.gam` 
 function: 
 
-```{r, fig.width = 7, fig.height=3.5}
+```{r, figpam1, fig.width = 7, fig.height=3.5}
 layout(matrix(1:2, nrow=1))
 termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
 plot(pamfit, select=2, se=TRUE, ylim=c(-4, 3.5))
@@ -74,7 +76,7 @@ pamfit2 <- gam(status~s(tend) + age + s(hgb), data=mgus2.ped,
 	family=poisson(), offset=offset)
 ```
   
-```{r, fig.width=7, fig.height=3.5}
+```{r, figpam, fig.width=7, fig.height=3.5}
 layout(matrix(1:2, nrow=1))
 termplot(fit, term=2, se=TRUE, col.term=1, col.se=1)
 plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
@@ -85,7 +87,7 @@ The vignette in the survival package further discusses enforcing monotonicity
 contraints on the effect of `hgb`. These can be achieved here much more easily 
 using the functionality provided in the `scam` package (see also Pya 2015). The 
 usage is exactly the same as before, replacing the call to `gam` with a 
-cal to `scam` and specifying `bs="mpd": 
+cal to `scam` and specifying `bs="mpd"`: 
 
 ```{r}
 library(scam)
@@ -93,9 +95,8 @@ mpam <- scam(status ~ s(tend) + age + s(hgb, bs="mpd"), data=mgus2.ped,
   family=poisson(), offset=offset)
 ```
 
-```{r, fig.height=3, fig.width=9}
-layout(matrix(1:3, nrow=1))
-termplot(fit, term=2, se=TRUE, col.term=1, col.se=1, ylim=c(-0.5, 2))
+```{r, figscam, fig.height=3.5, fig.width=7}
+layout(matrix(1:2, nrow=1))
 plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
 # 1.72 = intercept difference between pamfit2 and mpam
 const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
