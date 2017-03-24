@@ -22,7 +22,4 @@ Given a gam model this convenience functions returns a plot of all
 smooth terms contained in the model. If more than one smooth is present, the 
 different smooth are faceted.
 }
-\seealso{
-\code{\link[mgcvtools]{tidy_smooth}}
-}
 
