@@ -44,10 +44,15 @@ sample_info.data.frame <- function(x, ...) {
 
 	assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
-	bind_cols(
-		summarize_if(x, .predicate=function(column) is.numeric(column), 
-			funs(median(., na.rm=TRUE))),
-		summarize_if(x, .predicate=function(column) !is.numeric(column), modus))
+	num <- summarize_if(x, .predicate=function(column) is.numeric(column), 
+		funs(median(., na.rm=TRUE)))
+	fac <- summarize_if(x, .predicate=function(column) !is.numeric(column), modus)
+	
+	if(any(names(num) %in% names(fac))) {
+		left_join(num, fac)
+	} else {
+		bind_cols(num, fac)
+	}
 
 }
 
@@ -61,7 +66,8 @@ sample_info.data.frame <- function(x, ...) {
 sample_info.ped <- function(x, ...) {
 
 	# remove "noise" information on interval variables 
-	x %<>% select(-one_of(attr(x, "intvars")))
+	iv <- attr(x, "intvars")
+	x %<>% select(-one_of(iv))
 	sample_info.data.frame(x, ...)
 
 }
