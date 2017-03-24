@@ -7,7 +7,6 @@
 #' @inheritParams get_term
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
-#' @seealso \code{\link[mgcvtools]{tidy_smooth}}
 #' @return A \code{\link[ggplot2]{ggplot2}} object.
 #' @export 
 gg_smooth <- function(data, fit, ...) {
