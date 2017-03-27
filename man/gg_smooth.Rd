@@ -22,4 +22,8 @@ Given a gam model this convenience functions returns a plot of all
 smooth terms contained in the model. If more than one smooth is present, the 
 different smooth are faceted.
 }
+\examples{
+g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
+gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
+}
 

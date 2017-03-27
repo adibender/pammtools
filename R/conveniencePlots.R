@@ -8,6 +8,9 @@
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
 #' @return A \code{\link[ggplot2]{ggplot2}} object.
+#' @examples
+#' g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
+#' gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 #' @export 
 gg_smooth <- function(data, fit, ...) {
 
