@@ -54,10 +54,8 @@ library(mgcv)
 library(magrittr)
 library(dplyr)
 data("mgus2", package="survival")
-# use only a faction of observations for convenience
-set.seed(23032017)
 ped <- split_data(Surv(futime, death)~age + hgb + sex, data=mgus2, id="id")
-pam <- gam(status~s(tend) + age + s(hgb), data=ped, family=poisson(), offset=offset)
+pam <- gam(status~s(tend) + sex + age + s(hgb), data=ped, family=poisson(), offset=offset)
 ```
 
 The easiest way to obtain overview of the estimated coefficients for fixed effects 
@@ -70,8 +68,8 @@ summary(pam)
 
 
 
-Here the receiving treatment increases the risk of dying by a factor of 
-$\exp(\Sexpr{round(coef(pam.treat)[2], 2)}) = \Sexpr{round(exp(coef(pam.treat)[2]), 2)}.
+Here, male subjects have increased risk by a factor of 
+$\exp(\Sexpr{round(coef(pam)[2], 2)}) = \Sexpr{round(exp(coef(pam)[2]), 2)}.
 
 Additionally, this package provides a function to visualize fixed coefficients 
 in terms of tree/forest plots: 
@@ -121,6 +119,7 @@ effects at once:
 ped %>% gg_smooth(pam, terms=c("tend", "hgb"))
 ```
 
+
 ## Extraction/Visualization of the baseline hazard
 
 In PAMs the baseline hazard \lambda_0(t) is estimated semi-parametrically as a 
@@ -131,8 +130,7 @@ $$
 \log(\lambda(t|x)) = f_0(t) + \beta_0 + \ldots.
 $$
 
-Thus the term $f_0(t)$ represents the time-dependent part of the ($log$-)baseline-hazard, 
-i.e. the part that controls the shape of the $\log$-baseline-hazard. 
+Thus the term $f_0(t)$ represents the time-dependent part of the ($log$-)baseline-hazard. 
 
 To create a data set with all interval cut-points we can use the function 
 `ped_info` applied to an object of class `ped` (piece-wise exponential data). 
@@ -152,8 +150,8 @@ at all time points in the data.
 
 ```{r}
 ped.info %<>% add_hazard(pam)
-head(ped.info)
-tail(ped.info)
+ped.info %>% select(interval, hazard, lower, upper) %>% head()
+ped.info %>% select(interval, hazard, lower, upper) %>% tail()
 ```
 
 Which in turn can be conveniently plotted using respective functions, e.g. 
@@ -175,19 +173,14 @@ gg.chaz + geom_step() + geom_stepribbon(alpha=0.2) +
 ```
 
 This approach is very convenient, as the usual tidy `dplyr` workflow can 
-be maintained throughout, for example, if we wanted to plot the cumulative hazard 
-for different sexes 
+be maintained throughout, for example, if we wanted to plot the cumulative 
+hazard for different sexes:
 
 ```{r}
-pam.sex <- gam(status~s(tend) + sex + age + s(hgb), data=ped, family=poisson(), offset=offset)
-```
-
-```{r}
-pinfo.sex <- ped %>% group_by(sex) %>% ped_info()
-pinfo.sex <- pinfo.sex[, -9]
-pinfo.sex %<>% add_cumhazard(pam)
-ggplot(pinfo.sex, aes(x=tend, y=cumhazard, ymin=cumlower, ymax=cumupper)) + 
-	geom_step(aes(col=sex)) + 
-	geom_stepribbon(aes(fill=sex), alpha=0.2)
+pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
+head(pinfo.sex)
+ggplot(pinfo.sex, aes(x=tend, y=cumhazard)) + 
+	geom_stepribbon(aes(ymin=cumlower, ymax=cumupper, fill=sex), alpha=0.3) + 
+	geom_step(aes(col=sex))
 ```
 
