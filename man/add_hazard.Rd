@@ -3,12 +3,20 @@
 \name{add_hazard}
 \alias{add_cumhazard}
 \alias{add_hazard}
+\alias{get_cumhazard}
+\alias{get_hazard}
 \title{Add predicted hazard to data set}
 \usage{
-add_hazard(newdata, object, se.fit = TRUE, type = c("response", "link"),
-  ...)
+add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
+  se.mult = 2, overwrite = FALSE, ...)
 
-add_cumhazard(newdata, object, se.fit = TRUE, type = "response", ...)
+get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
+  se.mult = 2, ...)
+
+add_cumhazard(newdata, object, type = c("response"), ci = TRUE,
+  se.mult = 2, overwrite = FALSE, ...)
+
+get_cumhazard(newdata, object, ci = TRUE, type = "response", ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -19,8 +27,6 @@ add_cumhazard(newdata, object, se.fit = TRUE, type = "response", ...)
 
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
-
-\item{se.fit}{ when this is TRUE (not default) standard error estimates are returned for each prediction.}
 
 \item{type}{ When this has the value \code{"link"} (default) the linear predictor (possibly with
 associated standard errors) is returned. When \code{type="terms"} each component of the 
@@ -39,12 +45,26 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
+\item{ci}{Logical indicating whether to inlcude confidence intervals. Defaults
+to \code{TRUE}}
+
+\item{se.mult}{Factor by which standard errors are multiplied for calulating 
+the confidence intervals.}
+
+\item{overwrite}{Should hazard columns be overwritten if already present in 
+the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names 
+\code{c("hazard", "se", "lower", "upper")} will be overwritten.}
+
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
 Add predicted hazard to data set
 
+Calculate predicted hazard
+
 Add cumulative hazard estimate to data set
+
+Calculate cumulative hazard
 }
 \examples{
 library(mgcv)
@@ -53,12 +73,6 @@ leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
 pam <- gam(status ~ s(tend), data = leuk.ped, family=poisson(), offset=offset)
 pinfo <- ped_info(leuk.ped)
 add_hazard(pinfo, pam)
-library(mgcv)
-data("leuk2", package="bpcp")
-leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-pam <- gam(status ~ s(tend), data = leuk.ped, family=poisson(), offset=offset)
-pinfo <- ped_info(leuk.ped)
-add_cumhazard(pinfo, pam)
 }
 \seealso{
 \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
