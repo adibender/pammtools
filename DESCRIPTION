@@ -9,7 +9,7 @@ Depends:
     R (>= 3.1.2),
 Imports:
     mgcv,
-    survival (>= 2.41-0),
+    survival (>= 2.39-5),
     checkmate,
     magrittr,
     dplyr,
