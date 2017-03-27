@@ -111,6 +111,61 @@ get_intervals <- function(brks, x, ...) {
 }
 
 
+#' Extract information of the sample contained in a data set 
+#' 
+#' Given a data set and grouping variables, this function returns median values 
+#' for numeric variables and modus for characters and factors.
+#' 
+#' @param x A data frame (or object that inherits from \code{data.frame}).
+#' @param ... Further arguments passed to specialized methods.
+#' @importFrom stats median
+#' @export
+#' @rdname sample_info
+sample_info <- function(x, ...) {
+  UseMethod("sample_info", x)
+}
+
+#' @inheritParams sample_info
+#' @import checkmate dplyr
+#' @importFrom magrittr %<>%
+#' @export 
+#' @rdname sample_info
+sample_info.data.frame <- function(x, ...) {
+
+  assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
+
+  num <- summarize_if(x, .predicate=function(column) is.numeric(column), 
+    funs(median(., na.rm=TRUE)))
+  fac <- summarize_if(x, .predicate=function(column) !is.numeric(column), modus)
+
+  nnames <- intersect(names(num), names(fac))
+    
+  if(length(nnames) != 0) {
+    x <- left_join(num, fac) %>% 
+      grouped_df(vars=lapply(nnames, as.name))
+  } else {
+    x <- bind_cols(num, fac)
+  }
+
+}
+
+
+#' @inheritParams sample_info
+#' @import checkmate dplyr
+#' @importFrom magrittr %<>%
+#' @export 
+#' @rdname sample_info
+#' @seealso \code{\link[pam]{split_data}}
+sample_info.ped <- function(x, ...) {
+  # is.grouped_df
+  # remove "noise" information on interval variables 
+  iv <- attr(x, "intvars")
+  x %<>% select(-one_of(iv))
+  sample_info.data.frame(x, ...)
+
+}
+
+
 #' Extract inetrval information and median/modus values vor covariates
 #' 
 #' Given an object of class \code{ped}, returns data frame with interval information, 
@@ -132,9 +187,15 @@ ped_info <- function(ped) {
   int.df <- int_info(ped)
   sdf    <- sample_info(ped)
 
-  bind_cols(
+  bc <- bind_cols(
     int.df[rep(seq_len(nrow(int.df)), times=nrow(sdf)), ], 
     sdf[rep(seq_len(nrow(sdf)), each=nrow(int.df)), ])
+
+  if(is.grouped_df(sdf)) {
+    bc %<>% grouped_df(vars=groups(sdf))
+  }
+
+  return(bc)
 
 }
 
@@ -156,8 +217,8 @@ plot_df <- function(pinfo) {
 
   bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
     mutate(
-      tend = lag(tend, default = min(tstart)), 
-      intlen = lag(intlen, default = intlen[1])) %>% 
+      tend   = lag(tend, default   = min(tstart)),
+      intlen = lag(intlen, default = intlen[1])) %>%
     select(-one_of("interval", "tstart")) %>% 
     rename(time=tend)
 
