@@ -1,6 +1,7 @@
 language: r
 sudo: false
 cache: packages
+
 r:
   - devel
   - release
@@ -9,4 +10,4 @@ r_github_packages:
   - jimhester/covr
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+  - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
