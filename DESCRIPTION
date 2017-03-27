@@ -9,7 +9,7 @@ Depends:
     R (>= 3.1.2),
 Imports:
     mgcv,
-    survival,
+    survival (>= 2.41-0),
     checkmate,
     magrittr,
     dplyr,
@@ -25,5 +25,7 @@ Suggests:
     knitr,
     rmarkdown,
     JM
+URL: http://github.com/adibender/pam
+BugReports: http://github.com/adibender/pam/issues
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
