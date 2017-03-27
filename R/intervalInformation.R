@@ -1,8 +1,3 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2016-12-12 16:11:27
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-01-19 21:15:40
-
 #' Create start/end times and interval information
 #'
 #' Given interval breaks points, retuns data frame with information on 
@@ -10,16 +5,16 @@
 #' variable (left open intervals). If object of class ped is provided, extracts 
 #' unique interval information from object. 
 #' 
-#' @param brks A numeric vector of cut points in which the follow-up should be
+#' @param x A numeric vector of cut points in which the follow-up should be
 #' partitioned in or object of class \code{ped}. 
 #' @param ... Currently ignored.
 #' @rdname int_info
 #' @return data.frame. A data frame containing the start and end times of the
-#' intervals specified by the \code{brks} argument. Additionally the interval
+#' intervals specified by the \code{x} argument. Additionally the interval
 #' length, interval mid-point and a factor variable of the intervals themselfs.
 #' @export
-int_info <- function(brks, ...) {
-  UseMethod("int_info",  brks)
+int_info <- function(x, ...) {
+  UseMethod("int_info",  x)
 }
 
 
@@ -27,26 +22,28 @@ int_info <- function(brks, ...) {
 #' @param min.time Only intervals that have lower borders larger than
 #' this value will be included in the resulting data frame.
 #' @import checkmate dplyr
-#' @rdname int_info
 #' @export
-int_info.numeric <- function(
-  brks,
+#' @examples
+#' int_info(c(1, 2.3, 5))
+#' @rdname int_info
+int_info.default <- function(
+  x,
   min.time = 0L, ...) {
 
   # check inputs
-  assert_numeric(brks, lower = 0, any.missing = FALSE)
+  assert_numeric(x, lower = 0, any.missing = FALSE)
   assert_numeric(min.time, lower  = 0L)
 
-  # sort brks and add origin if necessary
-  if(is.unsorted(brks)) {
-    brks <- sort(brks)
+  # sort x and add origin if necessary
+  if(is.unsorted(x)) {
+    x <- sort(x)
   }
-  if(min(brks!=0)) {
-    brks <- c(0, brks)
+  if(min(x!=0)) {
+    x <- c(0, x)
   }
 
-  intlen <- diff(brks)
-  tstart <- brks[-length(brks)]
+  intlen <- diff(x)
+  tstart <- x[-length(x)]
   tend   <- tstart + intlen
 
   tdf <- data.frame(
@@ -65,13 +62,15 @@ int_info.numeric <- function(
 #' @inheritParams int_info
 #' @import dplyr
 #' @rdname int_info
+#' @examples
+#' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
+#' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
+#' int_info(ped)
+#' @export
 #' @seealso split_data
-int_info.ped <- function(brks, ...) {
+int_info.ped <- function(x, ...) {
 
-  brks %>% select(one_of(setdiff(
-      attr(brks, "intvars"), 
-      c("id", "offset", "time", "status")))) %>%
-    unique()
+  int_info(attr(x, "cut"), ...)
 
 }
 
@@ -80,7 +79,7 @@ int_info.ped <- function(brks, ...) {
 #' Given breaks, return intervals in which times vector falls
 #' 
 #' @inheritParams int_info
-#' @param x Vector of values for which interval information should be returned.
+#' @param brks Vector of values for which interval information should be returned.
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
 #' @return A \code{data.frame} containing information on intervals in which 
@@ -101,13 +100,68 @@ get_intervals <- function(brks, x, ...) {
   assert_numeric(x, finite = TRUE, all.missing = FALSE)
 
   int.df <- int_info(brks)
-  int <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
+  int    <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
 
   int.df %>% 
     slice(int)      %>%
     mutate(x = x)   %>%
     arrange(tstart) %>%
     select(x, everything())
+
+}
+
+
+#' Extract information of the sample contained in a data set 
+#' 
+#' Given a data set and grouping variables, this function returns median values 
+#' for numeric variables and modus for characters and factors.
+#' 
+#' @param x A data frame (or object that inherits from \code{data.frame}).
+#' @param ... Further arguments passed to specialized methods.
+#' @importFrom stats median
+#' @export
+#' @rdname sample_info
+sample_info <- function(x, ...) {
+  UseMethod("sample_info", x)
+}
+
+#' @inheritParams sample_info
+#' @import checkmate dplyr
+#' @importFrom magrittr %<>%
+#' @export 
+#' @rdname sample_info
+sample_info.data.frame <- function(x, ...) {
+
+  assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
+
+  num <- summarize_if(x, .predicate=function(column) is.numeric(column), 
+    funs(median(., na.rm=TRUE)))
+  fac <- summarize_if(x, .predicate=function(column) !is.numeric(column), modus)
+
+  nnames <- intersect(names(num), names(fac))
+    
+  if(length(nnames) != 0) {
+    x <- left_join(num, fac) %>% 
+      grouped_df(vars=lapply(nnames, as.name))
+  } else {
+    x <- bind_cols(num, fac)
+  }
+
+}
+
+
+#' @inheritParams sample_info
+#' @import checkmate dplyr
+#' @importFrom magrittr %<>%
+#' @export 
+#' @rdname sample_info
+#' @seealso \code{\link[pam]{split_data}}
+sample_info.ped <- function(x, ...) {
+  # is.grouped_df
+  # remove "noise" information on interval variables 
+  iv <- attr(x, "intvars")
+  x %<>% select(-one_of(iv))
+  sample_info.data.frame(x, ...)
 
 }
 
@@ -131,9 +185,17 @@ ped_info <- function(ped) {
   assert_class(ped, classes="ped")
 
   int.df <- int_info(ped)
-  sdf <- sample_info(ped)
+  sdf    <- sample_info(ped)
 
-  bind_cols(int.df, sdf[rep(1, nrow(int.df)), ])
+  bc <- bind_cols(
+    int.df[rep(seq_len(nrow(int.df)), times=nrow(sdf)), ], 
+    sdf[rep(seq_len(nrow(sdf)), each=nrow(int.df)), ])
+
+  if(is.grouped_df(sdf)) {
+    bc %<>% grouped_df(vars=groups(sdf))
+  }
+
+  return(bc)
 
 }
 
@@ -153,10 +215,10 @@ ped_info <- function(ped) {
 #' @export
 plot_df <- function(pinfo) {
 
-  pinfo <- bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
+  bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
     mutate(
-      tend = lag(tend, default = min(tstart)), 
-      intlen = lag(intlen, default = intlen[1])) %>% 
+      tend   = lag(tend, default   = min(tstart)),
+      intlen = lag(intlen, default = intlen[1])) %>%
     select(-one_of("interval", "tstart")) %>% 
     rename(time=tend)
 

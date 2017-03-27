@@ -2,18 +2,18 @@
 % Please edit documentation in R/intervalInformation.R
 \name{int_info}
 \alias{int_info}
-\alias{int_info.numeric}
+\alias{int_info.default}
 \alias{int_info.ped}
 \title{Create start/end times and interval information}
 \usage{
-int_info(brks, ...)
+int_info(x, ...)
 
-\method{int_info}{numeric}(brks, min.time = 0L, ...)
+\method{int_info}{default}(x, min.time = 0L, ...)
 
-\method{int_info}{ped}(brks, ...)
+\method{int_info}{ped}(x, ...)
 }
 \arguments{
-\item{brks}{A numeric vector of cut points in which the follow-up should be
+\item{x}{A numeric vector of cut points in which the follow-up should be
 partitioned in or object of class \code{ped}.}
 
 \item{...}{Currently ignored.}
@@ -23,7 +23,7 @@ this value will be included in the resulting data frame.}
 }
 \value{
 data.frame. A data frame containing the start and end times of the
-intervals specified by the \code{brks} argument. Additionally the interval
+intervals specified by the \code{x} argument. Additionally the interval
 length, interval mid-point and a factor variable of the intervals themselfs.
 }
 \description{
@@ -31,6 +31,12 @@ Given interval breaks points, retuns data frame with information on
 interval start time, interval end time, interval length and a interval factor 
 variable (left open intervals). If object of class ped is provided, extracts 
 unique interval information from object.
+}
+\examples{
+int_info(c(1, 2.3, 5))
+tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
+ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
+int_info(ped)
 }
 \seealso{
 split_data

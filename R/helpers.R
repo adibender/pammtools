@@ -9,7 +9,7 @@ modus <- function(var) {
 
 	# calculate modus 
   freqs <- table(var)
-  mod <- names(freqs)[which.max(freqs)]
+  mod   <- names(freqs)[which.max(freqs)]
   
   # factors should be returned as factors with all factor levels
   if(is.factor(var)) {
@@ -20,45 +20,28 @@ modus <- function(var) {
 
 }
 
-
-#' Extract information of the sample contained in a data set 
+#' extract character vector of grouping variables 
 #' 
-#' Given a data set and grouping variables, this function returns median values 
-#' for numeric variables and modus for characters and factors.
-#' 
-#' @param x A data frame (or object that inherits from \code{data.frame}).
-#' @param ... Further arguments passed to specialized methods.
-#' @importFrom stats median
-#' @export
-#' @rdname sample_info
-sample_info <- function(x, ...) {
-	UseMethod("sample_info", x)
+#' @importFrom dplyr groups
+#' @param data A data frame (potentially `grouped_df`) from which to extract 
+#' names of grouping variables. 
+#' @return A character vector (of length 0 if no grouping variables present). 
+get_grpvars <- function(data) {
+  vapply(groups(data), as.character, character(1))
 }
 
-#' @inheritParams sample_info
-#' @import checkmate dplyr
-#' @importFrom magrittr %<>%
-#' @rdname sample_info
-sample_info.data.frame <- function(x, ...) {
+#' return ungrouped data frame without grouping variables 
+#' 
+#' @param data A data frame (potentially `grouped_df`) from which grouping 
+#' variables will be removed. 
+#' @import dplyr
+#' @return Returns \code{data} without grouping variables (and group properties). 
+rm_grpvars <- function(data) {
 
-	assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
-
-	bind_cols(
-		summarize_if(x, .predicate=function(x) is.numeric(x), funs(median(., na.rm=TRUE))),
-		summarize_if(x, .predicate=function(x) !is.numeric(x), modus))
-
-}
-
-
-#' @inheritParams sample_info
-#' @import checkmate dplyr
-#' @importFrom magrittr %<>%
-#' @rdname sample_info
-#' @seealso \code{\link[pam]{split_data}}
-sample_info.ped <- function(x, ...) {
-
-	# remove "noise" information on interval variables 
-	x %<>% select(-one_of(attr(x, "intvars")))
-	sample_info.data.frame(x, ...)
+  if(is.grouped_df(data)) {
+    grp.vars <- get_grpvars(data)
+    data %<>% ungroup() %>% select(-one_of(grp.vars))
+  } 
+  return(data)
 
 }

@@ -30,7 +30,11 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
 
   ## extract names for event time and status variables
-  vars <- ifelse("." %in% all.vars(formula), colnames(data), all.vars(formula))
+  vars <- if("." %in% all.vars(formula)) {
+      colnames(data)
+    } else {
+      all.vars(formula)
+    } 
   tvars     <- all.vars(update(formula, .~0))
   if(length(tvars)!=2) {
     stop(
@@ -86,7 +90,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   filter(!(tstart==time))
 
   ## combine data with general interval info
-  split.data <- left_join(split.data, int_info(brks=cut), by=c("tstart"="tstart"))
+  split.data <- left_join(split.data, int_info(cut), by=c("tstart"="tstart"))
 
   ## rearrange columns 
   move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",

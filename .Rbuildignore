@@ -3,3 +3,5 @@
 
 ## travis
 ^\.travis\.yml$
+^sandbox$
+^appveyor\.yml$

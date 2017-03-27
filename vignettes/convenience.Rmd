@@ -1,0 +1,186 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5
+)
+```
+
+
+# Convenience functions
+
+Survival analysis is accompanied by a set of standard task, 
+aside of fitting the model, that need to be performed in most practical applications. 
+These task include: 
+
+- summary/visualization of fixed effects 
+- summary/visualization of smooth effects
+- extraction/visualization of the baseline hazard
+- extraction/visualization of the hazard/cumulative hazard/survival probabilities
+for specific covariate specifications
+- comparison of hazard/cumulative hazard/survival probabilities for a set 
+of covariate specifications
+- comparing hazard/cumulative hazard/survival probabilities estimated using 
+different model specifications or different subsets of the data 
+
+This package contains some convenience functions to achieve these tasks. 
+The overall philosophy of the package was to provide functions that return the 
+underlying data used for visualization in a tidy format, such that everybody 
+can use familiar tools for further processing. However, some convenience functions 
+for visualization are also presented. 
+
+For illustration we use the `mgus2` data from the survival package. 
+
+
+## Summary/visualization of fixed effects 
+
+```{r}
+library(pam)
+library(mgcv)
+library(magrittr)
+library(dplyr)
+data("mgus2", package="survival")
+ped <- split_data(Surv(futime, death)~age + hgb + sex, data=mgus2, id="id")
+pam <- gam(status~s(tend) + sex + age + s(hgb), data=ped, family=poisson(), offset=offset)
+```
+
+The easiest way to obtain overview of the estimated coefficients for fixed effects 
+is to call the `summary` function on the fitted model object, as is usual 
+for other model objects in the R Language.
+
+```{r options}
+summary(pam)
+```
+
+
+
+Here, male subjects have increased risk by a factor of 
+$\exp(\Sexpr{round(coef(pam)[2], 2)}) = \Sexpr{round(exp(coef(pam)[2]), 2)}.
+
+Additionally, this package provides a function to visualize fixed coefficients 
+in terms of tree/forest plots: 
+
+```{r}
+## yet to be implemented 
+```
+
+
+## Summary/visualization of smooth effects
+A first quick overview over the smooth effects is provided in the bottom part of 
+output of the `summary` call above. The interpretation is the same as as for 
+`mgcv::gam` objects (see `?summary.gam` for details). Briefly, the `edf` column 
+provides the number of effective degrees of freedom used to fit the spline 
+(values larger than 1 indicate non-linearity) and the p-value refers to 
+significance tests with $H_0: f_j(x_j) = 0$ (developed in Wood 2015). 
+
+Usually however, we want to visualize the non-linear effect by plotting 
+$f_j(x_j)$ over the range of $x_j$ values. One possibility using base R 
+plotting functions is to call the default plot function for `mgcv::gam` objects: 
+
+```{r}
+plot(pam, select=2)
+```
+
+If you want to customize the graphic using other plotting paradigms you can 
+extract the data used for plotting via: 
+
+```{r}
+hgb.term <- ped %>% get_terms(fit=pam, terms="hgb")
+head(hgb.term)
+```
+
+Then we can use for example `ggplot2` to produce an equivalent visualization. 
+
+```{r}
+library(ggplot2)
+ggplot(hgb.term, aes(x=x, y=eff)) + 
+	geom_line() + 
+	geom_ribbon(aes(ymin=ci.lower, ymax=ci.upper), alpha=0.3)
+```
+
+For convenience we also include a function that plots or selected smooth 
+effects at once: 
+
+```{r}
+ped %>% gg_smooth(pam, terms=c("tend", "hgb"))
+```
+
+
+## Extraction/Visualization of the baseline hazard
+
+In PAMs the baseline hazard \lambda_0(t) is estimated semi-parametrically as a 
+(potentially) non-linear smooth function. Thus the model specification usually 
+looks like 
+
+$$
+\log(\lambda(t|x)) = f_0(t) + \beta_0 + \ldots.
+$$
+
+Thus the term $f_0(t)$ represents the time-dependent part of the ($log$-)baseline-hazard. 
+
+To create a data set with all interval cut-points we can use the function 
+`ped_info` applied to an object of class `ped` (piece-wise exponential data). 
+In addition to all time-points the function returns mean values for continuous 
+variables and modus for categorical variables.
+
+```{r}
+ped.info  <- ped_info(ped)
+head(ped.info)
+tail(ped.info)
+```
+
+This data set can be used 
+to conveniently obtain the hazard, cumulative hazard and survival functions evaluated 
+at all time points in the data. 
+
+
+```{r}
+ped.info %<>% add_hazard(pam)
+ped.info %>% select(interval, hazard, lower, upper) %>% head()
+ped.info %>% select(interval, hazard, lower, upper) %>% tail()
+```
+
+Which in turn can be conveniently plotted using respective functions, e.g. 
+
+```{r}
+ggplot(ped.info, aes(x=tend)) + 
+	geom_step(aes(y=hazard)) + 
+	geom_stepribbon(aes(ymin=lower, ymax=upper), alpha=0.2) + 
+	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
+```
+
+or the cumulative hazard 
+
+```{r}
+gg.chaz <- ped.info %>% add_cumhazard(pam) %>% 
+	ggplot(aes(x=tend, y=cumhazard, ymin=cumlower, ymax=cumupper))
+gg.chaz + geom_step() + geom_stepribbon(alpha=0.2) + 
+	ylab(expression(hat(Lambda(t)))) + xlab(expression(t))
+```
+
+This approach is very convenient, as the usual tidy `dplyr` workflow can 
+be maintained throughout, for example, if we wanted to plot the cumulative 
+hazard for different sexes:
+
+```{r}
+pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
+head(pinfo.sex)
+ggplot(pinfo.sex, aes(x=tend, y=cumhazard)) + 
+	geom_stepribbon(aes(ymin=cumlower, ymax=cumupper, fill=sex), alpha=0.3) + 
+	geom_step(aes(col=sex))
+```
+

@@ -2,7 +2,9 @@
 	
 	if(getRversion() >= "2.5.1") {
 		utils::globalVariables(
-			c("status", "time", "tstart", "tend", "interval", "intlen", "."))
+			c("status", "time", "tstart", "tend", "interval", "intlen", ".", 
+				"eff", "se", "tmp.fit", "tmp.se", "hazard", "lower", "upper", "term", 
+				"x", "ci.lower", "ci.upper", "fit", "se.fit"))
 	}
 
 	invisible()

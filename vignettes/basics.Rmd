@@ -1,0 +1,103 @@
+---
+title: "Basic Modeling "
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align = "center",
+  cache=TRUE, 
+  message=FALSE, 
+  fig.height=5, 
+  fig.width=5
+)
+```
+
+# Basic modeling 
+In this tutorial we present basic examples for the usage of this package and 
+compare results to the ones obtained with classical approaches, namely using 
+the `coxph` function from the `survival` package. 
+
+Note that usually the strength of the described methods is more apparent when 
+fitting models with time-dependent covariates or time-varying effects, thus 
+this section is more useful for illustration purposes. 
+
+In the following two sections, we first describe the classical piece-wise 
+exponential model (PEM) and afterwards the extension to piece-wise exponential 
+additive models (PAM). 
+
+## Piece-wise exponential model (PEM)
+The strength of the PEM is that analysis of life-time data can be performed 
+using algorithms designed to fit Generalized Linear Models. It was shown that 
+this approach and Cox-PH models yield equivalent coefficient estimates in absence 
+of ties and using unique event times as cut points to transform the data into 
+a format suitable for PEMs (see `?split_data` and `vignette("data-transformation", package="pam")`).
+Estimates between the two approaches can differ due to a more crude 
+handling of ties in the PEM approach (Whitehead 1980). 
+In practice these differences are not very large (see examples below).
+
+
+We first demonstrate the equivalence using Freireichs Leukemia data (citation).
+
+```{r}
+library(survival)
+library(mgcv)
+library(pam)
+library(dplyr)
+
+data("leuk2", package="bpcp")
+leuku <- filter(leuk2, !duplicated(time))
+leuku.ped <- split_data(Surv(time, status)~., cut=unique(leuku$time), data=leuku, id="id")
+pem.treat <- glm(status ~ interval - 1 + treatment, data = leuku.ped, 
+	family=poisson(), offset=offset)
+coef(pem.treat)["treatmentplacebo"]
+
+## compare coefficient estimate to Cox-PH estimate 
+cph.treat <- coxph(Surv(time, status) ~ treatment, data = leuku)
+coef(cph.treat)
+## -> models yield equal estimates of treatment effect
+
+## Using the full data set (with ties) yields slightly different results 
+# when comparing PEM to Cox-PH
+leuk.ped <- split_data(Surv(time, status)~., cut=unique(leuk2$time), data=leuk2, id="id")
+pem2.treat <- glm(status ~ interval - 1 + treatment, data = leuk.ped, 
+	family=poisson(), offset=offset)
+coef(pem2.treat)["treatmentplacebo"]
+
+## compare coefficient estimate to Cox-PH estimate 
+cph2.treat <- coxph(Surv(time, status) ~ treatment, data = leuk2)
+coef(cph2.treat)
+```
+
+## Piece-wise exponential additive model 
+PAMs have mainly two advantages over the PEM: 
+
+- PAMs are more efficient when number of interval cut-points is very large. 
+	In this case PEMs need to estimate one parameter per interval, while the number 
+	of parameters estimated with PAMs only depends on the number of knots and thus 
+	basis functions representing the spline.
+
+- Baseline hazard estimates for each interval can vary a lot between neighboring 
+	intervals, especially when one interval only contains a few events. For 
+	PAMs on the other hand estimates of the baseline hazard in neighboring 
+	intervals are similar due to penalization. 
+
+The equivalence of coefficient estimates, however, is no longer given, as 
+the estimation of the baseline hazard is performed semi-parametrically. In our 
+experience the differences are not very large. Using the above example we get:
+
+```{r}
+## compare to PAM 
+pam.treat <- gam(status ~ s(tend) + treatment, data=leuku.ped, 
+	family="poisson", offset=offset)
+coef(pam.treat)[2]
+coef(pem.treat)["treatmentplacebo"]
+coef(cph.treat)
+```

@@ -1,0 +1,112 @@
+---
+title: "Baseline Hazard"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{baseline}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+
+```{r, message=FALSE}
+library(pam)
+library(survival)
+library(ggplot2)
+theme_set(theme_bw())
+library(magrittr)
+library(dplyr)
+library(mgcv)
+```
+
+
+Here we briefly demonstrate how to fit and visualize a simple 
+baseline model using the **`pam`** package. 
+We illustrate the procedure using censored survival data simulated from the Weibull 
+distribution $T \sim WB(1.5, 2)$: 
+
+```{r}
+set.seed(300117)
+tdf <- data.frame(time=rweibull(100, 1.5, 2)) %>% 
+  mutate(
+    time   = round(time, 3),
+    status = time > rweibull(100, 1.5, 2))
+head(tdf)
+```
+
+The below graph depicts the estimated cumulative hazard using the 
+Nelson-Aalen estimator.
+
+```{r, fig.width=4.5, fig.height=4.5}
+base.df <- basehaz(coxph(Surv(time, status)~1, data=tdf))
+ggplot(base.df, aes(x=time, y=hazard)) + 
+  geom_step() + ylab(expression(Lambda(t))) + xlab("t") + 
+  ggtitle("Nelson-Aalen estimate of the cumulative hazard")
+```
+
+
+## Data transformation 
+First we need to bring the data in a suitable format 
+  (see `vignette("data-transformation", package="pam")`)
+
+```{r}
+# Use unique event times as interval break points
+ped <- split_data(Surv(time, status)~., data=tdf, id="id")
+head(ped)
+```
+
+## Fit the baseline piece-wise exponential model (PEM)
+```{r}
+pem <- gam(status ~ interval, data=ped, offset=offset, family=poisson())
+```
+
+Extract cumulative baseline estimate
+
+```{r}
+int.df <- int_info(ped)
+head(int.df)
+int.df %<>% add_cumhazard(pem) %>% 
+  left_join(base.df, by=c("tend"="time"))
+head(int.df)
+```
+
+Visualize the PEM estimate
+
+```{r, fig.width=4.5, fig.height=4.5}
+ggplot(int.df, aes(x=tend)) + 
+  geom_step(aes(y=cumhazard, col="PEM")) + 
+  geom_step(aes(y=hazard, col="Nelson-Aalen"), lty=2) + 
+  scale_color_discrete(name="Method") + 
+  theme(legend.position = "bottom") + 
+  ylab(expression(Lambda(t))) + xlab("t") + 
+  ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
+all.equal(int.df$cumhazard, int.df$hazard)
+```
+
+
+Alternatively we could use PAMs, estimating the baseline hazard as a smooth, 
+non-linear function semi-parametrically: 
+
+```{r, fig.width=4.5, fig.height=4.5}
+pam <- gam(status ~ s(tend), data=ped, offset=offset, family=poisson())
+summary(pam)
+int.df$pamhaz <- predict(pam, newdata=int.df, type="response")
+int.df %<>% mutate(pamch = cumsum(pamhaz * intlen))
+ggplot(int.df, aes(x=tend)) + 
+  geom_step(aes(y=cumhazard, col="PEM")) + 
+  geom_step(aes(y=pamch, col="PAM")) +
+  geom_step(aes(y=hazard, col="Nelson-Aalen"), lty=2) + 
+  scale_color_discrete(name="Method") + 
+  theme(legend.position = "bottom") + 
+  ylab(expression(Lambda(t))) + xlab("t") + 
+  ggtitle("Comparison of cumulative hazards using \n 
+    Cox-PH (Nelson-Aalen) vs. PEM vs. PAM")
+```
