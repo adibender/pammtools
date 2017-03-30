@@ -83,14 +83,13 @@ tidy_smooth <- function(
 
 	po <- get_plotinfo(x, ...)
 	# index of list elements that are 1d smooths and not random effects 
-	ind.1d <- vapply(
+	ind1d <- vapply(
 		X         = po,
-		FUN       = function(z) !is.null(z$x) & is.null(z$main),
+		FUN       = function(z) !is.null(z[["x"]]) & is.null(z[["main"]]),
 		FUN.VALUE = logical(1))
-	# keep only variables of interes
-	po <- lapply(po[ind.1d], "[", i=keep, drop=TRUE)
-	# use cbind.data.frame here, b/c as_data_frame does not work here 
-	po <- lapply(po, function(z) do.call(cbind.data.frame, c(z, stringsAsFactors=FALSE)))
+	# keep only variables of interest
+	po <- lapply(po[ind1d], "[", i=keep, drop=TRUE)
+
 	if(ci) {
 		po <- lapply(po, function(z) {
 			z$low  = z$fit - z$se
@@ -98,6 +97,48 @@ tidy_smooth <- function(
 			z
 		})
 	}
+
+	return(bind_rows(po))
+
+}
+
+
+#' Extract 2d smooth objects in tidy format. 
+#' 
+#' @inheritParams tidy_smooth
+#' @importFrom purrr cross_d
+#' @importFrom tibble as_tibble
+#' @import dplyr
+#' @export
+tidy_smooth2d <- function(
+	x, 
+	keep = c("x", "y", "fit","se", "xlab", "ylab", "main"), 
+	ci = FALSE,
+	...) {
+
+	po <- get_plotinfo(x, ...)
+
+	ind2d <- vapply(
+		X         = po,
+		FUN       = function(z) !is.null(z[["x"]]) & !is.null(z[["y"]]),
+		FUN.VALUE = logical(1))
+
+	# keep only variables of interes
+	po <- lapply(po[ind2d], "[", i=keep, drop=TRUE)
+
+	# transform to data.frame 
+	po <- lapply(po, function(z) {
+		z[["fit"]] <- as.vector(z[["fit"]])
+		p1 <- as_tibble(z[setdiff(keep, c("x", "y"))])
+		xy <- cross_d(z[c("x", "y")])
+		xy <- bind_cols(xy, p1)
+		if(ci) {
+			xy %<>% mutate(
+				low  = fit - se,
+				high = fit + se)
+		}
+		xy
+	})
 
 	return(bind_rows(po))
 
@@ -116,7 +157,7 @@ tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 	po <- get_plotinfo(x, ...)
 	ind.re <- vapply(
 		X         = po,
-		FUN       = function(z) !is.null(z$main) & z$xlab == "Gaussian quantiles",
+		FUN       = function(z) !is.null(z[["main"]]) & z[["xlab"]] == "Gaussian quantiles",
 		FUN.VALUE = logical(1))
 
 	po <- lapply(po[ind.re], "[", i=keep, drop=TRUE)
