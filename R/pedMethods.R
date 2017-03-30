@@ -1,7 +1,7 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-03-23 18:51:15
+# @Last Modified time: 2017-03-29 17:53:18
 
 
 #' @importFrom dplyr filter
@@ -86,12 +86,19 @@ distinct_.ped <- function(ped, ...) {
 
 #' @importFrom dplyr mutate
 #' @export
-mutate_.ped <- function(ped, ...) {
+mutate_.ped <- function(ped, keep.attributes=TRUE, ...) {
 
+	if(keep.attributes) {
+		ped.attr   <- attributes(ped)
+		attr.names <- setdiff(names(ped.attr), c("class", "row.names", "names"))
+	}
 	ped.class  <- class(ped)[1]
 	class(ped) <- class(ped)[-1]
 	ped        <- mutate_(ped, ...)
 	class(ped) <- c(ped.class, class(ped))
+	if(keep.attributes) {
+		attributes(ped) <- c(attributes(ped), ped.attr[attr.names])
+	}
 
 	return(ped)
 
@@ -151,6 +158,19 @@ sample_frac.ped <- function(ped, ...) {
 
 }
 
+#' @importFrom dplyr left_join
+#' @export
+left_join.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- left_join(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
 
 #' @importFrom dplyr group_by
 #' @export
@@ -159,6 +179,19 @@ group_by_.ped <- function(ped, ...) {
 	ped.class  <- class(ped)[1]
 	class(ped) <- class(ped)[-1]
 	ped        <- group_by_(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+#' @importFrom dplyr ungroup
+#' @export
+ungroup.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- ungroup(ped, ...)
 	class(ped) <- c(ped.class, class(ped))
 
 	return(ped)
