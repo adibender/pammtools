@@ -17,22 +17,31 @@
 #' add_term(pinfo, pam, term="treatment")
 #' @export 
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
-add_term <- function(newdata, object, term, se.fit=TRUE, type="terms", ...) {
+add_term <- function(
+	newdata, 
+	object, 
+	term, 
+	se.fit  = TRUE,
+	type    = "terms",
+	se.mult = 2, ...) {
 
 	assert_data_frame(newdata, all.missing=FALSE) 
-	assert_class(object, classes = c("gam", "glm", "lm"))
-	assert_string(term)
-	pred <- predict(object=object, newdata=newdata, se.fit=se.fit, type=type, ...)
-	ind.term <- grep(term, colnames(pred$fit))
-	stopifnot(nrow(pred$fit) == nrow(newdata))
+	assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
 
-	newdata %>% mutate(
-		tmp.fit    = pred$fit[, ind.term],
-		tmp.se     = pred$se.fit[, ind.term],
-		term       = tmp.fit,
-		term.lower = tmp.fit - 2*tmp.se,
-		term.upper = tmp.fit + 2*tmp.se) %>%
-	select(-tmp.fit, -tmp.se)
+	col.ind <- lapply(term, grep, x=names(object$coefficients)) %>% 
+		unlist %>% unique %>% sort
+
+  X <- predict(object, newdata = newdata, type = "lpmatrix")[,col.ind]
+  newdata[["fit"]] <- drop(X %*% object$coefficients[col.ind])
+  if(se.fit) {
+  	cov.coefs <- object$Vp[col.ind, col.ind]
+  	se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
+		newdata %<>% mutate(
+			low = fit - se.mult * se,
+			high = fit + se.mult * se)
+  }
+
+  return(newdata)
 
 }
 

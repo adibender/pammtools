@@ -4,7 +4,8 @@
 \alias{add_term}
 \title{Add info about term effects to data set}
 \usage{
-add_term(newdata, object, term, se.fit = TRUE, type = "terms", ...)
+add_term(newdata, object, term, se.fit = TRUE, type = "terms",
+  se.mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -55,4 +56,3 @@ add_term(pinfo, pam, term="treatment")
 \seealso{
 \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
 }
-
