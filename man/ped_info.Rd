@@ -22,4 +22,3 @@ ped_info(leuk.ped)
 \seealso{
 \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
 }
-

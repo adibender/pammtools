@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions to utilize fitting piece-wise exponential (additive) models
-Version: 0.0.593
+Version: 0.0.594
 Authors@R: person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"))
 Description: We use generalized additive models (GAM) to fit piece-wise
     eponential models. This includes restructuring the data to the needed format.
@@ -29,5 +29,5 @@ Suggests:
     JM
 URL: http://github.com/adibender/pam
 BugReports: http://github.com/adibender/pam/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr
