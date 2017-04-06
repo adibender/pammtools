@@ -28,7 +28,7 @@ modus <- function(var) {
 seq_range <- function(x, length.out=100L) {
 
   assert_numeric(x, finite=TRUE, all.missing=FALSE, min.len=2)
-  assert_integer(length.out, lower=2, finite=TRUE)
+  assert_integer(length.out, lower=2)
 
   range.x <- range(x)
   seq(range.x[1], range.x[2], length.out=length.out)
@@ -87,15 +87,6 @@ construct_newdata <- function(ped, expand=NULL) {
   }
 
 }
-
-
-
-
-
-
-
-
-
 
 
 #' extract character vector of grouping variables 
