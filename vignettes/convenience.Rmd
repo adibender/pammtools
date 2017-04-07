@@ -55,7 +55,7 @@ library(magrittr)
 library(dplyr)
 data("mgus2", package="survival")
 ped <- split_data(Surv(futime, death)~age + hgb + sex, data=mgus2, id="id")
-pam <- gam(status~s(tend) + sex + age + s(hgb), data=ped, family=poisson(), offset=offset)
+pam <- gam(ped_status~s(tend) + sex + age + s(hgb), data=ped, family=poisson(), offset=offset)
 ```
 
 The easiest way to obtain overview of the estimated coefficients for fixed effects 

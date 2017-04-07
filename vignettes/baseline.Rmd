@@ -65,7 +65,7 @@ head(ped)
 
 ## Fit the baseline piece-wise exponential model (PEM)
 ```{r}
-pem <- gam(status ~ interval, data=ped, offset=offset, family=poisson())
+pem <- gam(ped_status ~ interval, data=ped, offset=offset, family=poisson())
 ```
 
 Extract cumulative baseline estimate
@@ -96,7 +96,7 @@ Alternatively we could use PAMs, estimating the baseline hazard as a smooth,
 non-linear function semi-parametrically: 
 
 ```{r, fig.width=4.5, fig.height=4.5}
-pam <- gam(status ~ s(tend), data=ped, offset=offset, family=poisson())
+pam <- gam(ped_status ~ s(tend), data=ped, offset=offset, family=poisson())
 summary(pam)
 int.df$pamhaz <- predict(pam, newdata=int.df, type="response")
 int.df %<>% mutate(pamch = cumsum(pamhaz * intlen))

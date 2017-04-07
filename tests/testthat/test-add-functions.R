@@ -3,7 +3,7 @@ context("Convenience functiions for calculation of hazard and similar")
 data("leuk2", package="bpcp")
 leuk2$x <- rnorm(nrow(leuk2))
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=c(0:5, 10, 40), id="id")
-fit <- mgcv::gam(status ~ s(tend, k=5) + treatment, data=leuk.ped)
+fit <- mgcv::gam(ped_status ~ s(tend, k=5) + treatment, data=leuk.ped)
 
 test_that("hazard functions work", {
 	expect_is(haz <- add_hazard(ped_info(leuk.ped), fit), "data.frame")

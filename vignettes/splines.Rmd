@@ -49,7 +49,7 @@ the model:
 ```{r}
 mgus.ped <- split_data(Surv(futime, death)~sex + age, data=mgus, id="id")
 head(mgus.ped)
-pamfit <- gam(status ~ s(tend) + sex + s(age, bs="ps"), data = mgus.ped, method="REML", 
+pamfit <- gam(ped_status ~ s(tend) + sex + s(age, bs="ps"), data = mgus.ped, method="REML", 
 	family=poisson(), offset=offset)
 summary(pamfit)
 ```
@@ -72,7 +72,7 @@ are very similar, when the effect of the covariate is in fact non-linear:
 ```{r}
 fit <- coxph(Surv(futime, death) ~ age + pspline(hgb, 4), mgus2)
 mgus2.ped <- split_data(Surv(futime, death)~age + hgb, data=mgus2, id="id")
-pamfit2 <- gam(status~s(tend) + age + s(hgb), data=mgus2.ped, 
+pamfit2 <- gam(ped_status~s(tend) + age + s(hgb), data=mgus2.ped, 
 	family=poisson(), offset=offset)
 ```
   
@@ -91,7 +91,7 @@ cal to `scam` and specifying `bs="mpd"`:
 
 ```{r}
 library(scam)
-mpam <- scam(status ~ s(tend) + age + s(hgb, bs="mpd"), data=mgus2.ped, 
+mpam <- scam(ped_status ~ s(tend) + age + s(hgb, bs="mpd"), data=mgus2.ped, 
   family=poisson(), offset=offset)
 ```
 
