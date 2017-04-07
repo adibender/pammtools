@@ -1,10 +1,23 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-03-29 17:53:18
+# @Last Modified time: 2017-04-07 15:00:43
 
 
 #' @importFrom dplyr filter
+#' @export
+filter.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- filter(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+#' @importFrom dplyr filter_
 #' @export
 filter_.ped <- function(ped, ...) {
 
@@ -17,7 +30,21 @@ filter_.ped <- function(ped, ...) {
 
 }
 
+
 #' @importFrom dplyr slice
+#' @export
+slice.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- slice(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+#' @importFrom dplyr slice_
 #' @export
 slice_.ped <- function(ped, ...) {
 
@@ -30,7 +57,21 @@ slice_.ped <- function(ped, ...) {
 
 }
 
+
 #' @importFrom dplyr arrange
+#' @export
+arrange.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- arrange(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+#' @importFrom dplyr arrange_
 #' @export
 arrange_.ped <- function(ped, ...) {
 
@@ -42,6 +83,7 @@ arrange_.ped <- function(ped, ...) {
 	return(ped)
 
 }
+
 
 #' @importFrom dplyr select
 #' @export
@@ -86,6 +128,26 @@ distinct_.ped <- function(ped, ...) {
 
 #' @importFrom dplyr mutate
 #' @export
+mutate.ped <- function(ped, keep.attributes=TRUE, ...) {
+
+	if(keep.attributes) {
+		ped.attr   <- attributes(ped)
+		attr.names <- setdiff(names(ped.attr), c("class", "row.names", "names"))
+	}
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- mutate(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+	if(keep.attributes) {
+		attributes(ped) <- c(attributes(ped), ped.attr[attr.names])
+	}
+
+	return(ped)
+
+} 
+
+#' @importFrom dplyr mutate_
+#' @export
 mutate_.ped <- function(ped, keep.attributes=TRUE, ...) {
 
 	if(keep.attributes) {
@@ -106,6 +168,19 @@ mutate_.ped <- function(ped, keep.attributes=TRUE, ...) {
 
 #' @importFrom dplyr transmute
 #' @export
+transmute.ped <- function(ped, ...) {
+
+	ped.class  <- class(ped)[1]
+	class(ped) <- class(ped)[-1]
+	ped        <- transmute(ped, ...)
+	class(ped) <- c(ped.class, class(ped))
+
+	return(ped)
+
+}
+
+#' @importFrom dplyr transmute_
+#' @export
 transmute_.ped <- function(ped, ...) {
 
 	ped.class  <- class(ped)[1]
@@ -116,6 +191,7 @@ transmute_.ped <- function(ped, ...) {
 	return(ped)
 
 }
+
 
 
 #' @importFrom dplyr summarise
