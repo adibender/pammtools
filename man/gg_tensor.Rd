@@ -24,4 +24,3 @@ gg_tensor(g)
 \seealso{
 \code{\link{tidy_smooth2d}}
 }
-

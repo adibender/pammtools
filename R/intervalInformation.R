@@ -128,6 +128,7 @@ sample_info <- function(x, ...) {
 #' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom magrittr %<>%
+#' @importFrom purrr compose
 #' @export 
 #' @rdname sample_info
 sample_info.data.frame <- function(x, ...) {
@@ -206,7 +207,7 @@ ped_info <- function(ped) {
 #' @examples
 #' data("leuk2", package="bpcp")
 #' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-#' pem <- glm(status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
+#' pem <- glm(ped_status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
 #' pinfo <- ped_info(leuk.ped)
 #' pinfo$basehaz <- predict(pem, newdata=pinfo, type="response")
 #' plot.inf <- plot_df(pinfo)

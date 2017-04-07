@@ -30,28 +30,39 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
 
   ## extract names for event time and status variables
+  tvars <- all.vars(update(formula, .~0))
   vars <- if("." %in% all.vars(formula)) {
-      colnames(data)
+      names(data)
     } else {
       all.vars(formula)
     } 
-  tvars     <- all.vars(update(formula, .~0))
+  uvars <- union(tvars, vars)
+  if(!all(uvars %in% vars)) {
+    stop(paste("Variables provided in formula not in data set:", 
+      paste0(setdiff(uvars, vars), collapse=", ")))
+  }
+
+  
   if(length(tvars)!=2) {
     stop(
-      "The left hand side of the formula has only one variable.\n 
-      At the moment a formula of the form Surv(time, event)~., is required.\n
+      "Currently a formula of the form Surv(time, event)~., is required.\n
       See ?Surv for more details.")
   }
   ## standardize event time and status names 
+  proposed.names <- c("ped_time", "ped_status")
+  if(any(proposed.names %in% names(data))) {
+    stop(paste0("Error in attempt to rename provided time/status variables: Variables 
+      ", intersect(proposed.names, names(data)), " allready in data set."))
+  }
   data <- rename_(data, 
-    .dots=setNames(c(tvars), c("time", "status")))
-  formula <- as.formula(paste0("Surv(time, status)", paste0(formula[-2], collapse = "")))
+    .dots=setNames(c(tvars), c(proposed.names)))
+  formula <- as.formula(paste0("Surv(ped_time, ped_status)", paste0(formula[-2], collapse = "")))
 
   if(is.null(cut)) {
-    cut <- unique(data[["time"]][data[["status"]]==1])
+    cut <- unique(data[["ped_time"]][data[["ped_status"]]==1])
   }
-  max.fail <- max(data[["time"]][data[["status"]]==1])
-  max.time <- max(max(data[["time"]]), max(cut))
+  max.fail <- max(data[["ped_time"]][data[["ped_status"]]==1])
+  max.time <- max(max(data[["ped_time"]]), max(cut))
 
 
   # sort interval cut points in case they are not (so that interval factor 
@@ -83,18 +94,18 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
   ## Add variables for piece-wise exponential (additive) model
   split.data  <- split.data %>%
-  mutate(
-    status = ifelse(status == 1 & time > max(cut), 0, status),
-    time   = pmin(time, max(cut)),
-    offset = log(time - tstart)) %>%
-  filter(!(tstart==time))
+    mutate(
+      ped_status = ifelse(ped_status == 1 & ped_time > max(cut), 0, ped_status),
+      ped_time   = pmin(ped_time, max(cut)),
+      offset = log(ped_time - tstart)) %>%
+    filter(!(tstart==ped_time))
 
   ## combine data with general interval info
   split.data <- left_join(split.data, int_info(cut), by=c("tstart"="tstart"))
 
   ## rearrange columns 
   move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",
-    "time", "status")
+    "ped_time", "ped_status")
   if(exists("id.var")) move <- c(id.var, move)
   split.data <- select(split.data, one_of(move), everything())
 
@@ -102,7 +113,7 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   class(split.data) <- c("ped", class(split.data))
   attr(split.data, "cut") <- cut 
   attr(split.data, "intvars") <- c("id", "tstart", "tend", "intlen", "intmid", 
-    "interval", "offset", "time", "status")
+    "interval", "offset", "ped_time", "ped_status")
 
   return(split.data)
 

@@ -2,8 +2,8 @@
 % Please edit documentation in R/plotHelpers.R
 \docType{data}
 \name{geom_stepribbon}
-\alias{GeomStepribbon}
 \alias{geom_stepribbon}
+\alias{GeomStepribbon}
 \title{Step ribbon plots.}
 \usage{
 geom_stepribbon(mapping = NULL, data = NULL, stat = "identity",
@@ -62,6 +62,7 @@ or a confidence band.
 
 \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "ribbon")}
 }
+
 \examples{
 library(ggplot2)
 huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
@@ -76,4 +77,3 @@ h + geom_ribbon(aes(ymin = level - 1, ymax = level + 1), fill = "grey70") +
   inherits from \code{geom_ribbon}.
 }
 \keyword{datasets}
-

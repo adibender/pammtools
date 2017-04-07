@@ -39,6 +39,9 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
+\item{se.mult}{The factor by which standard errors are multiplied to form 
+confidence intervals.}
+
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
@@ -48,7 +51,7 @@ Add info about term effects to data set
 library(mgcv)
 data("leuk2", package="bpcp")
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-pam <- gam(status ~ ti(tend) + ti(tend, by=as.ordered(treatment)), 
+pam <- gam(ped_status ~ ti(tend) + ti(tend, by=as.ordered(treatment)), 
 	data = leuk.ped, family=poisson(), offset=offset)
 pinfo <- ped_info(leuk.ped)
 add_term(pinfo, pam, term="treatment")

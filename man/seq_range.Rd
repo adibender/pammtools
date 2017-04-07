@@ -16,4 +16,3 @@ seq_range(x, length.out = 100L)
 \description{
 Creates sequence from minimum to maximum
 }
-

@@ -16,7 +16,7 @@
 #' library(mgcv)
 #' data("leuk2", package="bpcp")
 #' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-#' pam <- gam(status ~ s(tend), data = leuk.ped, family=poisson(), offset=offset)
+#' pam <- gam(ped_status ~ s(tend), data = leuk.ped, family=poisson(), offset=offset)
 #' pinfo <- ped_info(leuk.ped)
 #' add_hazard(pinfo, pam)
 #' @export 

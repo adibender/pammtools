@@ -19,4 +19,3 @@ first row will be used.}
 \description{
 Extract partial effects for specified model terms
 }
-

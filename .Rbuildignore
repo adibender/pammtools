@@ -5,5 +5,3 @@
 ^\.travis\.yml$
 ^sandbox$
 ^appveyor\.yml$
-^vignettes/tveffects_cache/$
-^vignettes/tveffects_files/$

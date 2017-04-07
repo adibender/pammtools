@@ -16,4 +16,3 @@ Given a data set of class \code{ped}, returns a data frame that can be used
 as \code{newdata} argument in a call to \code{predict} and similar functions. 
 When \code{expand==NULL} falls back to \code{\link{ped_info}}.
 }
-

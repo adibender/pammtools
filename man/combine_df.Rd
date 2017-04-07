@@ -19,4 +19,3 @@ combine_df(
   data.frame(x1=c("a", "b"), x2=c("c", "d")),
   data.frame(z=c(0, 1)))
 }
-

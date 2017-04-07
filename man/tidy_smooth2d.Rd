@@ -20,4 +20,3 @@ calculated and returned. Defaults to \code{TRUE}.}
 \description{
 Extract 2d smooth objects in tidy format.
 }
-
