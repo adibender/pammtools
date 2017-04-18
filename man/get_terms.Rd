@@ -31,4 +31,3 @@ term.karno <- get_terms(veteran, fit, terms="karno")
 \seealso{
 \code{\link[survival]{coxph}}
 }
-

@@ -20,8 +20,7 @@ test_that("Interval info returned for ped objects", {
 
 test_that("Sample info returned for data frame", {
 	expect_is(si <- sample_info(leuk2), "data.frame")
-	expect_equal(nrow(si), 1L)
-	expect_equal(ncol(si), 5L)
+	expect_equal(dim(si), c(1L, 5L))
 })
 
 test_that("Sample info returned for ped objects", {

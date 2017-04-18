@@ -2,7 +2,7 @@
 % Please edit documentation in R/conveniencePlots.R
 \name{gg_smooth}
 \alias{gg_smooth}
-\title{Plot smooth terms of gam objects}
+\title{Plot smooth 1d terms of gam objects}
 \usage{
 gg_smooth(data, fit, ...)
 }
@@ -18,7 +18,7 @@ first row will be used.}
 A \code{\link[ggplot2]{ggplot2}} object.
 }
 \description{
-Given a gam model this convenience functions returns a plot of all 
+Given a gam model this convenience function returns a plot of all 
 smooth terms contained in the model. If more than one smooth is present, the 
 different smooth are faceted.
 }
@@ -26,4 +26,3 @@ different smooth are faceted.
 g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 }
-

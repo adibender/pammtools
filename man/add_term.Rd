@@ -4,7 +4,8 @@
 \alias{add_term}
 \title{Add info about term effects to data set}
 \usage{
-add_term(newdata, object, term, se.fit = TRUE, type = "terms", ...)
+add_term(newdata, object, term, se.fit = TRUE, type = "terms",
+  se.mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -38,6 +39,9 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
+\item{se.mult}{The factor by which standard errors are multiplied to form 
+confidence intervals.}
+
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
@@ -47,7 +51,7 @@ Add info about term effects to data set
 library(mgcv)
 data("leuk2", package="bpcp")
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-pam <- gam(status ~ ti(tend) + ti(tend, by=as.ordered(treatment)), 
+pam <- gam(ped_status ~ ti(tend) + ti(tend, by=as.ordered(treatment)), 
 	data = leuk.ped, family=poisson(), offset=offset)
 pinfo <- ped_info(leuk.ped)
 add_term(pinfo, pam, term="treatment")
@@ -55,4 +59,3 @@ add_term(pinfo, pam, term="treatment")
 \seealso{
 \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
 }
-

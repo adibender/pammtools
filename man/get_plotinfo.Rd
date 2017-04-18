@@ -15,4 +15,3 @@ get_plotinfo(x, ...)
 Given a \code{mgcv} \code{\link[mgcv]{gamObject}}, returns the information 
 used for the default plots produced by \code{\link[mgcv]{plot.gam}}.
 }
-

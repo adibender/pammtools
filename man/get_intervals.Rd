@@ -31,4 +31,3 @@ get_intervals(brks, x, left.open=TRUE)
 \seealso{
 findInterval int_info
 }
-

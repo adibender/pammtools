@@ -24,4 +24,3 @@ for numeric variables and modus for characters and factors.
 \seealso{
 \code{\link[pam]{split_data}}
 }
-

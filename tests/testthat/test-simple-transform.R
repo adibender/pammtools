@@ -9,8 +9,8 @@ test_that("Output as expected without id", {
 	expect_equal(nrow(leuk.ped), 246)
 	expect_equal(ncol(leuk.ped), 10)
 	expect_is(leuk.ped, "data.frame")
-	expect_true(all(c("time", "status", "tstart", "tend", "interval", "intlen", 
-		"offset") %in% names(leuk.ped)))
+	expect_true(all(c("ped_time", "ped_status", "tstart", "tend", "interval", 
+		"intlen", "offset") %in% names(leuk.ped)))
 	expect_is(attr(leuk.ped, "cut"), "numeric")
 	expect_is(attr(leuk.ped, "intvars"), "character")
 })
@@ -33,6 +33,9 @@ test_that("ID kept when id variable excluded in formula", {
 test_that("Error on wrong input", {
 	expect_error(split_data())
 	expect_error(split_data(x~y, data=leuk2, cut=c(0:5, 10, 40)))
+	expect_error(split_data(Surv(time2, status)~., data=leuk2, cut=c(0:5, 10, 40)))
+	expect_error(split_data(Surv(ped_time, status)~., 
+		data=rename(leuk2, ped_time=time)))
 })
 
 

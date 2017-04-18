@@ -41,4 +41,3 @@ int_info(ped)
 \seealso{
 split_data
 }
-

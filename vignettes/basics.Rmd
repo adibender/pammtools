@@ -55,7 +55,7 @@ library(dplyr)
 data("leuk2", package="bpcp")
 leuku <- filter(leuk2, !duplicated(time))
 leuku.ped <- split_data(Surv(time, status)~., cut=unique(leuku$time), data=leuku, id="id")
-pem.treat <- glm(status ~ interval - 1 + treatment, data = leuku.ped, 
+pem.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuku.ped, 
 	family=poisson(), offset=offset)
 coef(pem.treat)["treatmentplacebo"]
 
@@ -67,7 +67,7 @@ coef(cph.treat)
 ## Using the full data set (with ties) yields slightly different results 
 # when comparing PEM to Cox-PH
 leuk.ped <- split_data(Surv(time, status)~., cut=unique(leuk2$time), data=leuk2, id="id")
-pem2.treat <- glm(status ~ interval - 1 + treatment, data = leuk.ped, 
+pem2.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuk.ped, 
 	family=poisson(), offset=offset)
 coef(pem2.treat)["treatmentplacebo"]
 
@@ -95,7 +95,7 @@ experience the differences are not very large. Using the above example we get:
 
 ```{r}
 ## compare to PAM 
-pam.treat <- gam(status ~ s(tend) + treatment, data=leuku.ped, 
+pam.treat <- gam(ped_status ~ s(tend) + treatment, data=leuku.ped, 
 	family="poisson", offset=offset)
 coef(pam.treat)[2]
 coef(pem.treat)["treatmentplacebo"]

@@ -1,6 +1,6 @@
-##' Plot smooth terms of gam objects
+##' Plot smooth 1d terms of gam objects
 #' 
-#' Given a gam model this convenience functions returns a plot of all 
+#' Given a gam model this convenience function returns a plot of all 
 #' smooth terms contained in the model. If more than one smooth is present, the 
 #' different smooth are faceted. 
 #' 
@@ -24,5 +24,32 @@ gg_smooth <- function(data, fit, ...) {
 		ylab(expression(f[j](x[j]))) + xlab(expression(x[j]))
 
 	return(ggsmooth)
+
+}
+
+#' Plot tensor product effects 
+#' 
+#' Given a gam model this convenience function returns a \code{ggplot2} object 
+#' depicting 2d smooth terms specified in the model as heat/contour plots. If 
+#' more than one 2d smooth term is present individual terms are faceted.
+#' @inheritParams get_term
+#' @examples
+#' library(mgcv)
+#' g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
+#' gg_tensor(g)
+#' @seealso \code{\link{tidy_smooth2d}}
+#' @export
+gg_tensor <- function(fit, ...) {
+
+	df2d <- tidy_smooth2d(fit, ...)
+	gg2d <- ggplot(df2d, aes_string(x="x", y="y", z="fit")) + 
+		geom_raster(aes(fill=fit)) + 
+		scale_fill_gradient2(
+			name=expression(f(list(x,y))),
+			low="steelblue", high="firebrick2") + 
+		geom_contour(col="grey30") + 
+		facet_wrap(~main, scales="free")
+
+	return(gg2d)
 
 }

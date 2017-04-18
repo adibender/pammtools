@@ -16,4 +16,3 @@ A character vector (of length 0 if no grouping variables present).
 \description{
 extract character vector of grouping variables
 }
-

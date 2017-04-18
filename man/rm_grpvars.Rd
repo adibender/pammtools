@@ -16,4 +16,3 @@ Returns \code{data} without grouping variables (and group properties).
 \description{
 return ungrouped data frame without grouping variables
 }
-
