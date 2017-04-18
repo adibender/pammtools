@@ -1,275 +1,192 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-04-07 15:00:43
+# @Last Modified by:   fabian.scheipl@stat.uni-muenchen.de
+# @Last Modified time: 2017-04-18
 
-
-#' @importFrom dplyr filter
-#' @export
-filter.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- filter(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
+use_dplyr_verb <- function(dplyr_verb, .data, ...) {
+  .data.class  <- class(.data)[1]
+  class(.data) <- class(.data)[-1]
+  args <- list(.data)
+  args <- c(args, ...)
+  .data        <- do.call(dplyr_verb, args)
+  class(.data) <- c(.data.class, class(.data))
+  .data
 }
 
-#' @importFrom dplyr filter_
-#' @export
-filter_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- filter_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @importFrom dplyr slice
-#' @export
-slice.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- slice(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-#' @importFrom dplyr slice_
-#' @export
-slice_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- slice_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @importFrom dplyr arrange
-#' @export
-arrange.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- arrange(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-#' @importFrom dplyr arrange_
-#' @export
-arrange_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- arrange_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @importFrom dplyr select
-#' @export
-select_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- select_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-#' @importFrom dplyr rename
-#' @export
-rename_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- rename_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @importFrom dplyr distinct
-#' @export
-distinct_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- distinct_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @importFrom dplyr mutate
-#' @export
-mutate.ped <- function(ped, keep.attributes=TRUE, ...) {
-
-	if(keep.attributes) {
-		ped.attr   <- attributes(ped)
-		attr.names <- setdiff(names(ped.attr), c("class", "row.names", "names"))
-	}
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- mutate(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-	if(keep.attributes) {
-		attributes(ped) <- c(attributes(ped), ped.attr[attr.names])
-	}
-
-	return(ped)
-
-} 
-
-#' @importFrom dplyr mutate_
-#' @export
-mutate_.ped <- function(ped, keep.attributes=TRUE, ...) {
-
-	if(keep.attributes) {
-		ped.attr   <- attributes(ped)
-		attr.names <- setdiff(names(ped.attr), c("class", "row.names", "names"))
-	}
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- mutate_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-	if(keep.attributes) {
-		attributes(ped) <- c(attributes(ped), ped.attr[attr.names])
-	}
-
-	return(ped)
-
-} 
-
-#' @importFrom dplyr transmute
-#' @export
-transmute.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- transmute(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-#' @importFrom dplyr transmute_
-#' @export
-transmute_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- transmute_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-
-#' @importFrom dplyr summarise
-#' @export
-summarise_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- summarise_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-
-#' @import dplyr 
-#' @export
-sample_n.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- sample_n(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-} 
+#' @name dplyr_verbs
+#' @title \code{dplyr} Verbs for \code{ped}-Objects
+#' @param .data an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param ... see \code{dplyr} documentation
+#' @description See \code{dplyr} documentation of the respective function for
+#'   details and examples.
+#' @return a modified \code{ped} object
+NULL
 
 #' @import dplyr
 #' @export
-sample_frac.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- sample_frac(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
-}
-
-#' @importFrom dplyr left_join
-#' @export
-left_join.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- left_join(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
+#' @rdname dplyr_verbs
+filter.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::filter,.data, ...)
 }
 
 
-#' @importFrom dplyr group_by
+#' @import dplyr
 #' @export
-group_by_.ped <- function(ped, ...) {
-
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- group_by_(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
-
-	return(ped)
-
+#' @rdname dplyr_verbs
+filter_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::filter_,.data, ...)
 }
 
-#' @importFrom dplyr ungroup
+
+#' @import dplyr
 #' @export
-ungroup.ped <- function(ped, ...) {
+#' @rdname dplyr_verbs
+slice.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::slice,.data, ...)
+}
 
-	ped.class  <- class(ped)[1]
-	class(ped) <- class(ped)[-1]
-	ped        <- ungroup(ped, ...)
-	class(ped) <- c(ped.class, class(ped))
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+slice_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::slice_,.data, ...)
+}
 
-	return(ped)
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+arrange.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::arrange,.data, ...)
+}
 
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+arrange_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::arrange_,.data, ...)
+}
+
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+select_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::select_,.data, ...)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+rename_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::rename_,.data, ...)
+}
+
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+distinct_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::distinct_,.data, ...)
+}
+
+
+#' @import dplyr
+#' @param keep.attributes conserve attributes? defaults to \code{TRUE}
+#' @export
+#' @rdname dplyr_verbs
+mutate.ped <- function(.data, keep.attributes=TRUE, ...) {
+	if (keep.attributes) {
+		.data.attr   <- attributes(.data)
+		attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
+	}
+  .data <- use_dplyr_verb(dplyr::mutate,.data, ...)
+	if (keep.attributes) {
+		attributes(.data) <- c(attributes(.data), .data.attr[attr.names])
+	}
+	return(.data)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+mutate_.ped <- function(.data, keep.attributes=TRUE, ...) {
+
+	if (keep.attributes) {
+	  .data.attr   <- attributes(.data)
+		attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
+	}
+  .data <- use_dplyr_verb(dplyr::mutate_,.data, ...)
+	if (keep.attributes) {
+		attributes(.data) <- c(attributes(.data), .data.attr[attr.names])
+	}
+	return(.data)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+transmute.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::transmute,.data, ...)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+transmute_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::transmute_,.data, ...)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+summarise_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::summarise_,.data, ...)
+}
+
+#' @import dplyr
+#' @inherit dplyr::sample_n params
+#' @export
+#' @rdname dplyr_verbs
+sample_n.ped <- function(.data, ...) {
+  .data.class  <- class(.data)[1]
+  class(.data) <- class(.data)[-1]
+  .data        <- sample_n(.data, ...)
+  class(.data) <- c(.data.class, class(.data))
+  return(.data)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+sample_frac.ped <- function(.data, ...) {
+  .data.class  <- class(.data)[1]
+  class(.data) <- class(.data)[-1]
+  .data        <- sample_frac(.data, ...)
+  class(.data) <- c(.data.class, class(.data))
+  return(.data)
+}
+
+#' @import dplyr
+#' @inherit dplyr::left_join params
+#' @export
+#' @rdname dplyr_verbs
+left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ...) {
+  #FIXME?
+  use_dplyr_verb(dplyr::left_join, x, y, by, copy, suffix, ...)
+}
+
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+group_by_.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::group_by_, .data, ...)
+}
+
+#' @import dplyr
+#' @export
+#' @rdname dplyr_verbs
+ungroup.ped <- function(.data, ...) {
+  use_dplyr_verb(dplyr::ungroup, .data, ...)
 }
