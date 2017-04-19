@@ -1,0 +1,130 @@
+---
+title: "Time-varying effects"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tveffects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align = "center",
+  fig.width=4, 
+  fig.height=4
+)
+```
+
+```{r, message=FALSE}
+library(pam)
+library(ggplot2)
+theme_set(theme_bw())
+library(magrittr)
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(survival)
+library(mgcv)
+```
+
+In this vignette we show examples of how to fit time-varying effects of time-constant continuous covariates. Time-varying effects of time-constant categorical variables can be viewed as some type of stratification (see vignette on stratified cox for deatails).
+
+## Possible specifications of time-varyation
+
+In the following we denote the time-contant covariate with $x$ and time with $t$. 
+Essentially, a time-varying effect of $x$ then can be specified as an interaction 
+term between $x$ and $t$, where different levels of complexity for this interaction 
+are possible:
+
+a) $\beta x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
+time-variation of $g(t)$, where $g()$ is a known/prespecified transformation of 
+time $t$, e.g. the $\log$-function.
+
+b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
+where $g(t)$ is a known/prespecified transformation of time
+
+c) $f_t(t)\cdot x$: A Varying coefficient model of $x$, where time-variation is 
+non-linear (if $x$ is a categorical variable this would constitute a stratified model)
+
+d) $f_{x,t}(x,t)$: A non-linear, non-linearly time-varying effect of $x$
+
+## Veteran Data example
+
+For illustration (and comparison) we use the `veteran` data presented in the 
+vignette of the survival package (`vignette("timedep", package="survival")`). 
+Besides information on survival, the data set contains information on the 
+Karnofsky performance score `karno` (the higher the better), `age` and if 
+`prior`therapy occured:
+.
+```{r}
+# for some reason the prior variable is coded 0/10 instead of 0/1
+data("veteran", package="survival")
+# we limit the data to event times < 400 (not many events afterwards)
+veteran %<>% mutate(prior=(prior!=0)*1) %>% filter(time < 400)
+head(veteran)
+```
+
+To fit a time-varying effect of karno the authors suggest to use the function 
+$f(x,t)=\beta_{karno}(x_{karno})+\beta_{karno,t}\cdot (x_{karno}\cdot \log(t+20))$. 
+This is a special case of a) above with $g(t)=log(t+20)$.
+
+```{r}
+vfit <- coxph(Surv(time, status) ~ trt + prior + karno + tt(karno), 
+    data=veteran, 
+    tt = function(x, t, ...) x * log(t+20))
+coef(vfit)
+```
+
+
+Thus the time-varying component of the effect becomes 
+$\beta_{karno}+\beta_{karno,t}\log(t+20)=−0.125+0.021∗log(t+20)$:
+
+```{r}
+t <- seq(0, 400, by=10)
+plot(x = t, y=-0.125 + 0.021*log(t + 20), type="l", ylab="Beta(t) for karno", las=1)
+```
+
+To fit a PAM with equivalent model specification (except for the baseline hazard) 
+we can use
+
+```{r}
+# data transformation
+ped <- split_data(Surv(time, status)~., data=veteran, id="id") %>% 
+    mutate(logt20 = log(intmid + 20))
+head(ped) %>% select(interval, intmid, ped_status, trt, karno, age, prior, logt20)
+
+# fit model 
+pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20, 
+    data=ped, offset=offset, family=poisson())
+coef(pam)[1:5]
+# compare fits 
+plot(x = t, y=-0.125 + 0.021*log(t + 20), type="l", ylab="Beta(t) for karno", 
+    ylim=c(-.1, .05), las=1) 
+lines(x = t, y=-0.144 + 0.027*log(t + 20), col=2)
+```
+
+In case we don’t want to prespecify which shape the time-depency should have, 
+we can specify the effect of karno as $f(x,t)=f(t)\cdot x$, where $f(t)$
+is estimated from the data:
+```{r, fig.width=6}
+# no need to specify main effect for karno here 
+pam2 <- gam(ped_status ~ s(tend) + trt + prior + s(tend, by=karno), 
+    data=ped, offset=offset, family=poisson())
+term.df <- ped %>% ped_info() %>% add_term(pam2, term="karno") %>% 
+    mutate_at(c("fit", "low", "high"), function(z) z/.$karno) %>% 
+    mutate(
+        cox.fit = -0.125 + 0.021*log(tend + 20), 
+        pam.fit = -0.144 + 0.027*log(tend + 20)) 
+ggplot(term.df, aes(x=tend, y=fit)) + 
+    geom_line() + 
+    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
+    geom_line(aes(y=cox.fit, col="Cox with log-transform")) + 
+    geom_line(aes(y=pam.fit, col="PAM with log-transform")) + 
+    xlab("t") + ylab("Beta(t) for karno")
+```
+
+The PAM models estimate a steeper increase of the karno effect in the beginning
+and flattens out after ca. 150 days.
