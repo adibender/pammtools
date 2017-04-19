@@ -2,20 +2,19 @@
 % Please edit documentation in R/pedMethods.R
 \name{dplyr_verbs}
 \alias{dplyr_verbs}
+\alias{do.ped}
 \alias{filter.ped}
-\alias{filter_.ped}
 \alias{slice.ped}
-\alias{slice_.ped}
 \alias{arrange.ped}
-\alias{arrange_.ped}
+\alias{select.ped}
 \alias{select_.ped}
+\alias{rename.ped}
+\alias{summarise.ped}
+\alias{summarize.ped}
 \alias{rename_.ped}
 \alias{distinct_.ped}
 \alias{mutate.ped}
-\alias{mutate_.ped}
 \alias{transmute.ped}
-\alias{transmute_.ped}
-\alias{summarise_.ped}
 \alias{sample_n.ped}
 \alias{sample_frac.ped}
 \alias{left_join.ped}
@@ -23,65 +22,88 @@
 \alias{ungroup.ped}
 \title{\code{dplyr} Verbs for \code{ped}-Objects}
 \usage{
-filter.ped(.data, ...)
+\method{do}{ped}(.data, ...)
 
-\method{filter_}{ped}(.data, ...)
+\method{filter}{ped}(.data, ...)
 
-slice.ped(.data, ...)
+\method{slice}{ped}(.data, ...)
 
-\method{slice_}{ped}(.data, ...)
+\method{arrange}{ped}(.data, ...)
 
-arrange.ped(.data, ...)
+\method{select}{ped}(.data, ...)
 
-\method{arrange_}{ped}(.data, ...)
+\method{select_}{ped}(.data, ..., .dots = list())
 
-\method{select_}{ped}(.data, ...)
+\method{rename}{ped}(.data, ...)
 
-\method{rename_}{ped}(.data, ...)
+\method{summarise}{ped}(.data, ...)
 
-\method{distinct_}{ped}(.data, ...)
+\method{summarize}{ped}(.data, ...)
 
-mutate.ped(.data, keep.attributes = TRUE, ...)
+\method{rename_}{ped}(.data, ..., .dots = list())
 
-\method{mutate_}{ped}(.data, keep.attributes = TRUE, ...)
+\method{distinct_}{ped}(.data, ..., .dots = list())
 
-transmute.ped(.data, ...)
+\method{mutate}{ped}(.data, ..., keep.attributes = TRUE)
 
-\method{transmute_}{ped}(.data, ...)
+\method{transmute}{ped}(.data, ...)
 
-\method{summarise_}{ped}(.data, ...)
+\method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
+  .env = NULL)
 
-\method{sample_n}{ped}(.data, ...)
-
-\method{sample_frac}{ped}(.data, ...)
+\method{sample_frac}{ped}(tbl, size = 1, replace = FALSE, weight = NULL,
+  .env = NULL)
 
 \method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
   ".y"), ...)
 
-\method{group_by_}{ped}(.data, ...)
+\method{group_by_}{ped}(.data, ..., .dots = list(), add = FALSE)
 
-\method{ungroup}{ped}(.data, ...)
+\method{ungroup}{ped}(x, ...)
 }
 \arguments{
 \item{.data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
 
 \item{...}{see \code{dplyr} documentation}
 
+\item{.dots}{see \code{dplyr} documentation}
+
 \item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
+
+\item{tbl}{tbl of data.}
+
+\item{size}{For \code{sample_n()}, the number of rows to select.
+For \code{sample_frac()}, the fraction of rows to select.
+If \code{tbl} is grouped, \code{size} applies to each group.}
+
+\item{replace}{Sample with or without replacement?}
+
+\item{weight}{Sampling weights. This must evaluate to a vector of
+non-negative numbers the same length as the input. Weights are
+automatically standardised to sum to 1.
+
+This argument is automatically \link[rlang:quo]{quoted} and later
+\link[rlang:eval_tidy]{evaluated} in the context of the data
+frame. It supports \link[rlang:quasiquotation]{unquoting}. See
+\code{vignette("programming")} for an introduction to these concepts.}
+
+\item{.env}{This variable is deprecated and no longer has any
+effect. To evaluate \code{weight} in a particular context, you can
+now unquote a \link[rlang:quosure]{quosure}.}
 
 \item{x}{tbls to join}
 
 \item{y}{tbls to join}
 
 \item{by}{a character vector of variables to join by.  If \code{NULL}, the
-  default, \code{join} will do a natural join, using all variables with
-  common names across the two tables. A message lists the variables so
-  that you can check they're right (to suppress the message, simply
-  explicitly list the variables that you want to join).
+default, \code{*_join()} will do a natural join, using all variables with
+common names across the two tables. A message lists the variables so
+that you can check they're right (to suppress the message, simply
+explicitly list the variables that you want to join).
 
-  To join by different variables on x and y use a named vector.
-  For example, \code{by = c("a" = "b")} will match \code{x.a} to
-  \code{y.b}.}
+To join by different variables on x and y use a named vector.
+For example, \code{by = c("a" = "b")} will match \code{x.a} to
+\code{y.b}.}
 
 \item{copy}{If \code{x} and \code{y} are not from the same data source,
 and \code{copy} is \code{TRUE}, then \code{y} will be copied into the
@@ -89,12 +111,17 @@ same src as \code{x}.  This allows you to join tables across srcs, but
 it is a potentially expensive operation so you must opt into it.}
 
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
-\code{y}, these suffixes will be added to the output to diambiguate them.}
+\code{y}, these suffixes will be added to the output to diambiguate them.
+Should be a character vector of length 2.}
+
+\item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
+override existing groups. To instead add to the existing groups,
+use \code{add = TRUE}}
 }
 \value{
-a modified \code{ped} object
+a modified \code{ped} object (except for \code{do})
 }
 \description{
-See \code{dplyr} documentation of the respective function for
-  details and examples.
+See \code{dplyr} documentation of the respective functions for
+  description and examples.
 }

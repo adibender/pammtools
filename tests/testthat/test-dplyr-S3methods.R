@@ -1,9 +1,8 @@
 context("Dplyr methods for specific classes")
 
-library(dplyr)
-data("leuk2", package="bpcp")
-leuk2 <- slice(leuk2, 1:2)
-ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
+data("leuk2", package = "bpcp")
+leuk2 <- dplyr::slice(leuk2, 1:2)
+ped <- split_data(Surv(time, status)~., data = leuk2, id = "id")
 
 test_that("ped class is preserved", {
 	expect_is(filter(ped, id == 1), "ped")

@@ -1,192 +1,174 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   fabian.scheipl@stat.uni-muenchen.de
-# @Last Modified time: 2017-04-18
+# @Last Modified time: 2017-04-19
 
-use_dplyr_verb <- function(dplyr_verb, .data, ...) {
-  .data.class  <- class(.data)[1]
-  class(.data) <- class(.data)[-1]
-  args <- list(.data)
-  args <- c(args, ...)
-  .data        <- do.call(dplyr_verb, args)
-  class(.data) <- c(.data.class, class(.data))
+unped <- function(ped) {
+  class(ped) <- class(ped)[-1]
+  ped
+}
+reped <- function(.data) {
+  class(.data) <- c("ped", class(.data))
   .data
 }
+
 
 #' @name dplyr_verbs
 #' @title \code{dplyr} Verbs for \code{ped}-Objects
 #' @param .data an  object of class \code{ped}, see \code{\link{split_data}}.
 #' @param ... see \code{dplyr} documentation
-#' @description See \code{dplyr} documentation of the respective function for
-#'   details and examples.
-#' @return a modified \code{ped} object
+#' @param .dots see \code{dplyr} documentation
+#' @description See \code{dplyr} documentation of the respective functions for
+#'   description and examples.
+#' @return a modified \code{ped} object (except for \code{do})
+#' @import dplyr
+#FIXME: replace deprecated "underscore" verbs
 NULL
 
-#' @import dplyr
+
 #' @export
+#' @export do
+#' @rdname dplyr_verbs
+do.ped <- function(.data, ...) {
+  do(unped(.data), ...)
+}
+
+#' @export
+#' @export filter
 #' @rdname dplyr_verbs
 filter.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::filter,.data, ...)
+  reped(filter(unped(.data), ...))
 }
 
-
-#' @import dplyr
 #' @export
-#' @rdname dplyr_verbs
-filter_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::filter_,.data, ...)
-}
-
-
-#' @import dplyr
-#' @export
+#' @export slice
 #' @rdname dplyr_verbs
 slice.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::slice,.data, ...)
+  reped(slice(unped(.data), ...))
 }
 
-#' @import dplyr
 #' @export
-#' @rdname dplyr_verbs
-slice_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::slice_,.data, ...)
-}
-
-#' @import dplyr
-#' @export
+#' @export arrange
 #' @rdname dplyr_verbs
 arrange.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::arrange,.data, ...)
+  reped(arrange(unped(.data), ...))
 }
 
-#' @import dplyr
+#' @export
+#' @export select
+#' @rdname dplyr_verbs
+select.ped <- function(.data, ...) {
+  reped(select(unped(.data), ...))
+}
+
+#' @export
+#' @export select_
+#' @rdname dplyr_verbs
+select_.ped <- function(.data, ..., .dots = list()) {
+  reped(select_(unped(.data), ..., .dots = .dots))
+}
+
+#' @export
+#' @export rename
+#' @rdname dplyr_verbs
+rename.ped <- function(.data, ...) {
+  reped(rename(unped(.data), ...))
+}
+
+#' @export
+#' @export summarise
+#' @rdname dplyr_verbs
+summarise.ped <- function(.data, ...) {
+  reped(summarise(unped(.data), ...))
+}
 #' @export
 #' @rdname dplyr_verbs
-arrange_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::arrange_,.data, ...)
-}
+summarize.ped <- summarise.ped
 
-
-#' @import dplyr
 #' @export
+#' @export rename_
 #' @rdname dplyr_verbs
-select_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::select_,.data, ...)
+rename_.ped <- function(.data, ..., .dots = list()) {
+  reped(rename_(unped(.data), ..., .dots = .dots))
 }
 
-#' @import dplyr
+
 #' @export
+#' @export distinct_
 #' @rdname dplyr_verbs
-rename_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::rename_,.data, ...)
+distinct_.ped <- function(.data, ..., .dots = list()) {
+  reped(distinct_(unped(.data), ..., .dots = .dots))
 }
 
 
-#' @import dplyr
-#' @export
-#' @rdname dplyr_verbs
-distinct_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::distinct_,.data, ...)
-}
-
-
-#' @import dplyr
 #' @param keep.attributes conserve attributes? defaults to \code{TRUE}
 #' @export
+#' @export mutate
 #' @rdname dplyr_verbs
-mutate.ped <- function(.data, keep.attributes=TRUE, ...) {
+mutate.ped <- function(.data, ..., keep.attributes=TRUE) {
 	if (keep.attributes) {
 		.data.attr   <- attributes(.data)
 		attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
 	}
-  .data <- use_dplyr_verb(dplyr::mutate,.data, ...)
+  .data <- reped(mutate(unped(.data), ...))
 	if (keep.attributes) {
 		attributes(.data) <- c(attributes(.data), .data.attr[attr.names])
 	}
 	return(.data)
 }
 
-#' @import dplyr
 #' @export
-#' @rdname dplyr_verbs
-mutate_.ped <- function(.data, keep.attributes=TRUE, ...) {
-
-	if (keep.attributes) {
-	  .data.attr   <- attributes(.data)
-		attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
-	}
-  .data <- use_dplyr_verb(dplyr::mutate_,.data, ...)
-	if (keep.attributes) {
-		attributes(.data) <- c(attributes(.data), .data.attr[attr.names])
-	}
-	return(.data)
-}
-
-#' @import dplyr
-#' @export
+#' @export transmute
 #' @rdname dplyr_verbs
 transmute.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::transmute,.data, ...)
+  reped(transmute(unped(.data), ...))
 }
 
-#' @import dplyr
+
 #' @export
+#' @export sample_n
+#' @inheritParams dplyr::sample_n
 #' @rdname dplyr_verbs
-transmute_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::transmute_,.data, ...)
+sample_n.ped <- function(tbl, size, replace = FALSE, weight = NULL,
+  .env = NULL) {
+  reped(sample_n(unped(tbl), size, replace, weight, .env))
 }
 
-#' @import dplyr
+
 #' @export
+#' @export sample_frac
+#' @inheritParams dplyr::sample_frac
 #' @rdname dplyr_verbs
-summarise_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::summarise_,.data, ...)
+sample_frac.ped <- function(tbl, size = 1, replace = FALSE, weight = NULL,
+  .env = NULL) {
+  reped(sample_frac(unped(tbl), size, replace, weight, .env))
 }
 
-#' @import dplyr
-#' @inherit dplyr::sample_n params
-#' @export
-#' @rdname dplyr_verbs
-sample_n.ped <- function(.data, ...) {
-  .data.class  <- class(.data)[1]
-  class(.data) <- class(.data)[-1]
-  .data        <- sample_n(.data, ...)
-  class(.data) <- c(.data.class, class(.data))
-  return(.data)
-}
 
-#' @import dplyr
+#' @inheritParams dplyr::left_join
 #' @export
-#' @rdname dplyr_verbs
-sample_frac.ped <- function(.data, ...) {
-  .data.class  <- class(.data)[1]
-  class(.data) <- class(.data)[-1]
-  .data        <- sample_frac(.data, ...)
-  class(.data) <- c(.data.class, class(.data))
-  return(.data)
-}
-
-#' @import dplyr
-#' @inherit dplyr::left_join params
-#' @export
+#' @export left_join
 #' @rdname dplyr_verbs
 left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   ...) {
   #FIXME?
-  use_dplyr_verb(dplyr::left_join, x, y, by, copy, suffix, ...)
+  reped(left_join(unped(tbl), y, by, copy, suffix, ...))
 }
 
 
-#' @import dplyr
+
+#' @inheritParams dplyr::group_by_
 #' @export
+#' @export group_by_
 #' @rdname dplyr_verbs
-group_by_.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::group_by_, .data, ...)
+group_by_.ped <- function(.data, ..., .dots = list(), add = FALSE) {
+  reped(group_by_(unped(.data), ..., .dots = .dots, add = add))
 }
 
-#' @import dplyr
+
 #' @export
+#' @export ungroup
 #' @rdname dplyr_verbs
-ungroup.ped <- function(.data, ...) {
-  use_dplyr_verb(dplyr::ungroup, .data, ...)
+ungroup.ped <- function(x, ...) {
+  reped(ungroup(unped(x), ...))
 }

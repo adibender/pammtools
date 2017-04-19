@@ -6,15 +6,15 @@ Description: We use generalized additive models (GAM) to fit piece-wise
     eponential models. This includes restructuring the data to the needed format.
     Estimation is done using mgcv package.
 Depends:
-    R (>= 3.1.2),
+    R (>= 3.1.2)
 Imports:
     mgcv,
     survival (>= 2.39-5),
     checkmate,
     magrittr,
-    dplyr,
     tidyr,
     ggplot2,
+    dplyr (>= 0.5.0),
     purrr,
     tibble
 License: GPL-2
