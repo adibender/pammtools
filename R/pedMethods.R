@@ -1,7 +1,7 @@
 # @Author: andreas.bender@stat.uni-muenchen.de
 # @Date:   2017-03-20 17:57:02
 # @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-04-07 15:00:43
+# @Last Modified time: 2017-04-19 09:54:30
 
 
 #' @importFrom dplyr filter
