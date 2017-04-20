@@ -18,14 +18,17 @@ reped <- function(.data) {
 #' @name dplyr_verbs
 #' @title \code{dplyr} Verbs for \code{ped}-Objects
 #' @param .data an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param tbl an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param x an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param funs see \code{\link[dplyr]{summarize_all}}
 #' @param ... see \code{dplyr} documentation
 #' @param .dots see \code{dplyr} documentation
 #' @description See \code{dplyr} documentation of the respective functions for
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
 #' @import dplyr
-#' @aliases arrange distinct_ filter full_join group_by group_by_ inner_join left_join mutate rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
-#FIXME: replace deprecated "underscore" verbs
+#' @aliases arrange distinct_ filter full_join group_by group_by_ inner_join left_join mutate mutate_each rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
+# FIXME: replace deprecated "underscore" verbs, [summarise|mutate]_each
 NULL
 
 #-------------------------------------------------------------------------------
@@ -136,9 +139,9 @@ mutate.ped <- function(.data, ..., keep.attributes=TRUE) {
   return(.data)
 }
 
-#' @inheritParams dplyr::mutate_each
+#' @inheritParams dplyr::mutate_all
 #' @export
-#' @export mutate
+#' @export mutate_each
 #' @rdname dplyr_verbs
 mutate_each.ped <- function(tbl, funs, ..., keep.attributes=TRUE) {
   if (keep.attributes) {

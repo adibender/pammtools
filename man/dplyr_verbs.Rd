@@ -11,6 +11,7 @@
 \alias{inner_join}
 \alias{left_join}
 \alias{mutate}
+\alias{mutate_each}
 \alias{rename}
 \alias{rename_}
 \alias{right_join}
@@ -111,9 +112,9 @@ use \code{add = TRUE}}
 
 \item{.dots}{see \code{dplyr} documentation}
 
-\item{x}{A \code{\link[=tbl]{tbl()}}}
+\item{x}{an  object of class \code{ped}, see \code{\link{split_data}}.}
 
-\item{tbl}{tbl of data.}
+\item{tbl}{an  object of class \code{ped}, see \code{\link{split_data}}.}
 
 \item{size}{For \code{sample_n()}, the number of rows to select.
 For \code{sample_frac()}, the fraction of rows to select.
@@ -136,6 +137,8 @@ now unquote a \link[rlang:quosure]{quosure}.}
 
 \item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
 
+\item{funs}{see \code{\link[dplyr]{summarize_all}}}
+
 \item{y}{tbls to join}
 
 \item{by}{a character vector of variables to join by.  If \code{NULL}, the
@@ -156,8 +159,6 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to diambiguate them.
 Should be a character vector of length 2.}
-
-\item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
 }
 \value{
 a modified \code{ped} object (except for \code{do})
