@@ -14,7 +14,7 @@ Imports:
     magrittr,
     tidyr,
     ggplot2,
-    dplyr (>= 0.5.0),
+    dplyr (> 0.5.0),
     purrr,
     tibble
 License: GPL-2

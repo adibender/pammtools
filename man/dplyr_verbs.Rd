@@ -2,51 +2,63 @@
 % Please edit documentation in R/pedMethods.R
 \name{dplyr_verbs}
 \alias{dplyr_verbs}
-\alias{do.ped}
-\alias{filter.ped}
-\alias{slice.ped}
+\alias{arrange}
+\alias{distinct_}
+\alias{filter}
+\alias{full_join}
+\alias{group_by}
+\alias{group_by_}
+\alias{inner_join}
+\alias{left_join}
+\alias{mutate}
+\alias{rename}
+\alias{rename_}
+\alias{right_join}
+\alias{sample_frac}
+\alias{sample_n}
+\alias{select}
+\alias{select_}
+\alias{slice}
+\alias{summarise}
+\alias{summarise_each}
+\alias{transmute}
+\alias{ungroup}
 \alias{arrange.ped}
-\alias{select.ped}
-\alias{select_.ped}
-\alias{rename.ped}
-\alias{summarise.ped}
-\alias{summarize.ped}
-\alias{rename_.ped}
-\alias{distinct_.ped}
-\alias{mutate.ped}
-\alias{transmute.ped}
-\alias{sample_n.ped}
-\alias{sample_frac.ped}
-\alias{left_join.ped}
+\alias{group_by.ped}
 \alias{group_by_.ped}
 \alias{ungroup.ped}
+\alias{distinct_.ped}
+\alias{filter.ped}
+\alias{sample_n.ped}
+\alias{sample_frac.ped}
+\alias{slice.ped}
+\alias{select.ped}
+\alias{select_.ped}
+\alias{mutate.ped}
+\alias{mutate_each.ped}
+\alias{rename.ped}
+\alias{rename_.ped}
+\alias{summarise.ped}
+\alias{summarize.ped}
+\alias{summarise_each.ped}
+\alias{transmute.ped}
+\alias{inner_join.ped}
+\alias{full_join.ped}
+\alias{left_join.ped}
+\alias{right_join.ped}
 \title{\code{dplyr} Verbs for \code{ped}-Objects}
 \usage{
-\method{do}{ped}(.data, ...)
-
-\method{filter}{ped}(.data, ...)
-
-\method{slice}{ped}(.data, ...)
-
 \method{arrange}{ped}(.data, ...)
 
-\method{select}{ped}(.data, ...)
+\method{group_by}{ped}(.data, ..., add = FALSE)
 
-\method{select_}{ped}(.data, ..., .dots = list())
+\method{group_by_}{ped}(.data, ..., .dots = list(), add = FALSE)
 
-\method{rename}{ped}(.data, ...)
-
-\method{summarise}{ped}(.data, ...)
-
-\method{summarize}{ped}(.data, ...)
-
-\method{rename_}{ped}(.data, ..., .dots = list())
+\method{ungroup}{ped}(x, ...)
 
 \method{distinct_}{ped}(.data, ..., .dots = list())
 
-\method{mutate}{ped}(.data, ..., keep.attributes = TRUE)
-
-\method{transmute}{ped}(.data, ...)
+\method{filter}{ped}(.data, ...)
 
 \method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
   .env = NULL)
@@ -54,21 +66,52 @@
 \method{sample_frac}{ped}(tbl, size = 1, replace = FALSE, weight = NULL,
   .env = NULL)
 
+\method{slice}{ped}(.data, ...)
+
+\method{select}{ped}(.data, ...)
+
+\method{select_}{ped}(.data, ..., .dots = list())
+
+\method{mutate}{ped}(.data, ..., keep.attributes = TRUE)
+
+mutate_each.ped(tbl, funs, ..., keep.attributes = TRUE)
+
+\method{rename}{ped}(.data, ...)
+
+\method{rename_}{ped}(.data, ..., .dots = list())
+
+\method{summarise}{ped}(.data, ...)
+
+\method{summarize}{ped}(.data, ...)
+
+summarise_each.ped(tbl, funs, ...)
+
+\method{transmute}{ped}(.data, ...)
+
+\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
+  ".y"), ...)
+
+\method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
+  ".y"), ...)
+
 \method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
   ".y"), ...)
 
-\method{group_by_}{ped}(.data, ..., .dots = list(), add = FALSE)
-
-\method{ungroup}{ped}(x, ...)
+\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
+  ".y"), ...)
 }
 \arguments{
 \item{.data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
 
 \item{...}{see \code{dplyr} documentation}
 
+\item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
+override existing groups. To instead add to the existing groups,
+use \code{add = TRUE}}
+
 \item{.dots}{see \code{dplyr} documentation}
 
-\item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
+\item{x}{A \code{\link[=tbl]{tbl()}}}
 
 \item{tbl}{tbl of data.}
 
@@ -91,7 +134,7 @@ frame. It supports \link[rlang:quasiquotation]{unquoting}. See
 effect. To evaluate \code{weight} in a particular context, you can
 now unquote a \link[rlang:quosure]{quosure}.}
 
-\item{x}{tbls to join}
+\item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
 
 \item{y}{tbls to join}
 
@@ -114,9 +157,7 @@ it is a potentially expensive operation so you must opt into it.}
 \code{y}, these suffixes will be added to the output to diambiguate them.
 Should be a character vector of length 2.}
 
-\item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
-override existing groups. To instead add to the existing groups,
-use \code{add = TRUE}}
+\item{keep.attributes}{conserve attributes? defaults to \code{TRUE}}
 }
 \value{
 a modified \code{ped} object (except for \code{do})
