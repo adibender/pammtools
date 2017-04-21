@@ -7,9 +7,10 @@ vignette: >
   %\VignetteIndexEntry{data-transformation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: pam.bib
 ---
 
-```{r echo=TRUE, message=FALSE}
+```{r echo = TRUE, message = FALSE}
 library(pam)
 library(magrittr)
 library(dplyr)
@@ -38,54 +39,55 @@ are also available to the `split_data` function.
 
 ### Using defaults
 
-As an example data set we first consider Freireichs (citation) Leukimia data set 
+As an example data set we first consider Freireichs Leukemia data set [@freireich1963] 
 available from the `bpcp` package: 
 
 ```{r}
-data("leuk2", package="bpcp")
+data("leuk2", package = "bpcp")
 leuk2 %<>%
-  mutate(id=row_number()) %>% 
+  mutate(id = row_number()) %>% 
   select(id,everything(), -pair)
 head(leuk2)
 ```
 
-Each row contains information on the survival time (`time`), an event indication
+Each row contains information on the survival time (`time`), an event indicator
 (`status`) and the `treatment` information (`6-MP` vs. `placebo`) as the only 
 covariate. 
 
-To bring the data into piece-wise exponential data (PED) format, we need to 
+To transform the data into piece-wise exponential data (`ped`) format, we need to 
 
-  - define $J+1$ interval break points $t_{\min}=\kappa_0 < \kappa_1 < \cdots < \kappa_J=t_{\max}$ 
+  - define $J+1$ interval break points $t_{\min} = \kappa_0 < \kappa_1 < \cdots < \kappa_J = t_{\max}$ 
   
-- create "pseudo" observations for each interval $j=1,\ldots, J$  which subject 
-  $i, i=1,\ldots,n$ visited. 
+- create *pseudo*-observations for each interval $j = 1,\ldots, J$ in which subject 
+  $i, i = 1,\ldots,n$ was under risk. 
 
 Using the `pam` package this is easily achieved with the `split_data` function
 as follows: 
 
 ```{r}
 library(pam)
-ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
+ped <- split_data(Surv(time, status)~., data = leuk2, id = "id")
 dplyr::filter(ped, id %in% 1:2)
 ```
 
 When no cut points are specified, the default is to use the unique event times. 
 As can be seen from the above output, the function creates an `id` variable, 
-indicating the subjects $i=1,\ldots,n$, with one row per `id` for each interval 
-the subject "visited". Thus subject `1` visited one interval, subject `2` visited 
-9 intervals. Additionally to the optional `id` variable the function also 
+indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval 
+the subject "visited". Thus subject `1` was under risk during one interval, subject `2` was under risk during
+9 intervals. In addition to the optional `id` variable the function also 
 creates 
 
-  - `tstart`: the start time of the interval
-  - `tend`: the end time of the interval
+  - `tstart`: the beginning of each interval
+  - `tend`: the end of each interval
   - `interval`: a factor variable denoting the interval
-  - `intmid`: the interval mid-point
-  - `intlen`: the interval length (usefull to have to calculate cumulative hazards
+  - `intmid`: the interval mid-points
+  - `intlen`: the interval lengths (useful for calculating cumulative hazards,
   for example)
-  - `offset`: the log of `intlen` (must be included when fitting the model)
+  - `offset`:  the log of the duration during which the subject was under risk in that interval (i.e., $\log($`ped_time`-`tstart`), necessary for fitting a PAM model)
   
-Additionally the time-constant covariates (here only treatment) are repeated 
-$n_i$ number of times, where $n_i$ is the number of interval subject $i$ visited. 
+Additionally the time-constant covariates (here: `treatment`) are repeated 
+$n_i$ number of times, where $n_i$ is the number of intervals during which 
+subject $i$ was in the risk set. 
 
 
 ### Custom cut points 
@@ -94,19 +96,18 @@ Per default the `split_data` function uses all unique event times as cut points
 estimates in Cox-PH functions are updated also only at event times). 
 
 In some cases, however, one might want to reduce the number of cut points, 
-to reduce the size of the resulting data object and/or for gain of computational 
-efficiency  for example). To do so the `cut` argument has to be specified. 
+to reduce the size of the resulting data object and/or faster estimation times). To do so the `cut` argument has to be specified. 
 Following the above example, we can use only 4 cut points
-$\kappa_0 = 0, \kappa_1=10, \kappa_2=20, \kappa_3 = 35$, resulting in $J=3$ 
+$\kappa_0 = 0, \kappa_1 = 10, \kappa_2 = 20, \kappa_3 = 35$, resulting in $J = 3$ 
 intervals: 
 
 ```{r}
-ped2 <- split_data(Surv(time, status)~., data=leuk2, cut=c(0, 10, 20, 35), id="id")
+ped2 <- split_data(Surv(time, status)~., data = leuk2, cut = c(0, 10, 20, 35), id = "id")
 ped2 %>% filter(id %in% 1:2)
 ```
-Note taht subject with $id=2$ now also has only one row in the data set. The fact 
+Note that subject with $id = 2$ now also has only one row in the data set. The fact 
 that subject 2 was in the risk set longer than subject one is however still 
-reflected in the data set through the `offset` variable. 
+accounted for by the `offset` variable. 
 
 
 <!-- ## Data with time-dependent covariates 
@@ -114,8 +115,10 @@ reflected in the data set through the `offset` variable.
 data("pbc2", package = "JM")
 pbc2.time <- select(pbc2, id, years, status2)
 pbc2.tv <- select(pbc2, year, albumin)
-pbc.ped <- split_data(Surv(years, status2)~., data=pbc2.time, id="id")
-tv.df <- get_intervals(brks=sort(unique(pbc2$years)), pbc2.tv$year) %>% 
+pbc.ped <- split_data(Surv(years, status2)~., data = pbc2.time, id = "id")
+tv.df <- get_intervals(brks = sort(unique(pbc2$years)), pbc2.tv$year) %>% 
   bind_cols(pbc2.tv)
 ```
  -->
+ 
+## References
