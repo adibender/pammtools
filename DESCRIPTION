@@ -1,7 +1,9 @@
 Package: pam
 Title: Functions to utilize fitting piece-wise exponential (additive) models
 Version: 0.0.595
-Authors@R: person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"))
+Authors@R: c(
+    person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
+    person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
 Description: We use generalized additive models (GAM) to fit piece-wise
     eponential models. This includes restructuring the data to the needed format.
     Estimation is done using mgcv package.
