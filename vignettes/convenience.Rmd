@@ -4,7 +4,7 @@ author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{convenience}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: pam.bib
@@ -43,7 +43,8 @@ underlying data used for visualization in a *tidy* format [@wickham2014], such t
 can use familiar tools for further processing. In addition, some convenience functions 
 for visualization are also included. 
 
-We use the `mgus2` data [@kyle1993] from the `survival` package for illustration in the following.  
+We use the `mgus2` data [@kyle1993] from the `survival` package for illustration 
+in the following.  
 
 
 ## Summary/visualization of fixed effects 
@@ -93,7 +94,7 @@ plotting functions is to call the default plot function for `mgcv::gam` objects.
 Note that PAM effects are additive on the log-hazard scale, so we have to plot 
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
-```{r}
+```{r, fig.width=8}
 layout(t(1:2))
 plot(pam, select = 2, ylim = c(-1, 2))
 abline(h = 0, col = "grey")
