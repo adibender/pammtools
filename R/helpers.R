@@ -39,7 +39,7 @@ seq_range <- function(x, length.out=100L) {
 #' Combines multiple data frames
 #' 
 #' @importFrom dplyr slice bind_cols combine
-#' @importFrom purrr map2 transpose cross_n 
+#' @importFrom purrr map2 transpose cross
 #' @importFrom checkmate test_data_frame
 #' @param ... Data frames that should be combined to one data frame. 
 #' Elements of first df vary fastest, elements of last df vary slowest
@@ -56,9 +56,9 @@ combine_df <- function(...) {
     stop("All elements in ... must inherit from data.frame!")
   }
   seq.list <- lapply(dots, function(z) seq_len(nrow(z)))
-  ind.list <- cross_n(seq.list) %>% transpose() %>% lapply(combine)
+  ind.list <- cross(seq.list) %>% transpose() %>% lapply(combine)
   
-  map2(dots, ind.list, slice) %>% bind_cols()
+  map2(dots, ind.list, function(.x, .y) slice(.x, .y)) %>% bind_cols()
 
 }
 

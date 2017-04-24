@@ -21,6 +21,7 @@ environment:
 
 build_script:
   - travis-tool.sh install_github tidyverse/dplyr
+  - travis-tool.sh install_github tidyverse/purrr
   - travis-tool.sh install_deps
 
 test_script:
