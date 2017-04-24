@@ -101,12 +101,16 @@ pam <- gam(ped_status ~ s(tend), data = ped, offset = offset, family = poisson()
 summary(pam)
 int.df$pamhaz <- predict(pam, newdata = int.df, type = "response")
 int.df %<>% mutate(pamch = cumsum(pamhaz * intlen))
+# Weibull AFT for comparison (true/correctly specified model)
+aft <- survreg(Surv(time, status)~1, data=tdf, dist="weibull")
+int.df$aft <- exp(-1.133)^(1/0.416) * int.df$tend^(1/0.416)
 ggplot(int.df, aes(x = tend)) + 
   geom_line(aes(y = cumhazard, col = "PEM"), lty = 3) + 
   geom_step(aes(y = hazard, col = "Nelson-Aalen"), lty = 2) + 
   geom_line(aes(y = pamch, col = "PAM")) +
+  geom_line(aes(y = aft, col = "AFT")) + 
   scale_color_brewer(name = "Method", palette = "Set1", 
-    breaks = c("Nelson-Aalen", "PEM", "PAM")) + 
+    breaks = c("Nelson-Aalen", "PEM", "PAM", "AFT")) + 
   theme(legend.position = "bottom") + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle(paste0("Comparison of cumulative hazards using\n", 
