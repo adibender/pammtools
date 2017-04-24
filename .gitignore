@@ -7,9 +7,7 @@ sandbox
 pam.Rproj
 .Rhistory
 *.Rhistory
-
 # vignette by-products
 *cache/
 *files/
 *.html
-
