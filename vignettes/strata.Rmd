@@ -22,11 +22,13 @@ opts_chunk$set(
 ```
 
 ```{r}
+library(magrittr)
 library(dplyr)
 library(ggplot2)
 theme_set(theme_bw())
 library(mgcv)
 library(survival)
+library(pam)
 ```
 
 # Stratified baselines 
@@ -40,13 +42,13 @@ $\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$.
 
 For illustration we again use the veterans data from the `survival` package:
 
-```{r}library(magrittr)
+```{r, warning=FALSE}
 data("veteran")
 veteran %<>% filter(time < 400)
 table(veteran$celltype)
 cph <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
-base <- basehaz(scph.cell, centered=FALSE)
-gg.bz <- ggplot(bz, aes(x=time, y=hazard, group=strata)) + 
+base <- basehaz(cph, centered=FALSE)
+gg.bz <- ggplot(base, aes(x=time, y=hazard, group=strata)) + 
 	geom_step() + 
 	ylab(expression(Lambda(t))) + xlab("t")
 gg.bz
