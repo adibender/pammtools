@@ -147,6 +147,8 @@ sample_info.data.frame <- function(x, ...) {
     x <- bind_cols(num, fac)
   }
 
+  return(x)
+
 }
 
 

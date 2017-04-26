@@ -30,8 +30,12 @@ library(dplyr)
 library(pam)
 ```
 
-In this vignette we show examples of how to fit time-varying effects of time-constant continuous covariates. Time-varying effects of time-constant categorical variables can be viewed as some type of stratification
-<!-- (see vignette on stratified cox for details) WHICH PACKAGE IS THIS? -->.
+In this vignette we show examples of how to fit time-varying effects of 
+time-constant continuous covariates. Time-varying effects of time-constant 
+categorical variables can be viewed in the context of stratified proportional 
+hazards models, where all observations from one group of the categorical variable
+have an individual baseline hazard. This case is detailed in `vignette("strata", pacakge="pam")`.
+<!-- (see vignette on stratified baseline for details) WHICH PACKAGE IS THIS? -->.
 
 ## Possible specifications of time-variation
 
@@ -127,8 +131,8 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     geom_ribbon(aes(ymin = low, ymax = high), alpha = 0.2) + 
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) + 
     geom_line(aes(y = pam.fit, col = "PAM with log-transform")) + 
-    scale_color_brewer(palette = "Set1") +
+    scale_color_brewer(name="Method", palette = "Set1") +
     xlab("t") + ylab("Beta(t) for karno")
 ```
 
-The semiparametric PAM model estimate flattens out after ca. 150 days.
+The semi-parametric PAM model estimate flattens out after ca. 150 days.
