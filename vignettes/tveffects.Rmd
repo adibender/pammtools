@@ -101,8 +101,8 @@ we can use
 ```{r}
 # data transformation
 ped <- split_data(Surv(time, status)~., data = veteran, id = "id") %>% 
-    mutate(logt20 = log(intmid + 20))
-head(ped) %>% select(interval, intmid, ped_status, trt, karno, age, prior, logt20)
+    mutate(logt20 = log(tstart+(tstart-tend)/2 + 20))
+head(ped) %>% select(interval, ped_status, trt, karno, age, prior, logt20)
 
 # fit model 
 pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20, 

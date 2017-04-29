@@ -107,13 +107,15 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",
     "ped_time", "ped_status")
   if(exists("id.var")) move <- c(id.var, move)
-  split.data <- select(split.data, one_of(move), everything())
+  split.data <- select(split.data, one_of(move), everything(), 
+    -intmid, -intlen, -ped_time)
+  
 
   ## set class and and attributes
   class(split.data) <- c("ped", class(split.data))
   attr(split.data, "cut") <- cut 
-  attr(split.data, "intvars") <- c("id", "tstart", "tend", "intlen", "intmid", 
-    "interval", "offset", "ped_time", "ped_status")
+  attr(split.data, "intvars") <- c("id", "tstart", "tend", "interval", "offset", 
+    "ped_status")
 
   return(split.data)
 
