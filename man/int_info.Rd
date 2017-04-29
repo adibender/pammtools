@@ -24,10 +24,10 @@ this value will be included in the resulting data frame.}
 \value{
 data.frame. A data frame containing the start and end times of the
 intervals specified by the \code{x} argument. Additionally the interval
-length, interval mid-point and a factor variable of the intervals themselfs.
+length, interval mid-point and a factor variable of the intervals themselves.
 }
 \description{
-Given interval breaks points, retuns data frame with information on 
+Given interval breaks points, returns data frame with information on 
 interval start time, interval end time, interval length and a interval factor 
 variable (left open intervals). If object of class ped is provided, extracts 
 unique interval information from object.

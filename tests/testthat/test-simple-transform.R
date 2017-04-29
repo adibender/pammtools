@@ -1,16 +1,15 @@
 context("Simple transformation to PED data")
 
 data("leuk2", package="bpcp")
-
+leuk2 <- leuk2 <- leuk2[c(2, 16, 17, 20, 39), ]
 
 test_that("Output as expected without id", {
 	expect_is(leuk.ped <- split_data(Surv(time, status)~., data=leuk2, 
 		cut=c(0:5, 10, 40)), "ped")
-	expect_equal(nrow(leuk.ped), 246)
-	expect_equal(ncol(leuk.ped), 10)
+	expect_equal(dim(leuk.ped), c(27, 7))
 	expect_is(leuk.ped, "data.frame")
-	expect_true(all(c("ped_time", "ped_status", "tstart", "tend", "interval", 
-		"intlen", "offset") %in% names(leuk.ped)))
+	expect_true(all(c("ped_status", "tstart", "tend", "interval", "offset") %in% 
+		names(leuk.ped)))
 	expect_is(attr(leuk.ped, "cut"), "numeric")
 	expect_is(attr(leuk.ped, "intvars"), "character")
 })
@@ -20,13 +19,13 @@ test_that("Output as expected without id", {
 test_that("Output as expected with id", {
 	expect_is(leuk.ped <- split_data(Surv(time, status)~., data=leuk2, 
 		cut=c(0:5, 10, 40), id="id"), "ped")
-	expect_equal(ncol(leuk.ped), 11)
+	expect_equal(dim(leuk.ped),c(27, 8))
 })
 
 test_that("ID kept when id variable excluded in formula", {
 	expect_is(leuk.ped <- split_data(Surv(time, status)~treatment, data=leuk2, 
 		cut=c(0:5, 10, 40), id="id"), "ped")
-	expect_equal(ncol(leuk.ped), 10)
+	expect_equal(ncol(leuk.ped), 7)
 })
 
 
@@ -35,7 +34,7 @@ test_that("Error on wrong input", {
 	expect_error(split_data(x~y, data=leuk2, cut=c(0:5, 10, 40)))
 	expect_error(split_data(Surv(time2, status)~., data=leuk2, cut=c(0:5, 10, 40)))
 	expect_error(split_data(Surv(ped_time, status)~., 
-		data=rename(leuk2, ped_time=time)))
+		data=rename(leuk2, ped_time=time))) # already in data set ped_time
 })
 
 

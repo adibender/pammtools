@@ -7,9 +7,10 @@ vignette: >
   %\VignetteIndexEntry{splines}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: pam.bib
 ---
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 library(knitr)
 opts_chunk$set(
   fig.align  = "center",
@@ -19,12 +20,11 @@ opts_chunk$set(
   fig.width  = 5)
 ```
 
-# Spline terms 
-## Example MGUS data 
+## Example: MGUS data 
 
 In this vignette we show the usage of spline smooth terms using example data 
 presented in the respective vignette in the `survival` package 
-(see `vignette("splines", package="survival")`)
+(see `vignette("splines", package = "survival")`)
 
 The example presented in the vignette goes as follows, using the standard 
 base R workflow and `termplot` for visualization: 
@@ -33,73 +33,75 @@ base R workflow and `termplot` for visualization:
 library(pam)
 library(mgcv)
 library(survival)
-data("mgus", package="survival")
-mfit <- coxph(Surv(futime, death)~sex + pspline(age, df=4), data=mgus)
+data("mgus", package = "survival")
+mfit <- coxph(Surv(futime, death)~sex + pspline(age, df = 4), data = mgus)
 mfit
 ```
 
 ```{r, figcox}
-termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+termplot(mfit, term = 2, se = TRUE, col.term = 1, col.se = 1)
 ```
 
-The equivalent fit using PAMs requieres one additional step of transforming the 
-data into suitable format, afterwards we use the `mgcv::gam` function to fit 
+The equivalent fit using PAMs requires the additional step of transforming the 
+data into a suitable format. We then use `mgcv::gam` to fit 
 the model: 
 
 ```{r}
-mgus.ped <- split_data(Surv(futime, death)~sex + age, data=mgus, id="id")
+mgus.ped <- split_data(Surv(futime, death)~sex + age, data = mgus, id = "id")
 head(mgus.ped)
-pamfit <- gam(ped_status ~ s(tend) + sex + s(age, bs="ps"), data = mgus.ped, method="REML", 
-	family=poisson(), offset=offset)
+pamfit <- gam(ped_status ~ s(tend) + sex + s(age, bs = "ps"), data = mgus.ped, 
+  method = "REML", family = poisson(), offset = offset)
 summary(pamfit)
 ```
 
 For visualization of the smooth effects we can use the default `mgcv::plot.gam` 
 function: 
 
-```{r, figpam1, fig.width = 7, fig.height=3.5}
-layout(matrix(1:2, nrow=1))
-termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
-plot(pamfit, select=2, se=TRUE, ylim=c(-4, 3.5))
+```{r, figpam1, fig.width = 7, fig.height = 3.5}
+layout(matrix(1:2, nrow = 1))
+termplot(mfit, term = 2, se = TRUE, col.term = 1, col.se = 1)
+plot(pamfit, select = 2, se = TRUE, ylim = c(-4, 3.5))
 ```
 
-In this example the PAM approach estimates an linear effect of age, which is 
-consistet with the estimation using `coxph`, as there is not much non-linearity.
+In this example the PAM approach estimates a linear effect of age, which is 
+consistent with the estimation using `coxph`, as there is only weak non-linearity.
 
-Another example from the same vignette shows that estimated non-linear effect 
-are very similar, when the effect of the covariate is in fact non-linear: 
+Another example from the same vignette shows that estimated effects 
+are very similar if the effect of the covariate is in fact strongly non-linear: 
 
 ```{r}
 fit <- coxph(Surv(futime, death) ~ age + pspline(hgb, 4), mgus2)
-mgus2.ped <- split_data(Surv(futime, death)~age + hgb, data=mgus2, id="id")
-pamfit2 <- gam(ped_status~s(tend) + age + s(hgb), data=mgus2.ped, 
-	family=poisson(), offset=offset)
+mgus2.ped <- split_data(Surv(futime, death)~age + hgb, data = mgus2, id = "id")
+pamfit2 <- gam(ped_status~s(tend) + age + s(hgb), data = mgus2.ped, 
+	family = poisson(), offset = offset)
 ```
   
-```{r, figpam, fig.width=7, fig.height=3.5}
-layout(matrix(1:2, nrow=1))
-termplot(fit, term=2, se=TRUE, col.term=1, col.se=1)
-plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
+```{r, figpam, fig.width = 7, fig.height = 3.5}
+layout(matrix(1:2, nrow = 1))
+termplot(fit, term = 2, se = TRUE, col.term = 1, col.se = 1)
+plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2))
 ```
 
 ## Monotonicity constraints
-The vignette in the survival package further discusses enforcing monotonicity 
+The vignette in the `survival` package further discusses enforcing monotonicity 
 contraints on the effect of `hgb`. These can be achieved here much more easily 
-using the functionality provided in the `scam` package (see also Pya 2015). The 
+using the functionality provided in the `scam` package (see also @pya2015). The 
 usage is exactly the same as before, replacing the call to `gam` with a 
-cal to `scam` and specifying `bs="mpd"`: 
+call to `scam` and specifying `bs = "mpd"`: 
 
 ```{r}
 library(scam)
-mpam <- scam(ped_status ~ s(tend) + age + s(hgb, bs="mpd"), data=mgus2.ped, 
-  family=poisson(), offset=offset)
+mpam <- scam(ped_status ~ s(tend) + age + s(hgb, bs = "mpd"), data = mgus2.ped, 
+  family = poisson(), offset = offset)
 ```
 
-```{r, figscam, fig.height=3.5, fig.width=7}
-layout(matrix(1:2, nrow=1))
-plot(pamfit2, select=2, se=TRUE, ylim=c(-0.5, 2))
+```{r, figscam, fig.height = 3.5, fig.width = 7}
+layout(matrix(1:2, nrow = 1))
+plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2))
 # 1.72 = intercept difference between pamfit2 and mpam
 const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
-plot(mpam, select=2, se=TRUE, shift=const, 
-  ylim=c(-0.5-const, 2-const))
+plot(mpam, select = 2, se = TRUE, shift = const, 
+  ylim = c(-0.5-const, 2-const))
 ```
+
+## References

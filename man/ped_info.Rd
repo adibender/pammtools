@@ -2,7 +2,7 @@
 % Please edit documentation in R/intervalInformation.R
 \name{ped_info}
 \alias{ped_info}
-\title{Extract inetrval information and median/modus values vor covariates}
+\title{Extract interval information and median/modus values for covariates}
 \usage{
 ped_info(ped)
 }

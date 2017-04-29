@@ -1,6 +1,6 @@
 #' Create start/end times and interval information
 #'
-#' Given interval breaks points, retuns data frame with information on 
+#' Given interval breaks points, returns data frame with information on 
 #' interval start time, interval end time, interval length and a interval factor 
 #' variable (left open intervals). If object of class ped is provided, extracts 
 #' unique interval information from object. 
@@ -11,7 +11,7 @@
 #' @rdname int_info
 #' @return data.frame. A data frame containing the start and end times of the
 #' intervals specified by the \code{x} argument. Additionally the interval
-#' length, interval mid-point and a factor variable of the intervals themselfs.
+#' length, interval mid-point and a factor variable of the intervals themselves.
 #' @export
 int_info <- function(x, ...) {
   UseMethod("int_info",  x)
@@ -135,17 +135,19 @@ sample_info.data.frame <- function(x, ...) {
 
   assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
+  cn <- colnames(x)
   num <- summarize_if(x, .predicate=is.numeric, funs(median(., na.rm=TRUE)))
   fac <- summarize_if(x, .predicate=compose("!", is.numeric), modus)
 
   nnames <- intersect(names(num), names(fac))
     
   if(length(nnames) != 0) {
-    x <- left_join(num, fac) %>% 
-      grouped_df(vars=lapply(nnames, as.name))
+    x <- left_join(num, fac) %>% grouped_df(vars=lapply(nnames, as.name))
   } else {
     x <- bind_cols(num, fac)
   }
+
+  return(select(x, one_of(cn)))
 
 }
 
@@ -166,7 +168,7 @@ sample_info.ped <- function(x, ...) {
 }
 
 
-#' Extract inetrval information and median/modus values vor covariates
+#' Extract interval information and median/modus values for covariates
 #' 
 #' Given an object of class \code{ped}, returns data frame with interval information, 
 #' median values for numerical variables and modi for non-numeric variables 
@@ -223,4 +225,3 @@ plot_df <- function(pinfo) {
     rename(time=tend)
 
 }
-

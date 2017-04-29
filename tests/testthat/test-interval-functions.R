@@ -1,6 +1,8 @@
 context("Interal info and median and modus information")
 
 data("leuk2", package="bpcp")
+set.seed(27042017)
+leuk2 <- leuk2[c(2, 16, 17, 20, 39), ]
 leuk2$x <- rnorm(nrow(leuk2))
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=c(0:5, 10, 40), id="id")
 
@@ -20,11 +22,15 @@ test_that("Interval info returned for ped objects", {
 
 test_that("Sample info returned for data frame", {
 	expect_is(si <- sample_info(leuk2), "data.frame")
+	expect_equal(colnames(si), colnames(leuk2))
 	expect_equal(dim(si), c(1L, 5L))
+	expect_is(si <- leuk2 %>% group_by(treatment) %>% sample_info(), "data.frame")
+	expect_equal(colnames(si), colnames(leuk2))
 })
 
 test_that("Sample info returned for ped objects", {
 	expect_is(si2 <- sample_info(leuk.ped), "data.frame")
+	expect_equal(colnames(si2), c("treatment", "pair", "x"))
 	expect_equal(dim(si2), c(1L, 3L))
 })
 
