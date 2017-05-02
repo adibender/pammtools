@@ -1,9 +1,3 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2017-03-20 17:57:02
-
-# @Last Modified by:   fabian.scheipl@stat.uni-muenchen.de
-# @Last Modified time: 2017-04-19
-
 
 unped <- function(ped) {
   class(ped) <- class(ped)[-1]
