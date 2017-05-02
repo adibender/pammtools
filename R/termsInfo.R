@@ -33,7 +33,7 @@ add_term <- function(
 	col.ind <- lapply(term, grep, x=names(object$coefficients)) %>% 
 		unlist %>% unique %>% sort
 
-  X <- predict(object, newdata = newdata, type = "lpmatrix")[,col.ind]
+  X <- predict(object, newdata = newdata, type = "lpmatrix")[,col.ind, drop=FALSE]
   newdata[["fit"]] <- drop(X %*% object$coefficients[col.ind])
   if(se.fit) {
   	cov.coefs <- object$Vp[col.ind, col.ind]
