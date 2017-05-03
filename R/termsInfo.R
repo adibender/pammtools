@@ -1,10 +1,19 @@
 #' Add info about term effects to data set 
 #' 
+#' Adds the contribution (plus confidence intervals) of a specific term to the 
+#' linear predictor to the provided data.
+#' Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}. 
+#' Thus most arguments and their documentation below is from \code{predict.gam}.
+#' 
+#' 
 #' @inheritParams mgcv::predict.gam
-#' @param term A string or regular expression indicating for which term 
-#' information should be extracted and added to data set. 
+#' @param term A character (vector) or regular expression indicating for 
+#' which term(s) information should be extracted and added to data set.
 #' @param se.mult The factor by which standard errors are multiplied to form 
 #' confidence intervals.
+#' @param relative If \code{TRUE}, calculates relative risk contribution, 
+#' that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals 
+#' if \code{se.fit = TRUE}. Defaults to \code{FALSE}.
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
 #' @import checkmate dplyr mgcv 
 #' @importFrom magrittr %<>%
@@ -23,20 +32,39 @@ add_term <- function(
 	newdata, 
 	object, 
 	term, 
-	se.fit  = TRUE,
-	type    = "terms",
-	se.mult = 2, ...) {
+	se.fit   = TRUE,
+	type     = "terms",
+	se.mult  = 2,
+	relative = FALSE,
+	...) {
 
 	assert_data_frame(newdata, all.missing=FALSE) 
 	assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
 
-	col.ind <- lapply(term, grep, x=names(object$coefficients)) %>% 
-		unlist %>% unique %>% sort
+	col_ind <- lapply(term, grep, x=names(object$coefficients)) %>% 
+		unlist() %>% unique() %>% sort()
 
-  X <- predict(object, newdata = newdata, type = "lpmatrix")[,col.ind]
-  newdata[["fit"]] <- drop(X %*% object$coefficients[col.ind])
+  X <- predict(object, newdata = newdata, type = "lpmatrix", ...)[,col_ind, drop=FALSE]
+  if (relative) {
+  	if (!inherits(object, "gam") ) {
+  		stop("When 'relative=TRUE', 'object' must inherit from mgcv:::gam4objective")
+  	} else {
+  		if(is.null(object$model)) {
+  			"Relative risk can only be calculated when original data is present 
+  			in 'object'!"
+  		} else {
+  			X_bar <- predict(
+  				object, 
+  				newdata=sample_info(object$model)[rep(1, nrow(newdata)), ], 
+  				type = "lpmatrix")[, col_ind, drop=FALSE]
+  		}
+  	}
+  	X <- X - X_bar
+  } 
+  
+  newdata[["fit"]] <- drop(X %*% object$coefficients[col_ind])
   if(se.fit) {
-  	cov.coefs <- object$Vp[col.ind, col.ind]
+  	cov.coefs <- object$Vp[col_ind, col_ind]
   	se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
 		newdata %<>% mutate(
 			low = fit - se.mult * se,

@@ -93,8 +93,24 @@ all.equal(int.df$cumhazard, int.df$hazard)
 ```
 <!-- cumulative hazard of PEM/PAM is NOT step function, it's piecewise linear!!! -->
 
-Alternatively, we could use PAMs. This means estimating the baseline log-hazard rate semi-parametrically as a smooth, non-linear function evaluated at the end-points `tend` of the intervals defined for our model.
-Note that the estimated log-hazard value at time-points `tend` gives the value of the log-hazard rate for the **entire previous interval** as PAMs use hazard rates that are **constant** in each interval -- that's where the *piecewise* in the name of the package comes from. Estimating the log hazard rate as a smooth function evaluated at `tend` instead of using an unpenalized estimator without such a smoothness assumption ensures that the hazard rate does not change too rapidly from interval to interval unless there is very strong evidence for such changes in the data.
+### Fit the baseline using Piece-wise exponential additive model (PAM)
+
+
+Alternatively, we could use PAMs. This means estimating the baseline log-hazard 
+rate semi-parametrically as a smooth, non-linear function evaluated at the 
+end-points `tend` of the intervals defined for our model.
+
+Note that the estimated log-hazard value at time-points `tend` gives the value 
+of the log-hazard rate for the **entire previous interval** as PAMs use hazard 
+rates that are **constant** in each interval -- that's where the *piec-ewise* in 
+the name of the method comes from. 
+
+Estimating the log hazard rate as a smooth function evaluated at `tend` - 
+instead of using an unpenalized estimator without such a smoothness assumption - 
+ensures that the hazard rate does not change too rapidly from interval to 
+interval unless there is very strong evidence for such changes in the data.
+
+### Graphical comparison 
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
 pam <- gam(ped_status ~ s(tend), data = ped, offset = offset, family = poisson())
@@ -104,6 +120,7 @@ int.df %<>% mutate(pamch = cumsum(pamhaz * intlen))
 # Weibull AFT for comparison (true/correctly specified model)
 aft <- survreg(Surv(time, status)~1, data=tdf, dist="weibull")
 int.df$aft <- exp(-1.133)^(1/0.416) * int.df$tend^(1/0.416)
+
 ggplot(int.df, aes(x = tend)) + 
   geom_line(aes(y = cumhazard, col = "PEM"), lty = 3) + 
   geom_step(aes(y = hazard, col = "Nelson-Aalen"), lty = 2) + 

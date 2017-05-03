@@ -21,7 +21,7 @@ opts_chunk$set(
 )
 ```
 
-```{r}
+```{r, message=FALSE}
 library(magrittr)
 library(dplyr)
 library(ggplot2)
@@ -31,7 +31,7 @@ library(survival)
 library(pam)
 ```
 
-# Stratified baselines 
+## Stratified baselines 
 
 In some cases the proportional hazards assumption for different groups 
 (levels of a factor variable) is violated. One approach to resolve this 
@@ -40,33 +40,81 @@ $k=1,\ldots,K$ of factor variable $z$ will have its own baseline-hazard:
 
 $\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$. 
 
-For illustration we again use the veterans data from the `survival` package:
+For illustration we again use the `veteran` data from the `survival` package, 
+where the celltype of the lung cancer had four levels: 
 
-```{r, warning=FALSE}
+```{r}
 data("veteran")
 veteran %<>% filter(time < 400)
 table(veteran$celltype)
-cph <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
-base <- basehaz(cph, centered=FALSE)
-gg.bz <- ggplot(base, aes(x=time, y=hazard, group=strata)) + 
-	geom_step() + 
-	ylab(expression(Lambda(t))) + xlab("t")
-gg.bz
 ```
+
+### Stratified Cox model
+Fitting a stratified Cox model using the `coxph` function from the `survival`
+package is simple, including a `strata` term in the model formula. 
+
+```{r, cph}
+cph <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
+```
+
+The different baselines are visualized below: 
+```{r, ggbase, fig.width=5, fig.height=4, dependson="cph", warning=FALSE}
+base <- basehaz(cph, centered=FALSE)
+gg.bz <- ggplot(base, aes(x=time, y=hazard, group=strata)) +
+  geom_step() +
+	ylab(expression(hat(Lambda)(t))) + xlab("t")
+gg.bz + geom_step(aes(col=strata))
+```
+
+### Stratified PAM
 
 We can obtain similar results with PAMs by fitting one smooth baseline 
 estimate for each category of `celltype` in the data. 
-Technically, we specify the `by` argument in `mgcv` `s(...)` function:
+Technically, we specify the `by` argument in `mgcv` `s(...)` function. 
+Note that in contrast to the model specification in `coxph` we need to 
+include the `celltype` factor variable in the model specification:
 
 ```{r, fig.width=7, fig.height=6, warning=FALSE}
 ped <- split_data(Surv(time, status)~., data=veteran, id="id")
 pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped, 
 	family=poisson(), offset=offset)
-pinf <- ped %>% group_by(celltype) %>% ped_info() %>% add_cumhazard(pam) %>% 
+```
+
+Comparing the estimated baselines we get very similar results between 
+the stratified Cox and stratified PAM models. 
+```{r, fig.width=5, fig.height=4, dependson="ggbase", warning=FALSE}
+pinf <- ped %>% 
+  group_by(celltype) %>% 
+  ped_info() %>% 
+  add_cumhazard(pam) %>% 
 	rename(strata=celltype)
 gg.bz +	
-	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) + 
+  geom_step(aes(col="Cox")) +
+	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
 	facet_wrap(~strata) + 
 	scale_color_brewer(name="Method", palette="Set1") +
 	ylim(c(0, 5))
 ```
+
+### Stratified Proportional Hazards Model 
+Both models can be easily extended to incorporate further covariates. 
+If we assume that the covariate effects are not time-varying, this extension 
+constitutes a so called stratified proportional hazards model. For example, 
+including the treatment (`trt`), age (`age`) and the Karnofsky Score (`karno`), 
+we get the model 
+
+$$
+\lambda(t|z, \mathbf{x}) =
+  \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} + \beta_3\cdot x_{age})
+$$
+where $\lambda_{0k}(t)$ is the baseline for observation with celltype $k$,
+$k\in \{squamos,\ smallcell,\ adeno,\ large\}$:
+
+```{r}
+cph2 <- update(cph, .~. + trt + age + karno)
+pam2 <- update(pam, .~. + trt + age + karno)
+cbind(pam=coef(pam2)[5:7], cox=coef(cph2))
+```
+
+Again, covariate estimates are very similar between the two models and 
+can be interpreted in the same way. 

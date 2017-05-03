@@ -25,6 +25,7 @@ modus <- function(var) {
 #' @param x A numeric or integer vector.
 #' @inheritParams base::seq
 #' @import checkmate
+#' @export
 seq_range <- function(x, length.out=100L) {
 
   assert_numeric(x, finite=TRUE, all.missing=FALSE, min.len=2)
@@ -71,20 +72,26 @@ combine_df <- function(...) {
 #' 
 #' @inheritParams ped_info
 #' @param expand A charachter vector of column names in \code{ped}.
-#' @importFrom checkmate assert_data_frame
+#' @import dplyr 
+#' @importFrom checkmate assert_data_frame assert_character
+#' @importFrom purrr map
 construct_newdata <- function(ped, expand=NULL) {
 
   assert_data_frame(ped, all.missing=FALSE, min.rows=2, min.cols=1)
-  assert_character(min.chars=1, any.missing=FALSE)
-
-  if(is.null(expand)) {
-    return(ped_info(ped))
-  }
+  assert_character(expand, min.chars=1, any.missing=FALSE)
 
   if(!all(expand %in% names(ped)) | any(is.null(expand))) {
     stop("All arguments provided in ... must be named and have names equal to 
       column names of ped object")
   }
+
+  expand_list <- ped %>% select(one_of(expand)) %>% as.list() %>% 
+    map(seq_range) %>% map(as_tibble)
+  expand_df <- do.call(combine_df, expand_list)
+  si <- sample_info(ped) 
+  combine_df(
+    select(si, -one_of(intersect(names(expand_df), names(si)))), 
+    expand_df)
 
 }
 
