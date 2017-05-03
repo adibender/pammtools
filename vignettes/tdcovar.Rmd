@@ -1,0 +1,175 @@
+---
+title: "Time-dependent covariates"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tdcovar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: pam.bib
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5
+)
+```
+
+```{r, message=FALSE}
+library(magrittr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+theme_set(theme_bw())
+library(survival)
+library(mgcv)
+library(pam)
+# devtools::load_all()
+```
+
+# Analysis of the recidivism data 
+
+In the following we demonstrate an analysis containing time-dependent covariates, 
+using the famous recidivism data discussed in detail in [@Fox2011]. 
+The R-Code of the original analysis using the extended Cox model can be found 
+[here](http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R), 
+the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf).
+
+```{r}
+# raw data
+# http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R
+recidivism <- read.table("http://math.unm.edu/~james/Rossi.txt", header = TRUE) %>%
+  mutate(subject=row_number())
+```
+
+
+### Data preprocessing 
+
+In this simple example we don't need a dedicated function for transformation, 
+as we basically just need to transform the data in long format (equals 
+split at each week (that subjects are in the risk set) for all subjects):
+
+```{r}
+# transform into long format
+recidivism.long <- recidivism %>%
+  gather(calendar.week, employed, emp1:emp52) %>%
+  filter(!is.na(employed)) %>% # employed unequal to NA only for intervals under risk
+  group_by(subject) %>%
+  mutate(
+    start  = row_number()-1,
+    stop   = row_number(),
+    arrest = ifelse(stop == last(stop) & arrest == 1, 1, 0),
+    offset = log(stop - start)) %>%
+  select(subject, start, stop, offset, arrest, employed, fin:educ) %>%
+  arrange(subject, stop)
+recidivism.long %<>% mutate(employed.lag1 = lag(employed, default=0)) %>% 
+  slice(-1) %>% # exclusion of first week, as lagged information lacking
+  ungroup()
+```
+
+
+### Fitting the models 
+
+Below we fit the PAM and the extended Cox model. In this case the format for 
+both models is the same (which is not always the case for analyses with 
+time-dependent covariates, see also second example using `pbc` data):
+
+```{r}
+## Fit PAM (smooth effects of age and prio, using P-Splines)
+pam <- gam(arrest ~ s(stop) + fin + s(age, bs="ps") + race + wexp + mar + paro + 
+  s(prio, bs="ps") + employed.lag1,
+  data=recidivism.long, family=poisson(), offset=offset)
+extract_fixed(pam)[-1, ]
+## respective extended cox model 
+cph <- coxph(Surv(start, stop, arrest)~ fin + pspline(age) + race + wexp + mar + 
+  paro + pspline(prio) + employed.lag1,
+  data=recidivism.long)
+extract_fixed(cph)[c(1, 4:7, 10), ]
+```
+
+### Graphical comparison of the two models 
+The figure below summarizes the comparison between the two models.
+
+<details> 
+	<summary>Expand here for R-Code</summary>
+```{r}
+all_eff <- purrr::map_df(
+  list(
+    extract_fixed(pam)[-1,], 
+   	extract_fixed(cph)[-c(2:3, 8:9), ]), 
+  bind_rows, .id="Model") %>% 
+  mutate(Model = factor(Model, levels=2:1, labels=c("Cox-PH", "PAM")))
+
+## plot of fixed coefficients
+gg.coef <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) + 
+  geom_hline(yintercept = 0, lty=3) +
+  geom_pointrange(aes(col=factor(Model)), position=position_dodge(width=0.5)) + 
+  coord_flip() + 
+  scale_colour_brewer(name="Method", palette="Set1") + 
+  ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
+  xlab("")
+
+## to visualize smooth effect of age, create data set where all covariates are 
+# fixed to mean values except for age, which varies between min and max 
+# (length.out=100)
+pinf <- combine_df(
+  sample_info(recidivism.long) %>% select(-age), 
+  data.frame(age=pam:::seq_range(recidivism$age)))
+
+# add information on cotribution of age to linear predictor (partial effect of age)
+pinf %<>% add_term(pam, term="age") %>% 
+  mutate(cphfit = predict(object=cph, ., type="terms")[,2])
+
+## prep plot object for smooth effects 
+gg.smooth <- ggplot(pinf, aes(y=fit)) + 
+	geom_line(aes(col="PAM")) + 
+	geom_ribbon(aes(ymin=low, ymax=high), alpha=0.3) + 
+	geom_line(aes(y=cphfit, col="Cox")) + 
+	scale_colour_brewer(name="Method", palette="Set1", breaks=c("Cox-PH", "PAM")) + 
+  ylab(expression(hat(f)(x))) + theme(legend.position="none")
+
+## plot of the age effect 
+gg.age <- gg.smooth + aes(x=age)
+
+
+## same as for age for the prio variable 
+pinf.prio <- combine_df(
+  sample_info(recidivism.long) %>% select(-prio), 
+  data.frame(prio=pam:::seq_range(recidivism$prio)))
+
+pinf.prio %<>% add_term(pam, term="prio") %>% 
+  mutate(cphfit = predict(object=cph, ., type="terms")[,7])
+
+# plot of the prio effect 
+gg.prio <- gg.smooth %+% pinf.prio + aes(x=prio)
+```
+
+</details>
+
+As we can see, the estimates of the fixed coefficients (left panel) are 
+very similar between the two models (including) the confindence intervals. 
+Using the default settings in both model specifications (using P-Splines 
+for smooth terms), the PAM estimates are smoother compared to the Cox 
+estimates (right panel). 
+
+```{r, fig.width=7, fig.height=5, message=FALSE}
+## put all plots together 
+library(gridExtra)
+grid.arrange(
+  gg.coef +theme(legend.position="bottom"), 
+  gg.age, 
+  gg.prio, 
+  layout_matrix=matrix(c(1, 1, 2, 3), ncol=2))
+```
+
+
+# Analysis of the `pbc` data
+
+
+# References

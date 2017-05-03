@@ -13,15 +13,16 @@ bibliography: pam.bib
 ```{r, echo = FALSE}
 library(knitr)
 opts_chunk$set(
-  fig.align = "center",
-  cache = TRUE, 
-  message = FALSE, 
-  fig.height = 5, 
-  fig.width = 5
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5
 )
 ```
 
 # Basic modeling 
+
 In this tutorial we present basic examples for the usage of this package and 
 compare results to the ones obtained with classical approaches, namely using 
 the `coxph` function from the `survival` package. 
@@ -44,8 +45,8 @@ Estimates between the two approaches can differ due to a more crude
 handling of ties in the PEM approach [@whitehead1980]. 
 In practice these differences are not very large (see examples below).
 
-We first demonstrate the equivalence using Freireichs Leukemia data [@freireich1963] provided in the
-`bpcp` package.
+We first demonstrate the equivalence using Freireichs Leukemia data [@freireich1963] 
+provided in the `bpcp` package.
 
 ```{r}
 library(survival)

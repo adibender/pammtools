@@ -71,8 +71,14 @@ veteran %<>% mutate(prior = ((prior != 0) * 1)) %>% filter(time < 400)
 head(veteran)
 ```
 
+
+### Extended Cox Model (with known shape of time-variation function)
+
 To fit a time-varying effect of `karno` the authors suggest to use the function 
-$f(x,t) = \beta_{\text{karno}}(x_{\text{karno}})+\beta_{\text{karno},t}\cdot (x_{\text{karno}}\cdot \log(t+20))$. 
+$$
+f(x_{text{karno}},t) = \beta_{\text{karno}}(x_{\text{karno}}) +
+  \beta_{\text{karno},t} \cdot (x_{\text{karno}} \cdot \log(t+20))
+$$. 
 This is an instance of case a) above with $g(t) = log(t+20)$.
 
 ```{r}
@@ -94,6 +100,8 @@ plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
   type = "l", ylab = "Beta(t) for karno", las = 1)
 ```
 
+### PAM (with known shape of time-variation function)
+
 To fit a PAM with equivalent model specification (except for the baseline hazard) 
 we can use
 
@@ -112,6 +120,8 @@ plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1) 
 lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), col = 2)
 ```
+
+### PAM (penalized estimation of time-variation function)
 
 In case we don’t want to pre-specify which shape the time-dependency should have, 
 we can specify the effect of `karno` as 
