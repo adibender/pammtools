@@ -23,19 +23,18 @@ library(ggplot2)
 theme_set(theme_bw())
 library(magrittr)
 library(tidyr)
-library(purrr)
-library(survival)
-library(mgcv)
 library(dplyr)
 library(pam)
+library(survival)
+library(mgcv)
 ```
 
 In this vignette we show examples of how to fit time-varying effects of 
 time-constant continuous covariates. Time-varying effects of time-constant 
 categorical variables can be viewed in the context of stratified proportional 
-hazards models, where all observations from one group of the categorical variable
-have an individual baseline hazard. This case is detailed in `vignette("strata", pacakge="pam")`.
-<!-- (see vignette on stratified baseline for details) WHICH PACKAGE IS THIS? -->.
+hazards models, where all observations from one group of the categorical 
+variable have an individual baseline hazard. This case is detailed in
+`vignette("strata", pacakge="pam")`.
 
 ## Possible specifications of time-variation
 
@@ -107,7 +106,7 @@ head(ped) %>% select(interval, ped_status, trt, karno, age, prior, logt20)
 # fit model 
 pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20, 
     data = ped, offset = offset, family = poisson())
-coef(pam)[1:5]
+coef(pam)[2:5]
 # compare fits 
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1) 
@@ -115,8 +114,10 @@ lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), col
 ```
 
 In case we don’t want to pre-specify which shape the time-dependency should have, 
-we can specify the effect of `karno` as $f(x_{\text{karno}},t) = f(t)\cdot x_{\text{karno}}$, where $f(t)$
+we can specify the effect of `karno` as 
+$f(x_{\text{karno}},t) = f(t)\cdot x_{\text{karno}}$, where $f(t)$
 is estimated from the data:
+
 ```{r, fig.width = 6}
 # no need to specify main effect for karno here 
 pam2 <- gam(ped_status ~ s(tend) + trt + prior + s(tend, by = karno), 
@@ -134,5 +135,6 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     scale_color_brewer(name="Method", palette = "Set1") +
     xlab("t") + ylab("Beta(t) for karno")
 ```
+
 
 The semi-parametric PAM model estimate flattens out after ca. 150 days.
