@@ -17,8 +17,8 @@ add_term(newdata, object, term, se.fit = TRUE, type = "terms",
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{term}{A string or regular expression indicating for which term 
-information should be extracted and added to data set.}
+\item{term}{A character (vector) or regular expression indicating for 
+which term(s) information should be extracted and added to data set.}
 
 \item{se.fit}{ when this is TRUE (not default) standard error estimates are returned for each prediction.}
 
@@ -43,12 +43,16 @@ outside \code{R} (see example code, below). }
 confidence intervals.}
 
 \item{relative}{If \code{TRUE}, calculates relative risk contribution, 
-that is \eqn{(\mathbf{X}-\bar{\mathbf{X}})\beta}}
+that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals 
+if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
-Add info about term effects to data set
+Adds the contribution (plus confidence intervals) of a specific term to the 
+linear predictor to the provided data.
+Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}. 
+Thus most arguments and their documentation below is from \code{predict.gam}.
 }
 \examples{
 library(mgcv)
