@@ -27,26 +27,29 @@ In this tutorial we present basic examples for the usage of this package and
 compare results to the ones obtained with classical approaches, namely using 
 the `coxph` function from the `survival` package. 
 
-Note that usually the strength of the described methods is more apparent when 
-fitting models with time-dependent covariates or time-varying effects, thus 
-this section is more useful for illustration purposes. 
-
 In the following two sections, we first describe the classical piece-wise 
-exponential model (PEM) and afterwards the extension to piece-wise exponential 
+exponential model (PEM) and after that the extension to piece-wise exponential 
 additive models (PAM). 
 
 ## Piece-wise exponential model (PEM)
 The strength of the PEM is that analysis of time-to-event data can be performed 
-using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if (1) there are no ties (i.e., simultaneous events) in the data
-and (2) all unique event times are used as interval cut points in order to transform the data into 
-the format suitable for PEMs (see `?split_data` and `vignette("data-transformation", package = "pam")`).
+using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if 
+
+(1) there are no ties (i.e., simultaneous events) in the data and 
+
+(2) all unique event (and censoring) times are used as interval cut points in 
+order to transform the data into the format suitable for PEMs 
+(see `?split_data` and `vignette("data-transformation", package = "pam")`).
 
 Estimates between the two approaches can differ due to a more crude 
 handling of ties in the PEM approach [@whitehead1980]. 
 In practice these differences are not very large (see examples below).
 
-We first demonstrate the equivalence using Freireichs Leukemia data [@freireich1963] 
-provided in the `bpcp` package.
+
+### Subset with unique event times 
+
+We first demonstrate the equivalence using a subset Freireichs Leukemia 
+data [@freireich1963] provided in the `bpcp` package:
 
 ```{r}
 library(survival)
@@ -56,53 +59,62 @@ library(dplyr)
 
 data("leuk2", package = "bpcp")
 leuku <- filter(leuk2, !duplicated(time))
-leuku.ped <- split_data(Surv(time, status)~., cut = unique(leuku$time), data = leuku, id = "id")
+leuku.ped <- split_data(Surv(time, status)~., cut = unique(leuku$time), 
+	data = leuku, id = "id")
 pem.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuku.ped, 
 	family = poisson(), offset = offset)
-coef(pem.treat)["treatmentplacebo"]
-
-## compare coefficient estimate to Cox-PH estimate 
+## cox model for comparison
 cph.treat <- coxph(Surv(time, status) ~ treatment, data = leuku)
-coef(cph.treat)
-## -> models yield equal estimates of treatment effect
+## compare coefficients
+cbind(
+  pem = coef(pem.treat)["treatmentplacebo"],
+  cox = coef(cph.treat))
+```
+In this case both models yield equivalent estimates. 
 
+### Full data set
+```{r}
 ## Using the full data set (with ties) yields slightly different results 
 # when comparing PEM to Cox-PH
 leuk.ped <- split_data(Surv(time, status)~., cut = unique(leuk2$time), data = leuk2, id = "id")
 pem2.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuk.ped, 
 	family = poisson(), offset = offset)
-coef(pem2.treat)["treatmentplacebo"]
-
-## compare coefficient estimate to Cox-PH estimate 
 cph2.treat <- coxph(Surv(time, status) ~ treatment, data = leuk2)
-coef(cph2.treat)
+## compare coefficient estimate to Cox-PH estimate 
+cbind(
+  pem = coef(pem2.treat)["treatmentplacebo"],
+  cox = coef(cph2.treat))
 ```
 
 ## Piece-wise exponential additive model 
+
 PAMs have two main advantages over PEMs: 
 
-- PAM estimation scales better when the number of intervals becomes very large: 
-	PEMs need to estimate one parameter per interval for the baseline hazard, while the number 
-	of parameters in PAMs only depends on the number of basis functions used for the spline estimate of 
-	the baseline hazard.
+- PAM estimation scales better when the number of intervals becomes large: 
+	PEMs need to estimate one parameter per interval for the baseline hazard, 
+	while the number of parameters in PAMs only depends on the number of basis 
+	functions used for the spline estimate of the baseline hazard.
 
-- In PEMs, baseline hazard estimates for each interval can vary a lot between neighboring 
-	intervals, especially when intervals only contain few events. For 
-	PAMs on the other hand estimates of the baseline hazard in neighboring 
-	intervals are similar due to penalization unless the data provides very strong evidence for 
-	large changes between neighboring intervals. 
+- In PEMs, baseline hazard estimates for each interval can vary a lot between 
+	neighboring intervals, especially when intervals only contain few events. 
+	For PAMs on the other hand estimates of the baseline hazard in neighboring 
+	intervals are similar due to penalization unless the data provides very strong 
+	evidence for large changes between neighboring intervals.
 
-Note that coefficient estimates in PAMs are no longer equivalent to those from Cox PH models, since 
-the estimation of the baseline hazard is performed semi-parametrically. In our 
-experience the differences are not very large. Using the example above we get:
+Note that coefficient estimates in PAMs are no longer equivalent to those from 
+Cox PH models, since the estimation of the baseline hazard is performed 
+semi-parametrically. In our experience the differences are small.
+
+Using the example above we get:
 
 ```{r}
 ## compare to PAM 
 pam.treat <- gam(ped_status ~ s(tend) + treatment, data = leuku.ped, 
 	family = "poisson", offset = offset)
-coef(pam.treat)["treatmentplacebo"]
-coef(pem.treat)["treatmentplacebo"]
-coef(cph.treat)["treatmentplacebo"]
+cbind( 
+	pam = coef(pam.treat)["treatmentplacebo"],
+	pem = coef(pem.treat)["treatmentplacebo"], 
+	cox = coef(cph.treat)["treatmentplacebo"])
 ```
 
 # References
