@@ -1,8 +1,3 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2017-03-23 17:26:21
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-03-23 19:46:44
-
 #' Extract partial effects for specified model terms
 #'
 #' @param data Any data frame containing variables used to fit the model. Only
