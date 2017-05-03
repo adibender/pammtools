@@ -5,7 +5,7 @@
 \title{Add info about term effects to data set}
 \usage{
 add_term(newdata, object, term, se.fit = TRUE, type = "terms",
-  se.mult = 2, ...)
+  se.mult = 2, relative = FALSE, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -41,6 +41,9 @@ outside \code{R} (see example code, below). }
 
 \item{se.mult}{The factor by which standard errors are multiplied to form 
 confidence intervals.}
+
+\item{relative}{If \code{TRUE}, calculates relative risk contribution, 
+that is \eqn{(\mathbf{X}-\bar{\mathbf{X}})\beta}}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }

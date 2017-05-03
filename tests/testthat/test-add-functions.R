@@ -1,4 +1,4 @@
-# context("Convenience functiions for calculation of hazard and similar")
+context("Convenience functions for calculation of hazard and similar")
 
 library(mgcv)
 data("leuk2", package="bpcp")
@@ -19,4 +19,12 @@ test_that("cumulative hazard functions work", {
 	expect_identical(dim(haz), c(7L, 11L))
 	expect_error(add_cumhazard(haz, fit))
 	expect_identical(dim(add_cumhazard(haz, fit, overwrite = TRUE)), c(7L, 11L))
+})
+
+test_that("adding terms works", {
+	expect_is(add_term(ped_info(leuk.ped), fit, term="trt"), "data.frame")
+	expect_is(add_term(ped_info(leuk.ped), fit, term="trt", relative=TRUE), 
+		"data.frame")
+	fit$model <- NULL
+	expect_error(add_term(ped_info(leuk.ped), fit, term="trt", relative=TRUE))
 })
