@@ -40,6 +40,8 @@ gg_smooth <- function(data, fit, ...) {
 #' library(mgcv)
 #' g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 #' gg_tensor(g)
+#' gg_tensor(g, ci=TRUE)
+#' gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))
 #' @seealso \code{\link{tidy_smooth2d}}
 #' @export
 gg_tensor <- function(fit, ci=FALSE, ...) {
@@ -59,10 +61,12 @@ gg_tensor <- function(fit, ci=FALSE, ...) {
 		scale_fill_gradient2(
 			name = expression(f(list(x,y))),
 			low  = "steelblue", high = "firebrick2") +
-		geom_contour(col="grey30") + 
-		facet_grid(main ~ type, scales="free")
-
-	return(gg2d)
+		geom_contour(col="grey30")
+		if(ci) {
+			gg2d + facet_grid(main ~ type, scales="free")
+		} else {
+			gg2d + facet_wrap(~main, scales="free")
+		}
 
 }
 

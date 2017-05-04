@@ -20,6 +20,8 @@ more than one 2d smooth term is present individual terms are faceted.
 library(mgcv)
 g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 gg_tensor(g)
+gg_tensor(g, ci=TRUE)
+gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))
 }
 \seealso{
 \code{\link{tidy_smooth2d}}
