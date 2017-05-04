@@ -32,7 +32,7 @@ gg_smooth <- function(data, fit, ...) {
 #' Given a gam model this convenience function returns a \code{ggplot2} object 
 #' depicting 2d smooth terms specified in the model as heat/contour plots. If 
 #' more than one 2d smooth term is present individual terms are faceted.
-#' @inheritParams get_term
+#' @inheritParams tidy_smooth2d
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate
 #' @importFrom magrittr "%<>%"
@@ -44,9 +44,9 @@ gg_smooth <- function(data, fit, ...) {
 #' gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))
 #' @seealso \code{\link{tidy_smooth2d}}
 #' @export
-gg_tensor <- function(fit, ci=FALSE, ...) {
+gg_tensor <- function(x, ci=FALSE, ...) {
 
-	df2d <- tidy_smooth2d(fit, ci=ci, se=ci, ...)
+	df2d <- tidy_smooth2d(x, ci=ci, se=ci, ...)
 	if (ci) {
 		df2d %<>% gather(type, fit, fit, low, high) %>% 
 			mutate(
