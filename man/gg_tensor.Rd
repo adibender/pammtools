@@ -4,12 +4,15 @@
 \alias{gg_tensor}
 \title{Plot tensor product effects}
 \usage{
-gg_tensor(fit, ...)
+gg_tensor(x, ci = FALSE, ...)
 }
 \arguments{
-\item{fit}{A fitted object of class \code{gam}.}
+\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
 
-\item{...}{Currently ignored.}
+\item{ci}{A logical value indicating whether confidence intervals should be 
+calculated and returned. Defaults to \code{TRUE}.}
+
+\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
 Given a gam model this convenience function returns a \code{ggplot2} object 
@@ -20,6 +23,8 @@ more than one 2d smooth term is present individual terms are faceted.
 library(mgcv)
 g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 gg_tensor(g)
+gg_tensor(g, ci=TRUE)
+gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))
 }
 \seealso{
 \code{\link{tidy_smooth2d}}

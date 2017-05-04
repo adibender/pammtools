@@ -14,13 +14,14 @@ library(knitr)
 opts_chunk$set(
   fig.align = "center",
   fig.width = 4, 
-  fig.height = 4
-)
+  fig.height = 4,
+  crop=TRUE)
 ```
 
 ```{r, message = FALSE}
 library(ggplot2)
 theme_set(theme_bw())
+library(gridExtra)
 library(magrittr)
 library(tidyr)
 library(dplyr)
@@ -82,11 +83,13 @@ $$.
 This is an instance of case a) above with $g(t) = log(t+20)$.
 
 ```{r}
-vfit <- coxph(Surv(time, status) ~ trt + prior + karno + tt(karno), 
-    data = veteran, 
-    tt = function(x, t, ...) x * log(t + 20))
+vfit <- coxph(
+  formula = Surv(time, status) ~ trt + prior + karno + tt(karno),
+  data    = veteran,
+  tt      = function(x, t, ...) x * log(t + 20))
 coef(vfit)
 ```
+
 ```{r, echo=FALSE}
 ttcoef <- round(coef(vfit), 3)[3:4]
 ```
@@ -97,7 +100,7 @@ $\beta_{\text{karno}}+\beta_{\text{karno},t}\log(t+20) = `r ttcoef[1]` + `r ttco
 ```{r}
 t <- seq(0, 400, by = 10)
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
-  type = "l", ylab = "Beta(t) for karno", las = 1)
+  type = "l", ylab = "Beta(t) for karno", las = 1, ylim=c(-.1, .05))
 ```
 
 ### PAM (with known shape of time-variation function)
@@ -114,7 +117,9 @@ head(ped) %>% select(interval, ped_status, trt, karno, age, prior, logt20)
 # fit model 
 pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20, 
     data = ped, offset = offset, family = poisson())
-coef(pam)[2:5]
+cbind(
+  pam = coef(pam)[2:5],
+  cox = coef(vfit))
 # compare fits 
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1) 
@@ -146,5 +151,131 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     xlab("t") + ylab("Beta(t) for karno")
 ```
 
-
 The semi-parametric PAM model estimate flattens out after ca. 150 days.
+
+
+### PAM with smooth, smoothly time-varying effect of the Karnosky Score
+
+To fit a non-linear, non-linearly time-varying effect we can specify a 
+two-dimensional interaction between the covariate of interest (here 
+the Karnofsky-Score and a variable that represents time in the respective 
+interval, e.g. interval end-points) using tensor product terms. 
+
+In `mgcv::gam` such two-dimensional effects can be directly used 
+either via `te` or `ti` terms in the model specification. The later is 
+especially useful, when we want to disentangle the marginal and interaction 
+effects of the respective covariates. 
+
+Below we first fit a model using the `te` specification. Note that we did not 
+include a `s(tend)` term here, as the time-variable `tend` is already present
+in the `te` term, thus we could still obtain a "baseline hazard" by setting 
+all other covariates to 0. 
+
+```{r}
+## Non-linear, non-linearly time-varying effects
+pam3 <- gam(
+  formula = ped_status ~ trt + prior + s(age) + te(tend, karno),
+  data   = ped,
+  family = poisson(),
+  offset = offset)
+```
+
+The summary of the model indicates that the estimated bivariate function 
+$\hat{f}(x_{karno}, t)$ is highly non-linear (edf \approx 8.9):
+```{r}
+summary(pam3)
+```
+
+The 3D perspective plot can aid interpretation, where y- and x-axes depict 
+the Karnosky-Score and the time respectively and the z-axis displays the 
+contribution of the effect to the log-hazard for each combination of 
+$x_{karno}$ and $t$.
+```{r, fig.width=6, fig.height=6}
+plot(pam3, select=2, pers=T, theta=150, ticktype="detailed")
+```
+Such 3D plots are sometimes difficult to interpret, thus we also provide 
+a heat-/contourplot (left panel) with respective slices for fixed 
+values of the Karnofsky-Score (middle panel) and fixed time-points/intervals 
+(right panel) below. 
+
+The left panel again depicts the Karnosky Score on the y-axis and the 
+time on the x-axis. The value of $\hat{f}(x_{karno}, t)$ is visualized using 
+a color gradient, where blue colors indicate log-hazard decrease and 
+red colors a log-hazard increase. The grayed out areas depict combinations
+of \code{karno} and \code{tend} that were not present in the data. 
+Dotted horizontal and vertical lines indicate slices that are displayed 
+in the middle and right panel. 
+
+Fixing $t=0$, we obtain the effect of the Karnofsky-Score at the beginning 
+of the follow-up (red line left panel), which decreases strongly from low 
+to high values of $x_{karno}$. This result is in line with the estimation 
+one would obtain fitting a time-constant, non-linear effect of the 
+$f(x_{karno}).
+
+Fixing the Karnofsky Score, we can see how the effect of the Karnofsky-Score
+changes over time for different values of $x_{karno}$ (middle panel). 
+For higher values $x_{karno} >60$ the effect is negative (decreased log-hazard)
+at the beginning and increases over the course of the follow-up 
+(orange and blue lines middle panel). This 
+again is consistent with the time-varying effect of the Karnofsky-Score 
+estimated in the previous section. However, the bivariate function indicates
+that for lower $x_{karno}$ values the effect may have a parabolic shape, 
+decreasing log-hazard at the beginning and increasing again for later 
+time-points (green line middle panel). 
+
+<details>
+  <summary>Expand here for detailed R-Code</summary>
+```{r}
+te_plot <- gg_tensor(pam3) +
+  geom_vline(xintercept=c(0, 50, 200, 300), lty=3) +
+  geom_hline(yintercept=c(40, 75, 95), lty=3) +
+  scale_fill_gradient2(
+    name=expression(hat(f)(list(x[plain(karno)],t))),
+    low="steelblue", high="firebrick2") +
+  geom_contour(col="grey30") +
+  xlab("t") + ylab(expression(x[plain(karno)])) +
+  theme(legend.position="bottom")
+
+## plot f(karno, t) for specific slices
+df.karno <- combine_df(
+  int_info(ped),
+  select(sample_info(ped), -karno),
+  data.frame(karno = c(40, 75, 95)))
+
+df.karno$fte <- predict(pam3, newdata=df.karno, type="terms")[,"te(tend,karno)"]
+karno_plot <- ggplot(df.karno, aes(x=tend, y=fte)) +
+  geom_line(aes(col=factor(karno))) +
+  scale_color_brewer(
+    name=expression(x[plain(karno)]),
+    palette = "Set2") +
+  ylab(expression(f(list(x[plain(karno)],t)))) +
+  xlab("t")+
+  theme(legend.position="bottom")
+
+df.time  <- combine_df(
+  data.frame(sample_info(ped)%>% select(-karno)),
+#  data.frame(karno = seq_range(c(20, 40, 75, 95))),
+  data.frame(karno = seq(20, 100, by=5)),
+  data.frame(tend  = c(0, 50, 200, 300)))
+df.time$fte <- predict(pam3, newdata=df.time, type="terms")[,"te(tend,karno)"]
+time_plot <- ggplot(df.time, aes(x=karno, y=fte)) +
+  geom_line(aes(col=factor(tend))) +
+  scale_color_brewer(name="t", palette="Set1") +
+  ylab(expression(f(list(x[plain(karno)],t)))) +
+  xlab(expression(x[plain(karno)])) +
+  theme(legend.position="bottom")
+```
+</details>
+
+```{r, fig.width=7, fig.height=3, warning=FALSE}
+grid.arrange(te_plot, karno_plot, time_plot, nrow=1)
+```
+
+Note that we have to be somewhat cautious with interpretation, considering 
+the uncertainty of the estimation, especially for lower Karnofsky-Scores
+and later time-points: 
+
+```{r, fig.width=7, fig.height=3, warning=FALSE}
+gg_tensor(pam3, ci=TRUE)
+```
+
