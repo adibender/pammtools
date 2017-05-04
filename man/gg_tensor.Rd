@@ -4,7 +4,7 @@
 \alias{gg_tensor}
 \title{Plot tensor product effects}
 \usage{
-gg_tensor(fit, ...)
+gg_tensor(fit, ci = FALSE, ...)
 }
 \arguments{
 \item{fit}{A fitted object of class \code{gam}.}
