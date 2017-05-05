@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{rm_grpvars}
 \alias{rm_grpvars}
-\title{return ungrouped data frame without grouping variables}
+\title{Return ungrouped data frame without grouping variables}
 \usage{
 rm_grpvars(data)
 }
@@ -14,5 +14,5 @@ variables will be removed.}
 Returns \code{data} without grouping variables (and group properties).
 }
 \description{
-return ungrouped data frame without grouping variables
+Return ungrouped data frame without grouping variables
 }

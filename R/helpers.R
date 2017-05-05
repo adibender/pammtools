@@ -39,11 +39,13 @@ seq_range <- function(x, length.out=100L) {
 
 #' Combines multiple data frames
 #' 
+#' Works like \code{\link[base]{expand.grid}} but for data frames. 
+#' 
 #' @importFrom dplyr slice bind_cols combine
 #' @importFrom purrr map2 transpose cross
 #' @importFrom checkmate test_data_frame
 #' @param ... Data frames that should be combined to one data frame. 
-#' Elements of first df vary fastest, elements of last df vary slowest
+#' Elements of first df vary fastest, elements of last df vary slowest.
 #' @examples 
 #' combine_df(
 #'   data.frame(x=1:3, y=3:1), 
@@ -71,11 +73,12 @@ combine_df <- function(...) {
 #' When \code{expand==NULL} falls back to \code{\link{ped_info}}.
 #' 
 #' @inheritParams ped_info
+#' @inheritParams seq_range
 #' @param expand A charachter vector of column names in \code{ped}.
 #' @import dplyr 
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map
-construct_newdata <- function(ped, expand=NULL) {
+construct_newdata <- function(ped, expand=NULL, length.out=100L) {
 
   assert_data_frame(ped, all.missing=FALSE, min.rows=2, min.cols=1)
   assert_character(expand, min.chars=1, any.missing=FALSE)
@@ -85,13 +88,14 @@ construct_newdata <- function(ped, expand=NULL) {
       column names of ped object")
   }
 
-  expand_list <- ped %>% select(one_of(expand)) %>% as.list() %>% 
-    map(seq_range) %>% map(as_tibble)
+  expand_list <- ped %>% 
+    select(one_of(expand)) %>% 
+    as.list() %>% 
+    map(seq_range, length.out=length.out) %>% map(as_tibble)
   expand_df <- do.call(combine_df, expand_list)
   si <- sample_info(ped) 
-  combine_df(
-    select(si, -one_of(intersect(names(expand_df), names(si)))), 
-    expand_df)
+
+  combine_df(select(si, -one_of(intersect(expand, names(si)))), expand_df)
 
 }
 
@@ -106,7 +110,7 @@ get_grpvars <- function(data) {
   vapply(groups(data), as.character, character(1))
 }
 
-#' return ungrouped data frame without grouping variables 
+#' Return ungrouped data frame without grouping variables 
 #' 
 #' @param data A data frame (potentially `grouped_df`) from which grouping 
 #' variables will be removed. 

@@ -8,10 +8,10 @@ combine_df(...)
 }
 \arguments{
 \item{...}{Data frames that should be combined to one data frame. 
-Elements of first df vary fastest, elements of last df vary slowest}
+Elements of first df vary fastest, elements of last df vary slowest.}
 }
 \description{
-Combines multiple data frames
+Works like \code{\link[base]{expand.grid}} but for data frames.
 }
 \examples{
 combine_df(

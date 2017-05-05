@@ -33,10 +33,10 @@ library(pam)
 # devtools::load_all()
 ```
 
-# Analysis of the recidivism data 
+## Analysis of the recidivism data 
 
-In the following we demonstrate an analysis containing time-dependent covariates, 
-using the famous recidivism data discussed in detail in [@Fox2011]. 
+In the following, we demonstrate an analysis containing time-dependent covariates, 
+using the prominent recidivism data discussed in detail in @Fox2011. 
 The R-Code of the original analysis using the extended Cox model can be found 
 [here](http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R), 
 the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf).
@@ -52,8 +52,8 @@ recidivism <- read.table("http://math.unm.edu/~james/Rossi.txt", header = TRUE) 
 ### Data preprocessing 
 
 In this simple example we don't need a dedicated function for transformation, 
-as we basically just need to transform the data in long format (equals 
-split at each week (that subjects are in the risk set) for all subjects):
+as we basically just need to transform the data into long format (equals 
+splitting at each week that subjects are in the risk set):
 
 ```{r}
 # transform into long format
@@ -169,7 +169,7 @@ grid.arrange(
 ```
 
 
-# Analysis of the `pbc` data
+## Analysis of the `pbc` data
 
 
-# References
+## References

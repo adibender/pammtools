@@ -4,12 +4,16 @@
 \alias{construct_newdata}
 \title{Construct a data frame suitable for prediction}
 \usage{
-construct_newdata(ped, expand = NULL)
+construct_newdata(ped, expand = NULL, length.out = 100L)
 }
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.}
 
 \item{expand}{A charachter vector of column names in \code{ped}.}
+
+\item{length.out}{desired length of the sequence.  A
+    non-negative number, which for \code{seq} and \code{seq.int} will be
+    rounded up if fractional.}
 }
 \description{
 Given a data set of class \code{ped}, returns a data frame that can be used 
