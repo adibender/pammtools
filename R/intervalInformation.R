@@ -111,63 +111,6 @@ get_intervals <- function(brks, x, ...) {
 }
 
 
-#' Extract information of the sample contained in a data set 
-#' 
-#' Given a data set and grouping variables, this function returns median values 
-#' for numeric variables and modus for characters and factors.
-#' 
-#' @param x A data frame (or object that inherits from \code{data.frame}).
-#' @param ... Further arguments passed to specialized methods.
-#' @importFrom stats median
-#' @export
-#' @rdname sample_info
-sample_info <- function(x, ...) {
-  UseMethod("sample_info", x)
-}
-
-#' @inheritParams sample_info
-#' @import checkmate dplyr
-#' @importFrom magrittr %<>%
-#' @importFrom purrr compose
-#' @export 
-#' @rdname sample_info
-sample_info.data.frame <- function(x, ...) {
-
-  assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
-
-  cn <- colnames(x)
-  num <- summarize_if(x, .predicate=is.numeric, funs(median(., na.rm=TRUE)))
-  fac <- summarize_if(x, .predicate=compose("!", is.numeric), modus)
-
-  nnames <- intersect(names(num), names(fac))
-    
-  if(length(nnames) != 0) {
-    x <- left_join(num, fac) %>% grouped_df(vars=lapply(nnames, as.name))
-  } else {
-    x <- bind_cols(num, fac)
-  }
-
-  return(select(x, one_of(cn)))
-
-}
-
-
-#' @inheritParams sample_info
-#' @import checkmate dplyr
-#' @importFrom magrittr %<>%
-#' @export 
-#' @rdname sample_info
-#' @seealso \code{\link[pam]{split_data}}
-sample_info.ped <- function(x, ...) {
-  # is.grouped_df
-  # remove "noise" information on interval variables 
-  iv <- attr(x, "intvars")
-  x %<>% select(-one_of(iv))
-  sample_info.data.frame(x, ...)
-
-}
-
-
 #' Extract interval information and median/modus values for covariates
 #' 
 #' Given an object of class \code{ped}, returns data frame with interval information, 
