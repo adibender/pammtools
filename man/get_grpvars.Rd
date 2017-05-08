@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{get_grpvars}
 \alias{get_grpvars}
-\title{extract character vector of grouping variables}
+\title{Extract character vector of grouping variables}
 \usage{
 get_grpvars(data)
 }
@@ -14,5 +14,5 @@ names of grouping variables.}
 A character vector (of length 0 if no grouping variables present).
 }
 \description{
-extract character vector of grouping variables
+Extract character vector of grouping variables
 }
