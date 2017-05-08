@@ -171,5 +171,132 @@ grid.arrange(
 
 ## Analysis of the `pbc` data
 
+Here we show an example with continuous time-dependent covariates using the 
+Primary Biliary Cirrhosis Data (`pbc`) from the `survival` package (see 
+`?pbc` for documentation).
+
+```{r}
+head(pbc)[, c(1:5, 11, 12)]
+head(pbcseq)[, c(1, 4:5, 7, 12, 13)]
+```
+
+### Extended Cox analysis of the `pbc` data
+We first replicate the analysis from `vignette("timedep", package="survival")`:
+
+```{r}
+temp <- subset(pbc, id <= 312, select=c(id:sex, stage)) # baseline
+pbc2 <- tmerge(temp, temp, id=id, death = event(time, status)) #set range
+pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites), 
+    bili = tdc(day, bili), albumin = tdc(day, albumin), 
+    protime = tdc(day, protime), alk.phos = tdc(day, alk.phos))
+
+fit1 <- coxph(Surv(time, status==2) ~ log(bili) + log(protime), pbc)
+fit2 <- coxph(Surv(tstart, tstop, death==2) ~ log(bili) + log(protime), pbc2)
+rbind("baseline fit" = coef(fit1), "time dependent" = coef(fit2))
+```
+
+This demonstrates, that results can differ substantially, when only the 
+baseline values of TDCs are used in anlysis. 
+
+
+### PAM analysis of the `pbc` data
+First we need to transform the data to PED format. In order to do so we 
+perform some minor preprocessing: 
+
+```{r}
+# data set that only contains baseline (t=0) information
+event_df <- pbc %>% 
+  filter(id <=312) %>% 
+  mutate(event = 1*(status==2)) %>% 
+  select(id, time, event, trt, age, sex, bili, protime)
+# we rename the "day" variable here for use of `split_tdc` function later
+tdc_df <- pbcseq %>% 
+  select(id, day, bili, protime) %>% 
+  rename(time = day)
+```
+
+
+Now we can use the `?split_tdc` variable, that need both data sets, 
+`event_df`, that contains time-to-event information and one row per subject and 
+`tdc_df` that contains information on timing and value of time-dependent covariates. 
+
+The `split_tdc` function performs the following tasks: 
+
+  - extract unique event times and measurement times of the TDCs
+  - split the follow-up according to these times (essentially calling 
+  `split_data` with above cut-points on `event_df` after removing TDCs)
+  - merge the expanded data set with the data set containing information 
+  on TDCs by ID and time
+  - fill the values of TDCs for time-points that did not occur in `tdc_df` by 
+  carriing last value forward. 
+
+```{r}
+pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "id", "time", "status")
+filter(tdc_df, id==17)
+pbc_ped %>% 
+  filter(id==17) %>% 
+  semi_join(tdc_df, by=c("id", "tstart"="time")) %>% 
+  select(id, interval, age, bili, protime)
+```
+
+
+Now we can fit the model as usual calling `mgcv::gam`: 
+
+```{r}
+pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped, 
+  family=poisson(), offset=offset)
+cbind(pam=coef(pbc_pam)[2:3], cox=coef(fit2))
+```
+
+Coeffiicent estimates are very similar for both models, especially for the 
+effect of `bili`. A graphical comparison yields similar results: 
+
+<details>
+  <summary>Expand here for R-Code</summary>
+```{r, fig.show="none"}
+## Effect of bilirubin
+# note that we use relative = TRUE in the call to add_term, which calculates 
+# the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
+# (see also Details section in ?predict.coxph)
+bili_df <- combine_df(
+    data.frame(bili = seq_range(tdc_df$bili)),
+    sample_info(ungroup(pbc_ped))) %>% 
+    add_term(pbc_pam, term="bili", relative=TRUE)
+bili_df$cox <- predict(fit2, bili_df, type="term")[,"log(bili)"]
+gg_bili <- ggplot(bili_df, aes(x=bili, y=fit)) + 
+    geom_line() + 
+    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
+    geom_line(aes(y=cox), lty=2)
+
+## Effect of protime
+protime_df <- combine_df(
+    data.frame(protime = seq_range(tdc_df$protime)),
+    sample_info(ungroup(pbc_ped))) %>% 
+    add_term(pbc_pam, term="protime", relative=TRUE)
+protime_df$cox <- predict(fit2, protime_df, type="term")[, "log(protime)"]
+gg_protime <- ggplot(protime_df, aes(x=protime, y=fit)) + 
+    geom_line() + 
+    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
+    geom_line(aes(y=cox), lty=2)
+
+# combine figures
+library(grid)
+grid.draw(
+    cbind(
+        ggplotGrob(gg_bili),
+        ggplotGrob(gg_protime),
+        size = "last"))
+```
+</details>
+
+```{r, echo=FALSE, fig.width=6, fig.height=3}
+library(grid)
+grid.draw(
+    cbind(
+        ggplotGrob(gg_bili),
+        ggplotGrob(gg_protime),
+        size = "last"))
+```
+
 
 ## References
