@@ -4,7 +4,7 @@
 \alias{make_newdata}
 \title{Construct a data frame suitable for prediction}
 \usage{
-make_newdata(ped, ..., expand = NULL, length.out = 100L)
+make_newdata(ped, ..., expand = NULL, length.out = 25L)
 }
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.}
@@ -32,6 +32,7 @@ in expand, these will be exanded from \code{min} to \code{max} using
 in \code{length.out} equidistant steps.
 }
 \examples{
+\dontrun{
 library(dplyr)
 iris \%>\% make_newdata()
 iris \%>\% make_newdata(Sepal.Length=5)
@@ -40,4 +41,5 @@ iris \%>\% make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", length.out=
 iris \%>\% group_by(Species) \%>\% 
   make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", length.out=5) \%>\% 
   print(n=30)
+}
 }
