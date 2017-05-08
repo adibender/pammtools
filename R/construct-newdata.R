@@ -123,6 +123,7 @@ combine_df <- function(...) {
 #' in expand, these will be exanded from \code{min} to \code{max} using 
 #' in \code{length.out} equidistant steps.
 #' @examples
+#' \dontrun{
 #' library(dplyr)
 #' iris %>% make_newdata()
 #' iris %>% make_newdata(Sepal.Length=5)
@@ -131,6 +132,7 @@ combine_df <- function(...) {
 #' iris %>% group_by(Species) %>% 
 #'   make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", length.out=5) %>% 
 #'   print(n=30)
+#' }
 #' @export
 make_newdata <- function(
   ped, 
@@ -145,11 +147,12 @@ make_newdata <- function(
 
   si      <- sample_info(ped) %>% ungroup()
   dots_df <- cross_df(list(...))
+  assert_subset(names(dots_df), orig_names)
   # return(dots_df)
   if (!is.null(expand)) {
     if (!all(expand %in% names(ped))) {
-      stop("All arguments provided in 'expand' must be named and have names equal 
-        to column names of ped object")
+      stop("All arguments provided in 'expand' must be quoted variable names 
+      that are  equal to column names of ped object")
     } else {
       expanded_df <- ped %>% 
         ungroup() %>% # ungroup here to obtain sequence from min to max for all data
