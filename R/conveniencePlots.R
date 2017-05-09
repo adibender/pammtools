@@ -87,7 +87,7 @@ gg_re <- function(x, ...) {
 
 	re <- tidy_re(x, ...)
 	ggplot(re, aes(sample=fit)) + 
-		geom_abline(aes(intercept=qqintercept, slope=qqslope)) + 
+		geom_abline(aes_string(intercept="qqintercept", slope="qqslope")) + 
 		geom_qq(distribution="qnorm") + 
 		facet_wrap(~main) + 
 		theme_set(theme_bw())

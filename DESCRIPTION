@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.636
+Version: 0.0.638
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
