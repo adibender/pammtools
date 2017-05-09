@@ -20,8 +20,7 @@ depicting 2d smooth terms specified in the model as heat/contour plots. If
 more than one 2d smooth term is present individual terms are faceted.
 }
 \examples{
-library(mgcv)
-g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
+g <- mgcv::gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 gg_tensor(g)
 gg_tensor(g, ci=TRUE)
 gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))

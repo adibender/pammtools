@@ -196,22 +196,38 @@ fit2 <- coxph(Surv(tstart, tstop, death==2) ~ log(bili) + log(protime), pbc2)
 rbind("baseline fit" = coef(fit1), "time dependent" = coef(fit2))
 ```
 
+<<<<<<< HEAD
 This demonstrates that results can differ substantially if only the 
 baseline values of TDCs are used for the analysis instead of their complete trajectories over time. 
 
 
 ### PAM analysis of the `pbc` data
 
+=======
+This demonstrates, that results can differ substantially, when only the 
+baseline values of TDCs are used in anlysis. 
+
+
+### PAM analysis of the `pbc` data
+>>>>>>> devel
 First we need to transform the data to PED format. In order to do so we 
 perform some minor preprocessing: 
 
 ```{r}
+<<<<<<< HEAD
 ## data set that only contains baseline (t=0) information
+=======
+# data set that only contains baseline (t=0) information
+>>>>>>> devel
 event_df <- pbc %>% 
   filter(id <=312) %>% 
   mutate(event = 1*(status==2)) %>% 
   select(id, time, event, trt, age, sex, bili, protime)
+<<<<<<< HEAD
 ## we rename the "day" variable here for use of `split_tdc` function later
+=======
+# we rename the "day" variable here for use of `split_tdc` function later
+>>>>>>> devel
 tdc_df <- pbcseq %>% 
   select(id, day, bili, protime) %>% 
   rename(time = day)
@@ -224,6 +240,7 @@ Now we can use the `?split_tdc` variable, that need both data sets,
 
 The `split_tdc` function performs the following tasks: 
 
+<<<<<<< HEAD
   - extract unique event times as well as all measurement times of the TDCs
   - split the follow-up into intervals according to these times (essentially calling 
   `split_data` with above cut-points on `event_df` after removing all TDCs)
@@ -231,6 +248,15 @@ The `split_tdc` function performs the following tasks:
   on TDCs by ID and time
   - fill in the values of TDCs for any time-points that did not occur in `tdc_df` by 
   carrying the respective previous value of the TDC forward. 
+=======
+  - extract unique event times and measurement times of the TDCs
+  - split the follow-up according to these times (essentially calling 
+  `split_data` with above cut-points on `event_df` after removing TDCs)
+  - merge the expanded data set with the data set containing information 
+  on TDCs by ID and time
+  - fill the values of TDCs for time-points that did not occur in `tdc_df` by 
+  carriing last value forward. 
+>>>>>>> devel
 
 ```{r}
 pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "id", "time", "status")

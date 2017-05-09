@@ -37,8 +37,7 @@ gg_smooth <- function(data, fit, ...) {
 #' @importFrom dplyr mutate
 #' @importFrom magrittr "%<>%"
 #' @examples
-#' library(mgcv)
-#' g <- gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
+#' g <- mgcv::gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 #' gg_tensor(g)
 #' gg_tensor(g, ci=TRUE)
 #' gg_tensor(update(g, .~. + te(Petal.Width, Petal.Length)))
@@ -70,3 +69,27 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 
 }
 
+
+#' Plot Normal QQ plots for random effects
+#' 
+#' @inherit tidy_re
+#' @import ggplot2
+#' @examples
+#' data("lung", package="survival")
+#' lung$inst <- as.factor(lung$inst) # for mgcv
+#' ped <- split_data(Surv(time, status)~ph.ecog + inst, data=lung, id="id")
+#' pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"), 
+#' 	data=ped, family=poisson(), offset=offset)
+#' gg_re(pam)
+#' @seealso \code{\link{tidy_re}}
+#' @export
+gg_re <- function(x, ...) {
+
+	re <- tidy_re(x, ...)
+	ggplot(re, aes(sample=fit)) + 
+		geom_abline(aes_string(intercept="qqintercept", slope="qqslope")) + 
+		geom_qq(distribution="qnorm") + 
+		facet_wrap(~main) + 
+		theme_set(theme_bw())
+
+}
