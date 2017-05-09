@@ -274,6 +274,7 @@ gg_bili <- ggplot(bili_df, aes(x=bili, y=fit)) +
 protime_df <- combine_df(
     data.frame(protime = seq_range(tdc_df$protime)),
     sample_info(ungroup(pbc_ped))) %>% 
+    add_term(pbc_pam, term="protime", relative=TRUE)
 protime_df$cox <- predict(fit2, protime_df, type="term")[, "log(protime)"]
 gg_protime <- ggplot(protime_df, aes(x=protime, y=fit)) + 
     geom_line() + 
