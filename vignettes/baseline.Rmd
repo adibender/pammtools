@@ -56,7 +56,7 @@ ggplot(base.df, aes(x = time, y = hazard)) +
 
 ## Data transformation 
 First we need to bring the data in a suitable format 
- (see `vignette("data-transformation", package = "pam")`).
+ (see [`vignette("data-transformation", package = "pam")`](data-transformation.html)).
 
 ```{r}
 # Use unique event times as interval break points

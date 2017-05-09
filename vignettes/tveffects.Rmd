@@ -35,7 +35,7 @@ time-constant **continuous** covariates. Note that time-varying effects of time-
 **categorical** variables are analogous to stratified proportional 
 hazards models, where observations from different levels of the categorical 
 variable have different baseline hazards. That setting is described in
-`vignette("strata", package="pam")`.
+[`vignette("strata", package="pam")`](strata.html).
 
 ## Possible specifications of time-variation
 
@@ -52,7 +52,7 @@ b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g
 where $g(t)$ is a known or pre-specified transformation of time
 
 c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation is 
-non-linear and estimated from the data. If $x$ is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category, see `vignette("strata", package="pam")`.
+non-linear and estimated from the data. If $x$ is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category, see [`vignette("strata", package="pam")`](strata.html).
 
 d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
