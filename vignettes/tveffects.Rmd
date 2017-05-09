@@ -31,38 +31,38 @@ library(mgcv)
 ```
 
 In this vignette we show examples of how to fit time-varying effects of 
-time-constant continuous covariates. Time-varying effects of time-constant 
-categorical variables can be viewed in the context of stratified proportional 
-hazards models, where all observations from one group of the categorical 
-variable have an individual baseline hazard. This case is detailed in
-`vignette("strata", pacakge="pam")`.
+time-constant **continuous** covariates. Note that time-varying effects of time-constant 
+**categorical** variables are analogous to stratified proportional 
+hazards models, where observations from different levels of the categorical 
+variable have different baseline hazards. That setting is described in
+`vignette("strata", package="pam")`.
 
 ## Possible specifications of time-variation
 
-In the following we denote the time-constant covariate with $x$ and time with $t$. 
-Essentially, a time-varying effect of $x$ then can be specified as an interaction 
-term between $x$ and $t$, where different levels of complexity for this interaction 
+In the following we denote the continuous time-constant covariate with $x$ and time with $t$. 
+A time-varying effect of $x$ can then be specified as an interaction 
+term between $x$ and $t$, where different levels of complexity and flexibility for this interaction 
 are possible:
 
 a) $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
-time-variation of $g(t)$, where $g()$ is a known or pre-specified transformation of 
+time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified transformation of 
 time $t$, e.g. the $\log$-function.
 
 b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
 where $g(t)$ is a known or pre-specified transformation of time
 
-c) $f_t(t)\cdot x$: A Varying coefficient model of $x$, where time-variation is 
-non-linear (if $x$ is a dummy coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category)
+c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation is 
+non-linear and estimated from the data. If $x$ is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category, see `vignette("strata", package="pam")`.
 
 d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
 ## Veteran Data example
 
-For illustration (and comparison) we use the `veteran` data presented in the 
+For illustration and comparison we use the `veteran` data presented in the 
 vignette of the `survival` package (`vignette("timedep", package = "survival")`). 
-Besides information on survival, the data set contains information on the 
-Karnofsky performance score `karno` (the higher the better), `age` and whether
- `prior` therapy occurred:
+Besides information on survival, the data set contains the 
+Karnofsky performance scores `karno` (the higher the better), `age` and whether
+ `prior` therapy occurred, along with some additional covariates, see `help("veteran", package = "survival")` for details:
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
@@ -125,6 +125,7 @@ plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1) 
 lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), col = 2)
 ```
+Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
 
 ### PAM (penalized estimation of time-variation function)
 
@@ -151,7 +152,7 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     xlab("t") + ylab("Beta(t) for karno")
 ```
 
-The semi-parametric PAM model estimate flattens out after ca. 150 days.
+The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky scores on the hazard) afterwards.
 
 
 ### PAM with smooth, smoothly time-varying effect of the Karnosky Score
@@ -163,13 +164,13 @@ interval, e.g. interval end-points) using tensor product terms.
 
 In `mgcv::gam` such two-dimensional effects can be directly used 
 either via `te` or `ti` terms in the model specification. The later is 
-especially useful, when we want to disentangle the marginal and interaction 
-effects of the respective covariates. 
+especially useful for disentangling the marginal (time-constant) and interaction 
+(time-varying) effects of the respective covariate. 
 
 Below we first fit a model using the `te` specification. Note that we did not 
 include a `s(tend)` term here, as the time-variable `tend` is already present
-in the `te` term, thus we could still obtain a "baseline hazard" by setting 
-all other covariates to 0. 
+in the `te` term, thus the effect `te(tend, karno)` also includes the *shape* of the baseline hazard
+as well. The *level* of the baseline log hazard is given by the intercept of the model.
 
 ```{r}
 ## Non-linear, non-linearly time-varying effects
@@ -215,15 +216,15 @@ to high values of $x_{\text{karno}}$.
 one would obtain fitting a time-constant, non-linear effect of 
 $f(x_{\text{karno}})$. ABER DAS IST ZUFALL HIER; DAS MUSS JA NICHT SO SEIN...  -->
 
-Holding the Karnofsky Score constant, we can see how its effect
-changes over time for different values of $x_{\text{karno}}$ (middle panel). 
-For higher values $x_{\text{karno}} >60$ the effect is negative (decreased log-hazard)
+Holding the Karnofsky Score constant, we can see how the log hazard
+changes over time for different given values of $x_{\text{karno}}$ (middle panel). 
+For higher values $x_{\text{karno}} >60$ the log-hazard is smaller
 at the beginning and increases over the course of the follow-up 
 (orange and blue lines middle panel). This 
-again is consistent with the time-varying effect of the Karnofsky-Score 
+is consistent with the time-varying effect of the Karnofsky-Score 
 estimated in the previous section. However, the bivariate function indicates
-that for lower $x_{\text{karno}}$ values the effect may have a parabolic shape, 
-decreasing log-hazard at the beginning and increasing again for later 
+that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values, 
+decreasing at the beginning and increasing again for later 
 time-points (green line middle panel). 
 
 <details>
@@ -275,9 +276,11 @@ grid.arrange(te_plot, karno_plot, time_plot, nrow=1)
 ```
 
 The following figure shows the estimated effect (middle panel) along with a pointwise upper (right) and lower (left) CI. Note that we have to be somewhat cautious with interpretation, considering the large uncertainty of the effect estimate, especially for lower Karnofsky-Scores
-and later time-points: 
+and later time-points. Also note that the estimate does not include the estimated average 
+time-constant log-hazard (`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`) and its uncertainty: 
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
-gg_tensor(pam3, ci=TRUE)
+gg_tensor(pam3, ci=TRUE) + 
+  xlab("t") + ylab(expression(x[plain(karno)]))
 ```
 
