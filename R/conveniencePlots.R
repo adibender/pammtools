@@ -93,3 +93,28 @@ gg_re <- function(x, ...) {
 		theme_set(theme_bw())
 
 }
+
+
+#' Forrest plot of fixed coefficients 
+#' 
+#' @inherit tidy_fixed
+#' @import ggplot2
+#' @seealso \code{\link{tidy_fixed}}
+#' @examples
+#' g <- mgcv::gam(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species, 
+#' 	data=iris)
+#' gg_fixed(g, intercept=TRUE)
+#' gg_fixed(g)
+#' @export
+gg_fixed <- function(x, intercept=FALSE, ...) {
+
+	fixed_df <- tidy_fixed(x, intercept=intercept, ...)
+
+	ggplot(fixed_df, aes_string(x="variable", y="coef", ymin="lower", ymax="upper")) + 
+		geom_hline(yintercept = 0, lty=3) + 
+		geom_pointrange() +
+		coord_flip() +   
+		ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
+		xlab("")
+
+}
