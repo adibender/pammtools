@@ -28,32 +28,34 @@ library(pam)
 library(mgcv)
 ```
 
-In some cases, when subjects observed from one cluster or group are assumed 
-to have correlated outcomes, we can account for such correlation structure 
-by including random effects in our model. In the context of survival analysis 
-such effects are called "frailty" terms. 
+Whenever subjects belonging to a cluster or group could have correlated outcomes,
+our models must account for such dependency structures. 
+We can do so by including random effects in the model. 
+In the context of survival analysis such effects are called "frailty" terms. 
 
 ## NCCTG Lung Cancer Data
-For illustration we consider the NCTG Lung Cancer Data [@Loprinzi1994] that 
-is contained in the `survival` package [@Thernau2015] and description 
-of the data is provided in `?lung`
 
-In essense we have survival times (in days) of advanced lung cancer patients 
-from different Insitutes: 
+For illustration we consider the NCTG Lung Cancer Data [@Loprinzi1994] that 
+is contained in the `survival` package [@Thernau2015]. A description
+of the data is provided in `?lung`.
+
+The data contain survival times (in days) of advanced lung cancer patients 
+from different institutions: 
 
 ```{r}
 lung %<>% mutate(inst = as.factor(inst))
 head(lung)
 
-## 228 patients from 18 institutes
+## 228 patients from 18 institutions
 nrow(lung)
 lung %>% group_by(inst) %>% summarize(n=n())
 ```
 
 
 ## Cox model with gaussian frailty 
+
 The penalized Cox model with frailty terms has been described in @Thernau2003
-and implemented in the `coxme` package for gaussian frailties. 
+and implemented in the `coxme` package for Gaussian frailties. 
 Below we apply the `coxme` function to the `lung` data:
 
 ```{r}
@@ -63,14 +65,13 @@ summary(cme$frail$inst)
 ```
 
 - The effect of `ph.ecog` was estimated to be about `0.5` on the log-hazard scale. 
-- The random intercepts of the different institution are relatively close to zero
-and have small variance. 
+- The estimated random intercepts ("frailties"") for the different institution are all relatively close to zero and have small standard deviation: `sd(cme$frail$inst)=``r round(sd(cme$frail$inst), 3)`,
 
 ## PAM with gaussian frailty
 
 For an equivalent model using PAMs we first transform the data set and 
 then call `mgcv:::gam` for the fit. To include a gaussian random effect 
-we set the `bs` argument in the `s()` term to `bs='re'` (see description 
+we set the `bs` argument in the respective penalized `s()` term to `bs='re'` (see description 
 in `?smooth.terms`): 
 
 ```{r}
@@ -79,7 +80,7 @@ pam <- gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 	data=ped, family=poisson(), offset=offset)
 ```
 
-Comparison of the estimates of the two models shows that they are in good 
+Comparison of the estimates of the two models shows that they are in close 
 agreement (we use `tidy_re` from the `pam` package to extract random effects):
 
 ```{r}
@@ -89,7 +90,7 @@ plot(cme$frail$inst, re$fit, las=1, xlab="Frailty (cox)", ylab="Frailty (PAM)")
 abline(0, 1)
 ```
 
-The `pam` package also provides a convenience function to plot the random effects: 
+The `pam` package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption: 
 
 ```{r}
 gg_re(pam)
