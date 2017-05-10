@@ -112,7 +112,7 @@ combine_df <- function(...) {
 #' @inheritParams seq_range
 #' @param ... Further specifications of variables that should be set 
 #' to a specific value. 
-#' @param expand A charachter vector of column names in \code{ped}.
+#' @param expand A character vector of column names in \code{ped}.
 #' @import dplyr 
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df
@@ -120,7 +120,7 @@ combine_df <- function(...) {
 #' Extracts information from \code{ped}, using \code{\link{sample_info}}. 
 #' If variables are specified with specific values in \code{...}, the values
 #' in from \code{sample_info} will be overwritten. If variables provided 
-#' in expand, these will be exanded from \code{min} to \code{max} using 
+#' in expand, these will be expanded from \code{min} to \code{max} using 
 #' in \code{length.out} equidistant steps.
 #' @examples
 #' \dontrun{

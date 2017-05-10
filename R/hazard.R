@@ -2,9 +2,9 @@
 #' 
 #' @inheritParams mgcv::predict.gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
-#' @param ci Logical indicating whether to inlcude confidence intervals. Defaults
+#' @param ci Logical indicating whether to iclude confidence intervals. Defaults
 #' to \code{TRUE}
-#' @param se.mult Factor by which standard errors are multiplied for calulating 
+#' @param se.mult Factor by which standard errors are multiplied for calculating 
 #' the confidence intervals.
 #' @param overwrite Should hazard columns be overwritten if already present in 
 #' the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names 

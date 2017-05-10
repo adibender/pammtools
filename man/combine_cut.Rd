@@ -10,7 +10,7 @@ combine_cut(event_df, tdc_df, time_var, status_var, cens_value = 0)
 \item{event_df}{A data frame (potentially) containing time-dependent covariates.}
 
 \item{tdc_df}{A data frame containing information on time-dependent variables
-in long format. Needs to contain a "time" variable idicating when the 
+in long format. Needs to contain a "time" variable indicating when the 
 TDCs change their value. Must have same name as variable indicating event 
 times in \code{event_df}.}
 

@@ -8,7 +8,7 @@
 \description{
 pam provides functions and utilities that facilitate fitting 
 Piece-wise Exponential (Additive) Models (PAMs), including data transformation and 
-other convenience functions for pre- and postprocessing as well as plotting.
+other convenience functions for pre- and post-processing as well as plotting.
 }
 \details{
 The best way to get an overview of the functionality provided and how to 

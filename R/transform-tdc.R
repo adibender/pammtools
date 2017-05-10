@@ -29,7 +29,7 @@ get_tdc <- function(event_df, id_var) {
 #' 
 #' @inheritParams get_tdc
 #' @param tdc_df A data frame containing information on time-dependent variables
-#' in long format. Needs to contain a "time" variable idicating when the 
+#' in long format. Needs to contain a "time" variable indicating when the 
 #' TDCs change their value. Must have same name as variable indicating event 
 #' times in \code{event_df}.
 #' @param time_var A character, specifies the column of the event or 
