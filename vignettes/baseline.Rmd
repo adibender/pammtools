@@ -38,7 +38,7 @@ set.seed(300117)
 tdf <- data.frame(time = rweibull(100, 1.5, 2)) %>% 
   mutate(
     time  = round(time, 3),
-    status = time > rweibull(100, 1.5, 2))
+    status = 1*(time > rweibull(100, 1.5, 2)))
 head(tdf)
 ```
 
@@ -46,8 +46,8 @@ The below graph depicts the estimated cumulative hazard using the
 Nelson-Aalen estimator:.
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
-base.df <- basehaz(coxph(Surv(time, status)~1, data = tdf))
-ggplot(base.df, aes(x = time, y = hazard)) + 
+base_df <- basehaz(coxph(Surv(time, status)~1, data = tdf))
+ggplot(base_df, aes(x = time, y = hazard)) + 
   geom_step() + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle("Nelson-Aalen estimate of the cumulative hazard")
@@ -72,29 +72,28 @@ pem <- gam(ped_status ~ interval, data = ped, offset = offset, family = poisson(
 Extract cumulative baseline estimate:
 
 ```{r}
-int.df <- int_info(ped)
-head(int.df)
-int.df %<>% add_cumhazard(pem) %>% 
-  left_join(base.df, by = c("tend" = "time"))
-head(int.df)
+int_df <- int_info(ped)
+head(int_df)
+int_df %<>% add_cumhazard(pem) %>% 
+  left_join(base_df, by = c("tend" = "time"))
+head(int_df)
 ```
 
 Visualize the PEM estimate:
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
-ggplot(int.df, aes(x = tend)) + 
+ggplot(int_df, aes(x = tend)) + 
   geom_line(aes(y = cumhazard, col = "PEM")) + 
   geom_step(aes(y = hazard, col = "Nelson-Aalen"), lty = 2) + 
   scale_color_brewer(name = "Method", palette = "Set1") + 
   theme(legend.position = "bottom") + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
-all.equal(int.df$cumhazard, int.df$hazard)
+all.equal(int_df$cumhazard, int_df$hazard)
 ```
 <!-- cumulative hazard of PEM/PAM is NOT step function, it's piecewise linear!!! -->
 
 ### Fit the baseline using Piece-wise exponential additive model (PAM)
-
 
 Alternatively, we could use PAMs. This means estimating the baseline log-hazard 
 rate semi-parametrically as a smooth, non-linear function evaluated at the 
@@ -102,7 +101,7 @@ end-points `tend` of the intervals defined for our model.
 
 Note that the estimated log-hazard value at time-points `tend` gives the value 
 of the log-hazard rate for the **entire previous interval** as PAMs use hazard 
-rates that are **constant** in each interval -- that's where the *piec-ewise* in 
+rates that are **constant** in each interval - that's where the *piece-wise* in 
 the name of the method comes from. 
 
 Estimating the log hazard rate as a smooth function evaluated at `tend` - 
@@ -110,26 +109,44 @@ instead of using an unpenalized estimator without such a smoothness assumption -
 ensures that the hazard rate does not change too rapidly from interval to 
 interval unless there is very strong evidence for such changes in the data.
 
-### Graphical comparison 
-
-```{r, fig.width = 4.5, fig.height = 4.5}
+```{r}
 pam <- gam(ped_status ~ s(tend), data = ped, offset = offset, family = poisson())
 summary(pam)
-int.df$pamhaz <- predict(pam, newdata = int.df, type = "response")
-int.df %<>% mutate(pamch = cumsum(pamhaz * intlen))
+```
+
+### Graphical comparison 
+
+In the figure below we compare the previous baseline estimates with the estimates
+from a correctly specified model (Weibull-AFT). All models are in good 
+agreement.
+
+<details>
+  <summary>Expand here for R-Code</summary>
+
+```{r}
+int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
+int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
 # Weibull AFT for comparison (true/correctly specified model)
 aft <- survreg(Surv(time, status)~1, data=tdf, dist="weibull")
-int.df$aft <- exp(-1.133)^(1/0.416) * int.df$tend^(1/0.416)
+int_df$aft <- exp(-coef(aft))^(1/aft$scale) * int_df$tend^(1/aft$scale)
 
-ggplot(int.df, aes(x = tend)) + 
-  geom_line(aes(y = cumhazard, col = "PEM"), lty = 3) + 
-  geom_step(aes(y = hazard, col = "Nelson-Aalen"), lty = 2) + 
-  geom_line(aes(y = pamch, col = "PAM")) +
-  geom_line(aes(y = aft, col = "AFT")) + 
-  scale_color_brewer(name = "Method", palette = "Set1", 
-    breaks = c("Nelson-Aalen", "PEM", "PAM", "AFT")) + 
+gg_baseline <- ggplot(int_df, aes(x = tend)) + 
+  geom_line(aes(y = cumhazard, col = "PEM"),          lty = 3) +
+  geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
+  geom_line(aes(y = pamch,     col = "PAM")) +
+  geom_line(aes(y = aft,       col = "AFT")) +
+  scale_color_brewer(
+    name    = "Method",
+    palette = "Set1",
+    breaks  = c("Nelson-Aalen", "PEM", "PAM", "AFT")) +
   theme(legend.position = "bottom") + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle(paste0("Comparison of cumulative hazards using\n", 
     "Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"))
+```
+
+</details>
+
+```{r, fig.width = 4.5, fig.height = 4.5}
+gg_baseline
 ```
