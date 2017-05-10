@@ -98,6 +98,7 @@ The figure below summarizes the comparison between the two models.
 
 <details> 
 	<summary>Expand here for R-Code</summary>
+
 ```{r}
 all_eff <- purrr::map_df(
   list(
@@ -253,6 +254,7 @@ effect of `bili`. A graphical comparison yields similar results:
 
 <details>
   <summary>Expand here for R-Code</summary>
+  
 ```{r, fig.show="none"}
 ## Effect of bilirubin
 # note that we use relative = TRUE in the call to add_term, which calculates 

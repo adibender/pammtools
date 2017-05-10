@@ -225,6 +225,7 @@ time-points (green line middle panel).
 
 <details>
   <summary>Expand here for detailed R-Code</summary>
+  
 ```{r}
 te_plot <- gg_tensor(pam3) +
   geom_vline(xintercept=c(0, 50, 200, 300), lty=3) +
@@ -265,6 +266,7 @@ time_plot <- ggplot(df.time, aes(x=karno, y=fte)) +
   xlab(expression(x[plain(karno)])) +
   theme(legend.position="bottom")
 ```
+
 </details>
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}

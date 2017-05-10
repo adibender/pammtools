@@ -190,6 +190,7 @@ tidy_smooth2d <- function(
 #' @importFrom dplyr bind_rows
 #' @importFrom stats ppoints qnorm quantile
 #' @rdname tidy_smooth
+#' @seealso \code{\link[stats]{qqline}}
 #' @export 
 tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 
@@ -203,6 +204,7 @@ tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 	po <- lapply(po, function(z) {
 		re.df = do.call(cbind.data.frame, c(z, stringsAsFactors=FALSE))
 		re.df$x = qnorm(ppoints(length(re.df$fit))[order(order(re.df$fit))])
+		# code to calculate qqslope and qqintercept from ?stats::qqline
 		yl <- quantile(re.df$fit, probs=c(0.1, 0.9), type=7, names=FALSE)
 		xl <- qnorm(c(0.1, 0.9))
 		re.df$qqslope <- diff(yl)/diff(xl)
