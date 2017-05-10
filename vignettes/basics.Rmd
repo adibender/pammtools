@@ -33,7 +33,8 @@ additive models (PAM).
 
 ## Piece-wise exponential model (PEM)
 The strength of the PEM is that analysis of time-to-event data can be performed 
-using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if 
+using algorithms designed to fit Generalized Linear Models. This approach yields 
+equivalent coefficient estimates as Cox Proportional Hazards models if 
 
 (1) there are no ties (i.e., simultaneous events) in the data and 
 
@@ -48,7 +49,7 @@ In practice these differences are not very large (see examples below).
 
 ### Subset with unique event times 
 
-We first demonstrate the equivalence using a subset Freireichs Leukemia 
+We first demonstrate the equivalence using a subset of Freireichs Leukemia 
 data [@freireich1963] provided in the `bpcp` package:
 
 ```{r}
