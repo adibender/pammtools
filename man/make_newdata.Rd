@@ -4,24 +4,19 @@
 \alias{make_newdata}
 \title{Construct a data frame suitable for prediction}
 \usage{
-make_newdata(ped, ..., expand = NULL, length.out = 25L)
+make_newdata(x, ...)
 }
 \arguments{
-\item{ped}{An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.}
+\item{x}{A data frame (or object that inherits from \code{data.frame}).}
 
 \item{...}{Further specifications of variables that should be set 
 to a specific value.}
 
 \item{expand}{A character vector of column names in \code{ped}.}
-
-\item{length.out}{desired length of the sequence.  A
-    non-negative number, which for \code{seq} and \code{seq.int} will be
-    rounded up if fractional.}
 }
 \description{
-Given a data set of class \code{ped}, returns a data frame that can be used 
-as \code{newdata} argument in a call to \code{predict} and similar functions. 
-When \code{expand==NULL} falls back to \code{\link{ped_info}}.
+Given a data set, returns a data frame type object that can be used 
+as \code{newdata} argument in a call to \code{predict} and similar functions.
 }
 \details{
 Details 

@@ -23,7 +23,7 @@ sample_info.data.frame <- function(x, ...) {
   assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
   cn <- colnames(x)
-  num <- summarize_if(x, .predicate=is.numeric, funs(median(., na.rm=TRUE)))
+  num <- summarize_if(x, .predicate=is.numeric, funs(mean(., na.rm=TRUE)))
   fac <- summarize_if(x, .predicate=compose("!", is.numeric), modus)
 
   nnames <- intersect(names(num), names(fac))
@@ -104,11 +104,10 @@ combine_df <- function(...) {
 
 #' Construct a data frame suitable for prediction
 #' 
-#' Given a data set of class \code{ped}, returns a data frame that can be used 
-#' as \code{newdata} argument in a call to \code{predict} and similar functions. 
-#' When \code{expand==NULL} falls back to \code{\link{ped_info}}.
+#' Given a data set, returns a data frame type object that can be used 
+#' as \code{newdata} argument in a call to \code{predict} and similar functions.
 #' 
-#' @inheritParams ped_info
+#' @inheritParams sample_info
 #' @inheritParams seq_range
 #' @param ... Further specifications of variables that should be set 
 #' to a specific value. 
@@ -134,27 +133,34 @@ combine_df <- function(...) {
 #'   print(n=30)
 #' }
 #' @export
-make_newdata <- function(
-  ped, 
+make_newdata <- function(x, ...) {
+  UseMethod("make_newdata", x)
+}
+
+
+#' @inheritParams make_newdata
+#' @importFrom magrittr "%<>%"
+make_newdata.default <- function(
+  x, 
   ..., 
   expand     = NULL,
-  length.out = 25L) {
+  length.out = 50L) {
 
-  assert_data_frame(ped, all.missing = FALSE, min.rows = 2, min.cols = 1)
+  assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
   assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
 
-  orig_names <- names(ped)
+  orig_names <- names(x)
 
-  si      <- sample_info(ped) %>% ungroup()
+  si      <- sample_info(x) %>% ungroup()
   dots_df <- cross_df(list(...))
   assert_subset(names(dots_df), orig_names)
   # return(dots_df)
   if (!is.null(expand)) {
-    if (!all(expand %in% names(ped))) {
+    if (!all(expand %in% names(x))) {
       stop("All arguments provided in 'expand' must be quoted variable names 
-      that are  equal to column names of ped object")
+      that are  equal to column names of x object")
     } else {
-      expanded_df <- ped %>% 
+      expanded_df <- x %>% 
         ungroup() %>% # ungroup here to obtain sequence from min to max for all data
         select(one_of(expand)) %>% as.list() %>% 
         map(seq_range, length.out=length.out) %>% 
@@ -169,5 +175,25 @@ make_newdata <- function(
 
   combine_df(si, dots_df, expanded_df) %>% 
     select(one_of(orig_names))
+
+}
+
+#' @inheritParams make_newdata
+#' @importFrom magrittr "%<>%"
+#' @export
+make_newdata.ped <- function(
+  x, 
+  ..., 
+  expand     = NULL,
+  length.out = 50L) {
+
+  assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
+  assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
+
+  g_vars <- group_vars(x)
+  x %<>% ungroup() %>% group_by(id) %>% slice(1) %>% ungroup(id) %>% unped() %>%
+    group_by_(.dots=g_vars)
+
+  make_newdata(x, ..., expand=expand, length.out=length.out)
 
 }
