@@ -45,10 +45,10 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{ci}{Logical indicating whether to inlcude confidence intervals. Defaults
+\item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
-\item{se.mult}{Factor by which standard errors are multiplied for calulating 
+\item{se.mult}{Factor by which standard errors are multiplied for calculating 
 the confidence intervals.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in 

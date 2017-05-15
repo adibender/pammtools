@@ -24,3 +24,6 @@ Extract 1d smooth objects in tidy data format.
 
 Extract random effects objects in tidy data format.
 }
+\seealso{
+\code{\link[stats]{qqline}}
+}

@@ -21,6 +21,13 @@ opts_chunk$set(
 )
 ```
 
+```{r, message=FALSE}
+library(magrittr)
+library(dplyr)
+library(mgcv)
+library(pam)
+```
+
 
 # Convenience functions
 
@@ -50,10 +57,6 @@ in the following.
 ## Summary/visualization of fixed effects 
 
 ```{r model, cache =TRUE}
-library(pam)
-library(mgcv)
-library(magrittr)
-library(dplyr)
 data("mgus2", package = "survival")
 ped <- split_data(Surv(futime, death)~age + hgb + sex, data = mgus2, id = "id")
 pam <- gam(ped_status ~ s(tend) + sex + age + s(hgb), data = ped, 
@@ -63,8 +66,17 @@ pam <- gam(ped_status ~ s(tend) + sex + age + s(hgb), data = ped,
 The easiest way to obtain an overview of the estimated coefficients for fixed effects 
 is to simply call `summary` on the fitted model object:
 
-```{r options}
+```{r, dependson="model"}
 summary(pam)
+```
+
+However, we also provide a convenience function that extracts a fixed coefficient
+table from `mgcv::gam` objects (including confidence intervals) and 
+a convenience function that creates a forrest-type plot: 
+
+```{r}
+tidy_fixed(pam) # per default intercept is ommitted
+gg_fixed(pam)
 ```
 
 We can see that the estimated mortality risk for male subjects is increased by a factor of 

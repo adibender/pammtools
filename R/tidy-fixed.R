@@ -30,25 +30,29 @@ calc_ci <- function(ftab) {
 #' @param x A model object.
 #' @param ... Currently not used.
 #' @export 
-extract_fixed <- function(x, ...) {
-	UseMethod("extract_fixed", x)
+tidy_fixed <- function(x, ...) {
+	UseMethod("tidy_fixed", x)
 }
 
-#' @inheritParams extract_fixed
-#' @rdname extract_fixed
+#' @inheritParams tidy_fixed
+#' @param intercept Should intercept also be returned?
+#' @rdname tidy_fixed
 #' @export 
-extract_fixed.gam <- function(x, ...) {
+tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
   ftab <- summary(x)[["p.table"]][, 1:2]
+  if(!intercept) {
+  	ftab <- ftab[!grepl("Intercept", rownames(ftab)), ]
+  }
   calc_ci(ftab)
 
 }
 
-#' @inheritParams extract_fixed
+#' @inheritParams tidy_fixed
 #' @importFrom tibble as_tibble
-#' @rdname extract_fixed
+#' @rdname tidy_fixed
 #' @export
-extract_fixed.coxph <- function(x, ...) {
+tidy_fixed.coxph <- function(x, ...) {
 
   ftab <- summary(x)[["coefficients"]][, c(1, 3)]
   calc_ci(ftab)

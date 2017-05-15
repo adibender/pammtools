@@ -1,17 +1,19 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.602
+Version: 0.0.741
+Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
 Description: This package provides functions that facilitate fitting 
-    piece-wise eponential (additive) models. 
+    piece-wise exponential (additive) models. 
     This includes restructuring the data to the needed format. 
 Depends:
     R (>= 3.1.2)
 Imports:
     mgcv,
     survival (>= 2.39-5),
+    coxme,
     checkmate,
     magrittr,
     tidyr,
@@ -22,10 +24,10 @@ Imports:
 License: GPL-2
 LazyData: true
 Suggests:
+    RColorBrewer,
     scam,
     testthat,
     bpcp,
-    KMsurv,
     knitr,
     rmarkdown,
     JM, 

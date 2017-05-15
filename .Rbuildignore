@@ -5,3 +5,4 @@
 ^\.travis\.yml$
 ^sandbox$
 ^appveyor\.yml$
+^.*\.dropbox\.attr$

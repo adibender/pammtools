@@ -20,21 +20,87 @@ opts_chunk$set(
   fig.width  = 5)
 ```
 
-## Example: MGUS data 
 
-In this vignette we show the usage of spline smooth terms using example data 
-presented in the respective vignette in the `survival` package 
-(see `vignette("splines", package = "survival")`)
+```{r}
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+theme_set(theme_bw())
+library(pam)
+library(mgcv)
+library(survival)
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
+```
+
+## Veteran's data 
+
+We first illustrate the estimation on non-linear smooth effects using 
+the `veteran` data from the survival package: 
+
+```{r}
+data("veteran", package="survival")
+veteran %<>% filter(time < 400) %>% mutate(prior = 1*(prior==10))
+head(veteran)
+```
+
+There are two continuous covariates in the data set that could potentially 
+exhibit non-linear effects, `age` and `karno`. We fit a Cox-PH model and 
+a PAM of the form 
+
+$$
+\lambda(t|x) = \lambda_0(t)\exp(f(age)) 
+$$
+and 
+$$
+\lambda(t|x) = \exp(f_0(t_j) + f(age))
+$$
+respectively: 
+
+```{r}
+## Cox-PH 
+cph <- coxph(Surv(time, status) ~ pspline(karno, df=0), data=veteran)
+## PAM 
+ped <- split_data(Surv(time, status) ~ ., data=veteran, id="id")
+pam <- gam(ped_status ~ s(tend) + s(karno, bs="ps"), data=ped, family=poisson(), 
+  offset=offset)
+```
+
+
+```{r}
+# crate data set with varying karno values (from min to max in 100 steps) 
+# and add term contribution of karno from PAM and Cox-PH models
+age_df <- ped %>% make_newdata(expand = "karno", length.out = 100) %>% 
+  add_term(pam, term="karno") %>% 
+  mutate(cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] -
+           predict(cph, newdata=data.frame(karno=mean(veteran$karno))))
+ggplot(age_df, aes(x=karno, ymin=low, ymax=high)) + 
+  geom_line(aes(y=fit, col="PAM")) + 
+  geom_ribbon(alpha=0.2) + 
+  geom_line(aes(y=cox, col="Cox PH"), lty=2)+
+  scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1))
+```
+
+Both methods are in good agreement. The higher the Karnofsky-Score the lower the
+expected log-hazard. For further evaluation of the Karnofsky Score effect using
+time-varying terms of the form $f(t)\cdot x_{karno}$ and $f(x_karno, t)$ see 
+`vignette("tveffects", package="pam")`. 
+
+
+## MGUS data: age example
+
+In the following we consider another example using  using data presented in the 
+respective vignette in the `survival` package 
+(see `vignette("splines", package = "survival")`).
+
+
+### Cox PH workflow
 
 The example presented in the vignette goes as follows, using the standard 
 base R workflow and `termplot` for visualization: 
 
 ```{r}
-library(pam)
-library(mgcv)
-library(survival)
 data("mgus", package = "survival")
-mfit <- coxph(Surv(futime, death)~sex + pspline(age, df = 4), data = mgus)
+mfit <- coxph(Surv(futime, death) ~ sex + pspline(age, df = 4), data = mgus)
 mfit
 ```
 
@@ -42,6 +108,8 @@ mfit
 termplot(mfit, term = 2, se = TRUE, col.term = 1, col.se = 1)
 ```
 
+
+### PAM workflow
 The equivalent fit using PAMs requires the additional step of transforming the 
 data into a suitable format. We then use `mgcv::gam` to fit 
 the model: 
@@ -66,6 +134,7 @@ plot(pamfit, select = 2, se = TRUE, ylim = c(-4, 3.5))
 In this example the PAM approach estimates a linear effect of age, which is 
 consistent with the estimation using `coxph`, as there is only weak non-linearity.
 
+### MGUS data: Hemoglobin example
 Another example from the same vignette shows that estimated effects 
 are very similar if the effect of the covariate is in fact strongly non-linear: 
 
@@ -82,26 +151,27 @@ termplot(fit, term = 2, se = TRUE, col.term = 1, col.se = 1)
 plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2))
 ```
 
-## Monotonicity constraints
+### Monotonicity constraints
 The vignette in the `survival` package further discusses enforcing monotonicity 
-contraints on the effect of `hgb`. These can be achieved here much more easily 
-using the functionality provided in the `scam` package (see also @pya2015). The 
-usage is exactly the same as before, replacing the call to `gam` with a 
-call to `scam` and specifying `bs = "mpd"`: 
+contraints on the effect of `hgb`. These can be achieved here more easily 
+using the functionality provided in the `scam` package (see also @pya2015). 
+The usage is exactly the same as before, replacing the call to `gam` with a 
+call to `scam` and specifying `bs = "mpd"`. Note that the fit using contraints 
+takes considerably longer compared to the unconstrained fit. 
 
-```{r}
+```{r, scammod}
 library(scam)
 mpam <- scam(ped_status ~ s(tend) + age + s(hgb, bs = "mpd"), data = mgus2.ped, 
   family = poisson(), offset = offset)
 ```
 
-```{r, figscam, fig.height = 3.5, fig.width = 7}
+```{r, figscam, fig.height = 3.5, fig.width = 7, dependson="scammod"}
 layout(matrix(1:2, nrow = 1))
-plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2))
+plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2), main="Unconstrained fit")
 # 1.72 = intercept difference between pamfit2 and mpam
 const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
 plot(mpam, select = 2, se = TRUE, shift = const, 
-  ylim = c(-0.5-const, 2-const))
+  ylim = c(-0.5-const, 2-const), main="Fit under monotonicity constraint")
 ```
 
 ## References

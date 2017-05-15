@@ -15,9 +15,16 @@ cache:
   - C:\RLibrary
 
 environment:
+  global: 
+    WARNINGS_ARE_ERRORS: 1
+    
   matrix:
     - R_VERSION: devel
-    - R_VERSION: release
+      R_ARCH: x64
+      GCC_PATH: mingw_64
+      
+    - R_VERSION: patched
+      GCC_PATH: mingw_32
 
 build_script:
   - travis-tool.sh install_github RcppCore/Rcpp

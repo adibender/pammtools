@@ -1,0 +1,102 @@
+---
+title: "Frailty and random effects"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{frailty}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: pam.bib
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align = "center",
+  fig.width = 4, 
+  fig.height = 4,
+  crop=TRUE)
+```
+
+```{r message=FALSE}
+library(magrittr)
+library(dplyr)
+library(survival)
+library(coxme)
+library(pam)
+library(mgcv)
+```
+
+Whenever subjects belonging to a cluster or group could have correlated outcomes,
+our models must account for such dependency structures. 
+We can do so by including random effects in the model. 
+In the context of survival analysis such effects are called "frailty" terms. 
+
+## NCCTG Lung Cancer Data
+
+For illustration we consider the NCTG Lung Cancer Data [@Loprinzi1994] that 
+is contained in the `survival` package [@Thernau2015]. A description
+of the data is provided in `?lung`.
+
+The data contain survival times (in days) of advanced lung cancer patients 
+from different institutions: 
+
+```{r}
+lung %<>% mutate(inst = as.factor(inst))
+head(lung)
+
+## 228 patients from 18 institutions
+nrow(lung)
+lung %>% group_by(inst) %>% summarize(n=n())
+```
+
+
+## Cox model with gaussian frailty 
+
+The penalized Cox model with frailty terms has been described in @Thernau2003
+and implemented in the `coxme` package for Gaussian frailties. 
+Below we apply the `coxme` function to the `lung` data:
+
+```{r}
+cme <- coxme(Surv(time, status) ~ ph.ecog + (1|inst), data=lung)
+coef(cme)
+summary(cme$frail$inst)
+```
+
+- The effect of `ph.ecog` was estimated to be about `0.5` on the log-hazard scale. 
+- The estimated random intercepts ("frailties"") for the different institution are all relatively close to zero and have small standard deviation: `sd(cme$frail$inst)=``r round(sd(cme$frail$inst), 3)`,
+
+## PAM with gaussian frailty
+
+For an equivalent model using PAMs we first transform the data set and 
+then call `mgcv:::gam` for the fit. To include a gaussian random effect 
+we set the `bs` argument in the respective penalized `s()` term to `bs='re'` (see description 
+in `?smooth.terms`): 
+
+```{r}
+ped <- split_data(Surv(time, status)~., data=lung, id="id")
+pam <- gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"), 
+	data=ped, family=poisson(), offset=offset)
+```
+
+Comparison of the estimates of the two models shows that they are in close 
+agreement (we use `tidy_re` from the `pam` package to extract random effects):
+
+```{r}
+cbind(pam = coef(pam)[2], cox=coef(cme))
+re <- tidy_re(pam)
+plot(cme$frail$inst, re$fit, las=1, xlab="Frailty (cox)", ylab="Frailty (PAM)")
+abline(0, 1)
+```
+
+The `pam` package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption: 
+
+```{r}
+gg_re(pam)
+```
+
+
+
+
+## References 
