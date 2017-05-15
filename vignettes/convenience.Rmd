@@ -136,7 +136,7 @@ ggplot(hgb.term, aes(x = x, y = eff)) +
 ```
 
 For convenience we also include a function that plots mutiple selected smooth 
-effects in one figure: 
+effects in one figure^[Note that graphical representation of the baseline hazard is a sloght approximation here -- it should be a *step function*, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.]: 
 
 ```{r}
 ped %>% gg_smooth(pam, terms = c("tend", "hgb"))
@@ -146,7 +146,7 @@ ped %>% gg_smooth(pam, terms = c("tend", "hgb"))
 ## Extraction/Visualization of the baseline hazard
 
 In PAMs the baseline hazard $\lambda_0(t)$ is estimated semi-parametrically as a 
-(potentially) non-linear smooth function. Thus the model specification usually 
+(potentially) non-linear smoothed step function. Thus the model specification usually 
 looks like 
 
 $$

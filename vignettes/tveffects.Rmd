@@ -37,6 +37,8 @@ time-constant **continuous** covariates. Note that time-varying effects of time-
 hazards models, where observations from different levels of the categorical 
 variable have different baseline hazards. That setting is described in
 [`vignette("strata", package="pam")`](strata.html).
+**Note that all time-varying effects in a PAM are still assumed to be piece-wise 
+constant over the intervals used to specify the PAM!**
 
 ## Possible specifications of time-variation
 
@@ -124,9 +126,10 @@ cbind(
 # compare fits 
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1, 
-  col = Set1[1]) 
-lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), 
-  col = Set1[2])
+  col = Set1[1])
+t_pem <- int_info(ped)$tend
+lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t_pem + 20), 
+  col = Set1[2], type = "s")
 ```
 Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
 
@@ -147,10 +150,10 @@ term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
         cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20), 
         pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20)) 
 ggplot(term.df, aes(x = tend, y = fit)) + 
-    geom_line(aes(col = "PAM with penalized spline")) + 
-    geom_ribbon(aes(ymin = low, ymax = high), alpha = 0.2) + 
+    geom_step(aes(col = "PAM with penalized spline")) + 
+    geom_stepribbon(aes(ymin = low, ymax = high), alpha = 0.2) + 
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) + 
-    geom_line(aes(y = pam.fit, col = "PAM with log-transform")) + 
+    geom_step(aes(y = pam.fit, col = "PAM with log-transform")) + 
     scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
     xlab("t") + ylab("Beta(t) for karno")
 ```
@@ -194,7 +197,7 @@ summary(pam3)
 The 3D perspective plot can aid interpretation, where y- and x-axes depict 
 the Karnosky-Score and the time respectively and the z-axis displays the 
 contribution of the effect to the log-hazard for each combination of 
-$x_{\text{karno}}$ and $t$.
+$x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
 
 ```{r, fig.width=6, fig.height=6}
 plot(pam3, select = 2, pers = T, theta = 150, ticktype = "detailed")
@@ -211,6 +214,7 @@ red colors a log-hazard increase. The grayed out areas depict combinations
 of \code{karno} and \code{tend} that were not present in the data. 
 Dotted horizontal and vertical lines indicate slices that are displayed 
 in the middle and right panel. 
+
 
 For fixed $t=0$, we obtain the effect of the Karnofsky-Score on the log-hazard 
 at the beginning of the follow-up (red line left panel), which decreases strongly from low 
@@ -252,17 +256,19 @@ karno_df <- combine_df(
 
 karno_df$fte <- predict(pam3, newdata=karno_df, type="terms")[,"te(tend,karno)"]
 karno_gg <- ggplot(karno_df, aes(x=tend, y=fte)) +
-  geom_line(aes(col=factor(karno))) +
+  geom_step(aes(col=factor(karno))) +
   scale_color_brewer(name=expression(x[plain(karno)]), palette = "Blues") +
   ylab(expression(f(list(x[plain(karno)],t)))) +
   xlab("t")+
   theme(legend.position="bottom")
 
 time_df  <- combine_df(
-  data.frame(sample_info(ped)%>% select(-karno)),
-#  data.frame(karno = seq_range(c(20, 40, 75, 95))),
+  data.frame(sample_info(ped) %>% select(-karno)),
   data.frame(karno = seq(20, 100, by=5)),
-  data.frame(tend  = c(0, 50, 200, 300)))
+  # caution: only use values for tend that were actually used as interval end 
+  # points to avoid interpolating piece-wise constant time-varying effects 
+  # between steps!
+  data.frame(tend  = c(1, 51, 200, 314)))
 time_df$fte <- predict(pam3, newdata=time_df, type="terms")[,"te(tend,karno)"]
 time_gg <- ggplot(time_df, aes(x=karno, y=fte)) +
   geom_line(aes(col=factor(tend))) +
