@@ -23,6 +23,7 @@
 #'     geom_line(aes(y = level))
 #' @rdname geom_stepribbon
 #' @importFrom ggplot2 layer GeomRibbon
+#' @author Triad Sou <triadsou@@gmail.com>
 #' @export
 
 geom_stepribbon <- function(
