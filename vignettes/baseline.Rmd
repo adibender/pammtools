@@ -12,8 +12,10 @@ vignette: >
 ```{r, echo = FALSE}
 library(knitr)
 opts_chunk$set(
-  fig.align = "center"
-)
+  fig.align  = "center",
+  fig.width  = 4,
+  fig.height = 4,
+  crop       = TRUE)
 ```
 
 
@@ -25,28 +27,26 @@ theme_set(theme_bw())
 library(magrittr)
 library(dplyr)
 library(mgcv)
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 
 Here we briefly demonstrate how to fit and visualize a simple 
 baseline model using the **`pam`** package. 
-We illustrate the procedure using censored survival data simulated from the Weibull 
-distribution $T \sim WB(1.5, 2)$: 
+We illustrate the procedure using the `veteran` data from the 
+`survival` package: 
 
 ```{r}
-set.seed(300117)
-tdf <- data.frame(time = rweibull(100, 1.5, 2)) %>% 
-  mutate(
-    time  = round(time, 3),
-    status = 1*(time > rweibull(100, 1.5, 2)))
-head(tdf)
+data("veteran", package="survival")
+veteran %<>% filter(time < 400)
 ```
 
 The below graph depicts the estimated cumulative hazard using the 
-Nelson-Aalen estimator:.
+Nelson-Aalen estimator:
+
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
-base_df <- basehaz(coxph(Surv(time, status)~1, data = tdf))
+base_df <- basehaz(coxph(Surv(time, status)~1, data = veteran))
 ggplot(base_df, aes(x = time, y = hazard)) + 
   geom_step() + 
   ylab(expression(Lambda(t))) + xlab("t") + 
@@ -56,11 +56,11 @@ ggplot(base_df, aes(x = time, y = hazard)) +
 
 ## Data transformation 
 First we need to bring the data in a suitable format 
- (see [`vignette("data-transformation", package = "pam")`](data-transformation.html)).
+(see [`vignette("data-transformation", package = "pam")`](data-transformation.html)).
 
 ```{r}
 # Use unique event times as interval break points
-ped <- split_data(Surv(time, status)~., data = tdf, id = "id")
+ped <- split_data(Surv(time, status)~., data = veteran, id = "id")
 head(ped)
 ```
 
@@ -83,15 +83,14 @@ Visualize the PEM estimate:
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
 ggplot(int_df, aes(x = tend)) + 
+  geom_step(aes(y = hazard, col = "Nelson-Aalen")) + 
   geom_line(aes(y = cumhazard, col = "PEM")) + 
-  geom_step(aes(y = hazard, col = "Nelson-Aalen"), lty = 2) + 
-  scale_color_brewer(name = "Method", palette = "Set1") + 
+  scale_color_manual(name = "Method", values=c(Set1[1:2])) + 
   theme(legend.position = "bottom") + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
 all.equal(int_df$cumhazard, int_df$hazard)
 ```
-<!-- cumulative hazard of PEM/PAM is NOT step function, it's piecewise linear!!! -->
 
 ### Fit the baseline using Piece-wise exponential additive model (PAM)
 
@@ -116,9 +115,8 @@ summary(pam)
 
 ### Graphical comparison 
 
-In the figure below we compare the previous baseline estimates with the estimates
-from a correctly specified model (Weibull-AFT). All models are in good 
-agreement.
+In the figure below we compare the previous baseline estimates with the 
+PAM estimates. All models are in good agreement.
 
 <details>
   <summary>Expand here for R-Code</summary>
@@ -126,19 +124,14 @@ agreement.
 ```{r}
 int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
 int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
-# Weibull AFT for comparison (true/correctly specified model)
-aft <- survreg(Surv(time, status)~1, data=tdf, dist="weibull")
-int_df$aft <- exp(-coef(aft))^(1/aft$scale) * int_df$tend^(1/aft$scale)
 
 gg_baseline <- ggplot(int_df, aes(x = tend)) + 
-  geom_line(aes(y = cumhazard, col = "PEM"),          lty = 3) +
   geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
+  geom_line(aes(y = cumhazard, col = "PEM")) +
   geom_line(aes(y = pamch,     col = "PAM")) +
-  geom_line(aes(y = aft,       col = "AFT")) +
-  scale_color_brewer(
+  scale_colour_manual(
     name    = "Method",
-    palette = "Set1",
-    breaks  = c("Nelson-Aalen", "PEM", "PAM", "AFT")) +
+    values = c(Set1[1], 1, Set1[2])) +
   theme(legend.position = "bottom") + 
   ylab(expression(Lambda(t))) + xlab("t") + 
   ggtitle(paste0("Comparison of cumulative hazards using\n", 

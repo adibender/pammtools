@@ -108,17 +108,5 @@ ped2 %>% filter(id %in% 1:2)
 Note that subject with $id = 2$ now also has only one row in the data set. The fact 
 that subject 2 was in the risk set longer than subject one is however still 
 accounted for by the `offset` variable. 
-
-
-<!-- ## Data with time-dependent covariates 
-```{r}
-data("pbc2", package = "JM")
-pbc2.time <- select(pbc2, id, years, status2)
-pbc2.tv <- select(pbc2, year, albumin)
-pbc.ped <- split_data(Surv(years, status2)~., data = pbc2.time, id = "id")
-tv.df <- get_intervals(brks = sort(unique(pbc2$years)), pbc2.tv$year) %>% 
-  bind_cols(pbc2.tv)
-```
- -->
  
 ## References

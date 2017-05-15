@@ -117,7 +117,7 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
   geom_hline(yintercept = 0, lty=3) +
   geom_pointrange(aes(col=factor(Model)), position=position_dodge(width=0.5)) + 
   coord_flip() + 
-  scale_colour_brewer(name="Method", palette="Set1") + 
+  scale_colour_manual(name="Method", values=c(Set1[1], 1)) + 
   ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
   xlab("")
 
@@ -128,14 +128,14 @@ age_df <- recidivism_long %>% make_newdata(expand="age", length.out=100)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
 age_df %<>% add_term(pam, term="age") %>% 
-  mutate(cphfit = predict(object=cph, ., type="terms")[,2])
+  mutate(cphfit = predict(object=cph, ., type="terms")[,"pspline(age)"])
 
 ## prep plot object for smooth effects 
 smooth_gg <- ggplot(age_df, aes(y=fit)) + 
 	geom_line(aes(col="PAM")) + 
 	geom_ribbon(aes(ymin=low, ymax=high), alpha=0.3) + 
-	geom_line(aes(y=cphfit, col="Cox")) + 
-	scale_colour_brewer(name="Method", palette="Set1", breaks=c("Cox-PH", "PAM")) + 
+	geom_line(aes(y=cphfit, col="Cox-PH")) + 
+	scale_colour_manual(name="Method", values=c(Set1[1],1)) + 
   ylab(expression(hat(f)(x))) + theme(legend.position="none")
 
 ## plot of the age effect 
@@ -269,9 +269,10 @@ bili_df <- pbc_ped %>% ungroup() %>%
   mutate(cox = predict(fit2, ., type="term")[, "log(bili)"])
 
 bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) + 
-    geom_line() + 
+    geom_line(aes(col="PAM")) + 
     geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
-    geom_line(aes(y=cox), lty=2)
+    geom_line(aes(y=cox, col="Cox")) +
+    scale_colour_manual(name="Method", values=c(Set1[1],1)) 
 
 ## Effect of protime
 protime_df <- pbc_ped %>% ungroup() %>% 
@@ -280,9 +281,10 @@ protime_df <- pbc_ped %>% ungroup() %>%
   mutate(cox = predict(fit2, ., type="term")[, "log(protime)"])
 
 protime_gg <- ggplot(protime_df, aes(x=protime, y=fit)) + 
-    geom_line() + 
+    geom_line(aes(col="PAM")) + 
     geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
-    geom_line(aes(y=cox), lty=2)
+    geom_line(aes(y=cox, col="Cox")) + 
+    scale_colour_manual(name="Method", values=c(Set1[1],1))
 
 ## combine figures
 library(grid)

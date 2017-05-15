@@ -29,6 +29,7 @@ theme_set(theme_bw())
 library(mgcv)
 library(survival)
 library(pam)
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 ## Stratified baselines 
@@ -63,7 +64,7 @@ base <- basehaz(cph, centered=FALSE)
 gg.bz <- ggplot(base, aes(x=time, y=hazard, group=strata)) +
   geom_step() +
 	ylab(expression(hat(Lambda)(t))) + xlab("t")
-gg.bz + geom_step(aes(col=strata))
+gg.bz + aes(col=strata)
 ```
 
 ### Stratified PAM
@@ -74,7 +75,7 @@ Technically, we specify the `by` argument in `mgcv` `s(...)` function.
 Note that in contrast to the model specification in `coxph` we need to 
 include the `celltype` factor variable in the model specification:
 
-```{r, fig.width=7, fig.height=6, warning=FALSE}
+```{r, fig.width=7, fig.height=3, warning=FALSE}
 ped <- split_data(Surv(time, status)~., data=veteran, id="id")
 pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped, 
 	family=poisson(), offset=offset)
@@ -82,21 +83,21 @@ pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped,
 
 Comparing the estimated baselines we get very similar results between 
 the stratified Cox and stratified PAM models. 
-```{r, fig.width=5, fig.height=4, dependson="ggbase", warning=FALSE}
+```{r, fig.width=6, fig.height=3, dependson="ggbase", warning=FALSE}
 pinf <- ped %>% 
   group_by(celltype) %>% 
   ped_info() %>% 
   add_cumhazard(pam) %>% 
 	rename(strata=celltype)
-gg.bz +	
-  geom_step(aes(col="Cox")) +
+gg.bz +	aes(col="Nelson-Aalen") +
 	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
-	facet_wrap(~strata) + 
-	scale_color_brewer(name="Method", palette="Set1") +
-	ylim(c(0, 5))
+	facet_wrap(~strata, nrow=1) + 
+	scale_color_manual(name="Method", values=c(Set1[1], 1)) +
+	ylim(c(0, 5)) + theme(legend.position = "bottom")
 ```
 
 ### Stratified Proportional Hazards Model 
+
 Both models can be easily extended to incorporate further covariates. 
 If we assume that the covariate effects are not time-varying, this extension 
 constitutes a so called stratified proportional hazards model. For example, 

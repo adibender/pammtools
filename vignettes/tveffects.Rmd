@@ -28,6 +28,7 @@ library(dplyr)
 library(pam)
 library(survival)
 library(mgcv)
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 In this vignette we show examples of how to fit time-varying effects of 
@@ -100,7 +101,7 @@ $\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20) = `r ttcoef[1]` + `r
 ```{r}
 t <- seq(0, 400, by = 10)
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
-  type = "l", ylab = "Beta(t) for karno", las = 1, ylim=c(-.1, .05))
+  type = "l", ylab = "Beta(t) for karno", las = 1, ylim=c(-.1, .05), col=Set1[1])
 ```
 
 ### PAM (with known shape of time-variation function)
@@ -122,8 +123,10 @@ cbind(
   cox = coef(vfit))
 # compare fits 
 plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
-  type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1) 
-lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), col = 2)
+  type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1, 
+  col = Set1[1]) 
+lines(x = t, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t + 20), 
+  col = Set1[2])
 ```
 Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
 
@@ -144,11 +147,11 @@ term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
         cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20), 
         pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20)) 
 ggplot(term.df, aes(x = tend, y = fit)) + 
-    geom_line() + 
+    geom_line(aes(col = "PAM with penalized spline")) + 
     geom_ribbon(aes(ymin = low, ymax = high), alpha = 0.2) + 
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) + 
     geom_line(aes(y = pam.fit, col = "PAM with log-transform")) + 
-    scale_color_brewer(name="Method", palette = "Set1") +
+    scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
     xlab("t") + ylab("Beta(t) for karno")
 ```
 
@@ -231,7 +234,7 @@ time-points (green line middle panel).
   <summary>Expand here for detailed R-Code</summary>
   
 ```{r}
-te_plot <- gg_tensor(pam3) +
+te_gg <- gg_tensor(pam3) +
   geom_vline(xintercept=c(0, 50, 200, 300), lty=3) +
   geom_hline(yintercept=c(40, 75, 95), lty=3) +
   scale_fill_gradient2(
@@ -242,30 +245,28 @@ te_plot <- gg_tensor(pam3) +
   theme(legend.position="bottom")
 
 ## plot f(karno, t) for specific slices
-df.karno <- combine_df(
+karno_df <- combine_df(
   int_info(ped),
   select(sample_info(ped), -karno),
   data.frame(karno = c(40, 75, 95)))
 
-df.karno$fte <- predict(pam3, newdata=df.karno, type="terms")[,"te(tend,karno)"]
-karno_plot <- ggplot(df.karno, aes(x=tend, y=fte)) +
+karno_df$fte <- predict(pam3, newdata=karno_df, type="terms")[,"te(tend,karno)"]
+karno_gg <- ggplot(karno_df, aes(x=tend, y=fte)) +
   geom_line(aes(col=factor(karno))) +
-  scale_color_brewer(
-    name=expression(x[plain(karno)]),
-    palette = "Set2") +
+  scale_color_brewer(name=expression(x[plain(karno)]), palette = "Blues") +
   ylab(expression(f(list(x[plain(karno)],t)))) +
   xlab("t")+
   theme(legend.position="bottom")
 
-df.time  <- combine_df(
+time_df  <- combine_df(
   data.frame(sample_info(ped)%>% select(-karno)),
 #  data.frame(karno = seq_range(c(20, 40, 75, 95))),
   data.frame(karno = seq(20, 100, by=5)),
   data.frame(tend  = c(0, 50, 200, 300)))
-df.time$fte <- predict(pam3, newdata=df.time, type="terms")[,"te(tend,karno)"]
-time_plot <- ggplot(df.time, aes(x=karno, y=fte)) +
+time_df$fte <- predict(pam3, newdata=time_df, type="terms")[,"te(tend,karno)"]
+time_gg <- ggplot(time_df, aes(x=karno, y=fte)) +
   geom_line(aes(col=factor(tend))) +
-  scale_color_brewer(name="t", palette="Set1") +
+  scale_color_brewer(name="t", palette="Reds") +
   ylab(expression(f(list(x[plain(karno)],t)))) +
   xlab(expression(x[plain(karno)])) +
   theme(legend.position="bottom")
@@ -274,7 +275,7 @@ time_plot <- ggplot(df.time, aes(x=karno, y=fte)) +
 </details>
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
-grid.arrange(te_plot, karno_plot, time_plot, nrow=1)
+grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
 
 The following figure shows the estimated effect (middle panel) along with a pointwise upper (right) and lower (left) CI. Note that we have to be somewhat cautious with interpretation, considering the large uncertainty of the effect estimate, especially for lower Karnofsky-Scores
