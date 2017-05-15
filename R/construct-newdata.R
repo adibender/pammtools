@@ -133,13 +133,14 @@ combine_df <- function(...) {
 #'   print(n=30)
 #' }
 #' @export
-make_newdata <- function(x, ...) {
+make_newdata <- function(x, ..., expand=NULL, length.out=50L) {
   UseMethod("make_newdata", x)
 }
 
 
-#' @inheritParams make_newdata
+#' @inherit make_newdata
 #' @importFrom magrittr "%<>%"
+#' @export
 make_newdata.default <- function(
   x, 
   ..., 
@@ -178,7 +179,7 @@ make_newdata.default <- function(
 
 }
 
-#' @inheritParams make_newdata
+#' @inherit make_newdata
 #' @importFrom magrittr "%<>%"
 #' @export
 make_newdata.ped <- function(
