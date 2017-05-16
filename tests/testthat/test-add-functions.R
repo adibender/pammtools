@@ -59,3 +59,30 @@ test_that("warns about / aborts for unknown intervals", {
   expect_warning(add_hazard(weird, pam), "not used in original fit")
   expect_error(add_hazard(weird, pem), "not used in original fit")
 })
+
+test_that("works for nonstandard baseline arguments", {
+  pseudonymous <- leuk.ped %>% dplyr::rename(stop = tend, int = interval)
+  pseudonymous <-  pseudonymous %>% dplyr::mutate(length = stop - tstart)
+  leuk.ped <- leuk.ped %>% dplyr::mutate(intlen = tend - tstart)
+
+  p_pam <- gam(ped_status ~ s(stop, k=5) + treatment, data=pseudonymous,
+    family = poisson(), offset = offset)
+  p_pem <- glm(ped_status ~ 0 + int + treatment, data=pseudonymous,
+    family = poisson(), offset = offset)
+  expect_equal(
+    add_hazard(pseudonymous[1:5,], p_pam, time_variable = "stop")$hazard,
+    add_hazard(leuk.ped[1:5,], pam)$hazard)
+  expect_equal(
+    add_hazard(pseudonymous[1:5,], p_pem, time_variable = "int")$hazard,
+    add_hazard(leuk.ped[1:5,], pem)$hazard)
+
+  expect_equal(
+    add_cumhazard(pseudonymous[1:5,], p_pam, time_variable = "stop",
+      interval_length = dplyr::quo(length))$cumhazard,
+    add_cumhazard(leuk.ped[1:5,], pam)$cumhazard)
+  expect_equal(
+    add_cumhazard(pseudonymous[1:5,], p_pem, time_variable = "int",
+      interval_length = dplyr::quo(length))$cumhazard,
+    add_cumhazard(leuk.ped[1:5,], pem)$cumhazard)
+})
+

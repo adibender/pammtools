@@ -1,7 +1,8 @@
 #' Add predicted hazard to data set
 #'
 #' @inheritParams mgcv::predict.gam
-#' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
+#' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+#'   \code{\link{get_hazard}}
 #' @param ci Logical indicating whether to iclude confidence intervals. Defaults
 #' to \code{TRUE}
 #' @param se.mult Factor by which standard errors are multiplied for calculating
@@ -9,6 +10,10 @@
 #' @param overwrite Should hazard columns be overwritten if already present in
 #' the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 #' \code{c("hazard", "se", "lower", "upper")} will be overwritten.
+#' @param time_variable Name of the variable used for the baseline hazard. If
+#'   not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
+#'   \code{"interval"}. The latter is assumed to be a factor, the former
+#'   numeric.
 #' @import checkmate dplyr mgcv
 #' @importFrom magrittr %<>%
 #' @importFrom stats predict
@@ -29,6 +34,7 @@ add_hazard <- function(
 	ci        = TRUE,
 	se.mult   = 2,
 	overwrite = FALSE,
+  time_variable = NULL,
 	...)  {
 
 	if(!overwrite) {
@@ -40,7 +46,8 @@ add_hazard <- function(
 			newdata %<>% select(-one_of(rm.vars))
 	}
 
-	pred <- get_hazard(newdata, object, ci=ci, type=type, se.mult=se.mult, ...)
+	pred <- get_hazard(newdata, object, ci=ci, type=type, se.mult=se.mult,
+	  time_variable = time_variable, ...)
 	stopifnot(nrow(pred) == nrow(newdata))
 
 	newdata %<>% bind_cols(rm_grpvars(pred))
@@ -53,25 +60,33 @@ add_hazard <- function(
 #'
 #' @inheritParams add_hazard
 #' @rdname add_hazard
+#' @importFrom stats model.frame
 get_hazard <- function(
 	newdata,
 	object,
 	ci      = TRUE,
 	type    = c("response", "link"),
 	se.mult = 2,
+  time_variable = NULL,
 	...)  {
 
 	assert_data_frame(newdata, all.missing=FALSE)
 	assert_class(object, classes = "glm")
 	type <- match.arg(type)
   is_pam <- inherits(object, "gam")
+  if (is.null(time_variable)) {
+    time_variable <- ifelse(is_pam, "tend", "interval")
+  } else {
+    assert_string(time_variable)
+    assert_choice(time_variable, colnames(newdata))
+  }
 
 	original_intervals <- if (is_pam) {
-	  unique(model.frame(object)$tend)
-	} else levels(model.frame(object)$interval)
+	  unique(model.frame(object)[[time_variable]])
+	} else levels(model.frame(object)[[time_variable]])
 	prediction_intervals <- if (is_pam) {
-	  unique(newdata$tend)
-	} else levels(factor(newdata$interval))
+	  unique(newdata[[time_variable]])
+	} else levels(factor(newdata[[time_variable]]))
 	new_ints <- which(!(prediction_intervals %in% original_intervals))
 	if (length(new_ints)) {
 	 message <- paste0("Intervals in <newdata> contain values (",
@@ -113,6 +128,8 @@ get_hazard <- function(
 #' Add cumulative hazard estimate to data set
 #'
 #' @inheritParams add_hazard
+#' @param interval_length \code{quosure} providing the name of the variable in
+#'  newdata containing the interval lengths. Defaults to \code{intlen}.
 #' @export
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
 #' @rdname add_hazard
@@ -123,6 +140,8 @@ add_cumhazard <- function(
 	ci        = TRUE,
 	se.mult   = 2,
 	overwrite = FALSE,
+  time_variable = NULL,
+  interval_length = quo(intlen),
 	...)  {
 
 	if(!overwrite) {
@@ -134,7 +153,8 @@ add_cumhazard <- function(
 			newdata %<>% select(-one_of(rm.vars))
 	}
 
-	pred <- get_cumhazard(newdata, object, ci=ci, type=type, se.mult=se.mult, ...)
+	pred <- get_cumhazard(newdata, object, ci=ci, type=type, se.mult=se.mult,
+	  time_variable = time_variable, interval_length = interval_length, ...)
 
 	newdata %<>% bind_cols(rm_grpvars(pred))
 
@@ -151,17 +171,23 @@ get_cumhazard <- function(
 	object,
 	ci   = TRUE,
 	type = "response",
+  time_variable = NULL,
+  interval_length = quo(intlen),
 	...) {
 
-	hazard.df <- get_hazard(newdata, object, ci=TRUE, type=type)
-	hazard.df %>%
-		bind_cols(select_(rm_grpvars(newdata), .dots="intlen"))%>%
-		mutate(
-			cumhazard = cumsum(hazard * intlen),
-			cumlower  = cumsum(lower  * intlen),
-			cumupper  = cumsum(upper  * intlen)) %>%
-		select(-one_of(c("hazard", "se", "lower", "upper", "intlen")))
+  assert_class(interval_length, "quosure")
+  assert_choice(as.character(interval_length)[2], colnames(newdata))
 
+  lengths <- select(rm_grpvars(newdata), !!interval_length)
+	get_hazard(newdata, object, ci=TRUE, type=type, time_variable = time_variable,
+	  ...) %>%
+	  bind_cols(lengths) %>%
+	  mutate(
+	    cumhazard = cumsum(hazard * (!!interval_length)),
+	   	cumlower  = cumsum(lower  * (!!interval_length)),
+		 	cumupper  = cumsum(upper  * (!!interval_length))) %>%
+    select(-one_of(c("hazard", "se", "lower", "upper"))) %>%
+	  select(-!!interval_length)
 }
 
 

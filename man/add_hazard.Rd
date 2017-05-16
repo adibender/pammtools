@@ -8,15 +8,17 @@
 \title{Add predicted hazard to data set}
 \usage{
 add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
-  se.mult = 2, overwrite = FALSE, ...)
+  se.mult = 2, overwrite = FALSE, time_variable = NULL, ...)
 
 get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
-  se.mult = 2, ...)
+  se.mult = 2, time_variable = NULL, ...)
 
 add_cumhazard(newdata, object, type = c("response"), ci = TRUE,
-  se.mult = 2, overwrite = FALSE, ...)
+  se.mult = 2, overwrite = FALSE, time_variable = NULL,
+  interval_length = quo(intlen), ...)
 
-get_cumhazard(newdata, object, ci = TRUE, type = "response", ...)
+get_cumhazard(newdata, object, ci = TRUE, type = "response",
+  time_variable = NULL, interval_length = quo(intlen), ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -48,14 +50,23 @@ outside \code{R} (see example code, below). }
 \item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
-\item{se.mult}{Factor by which standard errors are multiplied for calculating 
+\item{se.mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
 
-\item{overwrite}{Should hazard columns be overwritten if already present in 
-the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names 
+\item{overwrite}{Should hazard columns be overwritten if already present in
+the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
+\item{time_variable}{Name of the variable used for the baseline hazard. If
+not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
+\code{"interval"}. The latter is assumed to be a factor, the former
+numeric.}
+
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
+
+\item{interval_length}{\code{quosure} providing the name of the variable in
+newdata containing the interval lengths. Defaults to \code{intlen}.}
 }
 \description{
 Add predicted hazard to data set
