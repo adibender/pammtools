@@ -62,7 +62,7 @@ get_hazard <- function(
 	...)  {
 
 	assert_data_frame(newdata, all.missing=FALSE)
-	assert_class(object, classes = c("gam", "glm", "lm"))
+	assert_class(object, classes = "glm")
 	type <- match.arg(type)
 
 	original_intervals <- unique(model.frame(object)$tend)
@@ -74,9 +74,14 @@ get_hazard <- function(
       " incorrect predictions or fitted values. Proceed with caution!")
 	}
 
-	pred <- predict(object=object, newdata=newdata, se.fit=TRUE, type=type, ...) %>%
+
+
+
+	pred <-
+	  predict(object=object, newdata = newdata, se.fit = TRUE, type=type,
+	    ...)[c("fit", "se.fit")] %>%
 		bind_cols() %>%
-		rename(hazard=fit, se=se.fit) %>%
+		rename(hazard = fit, se = se.fit) %>%
 		mutate(
 			hazard = as.numeric(hazard),
 			se     = as.numeric(se))

@@ -48,11 +48,11 @@ outside \code{R} (see example code, below). }
 \item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
-\item{se.mult}{Factor by which standard errors are multiplied for calculating 
+\item{se.mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
 
-\item{overwrite}{Should hazard columns be overwritten if already present in 
-the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names 
+\item{overwrite}{Should hazard columns be overwritten if already present in
+the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}

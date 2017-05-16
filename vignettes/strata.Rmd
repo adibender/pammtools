@@ -90,7 +90,8 @@ pinf <- ped %>%
   group_by(celltype) %>% 
   ped_info() %>% 
   add_cumhazard(pam) %>% 
-	rename(strata=celltype)
+	rename(strata=celltype) %>% 
+  filter(!(strata == "adeno" & tend > 200))
 gg.bz +	aes(col="Nelson-Aalen") +
 	geom_step(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
   geom_stepribbon(data=pinf, aes(x=tend, ymin=cumlower, ymax = cumupper,

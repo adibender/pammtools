@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}
 
-\item{...}{Further specifications of variables that should be set 
+\item{...}{Further specifications of variables that should be set
 to a specific value.}
 
 \item{expand}{A character vector of column names in \code{ped}.}
@@ -19,14 +19,13 @@ to a specific value.}
     rounded up if fractional.}
 }
 \description{
-Given a data set, returns a data frame type object that can be used 
+Given a data set, returns a data frame type object that can be used
 as \code{newdata} argument in a call to \code{predict} and similar functions.
 }
 \details{
-Details 
-Extracts information from \code{ped}, using \code{\link{sample_info}}. 
-If variables are specified with specific values in \code{...}, the values
-in from \code{sample_info} will be overwritten. If variables provided 
-in expand, these will be expanded from \code{min} to \code{max} using 
-in \code{length.out} equidistant steps.
+Extracts information from \code{ped}, using
+  \code{\link{sample_info}}. If variables are specified with specific values
+  in \code{...}, the values in from \code{sample_info} will be overwritten.
+  If variables are provided in \code{expand}, these will be expanded from \code{min} to
+  \code{max} using in \code{length.out} equidistant steps.
 }

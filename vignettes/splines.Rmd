@@ -39,7 +39,11 @@ the `veteran` data from the survival package:
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>% filter(time < 400) %>% mutate(prior = 1*(prior==10))
+veteran %<>% 
+  mutate(
+    prior = 1*(prior==10),
+    status = ifelse(time > 400, 0, status),
+    time = ifelse(time > 400, 400, time))
 head(veteran)
 ```
 
