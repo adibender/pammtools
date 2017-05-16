@@ -54,8 +54,8 @@ test_that("adding terms works for PEM", {
   expect_error(add_term(ped_info(leuk.ped), pem, term="treatment", relative=TRUE))
 })
 
-test_that("warns about unknown intervals", {
+test_that("warns about / aborts for unknown intervals", {
   weird <- make_newdata(ped_info(leuk.ped), tend = 2.2, interval = "(1.4, 4]")
   expect_warning(add_hazard(weird, pam), "not used in original fit")
-  expect_error(add_hazard(weird, pem))
+  expect_error(add_hazard(weird, pem), "not used in original fit")
 })

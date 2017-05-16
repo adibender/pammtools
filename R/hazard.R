@@ -64,19 +64,21 @@ get_hazard <- function(
 	assert_data_frame(newdata, all.missing=FALSE)
 	assert_class(object, classes = "glm")
 	type <- match.arg(type)
+  is_pam <- inherits(object, "gam")
 
-	original_intervals <- if (inherits(object, "gam")) {
+	original_intervals <- if (is_pam) {
 	  unique(model.frame(object)$tend)
 	} else levels(model.frame(object)$interval)
-	prediction_intervals <- if (inherits(object, "gam")) {
+	prediction_intervals <- if (is_pam) {
 	  unique(newdata$tend)
 	} else levels(factor(newdata$interval))
 	new_ints <- which(!(prediction_intervals %in% original_intervals))
 	if (length(new_ints)) {
-	 warning("Intervals in <newdata> contain values (",
-	    prediction_intervals[new_ints], ") not used in original fit.",
-	    " Setting intervals to values not used for original fit in <object>",
-      "can invalidate the PEM assumption and yield incorrect predictions.")
+	 message <- paste0("Intervals in <newdata> contain values (",
+	   prediction_intervals[new_ints], ") not used in original fit.",
+	   " Setting intervals to values not used for original fit in <object>",
+	   "can invalidate the PEM assumption and yield incorrect predictions.")
+	 if (is_pam) warning(message) else stop(message)
 	}
 
 	pred <-
