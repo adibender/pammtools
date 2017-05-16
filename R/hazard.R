@@ -71,12 +71,12 @@ get_hazard <- function(
 	prediction_intervals <- if (inherits(object, "gam")) {
 	  unique(newdata$tend)
 	} else levels(factor(newdata$interval))
-	weird_timepoints <- !all(prediction_intervals %in% original_intervals)
-	if (weird_timepoints) {
-	  warning("Intervals in <newdata> may contain values not used in original fit.",
-	    " Setting interval start or end points to values not used for",
-	    " original fit in <object> can invalidate the PEM assumption and yield",
-      " incorrect predictions or fitted values. Proceed with caution!")
+	new_ints <- which(!(prediction_intervals %in% original_intervals))
+	if (length(new_ints)) {
+	 warning("Intervals in <newdata> contain values (",
+	    prediction_intervals[new_ints], ") not used in original fit.",
+	    " Setting intervals to values not used for original fit in <object>",
+      "can invalidate the PEM assumption and yield incorrect predictions.")
 	}
 
 	pred <-

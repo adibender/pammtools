@@ -4,9 +4,10 @@ library(mgcv)
 data("leuk2", package="bpcp")
 leuk2$x <- rnorm(nrow(leuk2))
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, cut=c(0:5, 10, 40), id="id")
-pam <- gam(ped_status ~ s(tend, k=5) + treatment, data=leuk.ped, family = "poisson")
-pem <- glm(ped_status ~ 0 + interval + treatment, data=leuk.ped, family = "poisson")
-
+pam <- gam(ped_status ~ s(tend, k=5) + treatment, data=leuk.ped,
+  family = poisson(), offset = offset)
+pem <- glm(ped_status ~ 0 + interval + treatment, data=leuk.ped,
+  family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
 	expect_is(haz <- add_hazard(ped_info(leuk.ped), pam), "data.frame")
@@ -51,4 +52,10 @@ test_that("adding terms works for PEM", {
     "data.frame")
   pem$model <- NULL
   expect_error(add_term(ped_info(leuk.ped), pem, term="treatment", relative=TRUE))
+})
+
+test_that("warns about unknown intervals", {
+  weird <- make_newdata(ped_info(leuk.ped), tend = 2.2, interval = "(1.4, 4]")
+  expect_warning(add_hazard(weird, pam), "not used in original fit")
+  expect_error(add_hazard(weird, pem))
 })
