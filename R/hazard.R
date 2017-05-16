@@ -61,6 +61,7 @@ get_hazard <- function(
 	se.mult = 2,
 	...)  {
 
+<<<<<<< Updated upstream
 	assert_data_frame(newdata, all.missing=FALSE) 
 	assert_class(object, classes = c("gam", "glm", "lm"))
 	type <- match.arg(type)
@@ -68,6 +69,31 @@ get_hazard <- function(
 	pred <- predict(object=object, newdata=newdata, se.fit=TRUE, type=type, ...) %>% 
 		bind_cols() %>% 
 		rename(hazard=fit, se=se.fit) %>% 
+=======
+	assert_data_frame(newdata, all.missing=FALSE)
+	assert_class(object, classes = "glm")
+	type <- match.arg(type)
+
+	original_intervals <- if (inherits(object, "gam")) {
+	  unique(model.frame(object)$tend)
+	} else levels(model.frame(object)$interval)
+	prediction_intervals <- if (inherits(object, "gam")) {
+	  unique(newdata$tend)
+	} else levels(factor(newdata$interval))
+	weird_timepoints <- !all(prediction_intervals %in% original_intervals)
+	if (weird_timepoints) {
+	  warning("Intervals in <newdata> may contain values not used in original fit.",
+	    " Setting interval start or end points to values not used for",
+	    " original fit in <object> can invalidate the PEM assumption and yield",
+      " incorrect predictions or fitted values. Proceed with caution!")
+	}
+
+	pred <-
+	  predict(object=object, newdata = newdata, se.fit = TRUE, type=type,
+	    ...)[c("fit", "se.fit")] %>%
+		bind_cols() %>%
+		rename(hazard = fit, se = se.fit) %>%
+>>>>>>> Stashed changes
 		mutate(
 			hazard = as.numeric(hazard),
 			se     = as.numeric(se))
