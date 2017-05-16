@@ -97,8 +97,8 @@ pinf <- ped %>%
   add_cumhazard(pam) %>% 
 	rename(strata=celltype)
 gg.bz +	aes(col="Nelson-Aalen") +
-	geom_step(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
-  geom_stepribbon(data=pinf, aes(x=tend, ymin=cumlower, ymax = cumupper,
+	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
+  geom_ribbon(data=pinf, aes(x=tend, ymin=cumlower, ymax = cumupper,
     group=strata), fill = "black", col = NA, alpha = .2) +
  	facet_wrap(~strata, nrow=1) + 
 	scale_color_manual(name="Method", values=c(Set1[1], 1)) +
