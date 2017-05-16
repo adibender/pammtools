@@ -65,17 +65,22 @@ get_hazard <- function(
 	assert_class(object, classes = "glm")
 	type <- match.arg(type)
 
-	original_intervals <- unique(model.frame(object)$tend)
-	weird_timepoints <- !all(newdata$tend %in% original_intervals)
-	if (!is.null(newdata$tend) & weird_timepoints) {
-	  warning("'tend' in <newdata> may contain values not used in original fit.",
-	    " Setting interval start or end points to values not used for",
-	    " original fit in <object> can invalidate the PEM assumption and yield",
-      " incorrect predictions or fitted values. Proceed with caution!")
+  is_pam <- inherits(object, "gam")
+
+	original_intervals <- if (is_pam) {
+	  unique(model.frame(object)$tend)
+	} else levels(model.frame(object)$interval)
+	prediction_intervals <- if (is_pam) {
+	  unique(newdata$tend)
+	} else levels(factor(newdata$interval))
+	new_ints <- which(!(prediction_intervals %in% original_intervals))
+	if (length(new_ints)) {
+	 message <- paste0("Intervals in <newdata> contain values (",
+	   prediction_intervals[new_ints], ") not used in original fit.",
+	   " Setting intervals to values not used for original fit in <object>",
+	   "can invalidate the PEM assumption and yield incorrect predictions.")
+	 if (is_pam) warning(message) else stop(message)
 	}
-
-
-
 
 	pred <-
 	  predict(object=object, newdata = newdata, se.fit = TRUE, type=type,
