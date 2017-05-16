@@ -41,12 +41,17 @@ $k=1,\ldots,K$ of factor variable $z$ will have its own baseline-hazard:
 
 $\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$. 
 
-For illustration we again use the `veteran` data from the `survival` package, 
+For illustration we again use the `veteran` data (censored at day 400) 
+from the `survival` package, 
 where the celltype of the lung cancer had four levels: 
 
 ```{r}
 data("veteran")
-veteran %<>% filter(time < 400)
+veteran %<>% 
+  mutate(
+    prior = 1*(prior==10),
+    status = ifelse(time > 400, 0, status),
+    time = ifelse(time > 400, 400, time))
 table(veteran$celltype)
 ```
 
