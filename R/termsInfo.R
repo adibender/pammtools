@@ -28,6 +28,7 @@
 #' add_term(pinfo, pam, term="treatment")
 #' @export
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
+#' @importFrom stats model.matrix vcov
 add_term <- function(
 	newdata,
 	object,
