@@ -120,9 +120,9 @@ get_intervals <- function(brks, x, ...) {
 #' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
 #' @import checkmate dplyr
 #' @examples 
-#' data("leuk2", package="bpcp")
-#' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-#' ped_info(leuk.ped)
+#' data("veteran", package="survival")
+#' ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
+#' ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 #' @export 
 #' @seealso \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
 ped_info <- function(ped) {
@@ -150,8 +150,8 @@ ped_info <- function(ped) {
 #' @param pinfo A data frame as returned by \code{\link[pam]{ped_info}} and 
 #' potentially additional information from predictions, etc. 
 #' @examples
-#' data("leuk2", package="bpcp")
-#' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
+#' data("veteran", package="survival")
+#' leuk.ped <- split_data(Surv(time, status)~., data=veteran, id="id")
 #' pem <- glm(ped_status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
 #' pinfo <- ped_info(leuk.ped)
 #' pinfo$basehaz <- predict(pem, newdata=pinfo, type="response")

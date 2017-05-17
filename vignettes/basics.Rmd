@@ -49,8 +49,8 @@ In practice these differences are not very large (see examples below).
 
 ### Subset with unique event times 
 
-We first demonstrate the equivalence using a subset of Freireichs Leukemia 
-data [@freireich1963] provided in the `bpcp` package:
+We first demonstrate the equivalence using a subset of the Veterans'
+data [@Kalbfleisch1980] provided in the `survival` package:
 
 ```{r}
 library(survival)
@@ -58,33 +58,36 @@ library(mgcv)
 library(pam)
 library(dplyr)
 
-data("leuk2", package = "bpcp")
-leuku <- filter(leuk2, !duplicated(time))
-leuku.ped <- split_data(Surv(time, status)~., cut = unique(leuku$time), 
-	data = leuku, id = "id")
-pem.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuku.ped, 
+data("veteran", package = "survival")
+# remove ties to illustrate equivalence with Cox approach
+vetu <- filter(veteran, !duplicated(time))
+vetu.ped <- split_data(Surv(time, status)~., cut = unique(vetu$time), 
+	data = vetu, id = "id")
+pem.age <- glm(ped_status ~ interval - 1 + age, data = vetu.ped, 
 	family = poisson(), offset = offset)
 ## cox model for comparison
-cph.treat <- coxph(Surv(time, status) ~ treatment, data = leuku)
+cph.age <- coxph(Surv(time, status) ~ age, data = vetu)
 ## compare coefficients
 cbind(
-  pem = coef(pem.treat)["treatmentplacebo"],
-  cox = coef(cph.treat))
+  pem = coef(pem.age)["age"],
+  cox = coef(cph.age))
 ```
+
 In this case both models yield equivalent estimates. 
 
 ### Full data set
 ```{r}
 ## Using the full data set (with ties) yields slightly different results 
 # when comparing PEM to Cox-PH
-leuk.ped <- split_data(Surv(time, status)~., cut = unique(leuk2$time), data = leuk2, id = "id")
-pem2.treat <- glm(ped_status ~ interval - 1 + treatment, data = leuk.ped, 
+vet.ped <- split_data(Surv(time, status)~., cut = unique(veteran$time), 
+	data = veteran, id = "id")
+pem2.age <- glm(ped_status ~ interval - 1 + age, data = vet.ped, 
 	family = poisson(), offset = offset)
-cph2.treat <- coxph(Surv(time, status) ~ treatment, data = leuk2)
+cph2.age <- coxph(Surv(time, status) ~ age, data = veteran)
 ## compare coefficient estimate to Cox-PH estimate 
 cbind(
-  pem = coef(pem2.treat)["treatmentplacebo"],
-  cox = coef(cph2.treat))
+  pem = coef(pem2.age)["age"],
+  cox = coef(cph2.age))
 ```
 
 ## Piece-wise exponential additive model 
@@ -104,18 +107,18 @@ PAMs have two main advantages over PEMs:
 
 Note that coefficient estimates in PAMs are no longer equivalent to those from 
 Cox PH models, since the estimation of the baseline hazard is performed 
-semi-parametrically. In our experience the differences are small.
+semi-parametrically. In our experience the differences are very small.
 
 Using the example above we get:
 
 ```{r}
 ## compare to PAM 
-pam.treat <- gam(ped_status ~ s(tend) + treatment, data = leuku.ped, 
+pam.age <- gam(ped_status ~ s(tend) + age, data = vetu.ped, 
 	family = "poisson", offset = offset)
 cbind( 
-	pam = coef(pam.treat)["treatmentplacebo"],
-	pem = coef(pem.treat)["treatmentplacebo"], 
-	cox = coef(cph.treat)["treatmentplacebo"])
+	pam = coef(pam.age)["age"],
+	pem = coef(pem.age)["age"], 
+	cox = coef(cph.age)["age"])
 ```
 
 # References

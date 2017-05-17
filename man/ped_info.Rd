@@ -15,9 +15,9 @@ median values for numerical variables and modi for non-numeric variables
 in the data set.
 }
 \examples{
-data("leuk2", package="bpcp")
-leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-ped_info(leuk.ped)
+data("veteran", package="survival")
+ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
+ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 }
 \seealso{
 \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}

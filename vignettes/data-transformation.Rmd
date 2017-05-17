@@ -39,15 +39,15 @@ are also available to the `split_data` function.
 
 ### Using defaults
 
-As an example data set we first consider Freireichs Leukemia data set [@freireich1963] 
-available from the `bpcp` package: 
+As an example data set we first consider Veterans’ Administration lung cancer 
+study [@Kalbfleisch1980] available from the `survival` package:
 
 ```{r}
-data("leuk2", package = "bpcp")
-leuk2 %<>%
+data("veteran", package = "survival")
+veteran %<>%
   mutate(id = row_number()) %>% 
-  select(id,everything(), -pair)
-head(leuk2)
+  select(id,everything())
+head(veteran)
 ```
 
 Each row contains information on the survival time (`time`), an event indicator
@@ -66,28 +66,28 @@ as follows:
 
 ```{r}
 library(pam)
-ped <- split_data(Surv(time, status)~., data = leuk2, id = "id")
-dplyr::filter(ped, id %in% 1:2)
+ped <- split_data(Surv(time, status)~., data = veteran, id = "id")
+dplyr::filter(ped, id %in% c(42, 85, 112))
 ```
 
 When no cut points are specified, the default is to use the unique event times. 
 As can be seen from the above output, the function creates an `id` variable, 
 indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval 
-the subject "visited". Thus subject `1` was under risk during one interval, subject `2` was under risk during
-9 intervals. In addition to the optional `id` variable the function also 
+the subject "visited". Thus subject `42` was under risk during 5 intervals, 
+subject `85` was under risk during one interval, and subject `112` in 
+33 intervals. In addition to the optional `id` variable the function also 
 creates 
 
   - `tstart`: the beginning of each interval
   - `tend`: the end of each interval
   - `interval`: a factor variable denoting the interval
   - `intmid`: the interval mid-points
-  - `intlen`: the interval lengths (useful for calculating cumulative hazards,
-  for example)
-  - `offset`:  the log of the duration during which the subject was under risk in that interval (i.e., $\log($`ped_time`-`tstart`), necessary for fitting a PAM model)
+  - `offset`:  the log of the duration during which the subject was under risk in 
+  that interval
   
-Additionally the time-constant covariates (here: `treatment`) are repeated 
-$n_i$ number of times, where $n_i$ is the number of intervals during which 
-subject $i$ was in the risk set. 
+Additionally the time-constant covariates (here: `trt`, `celltype`, `karno`, etc.) 
+are repeated $n_i$ number of times, where $n_i$ is the number of intervals during 
+which subject $i$ was in the risk set.
 
 
 ### Custom cut points 
@@ -96,17 +96,26 @@ Per default the `split_data` function uses all unique event times as cut points
 estimates in Cox-PH functions are updated also only at event times). 
 
 In some cases, however, one might want to reduce the number of cut points, 
-to reduce the size of the resulting data object and/or faster estimation times). To do so the `cut` argument has to be specified. 
+to reduce the size of the resulting data object and/or faster estimation times. 
+To do so the `cut` argument has to be specified. 
 Following the above example, we can use only 4 cut points
-$\kappa_0 = 0, \kappa_1 = 10, \kappa_2 = 20, \kappa_3 = 35$, resulting in $J = 3$ 
-intervals: 
+$\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$, 
+resulting in $J = 3$ intervals:
 
 ```{r}
-ped2 <- split_data(Surv(time, status)~., data = leuk2, cut = c(0, 10, 20, 35), id = "id")
-ped2 %>% filter(id %in% 1:2)
+ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400), 
+  id = "id")
+ped2 %>% filter(id %in% c(42, 85, 112))
 ```
-Note that subject with $id = 2$ now also has only one row in the data set. The fact 
-that subject 2 was in the risk set longer than subject one is however still 
-accounted for by the `offset` variable. 
+Note that now have subjects `42` and `85` have only one row in the data set. 
+The fact that subjects `42` was in the risk set longer than subject `85` is,
+however, still accounted for by the `offset` variable. Note that the `offset`s
+for subject `85` and subject `112` in interval `(50,200]` are only zero 
+because subject `85` had an observed event time of `1`, thus `log(1-0)=0` and 
+subject `112` had an event at time `51`, thus `log(51-50)=0`: 
+
+```{r}
+veteran %>% slice(c(85, 112))
+```
  
 ## References

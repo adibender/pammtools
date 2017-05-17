@@ -10,15 +10,14 @@
 #' @importFrom stats as.formula setNames update
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
-#' data("leuk2", package="bpcp")
-#' head(leuk2)
-#' leuk.ped <- split_data(Surv(time, status)~treatment, data=leuk2, 
-#'    cut=c(0:5, 10, 40), id="id")
-#' head(leuk.ped)
-#' class(leuk.ped) # class ped (piece-wise exponential data)
+#' data("veteran", package="survival")
+#' head(veteran)
+#' ped <- split_data(Surv(time, status)~trt + age, data=veteran, 
+#'    cut=c(0, 100, 400), id="id")
+#' head(ped)
+#' class(ped) # class ped (piece-wise exponential data)
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
-
 split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
 
   ## assert that inputs have correct formats

@@ -6,3 +6,4 @@
 ^sandbox$
 ^appveyor\.yml$
 ^.*\.dropbox\.attr$
+^.*\.nfs$

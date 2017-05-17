@@ -18,12 +18,15 @@
 #' @importFrom magrittr %<>%
 #' @importFrom stats predict
 #' @examples
+#' \dontrun{
 #' library(mgcv)
-#' data("leuk2", package="bpcp")
-#' leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-#' pam <- gam(ped_status ~ s(tend), data = leuk.ped, family=poisson(), offset=offset)
-#' pinfo <- ped_info(leuk.ped)
+#' data("veteran", package="survival")
+#' ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran, 
+#' 	id="id")
+#' pam <- gam(ped_status ~ s(tend, k=5), data = ped, family=poisson(), offset=offset)
+#' pinfo <- ped_info(ped)
 #' add_hazard(pinfo, pam)
+#' }
 #' @export
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
 #' @rdname add_hazard
