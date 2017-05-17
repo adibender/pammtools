@@ -1,10 +1,11 @@
 context("Dplyr methods for specific classes")
 
-data("leuk2", package = "bpcp")
-leuk2 <- dplyr::slice(leuk2, 1:2)
-ped <- split_data(Surv(time, status)~., data = leuk2, id = "id")
-
 test_that("ped class is preserved", {
+	data("veteran", package = "survival")
+	veteran <- dplyr::slice(veteran, 1:2)
+	ped <- split_data(Surv(time, status)~ trt + age, cut=c(0, 100, 400), 
+		data = veteran, id = "id")
+
 	expect_is(filter(ped, id == 1), "ped")
 	expect_is(slice(ped, 1), "ped")
 	expect_is(arrange(ped, desc(id)), "ped")

@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.744
+Version: 0.0.754
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
@@ -27,10 +27,8 @@ Suggests:
     RColorBrewer,
     scam,
     testthat,
-    bpcp,
     knitr,
     rmarkdown,
-    JM, 
     grid,
     gridExtra
 URL: http://github.com/adibender/pam

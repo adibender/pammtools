@@ -56,12 +56,12 @@ Thus most arguments and their documentation below is from \code{predict.gam}.
 }
 \examples{
 library(mgcv)
-data("leuk2", package="bpcp")
-leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-pam <- gam(ped_status ~ ti(tend) + ti(tend, by=as.ordered(treatment)),
-	data = leuk.ped, family=poisson(), offset=offset)
-pinfo <- ped_info(leuk.ped)
-add_term(pinfo, pam, term="treatment")
+data("veteran", package="survival")
+ped <- split_data(Surv(time, status)~ age, data=veteran, id="id")
+pam <- gam(ped_status ~ s(tend),
+	data = ped, family=poisson(), offset=offset)
+pinf <- ped_info(ped)
+add_term(pinf, pam, term="tend")
 }
 \seealso{
 \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}

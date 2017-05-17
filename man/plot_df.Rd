@@ -14,8 +14,8 @@ potentially additional information from predictions, etc.}
 Extract information for plotting step functions
 }
 \examples{
-data("leuk2", package="bpcp")
-leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
+data("veteran", package="survival")
+leuk.ped <- split_data(Surv(time, status)~., data=veteran, id="id")
 pem <- glm(ped_status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
 pinfo <- ped_info(leuk.ped)
 pinfo$basehaz <- predict(pem, newdata=pinfo, type="response")

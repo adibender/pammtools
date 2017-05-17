@@ -79,8 +79,9 @@ tidy_fixed(pam) # per default intercept is ommitted
 gg_fixed(pam)
 ```
 
-We can see that the estimated mortality risk for male subjects is increased by a factor of 
-about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$ compared to female subjects.
+We can see that the estimated mortality risk for male subjects is increased by a
+factor of about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
+compared to female subjects.
 
 <!--
 Additionally, this package provides a function to visualize fixed coefficients 
