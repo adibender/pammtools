@@ -12,7 +12,7 @@ tidy_smooth2d(x, keep = c("x", "y", "fit", "se", "xlab", "ylab", "main"),
 
 \item{keep}{A vector of variables to keep.}
 
-\item{ci}{A logical value indicating whether confidence intervals should be 
+\item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}

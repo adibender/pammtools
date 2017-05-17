@@ -61,11 +61,11 @@ package is simple, including a `strata` term in the model formula.
 
 ```{r, cph}
 cph <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
+base <- basehaz(cph)
 ```
 
 The different baselines are visualized below: 
 ```{r, ggbase, fig.width=5, fig.height=4, dependson="cph", warning=FALSE}
-base <- basehaz(cph, centered=FALSE)
 gg.bz <- ggplot(base, aes(x=time)) +
   geom_step(aes(y=hazard, group=strata)) +
 	ylab(expression(hat(Lambda)(t))) + xlab("t")

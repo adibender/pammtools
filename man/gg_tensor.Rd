@@ -9,7 +9,7 @@ gg_tensor(x, ci = FALSE, ...)
 \arguments{
 \item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
 
-\item{ci}{A logical value indicating whether confidence intervals should be 
+\item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}

@@ -17,7 +17,7 @@ add_term(newdata, object, term, se.fit = TRUE, type = "terms",
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{term}{A character (vector) or regular expression indicating for 
+\item{term}{A character (vector) or regular expression indicating for
 which term(s) information should be extracted and added to data set.}
 
 \item{se.fit}{ when this is TRUE (not default) standard error estimates are returned for each prediction.}
@@ -39,26 +39,26 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{se.mult}{The factor by which standard errors are multiplied to form 
+\item{se.mult}{The factor by which standard errors are multiplied to form
 confidence intervals.}
 
-\item{relative}{If \code{TRUE}, calculates relative risk contribution, 
-that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals 
+\item{relative}{If \code{TRUE}, calculates relative risk contribution,
+that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals
 if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
-Adds the contribution (plus confidence intervals) of a specific term to the 
+Adds the contribution (plus confidence intervals) of a specific term to the
 linear predictor to the provided data.
-Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}. 
+Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
 Thus most arguments and their documentation below is from \code{predict.gam}.
 }
 \examples{
 library(mgcv)
 data("leuk2", package="bpcp")
 leuk.ped <- split_data(Surv(time, status)~., data=leuk2, id="id")
-pam <- gam(ped_status ~ ti(tend) + ti(tend, by=as.ordered(treatment)), 
+pam <- gam(ped_status ~ ti(tend) + ti(tend, by=as.ordered(treatment)),
 	data = leuk.ped, family=poisson(), offset=offset)
 pinfo <- ped_info(leuk.ped)
 add_term(pinfo, pam, term="treatment")
