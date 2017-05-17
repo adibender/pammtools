@@ -41,12 +41,17 @@ $k=1,\ldots,K$ of factor variable $z$ will have its own baseline-hazard:
 
 $\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$. 
 
-For illustration we again use the `veteran` data from the `survival` package, 
+For illustration we again use the `veteran` data (censored at day 400) 
+from the `survival` package, 
 where the celltype of the lung cancer had four levels: 
 
 ```{r}
 data("veteran")
-veteran %<>% filter(time < 400)
+veteran %<>% 
+  mutate(
+    prior = 1*(prior==10),
+    status = ifelse(time > 400, 0, status),
+    time = ifelse(time > 400, 400, time))
 table(veteran$celltype)
 ```
 
@@ -56,13 +61,13 @@ package is simple, including a `strata` term in the model formula.
 
 ```{r, cph}
 cph <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
+base <- basehaz(cph)
 ```
 
 The different baselines are visualized below: 
 ```{r, ggbase, fig.width=5, fig.height=4, dependson="cph", warning=FALSE}
-base <- basehaz(cph, centered=FALSE)
-gg.bz <- ggplot(base, aes(x=time, y=hazard, group=strata)) +
-  geom_step() +
+gg.bz <- ggplot(base, aes(x=time)) +
+  geom_step(aes(y=hazard, group=strata)) +
 	ylab(expression(hat(Lambda)(t))) + xlab("t")
 gg.bz + aes(col=strata)
 ```
@@ -77,9 +82,11 @@ include the `celltype` factor variable in the model specification:
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
 ped <- split_data(Surv(time, status)~., data=veteran, id="id")
-pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped, 
+pam <- gam(ped_status ~ celltype + s(tend, by=celltype, m=1), data=ped, 
 	family=poisson(), offset=offset)
 ```
+<!-- mit m = 1 hier bisschen weniger abgefahrenes Ergebnis als mit m=default =2
+für die 'adeno'-subgruppe..... da haste ja bisher ganz schön geschummelt mit dem ylim... ;)-->
 
 Comparing the estimated baselines we get very similar results between 
 the stratified Cox and stratified PAM models. 
@@ -88,12 +95,15 @@ pinf <- ped %>%
   group_by(celltype) %>% 
   ped_info() %>% 
   add_cumhazard(pam) %>% 
-	rename(strata=celltype)
+	rename(strata=celltype) %>% 
+  filter(!(strata == "adeno" & tend > 200))
 gg.bz +	aes(col="Nelson-Aalen") +
 	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
-	facet_wrap(~strata, nrow=1) + 
+  geom_ribbon(data=pinf, aes(x=tend, ymin=cumlower, ymax = cumupper,
+    group=strata), fill = "black", col = NA, alpha = .2) +
+ 	facet_wrap(~strata, nrow=1) + 
 	scale_color_manual(name="Method", values=c(Set1[1], 1)) +
-	ylim(c(0, 5)) + theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 ```
 
 ### Stratified Proportional Hazards Model 
@@ -101,7 +111,7 @@ gg.bz +	aes(col="Nelson-Aalen") +
 Both models can be easily extended to incorporate further covariates. 
 If we assume that the covariate effects are not time-varying, this extension 
 constitutes a so called stratified proportional hazards model. For example, 
-including the treatment (`trt`), age (`age`) and the Karnofsky Score (`karno`), 
+including effects for treatment (`trt`), age (`age`) and the Karnofsky Score (`karno`), 
 we get the model 
 
 $$

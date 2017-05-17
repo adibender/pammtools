@@ -12,6 +12,6 @@ get_plotinfo(x, ...)
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
-Given a \code{mgcv} \code{\link[mgcv]{gamObject}}, returns the information 
+Given a \code{mgcv} \code{\link[mgcv]{gamObject}}, returns the information
 used for the default plots produced by \code{\link[mgcv]{plot.gam}}.
 }

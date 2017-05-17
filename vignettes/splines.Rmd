@@ -39,7 +39,11 @@ the `veteran` data from the survival package:
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>% filter(time < 400) %>% mutate(prior = 1*(prior==10))
+veteran %<>% 
+  mutate(
+    prior = 1*(prior==10),
+    status = ifelse(time > 400, 0, status),
+    time = ifelse(time > 400, 400, time))
 head(veteran)
 ```
 
@@ -48,11 +52,11 @@ exhibit non-linear effects, `age` and `karno`. We fit a Cox-PH model and
 a PAM of the form 
 
 $$
-\lambda(t|x) = \lambda_0(t)\exp(f(age)) 
+\lambda(t|x) = \lambda_0(t)\exp(f(\text{age}})) 
 $$
 and 
 $$
-\lambda(t|x) = \exp(f_0(t_j) + f(age))
+\lambda(t|x) = \exp(f_0(t_j) + f(\text{age}))
 $$
 respectively: 
 

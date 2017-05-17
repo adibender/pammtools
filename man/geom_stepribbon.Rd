@@ -76,4 +76,7 @@ h + geom_ribbon(aes(ymin = level - 1, ymax = level + 1), fill = "grey70") +
 \code{\link[ggplot2:geom_ribbon]{geom_ribbon}} \code{geom_stepribbon}
   inherits from \code{geom_ribbon}.
 }
+\author{
+Triad Sou <triadsou@gmail.com>
+}
 \keyword{datasets}

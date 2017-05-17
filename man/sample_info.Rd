@@ -18,7 +18,7 @@ sample_info(x, ...)
 \item{...}{Further arguments passed to specialized methods.}
 }
 \description{
-Given a data set and grouping variables, this function returns median values 
+Given a data set and grouping variables, this function returns median values
 for numeric variables and modus for characters and factors.
 }
 \seealso{

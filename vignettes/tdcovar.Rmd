@@ -117,7 +117,7 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
   geom_hline(yintercept = 0, lty=3) +
   geom_pointrange(aes(col=factor(Model)), position=position_dodge(width=0.5)) + 
   coord_flip() + 
-  scale_colour_manual(name="Method", values=c(Set1[1], 1)) + 
+  scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) + 
   ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
   xlab("")
 
@@ -135,7 +135,7 @@ smooth_gg <- ggplot(age_df, aes(y=fit)) +
 	geom_line(aes(col="PAM")) + 
 	geom_ribbon(aes(ymin=low, ymax=high), alpha=0.3) + 
 	geom_line(aes(y=cphfit, col="Cox-PH")) + 
-	scale_colour_manual(name="Method", values=c(Set1[1],1)) + 
+	scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) + 
   ylab(expression(hat(f)(x))) + theme(legend.position="none")
 
 ## plot of the age effect 
@@ -272,7 +272,7 @@ bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) +
     geom_line(aes(col="PAM")) + 
     geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
     geom_line(aes(y=cox, col="Cox")) +
-    scale_colour_manual(name="Method", values=c(Set1[1],1)) 
+    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) 
 
 ## Effect of protime
 protime_df <- pbc_ped %>% ungroup() %>% 
@@ -284,7 +284,7 @@ protime_gg <- ggplot(protime_df, aes(x=protime, y=fit)) +
     geom_line(aes(col="PAM")) + 
     geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
     geom_line(aes(y=cox, col="Cox")) + 
-    scale_colour_manual(name="Method", values=c(Set1[1],1))
+    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000"))
 
 ## combine figures
 library(grid)
