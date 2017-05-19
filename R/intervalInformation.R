@@ -99,10 +99,10 @@ get_intervals <- function(brks, x, ...) {
   assert_numeric(brks, lower = 0, any.missing = FALSE)
   assert_numeric(x, finite = TRUE, all.missing = FALSE)
 
-  int.df <- int_info(brks)
-  int    <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
+  int_df <- int_info(brks)
+  int    <- findInterval(x, union(int_df$tstart, int_df$tend), ...)
 
-  int.df %>%
+  int_df %>%
     slice(int)      %>%
     mutate(x = x)   %>%
     arrange(tstart) %>%
@@ -115,10 +115,7 @@ get_intervals <- function(brks, x, ...) {
 #'
 #' Given an object of class \code{ped}, returns data frame with one row for each
 #' interval containing interval information, median values for numerical
-#' variables and modi for non-numeric variables in the data set. Columns
-#' \code{ped_riskset, ped_events, ped_censored} provide the size of the riskset
-#' at the beginning of each interval as well as the number of events and
-#' censorings in the interval, respectively.
+#' variables and modi for non-numeric variables in the data set.
 #'
 #' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
 #' @import checkmate dplyr
@@ -133,30 +130,53 @@ ped_info <- function(ped) {
 
   assert_class(ped, classes="ped")
 
-  int.df <- int_info(ped)
+  int_df <- int_info(ped)
   sdf    <- sample_info(ped)
+  bind_cols(
+    int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
+    sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
+    grouped_df(vars = groups(sdf))
+}
 
-  censored <- ped %>% group_by(id) %>%
-    arrange(tend) %>% filter(row_number() == n()) %>%
-    filter(ped_status == 0) %>% group_by(interval) %>%
+#' Extract risk set information for each interval.
+#'
+#' Computes means/modes of all covariates over the risk set as it exists at the
+#' beginning of each interval and returns a data.frame with one row for each
+#' interval. Columns \code{ped_riskset, ped_events, ped_censored} provide the
+#' size of the riskset at the beginning of each interval as well as the number
+#' of events and censorings that occured in the interval, respectively.
+#' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
+#' @import checkmate dplyr
+#' @examples
+#' data("veteran", package="survival")
+#' ped <- split_data(Surv(time, status)~ ., data = veteran, id = "id",
+#'   cut = seq(0,400, by = 100))
+#' riskset_info(ped)
+#' riskset_info(ped %>% group_by(celltype))
+#' @export
+#' @return A data frame with one row for each interval in \code{ped}.
+#' @seealso \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
+riskset_info <- function(ped) {
+  assert_class(ped, classes="ped")
+
+  # means/modes over risk set at each interval beginning:
+  interval_means <- group_by(ped, interval, add=TRUE) %>% sample_info()
+
+  # how often is interval the last row for a given id when status == 0?
+  censored <- ped %>% group_by(id, add = TRUE) %>%
+    arrange(tend) %>% slice(n()) %>%
+    filter(ped_status == 0) %>% ungroup(id) %>%
+    grouped_df(vars = c(groups(ped), as.symbol("interval"))) %>%
     summarize(ped_censored = n())
 
-  event_info <- ped %>% group_by(interval) %>%
+  join_vars <- unlist(c(sapply(groups(ped), deparse), "interval"))
+  ped %>% group_by(interval, add = TRUE) %>%
     summarize(
       ped_riskset = n(),
       ped_events = sum(ped_status)) %>%
-    left_join(censored, by = "interval") %>%
+    left_join(censored, by = join_vars) %>%
     mutate(ped_censored = ifelse(is.na(ped_censored), 0, ped_censored)) %>%
-    left_join(int.df, by = "interval")
-
-  bc <- bind_cols(
-    event_info %>% slice(rep(seq_len(nrow( event_info)), times = nrow(sdf))),
-    sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(event_info))))
-
-  if (is.grouped_df(sdf)) {
-    bc %<>% grouped_df(vars = groups(sdf))
-  }
-  bc
+    left_join(interval_means, by = join_vars)
 }
 
 #' Extract information for plotting step functions

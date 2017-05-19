@@ -9,10 +9,13 @@ ped_info(ped)
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.}
 }
+\value{
+A data frame with one row for each interval in \code{ped}.
+}
 \description{
-Given an object of class \code{ped}, returns data frame with interval information, 
-median values for numerical variables and modi for non-numeric variables 
-in the data set.
+Given an object of class \code{ped}, returns data frame with one row for each
+interval containing interval information, median values for numerical
+variables and modi for non-numeric variables in the data set.
 }
 \examples{
 data("veteran", package="survival")
