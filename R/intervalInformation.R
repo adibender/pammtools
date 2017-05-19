@@ -1,12 +1,12 @@
 #' Create start/end times and interval information
 #'
-#' Given interval breaks points, returns data frame with information on 
-#' interval start time, interval end time, interval length and a interval factor 
-#' variable (left open intervals). If object of class ped is provided, extracts 
-#' unique interval information from object. 
-#' 
+#' Given interval breaks points, returns data frame with information on
+#' interval start time, interval end time, interval length and a interval factor
+#' variable (left open intervals). If object of class ped is provided, extracts
+#' unique interval information from object.
+#'
 #' @param x A numeric vector of cut points in which the follow-up should be
-#' partitioned in or object of class \code{ped}. 
+#' partitioned in or object of class \code{ped}.
 #' @param ... Currently ignored.
 #' @rdname int_info
 #' @return data.frame. A data frame containing the start and end times of the
@@ -49,9 +49,9 @@ int_info.default <- function(
   tdf <- data.frame(
     tstart = tstart,
     tend   = tend,
-    intlen = intlen) %>% 
+    intlen = intlen) %>%
     mutate(
-      intmid = tstart + intlen/2, 
+      intmid = tstart + intlen/2,
       interval = paste0("(", tstart, ",", tend, "]"),
       interval = factor(interval, levels=interval))
 
@@ -77,12 +77,12 @@ int_info.ped <- function(x, ...) {
 
 
 #' Given breaks, return intervals in which times vector falls
-#' 
+#'
 #' @inheritParams int_info
 #' @param brks Vector of values for which interval information should be returned.
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
-#' @return A \code{data.frame} containing information on intervals in which 
+#' @return A \code{data.frame} containing information on intervals in which
 #' values of x fall
 #' @examples
 #' set.seed(111018)
@@ -102,7 +102,7 @@ get_intervals <- function(brks, x, ...) {
   int.df <- int_info(brks)
   int    <- findInterval(x, union(int.df$tstart, int.df$tend), ...)
 
-  int.df %>% 
+  int.df %>%
     slice(int)      %>%
     mutate(x = x)   %>%
     arrange(tstart) %>%
@@ -112,18 +112,22 @@ get_intervals <- function(brks, x, ...) {
 
 
 #' Extract interval information and median/modus values for covariates
-#' 
-#' Given an object of class \code{ped}, returns data frame with interval information, 
-#' median values for numerical variables and modi for non-numeric variables 
-#' in the data set. 
-#' 
+#'
+#' Given an object of class \code{ped}, returns data frame with one row for each
+#' interval containing interval information, median values for numerical
+#' variables and modi for non-numeric variables in the data set. Columns
+#' \code{ped_riskset, ped_events, ped_censored} provide the size of the riskset
+#' at the beginning of each interval as well as the number of events and
+#' censorings in the interval, respectively.
+#'
 #' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
 #' @import checkmate dplyr
-#' @examples 
+#' @examples
 #' data("veteran", package="survival")
 #' ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
 #' ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
-#' @export 
+#' @export
+#' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
 ped_info <- function(ped) {
 
@@ -132,23 +136,34 @@ ped_info <- function(ped) {
   int.df <- int_info(ped)
   sdf    <- sample_info(ped)
 
+  censored <- ped %>% group_by(id) %>%
+    arrange(tend) %>% filter(row_number() == n()) %>%
+    filter(ped_status == 0) %>% group_by(interval) %>%
+    summarize(ped_censored = n())
+
+  event_info <- ped %>% group_by(interval) %>%
+    summarize(
+      ped_riskset = n(),
+      ped_events = sum(ped_status)) %>%
+    left_join(censored, by = "interval") %>%
+    mutate(ped_censored = ifelse(is.na(ped_censored), 0, ped_censored)) %>%
+    left_join(int.df, by = "interval")
+
   bc <- bind_cols(
-    int.df %>% slice(rep(seq_len(nrow(int.df)), times=nrow(sdf))), 
-    sdf %>% slice(rep(seq_len(nrow(sdf)), each=nrow(int.df))))
+    event_info %>% slice(rep(seq_len(nrow( event_info)), times = nrow(sdf))),
+    sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(event_info))))
 
-  if(is.grouped_df(sdf)) {
-    bc %<>% grouped_df(vars=groups(sdf))
+  if (is.grouped_df(sdf)) {
+    bc %<>% grouped_df(vars = groups(sdf))
   }
-
-  return(bc)
-
+  bc
 }
 
 #' Extract information for plotting step functions
-#' 
-#' 
-#' @param pinfo A data frame as returned by \code{\link[pam]{ped_info}} and 
-#' potentially additional information from predictions, etc. 
+#'
+#'
+#' @param pinfo A data frame as returned by \code{\link[pam]{ped_info}} and
+#' potentially additional information from predictions, etc.
 #' @examples
 #' data("veteran", package="survival")
 #' leuk.ped <- split_data(Surv(time, status)~., data=veteran, id="id")
@@ -160,11 +175,11 @@ ped_info <- function(ped) {
 #' @export
 plot_df <- function(pinfo) {
 
-  bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>% 
+  bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>%
     mutate(
       tend   = lag(tend, default   = min(tstart)),
       intlen = lag(intlen, default = intlen[1])) %>%
-    select(-one_of("interval", "tstart")) %>% 
+    select(-one_of("interval", "tstart")) %>%
     rename(time=tend)
 
 }
