@@ -24,7 +24,7 @@ data("veteran", package="survival")
 ped <- split_data(Surv(time, status)~ ., data = veteran, id = "id",
   cut = seq(0,400, by = 100))
 riskset_info(ped)
-riskset_info(ped \%>\% group_by(celltype))
+riskset_info(group_by(ped, celltype))
 }
 \seealso{
 \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}

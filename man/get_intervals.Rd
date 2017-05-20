@@ -15,7 +15,7 @@ partitioned in or object of class \code{ped}.}
 \item{...}{Further arguments passed to \code{\link[base]{findInterval}}.}
 }
 \value{
-A \code{data.frame} containing information on intervals in which 
+A \code{data.frame} containing information on intervals in which
 values of x fall
 }
 \description{

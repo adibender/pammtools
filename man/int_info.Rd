@@ -27,9 +27,9 @@ intervals specified by the \code{x} argument. Additionally the interval
 length, interval mid-point and a factor variable of the intervals themselves.
 }
 \description{
-Given interval breaks points, returns data frame with information on 
-interval start time, interval end time, interval length and a interval factor 
-variable (left open intervals). If object of class ped is provided, extracts 
+Given interval breaks points, returns data frame with information on
+interval start time, interval end time, interval length and a interval factor
+variable (left open intervals). If object of class ped is provided, extracts
 unique interval information from object.
 }
 \examples{

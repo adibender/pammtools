@@ -107,8 +107,8 @@ summarise_each.ped(tbl, funs, ...)
 \item{...}{see \code{dplyr} documentation}
 
 \item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
-override existing groups. To add to the existing groups, use
-\code{add = TRUE}.}
+override existing groups. To instead add to the existing groups,
+use \code{add = TRUE}}
 
 \item{.dots}{see \code{dplyr} documentation}
 
