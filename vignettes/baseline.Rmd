@@ -20,13 +20,13 @@ opts_chunk$set(
 
 
 ```{r, message = FALSE}
-library(pam)
-library(survival)
 library(ggplot2)
 theme_set(theme_bw())
 library(magrittr)
 library(dplyr)
+library(survival)
 library(mgcv)
+library(pam)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
@@ -38,7 +38,11 @@ We illustrate the procedure using the `veteran` data from the
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>% filter(time < 400)
+veteran %<>% 
+  mutate(
+    trt   = 1*(trt == 2),
+    prior = 1*(prior != 10)) %>% 
+  filter(time < 400)
 ```
 
 The below graph depicts the estimated cumulative hazard using the 
@@ -66,7 +70,7 @@ head(ped)
 
 ## Fit the baseline piece-wise exponential model (PEM)
 ```{r}
-pem <- gam(ped_status ~ interval, data = ped, offset = offset, family = poisson())
+pem <- glm(ped_status ~ interval, data = ped, offset = offset, family = poisson())
 ```
 
 Extract cumulative baseline estimate:
