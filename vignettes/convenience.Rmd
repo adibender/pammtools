@@ -80,7 +80,8 @@ gg_fixed(pam)
 ```
 
 We can see that the estimated mortality risk for male subjects is increased by a
-factor of about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
+factor of about 
+$\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
 compared to female subjects.
 
 <!--

@@ -69,9 +69,12 @@ Karnofsky performance scores `karno` (the higher the better), `age` and whether
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
-data("veteran", package = "survival")
-# we limit the data to event times < 400 (not many events afterwards)
-veteran %<>% mutate(prior = ((prior != 0) * 1)) %>% filter(time < 400)
+data("veteran", package="survival")
+veteran %<>% 
+  mutate(
+    trt   = 1*(trt == 2),
+    prior = 1*(prior==10)) %>% 
+  filter(time < 400) # restriction for illustration
 head(veteran)
 ```
 
