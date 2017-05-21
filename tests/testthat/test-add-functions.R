@@ -86,3 +86,15 @@ test_that("works for nonstandard baseline arguments", {
     add_cumhazard(ped[1:5,], pem)$cumhazard)
 })
 
+
+## test sensibility 
+
+test_that("hazards and CI positiv for type response", {
+  ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
+  pam <- gam(ped_status ~ s(tend, k=5) + trt, 
+    data=ped, family = poisson(), offset = offset)
+  haz_test <- add_hazard(ped_info(ped), pam) %>% 
+    summarize_at(c("hazard", "lower", "upper"), funs(any(. < 0)))
+  expect_equal(any(unlist(haz_test)), FALSE)
+
+})
