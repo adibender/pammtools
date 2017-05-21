@@ -90,6 +90,7 @@ test_that("works for nonstandard baseline arguments", {
 ## test sensibility 
 
 test_that("hazards and CI positiv for type response", {
+  
   ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
   pam <- gam(ped_status ~ s(tend, k=5) + trt, 
     data=ped, family = poisson(), offset = offset)

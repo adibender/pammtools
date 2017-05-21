@@ -94,15 +94,15 @@ get_hazard <- function(
 	new_ints <- which(!(prediction_intervals %in% original_intervals))
 	if (length(new_ints)) {
 	 message <- paste0("Intervals in <newdata> contain values (",
-	   prediction_intervals[new_ints], ") not used in original fit.",
+	   paste(prediction_intervals[new_ints], collapse=","), 
+	   ") not used in original fit.",
 	   " Setting intervals to values not used for original fit in <object>",
 	   "can invalidate the PEM assumption and yield incorrect predictions.")
 	 if (is_pam) warning(message) else stop(message)
 	}
 
-	pred <-
-	  predict(object=object, newdata = newdata, se.fit = TRUE, type=type,
-	    ...)[c("fit", "se.fit")] %>%
+	pred <- predict(object=object, newdata = newdata, se.fit = TRUE, type="link", ...)
+	pred <- pred[c("fit", "se.fit")] %>%
 		bind_cols() %>%
 		rename(hazard = fit, se = se.fit) %>%
 		mutate(
@@ -117,13 +117,18 @@ get_hazard <- function(
 				upper = hazard + se.mult*se)
 	}
 
+	if(type=="response") {
+		pred %<>% 
+			mutate_at(c("hazard", "lower", "upper"), funs(exp(.)))
+	}
+
 	# it is necessary to include the grouping variables here, otherwise
 	# functions calculating the cumulative hazard will cumulate over all rows
 	# instead of group wise
 	if(is.grouped_df(newdata)) {
 		group.df <- select_(newdata, .dots=unlist(groups(newdata)))
 		pred     <- bind_cols(group.df, pred)
-	}
+	}	
 
 	return(pred)
 
@@ -140,12 +145,12 @@ get_hazard <- function(
 add_cumhazard <- function(
 	newdata,
 	object,
-	type      = c("response"),
-	ci        = TRUE,
-	se.mult   = 2,
-	overwrite = FALSE,
-  time_variable = NULL,
-  interval_length = quo(intlen),
+	type            = "response",
+	ci              = TRUE,
+	se.mult         = 2,
+	overwrite       = FALSE,
+	time_variable   = NULL,
+	interval_length = quo(intlen),
 	...)  {
 
 	if(!overwrite) {
@@ -173,17 +178,17 @@ add_cumhazard <- function(
 get_cumhazard <- function(
 	newdata,
 	object,
-	ci   = TRUE,
-	type = "response",
-  time_variable = NULL,
-  interval_length = quo(intlen),
+	ci              = TRUE,
+	type            = "response",
+	time_variable   = NULL,
+	interval_length = quo(intlen),
 	...) {
 
   assert_class(interval_length, "quosure")
   assert_choice(as.character(interval_length)[2], colnames(newdata))
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
-	get_hazard(newdata, object, ci=TRUE, type=type, time_variable = time_variable,
+	get_hazard(newdata, object, ci=TRUE, type=type, time_variable=time_variable,
 	  ...) %>%
 	  bind_cols(lengths) %>%
 	  mutate(
