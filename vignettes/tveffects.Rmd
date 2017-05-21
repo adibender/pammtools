@@ -246,7 +246,9 @@ te_gg <- gg_tensor(pam3) +
     low="steelblue", high="firebrick2") +
   geom_contour(col="grey30") +
   xlab("t") + ylab(expression(x[plain(karno)])) +
-  theme(legend.position="bottom")
+  theme(legend.position="bottom",
+    strip.background = element_blank(),
+    strip.text.x = element_blank())
 
 ## plot f(karno, t) for specific slices
 karno_df <- combine_df(
