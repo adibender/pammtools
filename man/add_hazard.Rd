@@ -13,9 +13,9 @@ add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
 get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
   se.mult = 2, time_variable = NULL, ...)
 
-add_cumhazard(newdata, object, type = c("response"), ci = TRUE,
-  se.mult = 2, overwrite = FALSE, time_variable = NULL,
-  interval_length = quo(intlen), ...)
+add_cumhazard(newdata, object, type = "response", ci = TRUE, se.mult = 2,
+  overwrite = FALSE, time_variable = NULL, interval_length = quo(intlen),
+  ...)
 
 get_cumhazard(newdata, object, ci = TRUE, type = "response",
   time_variable = NULL, interval_length = quo(intlen), ...)

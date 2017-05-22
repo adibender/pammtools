@@ -10,10 +10,20 @@ vignette: >
 bibliography: pam.bib
 ---
 
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  fig.width  = 4,
+  fig.height = 4,
+  crop       = TRUE)
+```
+
+
 ```{r echo = TRUE, message = FALSE}
-library(pam)
 library(magrittr)
 library(dplyr)
+library(pam)
 ```
 
 
@@ -45,7 +55,10 @@ study [@Kalbfleisch1980] available from the `survival` package:
 ```{r}
 data("veteran", package = "survival")
 veteran %<>%
-  mutate(id = row_number()) %>% 
+  mutate(
+    id = row_number(),
+    trt = 1*(trt == 2),
+    prior = 1*(prior != 0)) %>% 
   select(id,everything())
 head(veteran)
 ```
@@ -65,9 +78,8 @@ Using the `pam` package this is easily achieved with the `split_data` function
 as follows: 
 
 ```{r}
-library(pam)
 ped <- split_data(Surv(time, status)~., data = veteran, id = "id")
-dplyr::filter(ped, id %in% c(42, 85, 112))
+ped %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
 
 When no cut points are specified, the default is to use the unique event times. 
@@ -105,7 +117,7 @@ resulting in $J = 3$ intervals:
 ```{r}
 ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400), 
   id = "id")
-ped2 %>% filter(id %in% c(42, 85, 112))
+ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
 Note that now have subjects `42` and `85` have only one row in the data set. 
 The fact that subjects `42` was in the risk set longer than subject `85` is,
