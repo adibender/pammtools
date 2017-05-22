@@ -163,23 +163,23 @@ In addition to information about each interval, the data set returned by the fun
 mean values of continuous variables and the modal values of categorical variables.
 
 ```{r}
-ped.info  <- ped_info(ped)
-head(ped.info)
-tail(ped.info)
+ped_info  <- ped_info(ped)
+head(ped_info)
+tail(ped_info)
 ```
 
 This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:
 
 ```{r}
-ped.info %<>% add_hazard(pam)
-ped.info %>% select(interval, hazard, lower, upper) %>% head()
-ped.info %>% select(interval, hazard, lower, upper) %>% tail()
+ped_info %<>% add_hazard(pam)
+ped_info %>% select(interval, hazard, lower, upper) %>% head()
+ped_info %>% select(interval, hazard, lower, upper) %>% tail()
 ```
 
 Which in turn can be conveniently plotted using respective functions, e.g. 
 
 ```{r}
-ggplot(ped.info, aes(x = tend)) + 
+ggplot(ped_info, aes(x = tend)) + 
 	geom_step(aes(y = hazard)) + 
 	geom_stepribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
@@ -188,10 +188,19 @@ ggplot(ped.info, aes(x = tend)) +
 or the cumulative hazard 
 
 ```{r}
-gg.chaz <- ped.info %>% add_cumhazard(pam) %>% 
+gg.chaz <- ped_info %>% add_cumhazard(pam) %>% 
 	ggplot(aes(x = tend, y = cumhazard, ymin = cumlower, ymax = cumupper))
 gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) + 
-	ylab(expression(hat(Lambda(t)))) + xlab(expression(t))
+	ylab(expression(hat(Lambda)(t))) + xlab(expression(t))
+```
+
+or the survival probabilities
+
+```{r}
+gg.surv <- ped_info %>% add_survprob(pam) %>% 
+  ggplot(aes(x = tend, y = survprob, ymax = survlower, ymin = survupper))
+gg.surv + geom_line() + geom_ribbon(alpha = 0.2) + 
+  ylab(expression(hat(S)(t))) + xlab(expression(t))
 ```
 
 This approach is very convenient, as the usual tidy `dplyr` workflow can 
