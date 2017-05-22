@@ -10,14 +10,14 @@ test_that("creating newdata works on ungrouped data", {
 
 	expect_data_frame(make_newdata(iris2), any.missing=FALSE, nrows=1, ncols=5)
 	expect_equal(colnames(make_newdata(iris2)), colnames(iris2))
-	expect_data_frame(make_newdata(iris2, Sepal.Length=5), any.missing=FALSE, 
+	expect_data_frame(make_newdata(iris2, Sepal.Length=5), any.missing=FALSE,
 		nrows=1, ncols=5)
 	expect_equal(make_newdata(iris2, Sepal.Length=5)$Sepal.Length, 5)
-	expect_data_frame(make_newdata(iris2, Sepal.Length=c(5, 6)), 
+	expect_data_frame(make_newdata(iris2, Sepal.Length=c(5, 6)),
 		any.missing=FALSE, nrows=2, ncols=5)
-	expect_data_frame(make_newdata(iris2, expand="Sepal.Length", length.out=2), 
+	expect_data_frame(make_newdata(iris2, expand="Sepal.Length", length.out=2),
 		any.missing=FALSE, nrows=2, ncols=5)
-	expect_equal(make_newdata(iris2, expand="Sepal.Length", length.out=2)$Sepal.Length, 
+	expect_equal(make_newdata(iris2, expand="Sepal.Length", length.out=2)$Sepal.Length,
 		c(4.4, 7.1))
 })
 
@@ -34,3 +34,16 @@ test_that("creating newdata fails on ungrouped data", {
 
 })
 
+test_that("make_newdata.ped warns about intervals", {
+  int_df <- split_data(Surv(time, status)~.,
+    data.frame(time = 1:2, status = c(1,1)), id = "id")
+  expect_warning(
+    make_newdata(int_df, tstart = 1.5),
+    "Setting interval borders")
+  expect_warning(
+    make_newdata(int_df, expand = "tend", length.out = 3),
+    "Setting interval borders")
+  expect_warning(
+    make_newdata(int_df, tstart = 1.5, expand = "tend", length.out= 3),
+    "Setting interval borders")
+})

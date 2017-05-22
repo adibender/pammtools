@@ -148,6 +148,7 @@ make_newdata.default <- function(
 
   assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
   assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
+  assert_subset(expand, colnames(x))
 
   orig_names <- names(x)
 
@@ -192,12 +193,21 @@ make_newdata.ped <- function(
 
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
-  user_override_dots <- any(c("tstart", "tend") %in% names(list(...)))
-  user_override_expand <- any(c("tstart", "tend") %in% expand)
-  if (user_override_dots | user_override_expand) {
-    warning("Setting interval start or end points to values not used for",
-      " original 'ped'-data can invalidate PEM assumption and yield incorrect",
-      " predictions. Proceed with caution!")
+  which_override <- c("tstart", "tend") %in% unique(c(names(list(...)), expand))
+  for (var in c("tstart", "tend")[which_override]) {
+    new_vals <- if (var %in% names(list(...))) {
+      list(...)[[var]]
+    } else {
+      seq_range(x[[var]], length.out = length.out)
+    }
+    old_vals <- x[[var]]
+    not_seen <- !(new_vals %in% old_vals)
+    if (any(not_seen)) {
+      warning("Setting interval borders <",var,"> to values [",
+        new_vals[not_seen],
+        "] not used for original 'ped'-data can invalidate PEM assumption and ",
+        "yield incorrect predictions. Proceed with caution!")
+    }
   }
 
   g_vars <- group_vars(x)
