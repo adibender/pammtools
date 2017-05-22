@@ -87,6 +87,20 @@ test_that("works for nonstandard baseline arguments", {
 })
 
 
+## test survprob 
+test_that("survival probabilities functions work for PAM", {
+
+  expect_data_frame(surv <- add_survprob(ped_info(ped), pam), nrows=5L, ncols=10L)
+  stest <- sapply(surv[, c("survprob", "survlower", "survupper")], function(z) {
+    all(z >=0 & z <=1)
+  })
+  expect_identical(all(stest), TRUE)
+  expect_error(add_survprob(surv, pam))
+  expect_data_frame(add_survprob(surv, pam, overwrite = TRUE), nrows=5L, ncols=10L)
+  
+})
+
+
 ## test sensibility 
 
 test_that("hazards and CI positiv for type response", {

@@ -62,7 +62,6 @@ add_hazard <- function(
 #' Calculate predicted hazard
 #'
 #' @inheritParams add_hazard
-#' @rdname add_hazard
 #' @importFrom stats model.frame
 get_hazard <- function(
 	newdata,
@@ -145,7 +144,6 @@ get_hazard <- function(
 add_cumhazard <- function(
 	newdata,
 	object,
-	type            = "response",
 	ci              = TRUE,
 	se.mult         = 2,
 	overwrite       = FALSE,
@@ -162,7 +160,7 @@ add_cumhazard <- function(
 			newdata %<>% select(-one_of(rm.vars))
 	}
 
-	pred <- get_cumhazard(newdata, object, ci=ci, type=type, se.mult=se.mult,
+	pred <- get_cumhazard(newdata, object, ci=ci, se.mult=se.mult,
 	  time_variable = time_variable, interval_length = interval_length, ...)
 
 	newdata %<>% bind_cols(rm_grpvars(pred))
@@ -174,12 +172,10 @@ add_cumhazard <- function(
 #' Calculate cumulative hazard
 #'
 #' @inheritParams add_cumhazard
-#' @rdname add_hazard
 get_cumhazard <- function(
 	newdata,
 	object,
 	ci              = TRUE,
-	type            = "response",
 	time_variable   = NULL,
 	interval_length = quo(intlen),
 	...) {
@@ -188,7 +184,7 @@ get_cumhazard <- function(
   assert_choice(as.character(interval_length)[2], colnames(newdata))
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
-	get_hazard(newdata, object, ci=TRUE, type=type, time_variable=time_variable,
+	get_hazard(newdata, object, ci=TRUE, type="response", time_variable=time_variable,
 	  ...) %>%
 	  bind_cols(lengths) %>%
 	  mutate(
@@ -200,3 +196,59 @@ get_cumhazard <- function(
 }
 
 
+#' Add survival probabilities estimates to data set
+#' 
+#' @inherit add_cumhazard
+#' @export
+add_survprob <- function(
+	newdata,
+	object,
+	ci              = TRUE,
+	se.mult         = 2,
+	overwrite       = FALSE,
+	time_variable   = NULL,
+	interval_length = quo(intlen),
+	...)  {
+
+	if(!overwrite) {
+		if("survprob" %in% names(newdata)) {
+			stop("Data set already contains 'hazard' column. Set `overwrite=TRUE` to overwrite")
+		}
+	} else {
+			rm.vars <- intersect(c("survprob", "survlower", "survupper"), names(newdata))
+			newdata %<>% select(-one_of(rm.vars))
+	}
+
+	pred <- get_survprob(newdata, object, ci=ci, se.mult=se.mult,
+	  time_variable = time_variable, interval_length = interval_length, ...)
+
+	newdata %>% bind_cols(rm_grpvars(pred))
+
+}
+
+
+#' Calculate survival probabilities
+#'
+#' @inheritParams add_survprob
+get_survprob <- function(
+	newdata,
+	object,
+	ci              = TRUE,
+	time_variable   = NULL,
+	interval_length = quo(intlen),
+	...) {
+
+  assert_class(interval_length, "quosure")
+  assert_choice(as.character(interval_length)[2], colnames(newdata))
+
+  lengths <- select(rm_grpvars(newdata), !!interval_length)
+	get_cumhazard(newdata, object, ci=TRUE, time_variable=time_variable, ...) %>%
+	  bind_cols(lengths) %>%
+	  mutate(
+		 	survprob  = exp(-cumhazard),
+		 	survlower = exp(-cumlower),
+		 	survupper = exp(-cumupper)) %>%
+    select(-one_of(c("cumhazard", "cumlower", "cumupper"))) %>%
+	  select(-!!interval_length)
+	  
+}
