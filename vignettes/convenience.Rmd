@@ -108,7 +108,7 @@ plotting functions is to call the default plot function for `mgcv::gam` objects.
 Note that PAM effects are additive on the log-hazard scale, so we have to plot 
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
-```{r, fig.width=8}
+```{r, fig.width=8, warning=FALSE}
 layout(t(1:2))
 plot(pam, select = 2, ylim = c(-1, 2))
 abline(h = 0, col = "grey")
@@ -130,8 +130,6 @@ We can then use `ggplot2` to produce an equivalent visualization:
 ```{r}
 library(ggplot2)
 theme_set(theme_bw())
-scale_fill_discrete <- scale_fill_brewer
-scale_color_discrete <- scale_color_brewer
 ggplot(hgb.term, aes(x = x, y = eff)) + 
 	geom_line() + 
 	geom_ribbon(aes(ymin = ci.lower, ymax = ci.upper), alpha = 0.3)
@@ -163,23 +161,23 @@ In addition to information about each interval, the data set returned by the fun
 mean values of continuous variables and the modal values of categorical variables.
 
 ```{r}
-ped_info  <- ped_info(ped)
-head(ped_info)
-tail(ped_info)
+ped_df  <- ped_info(ped)
+head(ped_df)
+tail(ped_df)
 ```
 
 This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:
 
 ```{r}
-ped_info %<>% add_hazard(pam)
-ped_info %>% select(interval, hazard, lower, upper) %>% head()
-ped_info %>% select(interval, hazard, lower, upper) %>% tail()
+ped_df %<>% add_hazard(pam)
+ped_df %>% select(interval, hazard, lower, upper) %>% head()
+ped_df %>% select(interval, hazard, lower, upper) %>% tail()
 ```
 
 Which in turn can be conveniently plotted using respective functions, e.g. 
 
 ```{r}
-ggplot(ped_info, aes(x = tend)) + 
+ggplot(ped_df, aes(x = tend)) + 
 	geom_step(aes(y = hazard)) + 
 	geom_stepribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
@@ -188,7 +186,7 @@ ggplot(ped_info, aes(x = tend)) +
 or the cumulative hazard 
 
 ```{r}
-gg.chaz <- ped_info %>% add_cumhazard(pam) %>% 
+gg.chaz <- ped_df %>% add_cumhazard(pam) %>% 
 	ggplot(aes(x = tend, y = cumhazard, ymin = cumlower, ymax = cumupper))
 gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) + 
 	ylab(expression(hat(Lambda)(t))) + xlab(expression(t))
@@ -197,7 +195,7 @@ gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
 or the survival probabilities
 
 ```{r}
-gg.surv <- ped_info %>% add_survprob(pam) %>% 
+gg.surv <- ped_df %>% add_survprob(pam) %>% 
   ggplot(aes(x = tend, y = survprob, ymax = survlower, ymin = survupper))
 gg.surv + geom_line() + geom_ribbon(alpha = 0.2) + 
   ylab(expression(hat(S)(t))) + xlab(expression(t))
@@ -210,6 +208,7 @@ hazard for different sexes:
 ```{r}
 pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
 head(pinfo.sex)
+table(pinfo.sex$sex)
 ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) + 
 	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) + 
 	geom_line(aes(col = sex)) +

@@ -85,15 +85,16 @@ ped %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 When no cut points are specified, the default is to use the unique event times. 
 As can be seen from the above output, the function creates an `id` variable, 
 indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval 
-the subject "visited". Thus subject `42` was under risk during 5 intervals, 
-subject `85` was under risk during one interval, and subject `112` in 
-33 intervals. In addition to the optional `id` variable the function also 
-creates 
+the subject "visited". Thus,  
+- subject `42` was under risk during 5 intervals, 
+- subject `85` was under risk during one interval, 
+- and subject `112` in 33 intervals. 
+
+In addition to the optional `id` variable the function also creates 
 
   - `tstart`: the beginning of each interval
   - `tend`: the end of each interval
   - `interval`: a factor variable denoting the interval
-  - `intmid`: the interval mid-points
   - `offset`:  the log of the duration during which the subject was under risk in 
   that interval
   
@@ -119,7 +120,7 @@ ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400
   id = "id")
 ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
-Note that now have subjects `42` and `85` have only one row in the data set. 
+Note that now subjects `42` and `85` have only one row in the data set. 
 The fact that subjects `42` was in the risk set longer than subject `85` is,
 however, still accounted for by the `offset` variable. Note that the `offset`s
 for subject `85` and subject `112` in interval `(50,200]` are only zero 
