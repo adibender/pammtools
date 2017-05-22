@@ -53,7 +53,7 @@ Nelson-Aalen estimator:
 base_df <- basehaz(coxph(Surv(time, status)~1, data = veteran))
 ggplot(base_df, aes(x = time, y = hazard)) + 
   geom_step() + 
-  ylab(expression(Lambda(t))) + xlab("t") + 
+  ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle("Nelson-Aalen estimate of the cumulative hazard")
 ```
 
@@ -91,7 +91,7 @@ ggplot(int_df, aes(x = tend)) +
   geom_line(aes(y = cumhazard, col = "PEM")) + 
   scale_color_manual(name = "Method", values=c(Set1[1:2])) + 
   theme(legend.position = "bottom") + 
-  ylab(expression(Lambda(t))) + xlab("t") + 
+  ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
 all.equal(int_df$cumhazard, int_df$hazard)
 ```
@@ -130,14 +130,15 @@ int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
 int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
 
 gg_baseline <- ggplot(int_df, aes(x = tend)) + 
+  geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +
   geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
   geom_line(aes(y = cumhazard, col = "PEM")) +
   geom_line(aes(y = pamch,     col = "PAM")) +
-  scale_colour_manual(
-    name    = "Method",
-    values = c(Set1[1], 1, Set1[2])) +
+  scale_color_manual(
+    name   = "Method",
+    values = c("PEM" = Set1[2],"PAM" = 1,"Nelson-Aalen" = Set1[1])) +
   theme(legend.position = "bottom") + 
-  ylab(expression(Lambda(t))) + xlab("t") + 
+  ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle(paste0("Comparison of cumulative hazards using\n", 
     "Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"))
 ```

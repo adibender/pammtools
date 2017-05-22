@@ -30,7 +30,7 @@ theme_set(theme_bw())
 library(survival)
 library(mgcv)
 library(pam)
-# devtools::load_all()
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 ## Analysis of the recidivism data 
@@ -71,7 +71,7 @@ recidivism_long <- recidivism %>%
   select(subject, start, stop, offset, arrest, employed, fin:educ) %>%
   arrange(subject, stop)
 recidivism_long %<>% 
-  mutate(employed_lag1 = lag(employed, default=0)) %>% 
+  mutate(employed.lag1 = lag(employed, default=0)) %>% 
   slice(-1) %>% # exclusion of first week, as lagged information is missing
   ungroup()
 ```
@@ -88,13 +88,15 @@ the baseline log hazard rates.
 ```{r}
 ## Fit PAM (smooth effects of age and prio, using P-Splines)
 pam <- gam(arrest ~ s(stop) + fin + s(age, bs="ps") + race + wexp + mar + paro + 
-  s(prio, bs="ps") + employed_lag1,
+  s(prio, bs="ps") + employed.lag1,
   data=recidivism_long, family=poisson(), offset=offset)
 tidy_fixed(pam)
 ## respective extended cox model 
-cph <- coxph(Surv(start, stop, arrest)~ fin + pspline(age) + race + wexp + mar + 
-  paro + pspline(prio) + employed_lag1,
+cph <- coxph(
+  formula = Surv(start, stop, arrest)~ fin + pspline(age) + race + wexp + mar + 
+    paro + pspline(prio) + employed.lag1,
   data=recidivism_long)
+# extract information on fixed coefficients
 tidy_fixed(cph)[c(1, 4:7, 10), ]
 ```
 
@@ -104,7 +106,7 @@ The figure below summarizes the comparison between the two models.
 <details> 
 	<summary>Expand here for R-Code</summary>
 
-```{r}
+```{r, prisonPrep}
 all_eff <- purrr::map_df(
   list(
     tidy_fixed(pam), 
@@ -115,9 +117,17 @@ all_eff <- purrr::map_df(
 ## plot of fixed coefficients
 coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) + 
   geom_hline(yintercept = 0, lty=3) +
-  geom_pointrange(aes(col=factor(Model)), position=position_dodge(width=0.5)) + 
-  coord_flip() + 
-  scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) + 
+  geom_pointrange(aes(col=factor(Model), shape=factor(Model)),
+    position=position_dodge(width=0.5)) +
+  scale_colour_manual(
+    name   = "Method",
+    values = c(1, Set1[1]),
+    limits = rev(levels(all_eff$Model))) +
+  scale_shape_manual(
+    name   = "Method",
+    values = c(19, 15),
+    limits = rev(levels(all_eff$Model))) +
+  coord_flip(ylim=range(-1.5, 1)) +
   ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
   xlab("")
 
@@ -139,16 +149,18 @@ smooth_gg <- ggplot(age_df, aes(y=fit)) +
   ylab(expression(hat(f)(x))) + theme(legend.position="none")
 
 ## plot of the age effect 
-age_gg <- smooth_gg + aes(x=age)
+age_gg <- smooth_gg + aes(x=age) + 
+  xlab("Age")
 
 
 ## same as "age"" for "prio" variable 
-pinf_df <- recidivism_long %>% make_newdata(expand="prio", length.out=100)
-pinf_df %<>% add_term(pam, term="prio") %>% 
+prio_df <- recidivism_long %>% make_newdata(expand="prio", length.out=100)
+prio_df %<>% add_term(pam, term="prio") %>% 
   mutate(cphfit = predict(object=cph, ., type="terms")[,7])
 
 ## plot of the prio effect 
-prio_gg <- smooth_gg %+% pinf_df + aes(x=prio)
+prio_gg <- smooth_gg %+% prio_df + aes(x=prio) + 
+  xlab("Number of prior convictions")
 ```
 
 </details>
@@ -159,7 +171,7 @@ Using the default settings in both model specifications (using P-Splines
 for smooth terms), the PAM estimates are smoother compared to the Cox 
 estimates (right panel). 
 
-```{r, fig.width=7, fig.height=5, message=FALSE}
+```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prison_prep"}
 ## put all plots together 
 library(gridExtra)
 grid.arrange(
@@ -219,7 +231,7 @@ tdc_df <- pbcseq %>%
   rename(time = day)
 ```
 
-Now we can use the `?split_tdc` variable, that need both data sets, 
+Now we can use the `?split_tdc` function, that needs both data sets, 
 `event_df`, that contains time-to-event information and one row per subject and 
 `tdc_df` that contains information on timing and value of time-dependent 
 covariates. 

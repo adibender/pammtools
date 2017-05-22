@@ -52,13 +52,13 @@ exhibit non-linear effects, `age` and `karno`. We fit a Cox-PH model and
 a PAM of the form 
 
 $$
-\lambda(t|x) = \lambda_0(t)\exp(f(\text{age})) 
+\lambda(t|x) = \lambda_0(t)\exp(f(x_{karno})) 
 $$
 
 and 
 
 $$
-\lambda(t|x) = \exp(f_0(t_j) + f(\text{age}))
+\lambda(t|x) = \exp(f_0(t_j) + f(x_{karno}))
 $$
 respectively: 
 
@@ -75,20 +75,22 @@ pam <- gam(ped_status ~ s(tend) + s(karno, bs="ps"), data=ped, family=poisson(),
 ```{r}
 # crate data set with varying karno values (from min to max in 100 steps) 
 # and add term contribution of karno from PAM and Cox-PH models
-age_df <- ped %>% make_newdata(expand = "karno", length.out = 100) %>% 
+karno_df <- ped %>% make_newdata(expand = "karno", length.out = 100) %>% 
   add_term(pam, term="karno") %>% 
-  mutate(cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] -
-           predict(cph, newdata=data.frame(karno=mean(veteran$karno))))
-ggplot(age_df, aes(x=karno, ymin=low, ymax=high)) + 
-  geom_line(aes(y=fit, col="PAM")) + 
-  geom_ribbon(alpha=0.2) + 
-  geom_line(aes(y=cox, col="Cox PH"), lty=2)+
-  scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1))
+  mutate(
+    cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] - 
+      predict(cph, newdata=data.frame(karno=mean(veteran$karno))))
+ggplot(karno_df, aes(x=karno, ymin=low, ymax=high)) +
+  geom_line(aes(y=fit, col="PAM")) +
+  geom_ribbon(alpha=0.2) +
+  geom_line(aes(y=cox, col="Cox PH"))+
+  scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1)) +
+  xlab(expression(x[plain(karno)])) + ylab(expression(hat(f)(x[plain(karno)])))
 ```
 
 Both methods are in good agreement. The higher the Karnofsky-Score the lower the
 expected log-hazard. For further evaluation of the Karnofsky Score effect using
-time-varying terms of the form $f(t)\cdot x_{karno}$ and $f(x_karno, t)$ see 
+time-varying terms of the form $f(t)\cdot x_{karno}$ and $f(x_{karno}, t)$ see 
 `vignette("tveffects", package="pam")`. 
 
 
@@ -177,7 +179,7 @@ plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2), main="Unconstrained fit"
 # 1.72 = intercept difference between pamfit2 and mpam
 const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
 plot(mpam, select = 2, se = TRUE, shift = const, 
-  ylim = c(-0.5-const, 2-const), main="Fit under monotonicity constraint")
+  ylim = c(-0.5-const, 2-const), main="Fit with monotonicity constraint")
 ```
 
 ## References

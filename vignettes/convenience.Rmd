@@ -108,7 +108,7 @@ plotting functions is to call the default plot function for `mgcv::gam` objects.
 Note that PAM effects are additive on the log-hazard scale, so we have to plot 
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
-```{r, fig.width=8}
+```{r, fig.width=8, warning=FALSE}
 layout(t(1:2))
 plot(pam, select = 2, ylim = c(-1, 2))
 abline(h = 0, col = "grey")
@@ -130,8 +130,6 @@ We can then use `ggplot2` to produce an equivalent visualization:
 ```{r}
 library(ggplot2)
 theme_set(theme_bw())
-scale_fill_discrete <- scale_fill_brewer
-scale_color_discrete <- scale_color_brewer
 ggplot(hgb.term, aes(x = x, y = eff)) + 
 	geom_line() + 
 	geom_ribbon(aes(ymin = ci.lower, ymax = ci.upper), alpha = 0.3)
@@ -210,6 +208,7 @@ hazard for different sexes:
 ```{r}
 pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
 head(pinfo.sex)
+table(pinfo.sex$sex)
 ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) + 
 	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) + 
 	geom_line(aes(col = sex)) +

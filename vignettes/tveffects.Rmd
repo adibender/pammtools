@@ -28,7 +28,9 @@ library(dplyr)
 library(pam)
 library(survival)
 library(mgcv)
-Set1 <- RColorBrewer::brewer.pal(9, "Set1")
+Set1    <- RColorBrewer::brewer.pal(9, "Set1")
+Greens  <- RColorBrewer::brewer.pal(9, "Greens")
+Purples <- RColorBrewer::brewer.pal(9, "Purples")
 ```
 
 In this vignette we show examples of how to fit time-varying effects of 
@@ -158,7 +160,7 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) + 
     geom_step(aes(y = pam.fit, col = "PAM with log-transform")) + 
     scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
-    xlab("t") + ylab("Beta(t) for karno")
+    xlab("t") + ylab(expression(hat(f)(t)))
 ```
 
 The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky scores on the hazard) afterwards.
@@ -214,7 +216,7 @@ The left panel again depicts the Karnosky Score on the y-axis and the
 time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using 
 a color gradient, where blue colors indicate log-hazard decrease and 
 red colors a log-hazard increase. The grayed out areas depict combinations
-of \code{karno} and \code{tend} that were not present in the data. 
+of `karno` and `tend` that were not present in the data. 
 Dotted horizontal and vertical lines indicate slices that are displayed 
 in the middle and right panel. 
 
@@ -241,17 +243,18 @@ time-points (green line middle panel).
   <summary>Expand here for detailed R-Code</summary>
   
 ```{r}
+## heat map/contour plot
 te_gg <- gg_tensor(pam3) +
-  geom_vline(xintercept=c(0, 50, 200, 300), lty=3) +
-  geom_hline(yintercept=c(40, 75, 95), lty=3) +
+  geom_vline(xintercept = c(1, 51, 200), lty = 3) +
+  geom_hline(yintercept = c(40, 75, 95), lty = 3) +
   scale_fill_gradient2(
-    name=expression(hat(f)(list(x[plain(karno)],t))),
-    low="steelblue", high="firebrick2") +
+    name = expression(hat(f)(list(x[plain(karno)],t))),
+    low  = "steelblue", high = "firebrick2") +
   geom_contour(col="grey30") +
   xlab("t") + ylab(expression(x[plain(karno)])) +
-  theme(legend.position="bottom",
-    strip.background = element_blank(),
-    strip.text.x = element_blank())
+  theme(legend.position  = "bottom")
+
+
 
 ## plot f(karno, t) for specific slices
 karno_df <- combine_df(
@@ -259,28 +262,33 @@ karno_df <- combine_df(
   select(sample_info(ped), -karno),
   data.frame(karno = c(40, 75, 95)))
 
-karno_df$fte <- predict(pam3, newdata=karno_df, type="terms")[,"te(tend,karno)"]
-karno_gg <- ggplot(karno_df, aes(x=tend, y=fte)) +
-  geom_step(aes(col=factor(karno))) +
-  scale_color_brewer(name=expression(x[plain(karno)]), palette = "Blues") +
-  ylab(expression(f(list(x[plain(karno)],t)))) +
-  xlab("t")+
-  theme(legend.position="bottom")
+karno_df <- karno_df %>% add_term(pam3, term="karno")
 
-time_df  <- combine_df(
-  data.frame(sample_info(ped) %>% select(-karno)),
-  data.frame(karno = seq(20, 100, by=5)),
-  # caution: only use values for tend that were actually used as interval end 
-  # points to avoid interpolating piece-wise constant time-varying effects 
-  # between steps!
-  data.frame(tend  = c(1, 51, 200, 314)))
-time_df$fte <- predict(pam3, newdata=time_df, type="terms")[,"te(tend,karno)"]
-time_gg <- ggplot(time_df, aes(x=karno, y=fte)) +
-  geom_line(aes(col=factor(tend))) +
-  scale_color_brewer(name="t", palette="Reds") +
-  ylab(expression(f(list(x[plain(karno)],t)))) +
-  xlab(expression(x[plain(karno)])) +
-  theme(legend.position="bottom")
+karno_gg <- ggplot(karno_df, aes(x=tend, y=fit)) +
+  geom_step(aes(col=factor(karno)), lwd=1.1) +
+  geom_stepribbon(aes(ymin = low, ymax = high, fill=factor(karno)), alpha=.2) +
+  scale_color_manual(
+    name   = expression(x[plain(karno)]),
+    values = Greens[c(4, 7, 9)]) +
+  scale_fill_manual(
+    name   = expression(x[plain(karno)]),
+    values = Greens[c(4, 7, 9)]) +
+  ylab(expression(hat(f)(list(x[plain(karno)],t)))) +
+  xlab("t")+  coord_cartesian(ylim= c(-4, 3))+
+  theme(legend.position  = "bottom")
+
+time_df <-ped %>% 
+  make_newdata(tend=c(1, 51, 200), karno=seq(20, 100, by=5)) %>% 
+  add_term(pam3, term="karno")
+
+time_gg <- ggplot(time_df, aes(x=karno)) +
+  geom_line(aes(y=fit, col=factor(tend)), lwd=1.1) +
+  geom_ribbon(aes(ymin = low, ymax = high, fill=factor(tend)), alpha=.2) +
+  scale_color_manual(name="t", values=Purples[c(4, 6, 8)]) +
+  scale_fill_manual(name="t", values=Purples[c(4, 6, 8)]) +
+  ylab(expression(hat(f)(list(x[plain(karno)],t)))) +
+  xlab(expression(x[plain(karno)])) + coord_cartesian(ylim= c(-4, 3))+
+  theme(legend.position  = "bottom")
 ```
 
 </details>
@@ -289,9 +297,14 @@ time_gg <- ggplot(time_df, aes(x=karno, y=fte)) +
 grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
 
-The following figure shows the estimated effect (middle panel) along with a pointwise upper (right) and lower (left) CI. Note that we have to be somewhat cautious with interpretation, considering the large uncertainty of the effect estimate, especially for lower Karnofsky-Scores
-and later time-points. Also note that the estimate does not include the estimated average 
-time-constant log-hazard (`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`) and its uncertainty: 
+The following figure shows the estimated effect (middle panel) along with a 
+pointwise upper (right) and lower (left) CI. Note that we have to be somewhat 
+cautious with interpretation, considering the large uncertainty of the effect 
+estimate, especially for lower Karnofsky-Scoresand later time-points. 
+Also note that the estimate does not include the estimated average 
+time-constant log-hazard 
+(`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`) 
+and its uncertainty: 
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
 gg_tensor(pam3, ci=TRUE) + 
