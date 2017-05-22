@@ -140,9 +140,7 @@ ped_info <- function(ped) {
 
 #' Extract risk set information for each interval.
 #'
-#' Computes means/modes of all covariates over the risk set as it exists at the
-#' beginning of each interval and returns a data.frame with one row for each
-#' interval. Columns \code{ped_riskset, ped_events, ped_censored} provide the
+#' The columns \code{ped_riskset, ped_events, ped_censored} provide the
 #' size of the riskset at the beginning of each interval as well as the number
 #' of events and censorings that occured in the interval, respectively.
 #' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
@@ -152,15 +150,15 @@ ped_info <- function(ped) {
 #' ped <- split_data(Surv(time, status)~ ., data = veteran, id = "id",
 #'   cut = seq(0,400, by = 100))
 #' riskset_info(ped)
-#' riskset_info(group_by(ped, celltype))
+#' (riskset_celltype <- riskset_info(group_by(ped, celltype)))
+#' ## add descriptive statistics for riskset at beginning of each interval:
+#' # left_join(riskset_celltype,
+#' #           group_by(ped, celltype, interval) %>% sample_info())
 #' @export
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
 riskset_info <- function(ped) {
   assert_class(ped, classes="ped")
-
-  # means/modes over risk set at each interval beginning:
-  interval_means <- group_by(ped, interval, add=TRUE) %>% sample_info()
 
   # how often is interval the last row for a given id when status == 0?
   censored <- ped %>% group_by(id, add = TRUE) %>%
@@ -175,8 +173,7 @@ riskset_info <- function(ped) {
       ped_riskset = n(),
       ped_events = sum(ped_status)) %>%
     left_join(censored, by = join_vars) %>%
-    mutate(ped_censored = ifelse(is.na(ped_censored), 0, ped_censored)) %>%
-    left_join(interval_means, by = join_vars)
+    mutate(ped_censored = ifelse(is.na(ped_censored), 0, ped_censored))
 }
 
 #' Extract information for plotting step functions
