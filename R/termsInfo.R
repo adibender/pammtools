@@ -138,13 +138,17 @@ tidy_smooth <- function(
 	# keep only variables of interest
 	po <- lapply(po[ind1d], "[", i=keep, drop=TRUE)
 
-	if(ci) {
-		po <- lapply(po, function(z) {
-			z$low  = z$fit - z$se
-			z$high = z$fit + z$se
-			z
-		})
-	}
+	# transform to data.frame
+	po <- lapply(po, function(z) {
+		z[["fit"]] <- as.vector(z[["fit"]])
+		temp <- as_tibble(z)
+		if(ci) {
+			temp %<>% mutate(
+				low  = fit - se,
+				high = fit + se)
+		}
+		temp
+	})
 
 	return(bind_rows(po))
 
