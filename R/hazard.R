@@ -212,7 +212,7 @@ add_survprob <- function(
 
 	if(!overwrite) {
 		if("survprob" %in% names(newdata)) {
-			stop("Data set already contains 'hazard' column. Set `overwrite=TRUE` to overwrite")
+			stop("Data set already contains 'survprob' column. Set `overwrite=TRUE` to overwrite")
 		}
 	} else {
 			rm.vars <- intersect(c("survprob", "survlower", "survupper"), names(newdata))
@@ -242,13 +242,12 @@ get_survprob <- function(
   assert_choice(as.character(interval_length)[2], colnames(newdata))
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
-	get_cumhazard(newdata, object, ci=TRUE, time_variable=time_variable, ...) %>%
-	  bind_cols(lengths) %>%
+	newdata %>% 
+		get_cumhazard(object, ci=TRUE, time_variable=time_variable, ...) %>%
 	  mutate(
 		 	survprob  = exp(-cumhazard),
 		 	survlower = exp(-cumlower),
 		 	survupper = exp(-cumupper)) %>%
-    select(-one_of(c("cumhazard", "cumlower", "cumupper"))) %>%
-	  select(-!!interval_length)
+    select(-one_of(c("cumhazard", "cumlower", "cumupper")))
 	  
 }
