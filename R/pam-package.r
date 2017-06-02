@@ -23,6 +23,6 @@
 #' \item \code{tveffects}: Specifying time-varying effects
 #' } 
 #'
-#' @name pam
+#' @name pam_package
 #' @docType package
 NULL

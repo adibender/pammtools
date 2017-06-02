@@ -9,7 +9,7 @@
 #' partitioned in or object of class \code{ped}.
 #' @param ... Currently ignored.
 #' @rdname int_info
-#' @return data.frame. A data frame containing the start and end times of the
+#' @return A data frame containing the start and end times of the
 #' intervals specified by the \code{x} argument. Additionally the interval
 #' length, interval mid-point and a factor variable of the intervals themselves.
 #' @export
@@ -24,7 +24,9 @@ int_info <- function(x, ...) {
 #' @import checkmate dplyr
 #' @export
 #' @examples
+#' ## create interval information from cut points
 #' int_info(c(1, 2.3, 5))
+#' 
 #' @rdname int_info
 int_info.default <- function(
   x,
@@ -63,14 +65,31 @@ int_info.default <- function(
 #' @import dplyr
 #' @rdname int_info
 #' @examples
+#' ## extract interval information used to create ped object
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
 #' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
 #' int_info(ped)
+#' 
 #' @export
-#' @seealso split_data
+#' @seealso split_data ped_info
 int_info.ped <- function(x, ...) {
 
   int_info(attr(x, "cut"), ...)
+
+}
+
+#' @rdname int_info
+#' @examples
+#' ## extract interval information of ped that was used to fit the model
+#' data("veteran", package="survival")
+#' vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
+#' vet_pam <- pam(ped_status ~ s(tend, k=3), data=vet_ped)
+#' int_info(vet_pam)
+#' 
+#' @export
+int_info.pam <- function(x, ...) {
+
+  int_info(x$cut)
 
 }
 

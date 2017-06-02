@@ -7,3 +7,4 @@
 ^appveyor\.yml$
 ^.*\.dropbox\.attr$
 ^.*\.nfs$
+^data-raw$
