@@ -10,7 +10,7 @@ get_term(data, fit, term, ...)
 \item{data}{Any data frame containing variables used to fit the model. Only
 first row will be used.}
 
-\item{fit}{A fitted object of class \code{gam}.}
+\item{fit}{A fitted object of class \code{\link[mgcv]{gam}}.}
 
 \item{term}{The (non-linear) model term of interest.}
 

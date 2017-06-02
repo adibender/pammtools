@@ -2,7 +2,7 @@
 #'
 #' @param data Any data frame containing variables used to fit the model. Only
 #' first row will be used.
-#' @param fit A fitted object of class \code{gam}.
+#' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param term The (non-linear) model term of interest.
 #' @param ... Currently ignored.
 #' @import magrittr dplyr

@@ -94,7 +94,6 @@ int_info.pam <- function(x, ...) {
 }
 
 
-
 #' Given breaks, return intervals in which times vector falls
 #'
 #' @inheritParams int_info
@@ -102,7 +101,7 @@ int_info.pam <- function(x, ...) {
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
 #' @return A \code{data.frame} containing information on intervals in which
-#' values of x fall
+#' values of x fall.
 #' @examples
 #' set.seed(111018)
 #' brks <- c(0, 4.5, 5, 10, 30)
