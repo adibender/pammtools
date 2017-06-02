@@ -10,7 +10,7 @@ gg_smooth(data, fit, ...)
 \item{data}{Any data frame containing variables used to fit the model. Only
 first row will be used.}
 
-\item{fit}{A fitted object of class \code{gam}.}
+\item{fit}{A fitted object of class \code{\link[mgcv]{gam}}.}
 
 \item{...}{Further arguments passed to \code{\link{get_terms}}}
 }

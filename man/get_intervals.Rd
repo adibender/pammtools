@@ -16,7 +16,7 @@ partitioned in or object of class \code{ped}.}
 }
 \value{
 A \code{data.frame} containing information on intervals in which
-values of x fall
+values of x fall.
 }
 \description{
 Given breaks, return intervals in which times vector falls
