@@ -4,13 +4,14 @@
 \alias{get_intervals}
 \title{Given breaks, return intervals in which times vector falls}
 \usage{
-get_intervals(brks, x, ...)
+get_intervals(x, times, ...)
 }
 \arguments{
-\item{brks}{Vector of values for which interval information should be returned.}
+\item{x}{An object from which interval information can be obtained, 
+see \code{\link{int_info}}.}
 
-\item{x}{A numeric vector of cut points in which the follow-up should be
-partitioned in or object of class \code{ped}.}
+\item{times}{A vector of times for which corresponding interval information 
+should be returned.}
 
 \item{...}{Further arguments passed to \code{\link[base]{findInterval}}.}
 }
@@ -27,6 +28,7 @@ brks <- c(0, 4.5, 5, 10, 30)
 int_info(brks)
 x <- runif(3, 0, 30)
 get_intervals(brks, x, left.open=TRUE)
+
 }
 \seealso{
 findInterval int_info

@@ -97,7 +97,10 @@ int_info.pam <- function(x, ...) {
 #' Given breaks, return intervals in which times vector falls
 #'
 #' @inheritParams int_info
-#' @param brks Vector of values for which interval information should be returned.
+#' @param x An object from which interval information can be obtained, 
+#' see \code{\link{int_info}}.
+#' @param times A vector of times for which corresponding interval information 
+#' should be returned.
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
 #' @return A \code{data.frame} containing information on intervals in which
@@ -108,23 +111,23 @@ int_info.pam <- function(x, ...) {
 #' int_info(brks)
 #' x <- runif(3, 0, 30)
 #' get_intervals(brks, x, left.open=TRUE)
-#' @export
+#' 
 #' @seealso findInterval int_info
-
-get_intervals <- function(brks, x, ...) {
+#' @rdname get_intervals
+#' @export
+get_intervals <- function(x, times, ...) {
 
   # check inputs
-  assert_numeric(brks, lower = 0, any.missing = FALSE)
-  assert_numeric(x, finite = TRUE, all.missing = FALSE)
+  assert_numeric(times, lower = 0, finite = TRUE, all.missing = FALSE)
 
-  int_df <- int_info(brks)
-  int    <- findInterval(x, union(int_df$tstart, int_df$tend), ...)
+  int_df <- int_info(x)
+  int    <- findInterval(times, union(int_df$tstart, int_df$tend), ...)
 
   int_df %>%
     slice(int)      %>%
-    mutate(x = x)   %>%
-    arrange(tstart) %>%
-    select(x, everything())
+    mutate(times = times)   %>%
+    arrange(times) %>%
+    select(times, everything())
 
 }
 
