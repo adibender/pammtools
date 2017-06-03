@@ -10,46 +10,52 @@ pem <- glm(ped_status ~ 0 + interval + trt, data=ped,
   family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
-	expect_is(haz <- add_hazard(ped_info(ped), pam), "data.frame")
-	expect_identical(dim(haz), c(5L, 11L))
+
+	expect_data_frame(haz <- add_hazard(ped_info(ped), pam), nrows=5, ncols=11)
 	expect_error(add_hazard(haz, pam))
-	expect_identical(dim(add_hazard(haz, pam, overwrite = TRUE)), c(5L, 11L))
+	expect_data_frame(add_hazard(haz, pam, overwrite = TRUE), nrows=5L, ncols=11L)
+
 })
 
 test_that("hazard functions work for PEM", {
-  expect_is(haz <- add_hazard(ped_info(ped), pem), "data.frame")
-  expect_identical(dim(haz), c(5L, 11L))
+
+  expect_data_frame(haz <- add_hazard(ped_info(ped), pem), nrows=5L, ncols=11L)
   expect_error(add_hazard(haz, pem))
-  expect_identical(dim(add_hazard(haz, pem, overwrite = TRUE)), c(5L, 11L))
+  expect_data_frame(add_hazard(haz, pem, overwrite = TRUE), nrows=5L, ncols=11L)
+
 })
 
 
 test_that("cumulative hazard functions work for PAM", {
-	expect_is(haz <- add_cumhazard(ped_info(ped), pam), "data.frame")
-	expect_identical(dim(haz), c(5L, 10L))
+
+	expect_data_frame(haz <- add_cumhazard(ped_info(ped), pam), nrows=5L, ncols=10L)
 	expect_error(add_cumhazard(haz, pam))
-	expect_identical(dim(add_cumhazard(haz, pam, overwrite = TRUE)), c(5L, 10L))
+	expect_data_frame(add_cumhazard(haz, pam, overwrite = TRUE), nrows=5L, ncols=10L)
+
 })
 
 test_that("cumulative hazard functions work for PEM", {
-  expect_is(haz <- add_cumhazard(ped_info(ped), pem), "data.frame")
-  expect_identical(dim(haz), c(5L, 10L))
+
+  expect_data_frame(haz <- add_cumhazard(ped_info(ped), pem), nrows=5L, ncols=10L)
   expect_error(add_cumhazard(haz, pem))
-  expect_identical(dim(add_cumhazard(haz, pem, overwrite = TRUE)), c(5L, 10L))
+  expect_data_frame(add_cumhazard(haz, pem, overwrite = TRUE), nrows=5L, ncols=10L)
+
 })
 
 test_that("adding terms works for PAM", {
-	expect_is(add_term(ped_info(ped), pam, term="trt"), "data.frame")
-	expect_is(add_term(ped_info(ped), pam, term="trt", relative=TRUE),
-		"data.frame")
+	expect_data_frame(term <- add_term(ped_info(ped), pam, term="trt"), 
+    nrows=5L, ncols=10L)
+	expect_data_frame(add_term(ped_info(ped), pam, term="trt", relative=TRUE),
+		nrows=5L, ncols=10L)
 	pam$model <- NULL
 	expect_error(add_term(ped_info(ped), pam, term="trt", relative=TRUE))
 })
 
 test_that("adding terms works for PEM", {
-  expect_is(add_term(ped_info(ped), pem, term="trt"), "data.frame")
-  expect_is(add_term(ped_info(ped), pem, term="trt", relative=TRUE),
-    "data.frame")
+expect_data_frame(term <- add_term(ped_info(ped), pem, term="trt"), 
+    nrows=5L, ncols=10L)
+  expect_data_frame(add_term(ped_info(ped), pem, term="trt", relative=TRUE),
+    nrows=5L, ncols=10L)
   pem$model <- NULL
   expect_error(add_term(ped_info(ped), pem, term="trt", relative=TRUE))
 })
