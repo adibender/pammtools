@@ -1,9 +1,11 @@
 context("Simple transformation to PED data")
 
-data("veteran", package="survival")
-veteran <- veteran[c(1:3, 135:137), ]
-
 test_that("Output as expected without and with id", {
+	## preparations 
+	data("veteran", package="survival")
+	veteran <- veteran[c(1:3, 135:137), ]
+
+	## tests 
 	expect_data_frame(ped <- split_data(Surv(time, status)~ trt + age, 
 		data=veteran, cut=c(0, 100, 400)), nrows=10L, ncols=8L)
 	expect_is(ped, "ped")
@@ -16,7 +18,7 @@ test_that("Output as expected without and with id", {
 		data=veteran, cut=c(0, 100, 400), id="id"), nrows=10L, ncols=8L)
 	## no error, when id in data and additionally specified
 	veteran$id <- seq_len(nrow(veteran))
-	expect_data_frame(split_data(Surv(time, status)~trt, 
+	expect_data_frame(ped <- split_data(Surv(time, status)~trt, 
 		data=veteran, cut=c(0, 100, 400), id="id"), nrows=10L, ncols=7L)
 	## no error when id already in data but not specified
 	expect_data_frame(split_data(Surv(time, status)~trt, 
@@ -35,8 +37,19 @@ test_that("Output as expected without and with id", {
 
 
 test_that("Error on wrong input", {
+	## preparations 
+	data("veteran", package="survival")
+	veteran <- veteran[c(1:3, 135:137), ]
+
+	## tests
 	expect_error(split_data(x~y, data=veteran, cut=c(0:5, 10, 40)))
 	expect_error(split_data(Surv(time2, status)~., data=veteran, cut=c(0:5, 10, 40)))
 	expect_error(split_data(Surv(ped_time, status)~., 
 		data=rename(veteran, ped_time=time))) # already in data set ped_time
+
+	## error when specified id variable not unique
+	veteran$id <- rep(1:2, 3)
+	expect_error(
+		split_data(Surv(time, status)~trt, data=veteran, cut=c(0, 100, 400), id="id"), 
+		regexp="Specified ID variable.*")
 })
