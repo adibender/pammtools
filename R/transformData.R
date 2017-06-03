@@ -8,6 +8,7 @@
 #' cut point).
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula setNames update
+#' @importFrom magrittr "%<>%"
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
 #' data("veteran", package="survival")
@@ -82,40 +83,44 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
   # if id allready in the data set, remove id variable from dots but keep 
   # id variable for later rearrangment 
   if(!is.null(dots$id)) {
-    id.var <- dots$id
-    if(id.var %in% names(dots$data) & id.var %in% vars) {
-      dots$id <- NULL
-    }
+    id_var <- dots$id
+  } else {
+    id_var  <- "id"
+    dots$id <- id_var
   }
 
-  # crate data in ped format
-  split.data <- do.call(survSplit, args=dots)
+  if(id_var %in% names(dots$data) & id_var %in% vars) {
+    dots$id <- NULL 
+  }
+
+  # create data in ped format
+  split_df <- do.call(survSplit, args=dots)
 
   ## Add variables for piece-wise exponential (additive) model
-  split.data  <- split.data %>%
+  split_df  <- split_df %>%
     mutate(
       ped_status = ifelse(ped_status == 1 & ped_time > max(cut), 0, ped_status),
       ped_time   = pmin(ped_time, max(cut)),
-      offset = log(ped_time - tstart)) %>%
+      offset     = log(ped_time - tstart)) %>%
     filter(!(tstart==ped_time))
 
+
   ## combine data with general interval info
-  split.data <- left_join(split.data, int_info(cut), by=c("tstart"="tstart"))
+  split_df <- left_join(split_df, int_info(cut), by=c("tstart"="tstart"))
 
   ## rearrange columns 
-  move <- c("tstart", "tend", "interval", "intmid", "intlen", "offset",
+  move <- c(id_var, "tstart", "tend", "interval", "intmid", "intlen", "offset",
     "ped_time", "ped_status")
-  if(exists("id.var")) move <- c(id.var, move)
-  split.data <- select(split.data, one_of(move), everything(), 
-    -intmid, -intlen, -ped_time)
+  split_df %<>% select(one_of(move), everything(), -intmid, -intlen, -ped_time)
   
 
   ## set class and and attributes
-  class(split.data) <- c("ped", class(split.data))
-  attr(split.data, "cut") <- cut 
-  attr(split.data, "intvars") <- c("id", "tstart", "tend", "interval", "offset", 
+  class(split_df) <- c("ped", class(split_df))
+  attr(split_df, "cut") <- cut 
+  attr(split_df, "id_var") <- id_var
+  attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset", 
     "ped_status")
 
-  return(split.data)
+  return(split_df)
 
 }
