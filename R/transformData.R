@@ -89,8 +89,14 @@ split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
     dots$id <- id_var
   }
 
-  if(id_var %in% names(dots$data) & id_var %in% vars) {
-    dots$id <- NULL 
+  if (id_var %in% names(dots$data)) {
+    if (length(unique(dots$data[[id_var]])) != nrow(dots$data)) {
+      stop(paste0("Specified ID variable (", id_var, ") must have same number of 
+        unique values as number of rows in 'data'."))
+    }
+    if (id_var %in% vars) {
+      dots$id <- NULL 
+    }
   }
 
   # create data in ped format
