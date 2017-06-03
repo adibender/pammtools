@@ -209,9 +209,15 @@ make_newdata.ped <- function(
         "yield incorrect predictions. Proceed with caution!")
     }
   }
-
+  
+  id_var <- attr(x, "id_var")
   g_vars <- group_vars(x)
-  x %<>% ungroup() %>% group_by(id) %>% slice(1) %>% ungroup(id) %>% unped() %>%
+  x %<>% 
+    ungroup() %>% 
+    group_by_(id_var) %>% 
+    slice(1) %>% 
+    ungroup(id_var) %>% 
+    unped() %>%
     group_by_(.dots = g_vars)
 
   make_newdata(x, ..., expand = expand, length.out = length.out)
