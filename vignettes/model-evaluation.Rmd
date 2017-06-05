@@ -24,7 +24,7 @@ opts_chunk$set(
 library(ggplot2)
 theme_set(theme_bw())
 library(dplyr)
-devtools::load_all()
+library(pam)
 ```
 
 
