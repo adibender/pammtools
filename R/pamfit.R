@@ -38,7 +38,9 @@ pam <- function(formula, data=list(), method="REML", ...) {
 
 }
 
+#' Check if object is of class pam
 #' @export
+#' @param x Any R object.
 is.pam <- function(x) inherits(x, "pam")
 
 
@@ -52,10 +54,11 @@ print.pam <- function(x, ...) {
 }
 
 #' @rdname pam
+#' @param object An object of class \code{pam} as returned by \code{\link{pam}}.
 #' @export
-summary.pam <- function(x, ...) {
+summary.pam <- function(object, ...) {
 
-	summary(unpam(x), ...)
+	summary(unpam(object), ...)
 
 }
 

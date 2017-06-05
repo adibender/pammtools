@@ -5,7 +5,8 @@
 			c("ped_status", "ped_time", "tstart", "tend", "interval", "intlen", "intmid", 
 				".", "eff", "high", "low", "type", "se", "tmp.fit", "tmp.se", "hazard", 
 				"lower", "upper", "term", "x", "ci.lower", "ci.upper", "fit", "se.fit", 
-				"ped_censored", "cumhazard", "cumlower", "cumupper"))
+				"ped_censored", "cumhazard", "cumlower", "cumupper", 
+				"idx_train", "idx_test"))
 	}
 
 	invisible()

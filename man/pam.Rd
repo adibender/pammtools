@@ -11,7 +11,7 @@ pam(formula, data = list(), method = "REML", ...)
 
 \method{print}{pam}(x, ...)
 
-\method{summary}{pam}(x, ...)
+\method{summary}{pam}(object, ...)
 
 \method{plot}{pam}(x, ...)
 }
@@ -35,6 +35,8 @@ exponential family \code{"REML"} is the default, and the only other option is \c
 \item{...}{Further arguments passed to \code{\link[mgcv]{gam}}.}
 
 \item{x}{An object of class \code{pam} as returned by \code{\link{pam}}.}
+
+\item{object}{An object of class \code{pam} as returned by \code{\link{pam}}.}
 }
 \value{
 If \code{fit=FALSE} the function returns a list \code{G} of items needed to

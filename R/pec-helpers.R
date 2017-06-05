@@ -7,11 +7,10 @@
 #' @param newdata Data containing covariate information only, for which to 
 #' predict survival probabilities. 
 #' @param times Time points for which survival probabilities should be predicted.
-#' @param ... Arguments passed to \code{\link[pam]{int_info}}
+#' @param ... Arguments passed to \code{\link[pam]{int_info}}.
 #' @import dplyr
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr spread
-#' @rdname model.evaluation
 #' @export
 predictSurvProb.pam <- function(
 	object, 
@@ -29,9 +28,14 @@ predictSurvProb.pam <- function(
 		add_survprob(object) %>% 
 		select(.id, tend, survprob)
 
-	out_df <- get_intervals(object, times) %>% select(times, tend)
-	left_join(out_df, surv_df) %>% select(.id, times, survprob) %>% 
-		spread(times, survprob) %>% select(-.id) %>% as.matrix()
+	out_df <- get_intervals(object, times) %>% 
+		select(one_of("times", "tend"))
+
+	left_join(out_df, surv_df) %>% 
+		select(one_of(".id", "times", "survprob")) %>% 
+			spread(times, survprob) %>% 
+			select(-one_of(".id")) %>% 
+			as.matrix()
 
 }
 
@@ -46,13 +50,12 @@ predictSurvProb.pam <- function(
 #' @param method The function to which \code{formula_pam} will be passed to fit the 
 #' model in the k-th fold. 
 #' @param k The number of folds to be used in cross-validation. 
-#' @param ... Further arguments passet to 
+#' @param ... Further arguments passet to \code{\link{pec_pam}}.
 #' @import dplyr 
 #' @importFrom modelr crossv_kfold
 #' @importFrom magrittr "%<>%"
 #' @importFrom purrr map map2
 #' @importFrom tidyr unnest
-#' @rdname model.evaluation
 #' @export
 pec_cv <- function(
 	data, 
@@ -71,15 +74,15 @@ pec_cv <- function(
 		mutate(
 			idx_train = map(train, as.integer),
 			idx_test  = map(test, as.integer),
-			pec   = map2(
+			pec       = map2(
 				idx_train,
 				idx_test,
-				.f = pec_pam, 
+				.f          = pec_pam,
 				formula_ped = formula_ped,
 				formula_pam = formula_pam,
-				data=data,
+				data        = data,
 				... )) %>% 
-		select(.id, pec) %>% unnest()
+		select(one_of(".id", "pec")) %>% unnest()
 	
 }
 
@@ -87,7 +90,6 @@ pec_cv <- function(
 #' Fit PAM to train data and calculate PEC on test data 
 #' 
 #' @inherit pec_cv
-#' @param data The full data set. 
 #' @param idx_train Index of rows that indicate training set. 
 #' @param idx_test Index of rows that indicate test set.
 #' @param times The time points at which prediction error will be evaluated
@@ -97,7 +99,6 @@ pec_cv <- function(
 #' @importFrom pec pec
 #' @importFrom modelr seq_range
 #' @importFrom prodlim Hist
-#' @rdname model.evaluation
 pec_pam <- function(
 	data,
 	idx_train, 
@@ -117,7 +118,7 @@ pec_pam <- function(
 	## (makes sure same cut is used for test data)
 	train_pam <- pam(formula_pam, data=train_ped)
 	if(is.null(times)) {
-		times = c(0, round(modelr::seq_range(train_ped$tend, n=n), 2))
+		times = c(0, round(seq_range(train_ped$tend, n=n), 2))
 	}
 	
 	pred <- predictSurvProb.pam(train_pam, newdata=test, times=times)
@@ -128,7 +129,7 @@ pec_pam <- function(
 			data    = test,
 			times   = times,
 			exact   = FALSE,
-			formula = Surv(time, status)~1) %>%
+			formula = Surv(time, status) ~ 1) %>%
 		tidy_pec()
 
 }
@@ -139,7 +140,6 @@ pec_pam <- function(
 #' @importFrom checkmate assert_class
 #' @importFrom dplyr mutate
 #' @importFrom  tidyr gather
-#' @rdname model.evaluation
 tidy_pec <- function(pec) {
 
 	assert_class(pec, "pec")
