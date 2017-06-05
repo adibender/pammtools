@@ -38,7 +38,9 @@ pam <- function(formula, data=list(), method="REML", ...) {
 
 }
 
+
 #' Check if object is of class pam
+#' 
 #' @export
 #' @param x Any R object.
 is.pam <- function(x) inherits(x, "pam")
