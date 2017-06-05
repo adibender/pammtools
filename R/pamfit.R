@@ -1,3 +1,13 @@
+unpam <- function(pam) {
+  class(pam) <- class(pam)[-1]
+  pam
+}
+repam <- function(x) {
+  class(x) <- c("ped", class(x))
+  x
+}
+
+
 #' Fit a piece-wise exponential additive model
 #' 
 #' Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set 
@@ -28,7 +38,31 @@ pam <- function(formula, data=list(), method="REML", ...) {
 
 }
 
-#' @rdname pam
-#' @param x any R object.
 #' @export
 is.pam <- function(x) inherits(x, "pam")
+
+
+#' @param x An object of class \code{pam} as returned by \code{\link{pam}}.
+#' @rdname pam
+#' @export 
+print.pam <- function(x, ...) {
+
+	print(unpam(x), ...)
+
+}
+
+#' @rdname pam
+#' @export
+summary.pam <- function(x, ...) {
+
+	summary(unpam(x), ...)
+
+}
+
+#' @rdname pam
+#' @export
+plot.pam <- function(x, ...) {
+
+	plot(unpam(x), ...)
+
+}

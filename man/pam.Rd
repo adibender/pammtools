@@ -2,12 +2,18 @@
 % Please edit documentation in R/pamfit.R
 \name{pam}
 \alias{pam}
-\alias{is.pam}
+\alias{print.pam}
+\alias{summary.pam}
+\alias{plot.pam}
 \title{Fit a piece-wise exponential additive model}
 \usage{
 pam(formula, data = list(), method = "REML", ...)
 
-is.pam(x)
+\method{print}{pam}(x, ...)
+
+\method{summary}{pam}(x, ...)
+
+\method{plot}{pam}(x, ...)
 }
 \arguments{
 \item{formula}{ A GAM formula, or a list of formulae (see \code{\link{formula.gam}} and also \code{\link{gam.models}}). 
@@ -28,7 +34,7 @@ exponential family \code{"REML"} is the default, and the only other option is \c
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{gam}}.}
 
-\item{x}{any R object.}
+\item{x}{An object of class \code{pam} as returned by \code{\link{pam}}.}
 }
 \value{
 If \code{fit=FALSE} the function returns a list \code{G} of items needed to
