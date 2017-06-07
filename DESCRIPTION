@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.876
+Version: 0.0.887
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
@@ -12,8 +12,8 @@ Depends:
     R (>= 3.1.2)
 Imports:
     mgcv,
-    survival (>= 2.39-5),
     prodlim,
+    survival (>= 2.39-5),
     coxme,
     checkmate,
     magrittr,

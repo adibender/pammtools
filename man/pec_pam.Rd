@@ -4,7 +4,8 @@
 \alias{pec_pam}
 \title{Fit PAM to train data and calculate PEC on test data}
 \usage{
-pec_pam(data, idx_train, idx_test, formula_ped, formula_pam, times = NULL,
+pec_pam(data, idx_train, idx_test, formula_ped, formula_pam,
+  formula_ipcw = Surv(time, status) ~ 1, times = NULL, cut = NULL,
   n = 50L, ...)
 }
 \arguments{
@@ -20,7 +21,12 @@ in PED (see \code{\link{split_data}}).}
 
 \item{formula_pam}{The formula used to fit the PAM (see \code{\link{pam}}).}
 
+\item{formula_ipcw}{The formula used to calculate inverse probability censoring 
+weights (IPCW). See \code{\link[pec]{ipcw}} for details.}
+
 \item{times}{The time points at which prediction error will be evaluated}
+
+\item{cut}{the vector of timepoints to cut at}
 
 \item{n}{If \code{times} argument not specified, will create a sequence 
 from minimal to maximal time of this length.}

@@ -13,10 +13,10 @@ bibliography: pam.bib
 ```{r, echo = FALSE}
 library(knitr)
 opts_chunk$set(
-  fig.align = "center",
-  fig.width = 4, 
+  fig.align  = "center",
+  fig.width  = 4,
   fig.height = 4,
-  crop=TRUE)
+  crop       = TRUE)
 ```
 
 
@@ -82,21 +82,32 @@ estimate. For the PAM we fit the model on training data and calculate
 the PEC on test data (using 10-fold cross validation). The KM will be calculated
 directly on the test data. 
 
-```{r}
+```{r, message=FALSE}
 pec_cv_df <- pec_cv(veteran, ped_status~ s(tend) + s(karno) + trt, 
-                    times=seq(0, 100, by=5))
+  times=seq(0, 400, by=5))
+```
+
+```{r}
 ggplot(pec_cv_df, aes(x=time, y=brier)) + 
   geom_line(aes(color=method)) + 
   facet_wrap(~.id)
 ```
 
-We can summarize over all folds for each time
+We can summarize over all folds for each time point: 
 ```{r}
 pec_df <- pec_cv_df %>% group_by(method, time) %>% 
   summarize(brier=mean(brier))
 ggplot(pec_df, aes(x=time, y=brier)) +
   geom_line(aes(color=method))
 ```
+
+Note that we used marginal Kaplan-Meier estimator to calculate the 
+iverse probability censoring weights (IPCW) above. Choosing the correct 
+IPCW model can be difficult and depends on the application at hand. 
+@Mogensen2012 [section 6.2] offers some discussion. Usually, when comparing 
+models of different complexity, the IPCW model should include the union of 
+covariates used in all models. In the `pec_cv` function we can use 
+the `formula_ipcw` argument to specify the IPCW model.
 
 
 ### References

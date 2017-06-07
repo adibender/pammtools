@@ -11,7 +11,6 @@
 #' @import dplyr
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr spread
-#' @export
 predictSurvProb.pam <- function(
 	object, 
 	newdata, 
@@ -42,6 +41,7 @@ predictSurvProb.pam <- function(
 
 #' k-fold cross validated prediction error curve (pec)
 #' 
+#' @inheritParams split_data
 #' @param formula_ped The formula used to transform data to PED (see 
 #' \code{\link{split_data}}).
 #' @param formula_pam The formula used to fit the PAM (see \code{\link{pam}}).
@@ -50,19 +50,24 @@ predictSurvProb.pam <- function(
 #' @param method The function to which \code{formula_pam} will be passed to fit the 
 #' model in the k-th fold. 
 #' @param k The number of folds to be used in cross-validation. 
-#' @param ... Further arguments passet to \code{\link{pec_pam}}.
+#' @param formula_ipcw The formula used to calculate inverse probability censoring 
+#' weights (IPCW). See \code{\link[pec]{ipcw}} for details.
+#' @param ... Further arguments passed to \code{\link{split_data}}.
 #' @import dplyr 
 #' @importFrom modelr crossv_kfold
 #' @importFrom magrittr "%<>%"
 #' @importFrom purrr map map2
 #' @importFrom tidyr unnest
+#' @seealso pec::pec ipcw 
 #' @export
 pec_cv <- function(
 	data, 
 	formula_pam, 
-	formula_ped = Surv(time, status)~.,
-	method      = pam,
-	k           = 10L, 
+	formula_ped  = Surv(time, status)~.,
+	k            = 10L,
+	formula_ipcw = Surv(time, status)~1,
+	cut          = NULL,
+	method       = pam,
 	...)  {
 
 	assert_data_frame(data)
@@ -77,10 +82,12 @@ pec_cv <- function(
 			pec       = map2(
 				idx_train,
 				idx_test,
-				.f          = pec_pam,
-				formula_ped = formula_ped,
-				formula_pam = formula_pam,
-				data        = data,
+				.f           = pec_pam,
+				formula_ped  = formula_ped,
+				formula_pam  = formula_pam,
+				data         = data,
+				cut          = cut,
+				formula_ipcw = formula_ipcw,
 				... )) %>% 
 		select(one_of(".id", "pec")) %>% unnest()
 	
@@ -105,21 +112,29 @@ pec_pam <- function(
 	idx_test, 
 	formula_ped, 
 	formula_pam, 
+	formula_ipcw = Surv(time, status)~1,
 	times = NULL,
+	cut   = NULL,
 	n     = 50L,
 	...) {
 
-	train     <- data %>% slice(idx_train)
-	test      <- data %>% slice(idx_test)
-	train_ped <- split_data(formula_ped, train, ...)
-	max_time  <- max(train_ped$tend)
+	train <- data %>% slice(idx_train)
+	test  <- data %>% slice(idx_test)
 
+	if(is.null(times)) {
+		times = c(0, round(modelr::seq_range(train_ped$tend, n=n), 2))
+	}
+
+	# Necessary, b/c pec package internally performs the below operation and 
+	# then would throw error b/c prediction matrix (nrow(newdata)x tiems) and 
+	# requested newdata (nrow(newdata) x new times)
+	# would have different dimensions and pec would throw an error. 
+	times <- times[times <= max(test$time)]
+
+	train_ped <- split_data(formula_ped, train, cut=cut, ...)
 	## either provided cut or default cut created by split_data
 	## (makes sure same cut is used for test data)
 	train_pam <- pam(formula_pam, data=train_ped)
-	if(is.null(times)) {
-		times = c(0, round(seq_range(train_ped$tend, n=n), 2))
-	}
 	
 	pred <- predictSurvProb.pam(train_pam, newdata=test, times=times)
 
@@ -129,7 +144,7 @@ pec_pam <- function(
 			data    = test,
 			times   = times,
 			exact   = FALSE,
-			formula = Surv(time, status) ~ 1) %>%
+			formula = formula_ipcw) %>%
 		tidy_pec()
 
 }
