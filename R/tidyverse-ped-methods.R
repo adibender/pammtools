@@ -230,3 +230,35 @@ right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
   reped(right_join(unped(x), y, by, copy, suffix, ...))
 }
 
+
+
+#' @name tidyr_verbs
+#' @title \code{tidyr} Verbs for \code{ped}-Objects
+#' @param data an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @return a modified \code{ped} object.
+#' @import tidyr
+NULL
+
+#' @rdname tidyr_verbs
+#' @inheritParams tidyr::fill
+#' @importFrom tidyr fill
+#' @export fill
+#' @export
+fill.ped <- function(data, ..., .direction=c("down", "up")) {
+
+  reped(fill(unped(data), ..., .direction))
+
+}
+
+#' @rdname tidyr_verbs
+#' @inheritParams tidyr::fill_
+#' @importFrom tidyr fill_
+#' @export fill_
+#' @export
+fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
+
+  reped(fill_(unped(data), fill_cols, .direction))
+
+}
+
+
