@@ -1,10 +1,19 @@
-unpam <- function(pam) {
-  class(pam) <- class(pam)[-1]
-  pam
+unpam <- function(pamm) {
+  class(pamm) <- class(pamm)[-1]
+  pamm
 }
 repam <- function(x) {
-  class(x) <- c("ped", class(x))
+  class(x) <- c("pamm", class(x))
   x
+}
+
+append_ped_attr <- function(pamm, ped) {
+
+	attr_ped <- ped_attr(ped)
+	pamm[names(attr_ped)] <- attr_ped
+
+	pamm
+
 }
 
 
@@ -19,9 +28,9 @@ repam <- function(x) {
 #' @inherit mgcv::gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{gam}}.
 #' @importFrom stats poisson
-#' @rdname pam
+#' @rdname pamm
 #' @export
-pam <- function(formula, data=list(), method="REML", ...) {
+pamm <- function(formula, data=list(), method="REML", ...) {
 
 	dots <- list(...)
 	dots$formula = formula
@@ -29,44 +38,43 @@ pam <- function(formula, data=list(), method="REML", ...) {
 	dots$data    = data
 	dots$offset  = data$offset
 
-	pamfit         <- do.call(gam, dots)
-	class(pamfit)  <- c("pam", class(pamfit))
-	pamfit$cut     <- attr(data, "cut")
-	pamfit$intvars <- attr(data, "intvars")
+	pamm_fit        <- do.call(gam, dots)
+	class(pamm_fit) <- c("pamm", class(pamm_fit))
+	pamm_fit        <- append_ped_attr(pamm_fit, data)
 
-	pamfit
+	pamm_fit
 
 }
 
 
-#' Check if object is of class pam
+#' Check if object is of class pamm
 #' 
 #' @export
 #' @param x Any R object.
-is.pam <- function(x) inherits(x, "pam")
+is.pamm <- function(x) inherits(x, "pamm")
 
 
-#' @param x An object of class \code{pam} as returned by \code{\link{pam}}.
-#' @rdname pam
+#' @param x An object of class \code{pamm} as returned by \code{\link{pamm}}.
+#' @rdname pamm
 #' @export 
-print.pam <- function(x, ...) {
+print.pamm <- function(x, ...) {
 
 	print(unpam(x), ...)
 
 }
 
-#' @rdname pam
-#' @param object An object of class \code{pam} as returned by \code{\link{pam}}.
+#' @rdname pamm
+#' @param object An object of class \code{pamm} as returned by \code{\link{pamm}}.
 #' @export
-summary.pam <- function(object, ...) {
+summary.pamm <- function(object, ...) {
 
 	summary(unpam(object), ...)
 
 }
 
-#' @rdname pam
+#' @rdname pamm
 #' @export
-plot.pam <- function(x, ...) {
+plot.pamm <- function(x, ...) {
 
 	plot(unpam(x), ...)
 

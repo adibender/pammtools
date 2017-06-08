@@ -11,12 +11,12 @@
 #' @import dplyr
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr spread_
-predictSurvProb.pam <- function(
+predictSurvProb.pamm <- function(
 	object, 
 	newdata, 
 	times, ...) {
 
-	assert_class(object, "pam")
+	assert_class(object, "pamm")
 	## to calculate survival probabilities
 	int_df <- int_info(object) %>% 
 		filter(tstart <= max(times))
@@ -68,7 +68,7 @@ pec_cv <- function(
 	k            = 10L,
 	formula_ipcw = Surv(time, status)~1,
 	cut          = NULL,
-	method       = pam,
+	method       = pamm,
 	...)  {
 
 	assert_data_frame(data)
@@ -83,7 +83,7 @@ pec_cv <- function(
 			pec       = map2(
 				idx_train,
 				idx_test,
-				.f           = pec_pam,
+				.f           = pec_pamm,
 				formula_ped  = formula_ped,
 				formula_pam  = formula_pam,
 				data         = data,
@@ -107,7 +107,7 @@ pec_cv <- function(
 #' @importFrom pec pec
 #' @importFrom modelr seq_range
 #' @importFrom prodlim Hist
-pec_pam <- function(
+pec_pamm <- function(
 	data,
 	idx_train, 
 	idx_test, 
@@ -135,9 +135,9 @@ pec_pam <- function(
 	train_ped <- split_data(formula_ped, train, cut=cut, ...)
 	## either provided cut or default cut created by split_data
 	## (makes sure same cut is used for test data)
-	train_pam <- pam(formula_pam, data=train_ped)
+	train_pam <- pamm(formula_pam, data=train_ped)
 	
-	pred <- predictSurvProb.pam(train_pam, newdata=test, times=times)
+	pred <- predictSurvProb.pamm(train_pam, newdata=test, times=times)
 
 	
 	pec_df <- pec(

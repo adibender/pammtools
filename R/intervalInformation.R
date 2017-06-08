@@ -83,11 +83,11 @@ int_info.ped <- function(x, ...) {
 #' ## extract interval information of ped that was used to fit the model
 #' data("veteran", package="survival")
 #' vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
-#' vet_pam <- pam(ped_status ~ s(tend, k=3), data=vet_ped)
+#' vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
 #' int_info(vet_pam)
 #' 
 #' @export
-int_info.pam <- function(x, ...) {
+int_info.pamm <- function(x, ...) {
 
   int_info(x$cut)
 

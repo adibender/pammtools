@@ -1,0 +1,72 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Additive Aalen model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Comparison to estimation of time-dependent covariates from Aalen Model
+
+```{r, eval=FALSE}
+## load libraries 
+library(pam)
+library(magrittr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(mgcv)
+
+## load original data 
+liver <- readRDS("leber.Rds") %>% 
+	mutate(Geschlecht = factor(Geschlecht, labels = c("m", "f")))
+
+## transform to piece-wise exponential data (PED)
+ped <- split_data(Surv(days, Todjanein)~Geschlecht + Alter.bei.OP, data=liver, id="id")
+head(ped)
+## estimate baseline
+mbase <- gam(ped_status ~ s(intmid), data=ped, family=poisson, offset=offset)
+summary(mbase)
+plot(mbase, page=1, rug=FALSE)
+
+## estimate baseline by sex
+msex <- gam(ped_status ~ s(intmid, by=Geschlecht), data=ped, family=poisson(), 
+	offset = offset)
+plot(msex, page=1, rug=FALSE)
+
+## plot hazards
+pinfo <- ped_info(ped)
+pinfo <- bind_rows(pinfo, mutate(pinfo, Geschlecht = factor("f", levels=c("f", "m"))))
+pinfo %<>% add_hazard(msex) %>% mutate(hazard = as.numeric(hazard))
+
+ggplot(pinfo, aes(x=intmid, y = hazard)) + 
+	geom_ribbon(aes(ymin=lower, ymax=upper, fill=Geschlecht), alpha=0.2) +
+	geom_line(aes(col=Geschlecht))
+
+## calculate cumulative difference between Geschlecht = 1 and Geschlecht = 0
+pinf2 <- pinfo %>% select(tend, intlen, Geschlecht, hazard, lower, upper) %>% 
+	group_by(Geschlecht) %>% 
+	mutate(
+		hazard = cumsum(hazard * intlen), 
+		lower = cumsum(lower*intlen), 
+		upper = cumsum(upper*intlen)) %>% 
+	gather(type, haz, hazard:upper) %>% 
+	spread(Geschlecht, haz) %>% 
+	mutate(cumudiff = f - m) %>%
+	select(tend, type, cumudiff) %>% 
+	spread(type, cumudiff)
+
+gg.betasex <- ggplot(pinf2, aes(x=tend)) + 
+	geom_step(aes(y=hazard)) + 
+	ylim(c(-0.4, 0.5))
+gg.betasex
+
+##  comparison to aalen model 
+library(timereg)
+fit5 <-aalen(Surv(days, Todjanein)~Geschlecht,data=liver, resample.iid=1) 
+plot(fit5)
+lines(pinf2$tend, pinf2$hazard, col=2, type="s")
+```

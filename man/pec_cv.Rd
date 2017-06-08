@@ -5,7 +5,7 @@
 \title{k-fold cross validated prediction error curve (pec)}
 \usage{
 pec_cv(data, formula_pam, formula_ped = Surv(time, status) ~ ., k = 10L,
-  formula_ipcw = Surv(time, status) ~ 1, cut = NULL, method = pam, ...)
+  formula_ipcw = Surv(time, status) ~ 1, cut = NULL, method = pamm, ...)
 }
 \arguments{
 \item{data}{The data in standard time-to-event data format which can be tansformed 

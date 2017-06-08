@@ -4,7 +4,7 @@
 \alias{int_info}
 \alias{int_info.default}
 \alias{int_info.ped}
-\alias{int_info.pam}
+\alias{int_info.pamm}
 \title{Create start/end times and interval information}
 \usage{
 int_info(x, ...)
@@ -13,7 +13,7 @@ int_info(x, ...)
 
 \method{int_info}{ped}(x, ...)
 
-\method{int_info}{pam}(x, ...)
+\method{int_info}{pamm}(x, ...)
 }
 \arguments{
 \item{x}{A numeric vector of cut points in which the follow-up should be
@@ -47,7 +47,7 @@ int_info(ped)
 ## extract interval information of ped that was used to fit the model
 data("veteran", package="survival")
 vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
-vet_pam <- pam(ped_status ~ s(tend, k=3), data=vet_ped)
+vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
 int_info(vet_pam)
 
 }
