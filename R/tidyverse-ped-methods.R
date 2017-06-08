@@ -258,16 +258,18 @@ right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
 #' @name tidyr_verbs
 #' @title \code{tidyr} Verbs for \code{ped}-Objects
 #' @param data an  object of class \code{ped}, see \code{\link{split_data}}.
-#' @return a modified \code{ped} object.
-#' @import tidyr
+#' @return A modified \code{ped} object.
+#' @importFrom tidyr fill fill_
+#' @description See \code{tidyr} documentation of the respective functions for
+#'   description and examples.
+#' @aliases fill fill_
 NULL
 
-#' @rdname tidyr_verbs
 #' @inheritParams tidyr::fill
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}.
-#' @importFrom tidyr fill
-#' @export fill
 #' @export
+#' @export fill
+#' @rdname tidyr_verbs
 fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE) {
   if (keep_attributes) {
     data_attr   <- ped_attr(data)
@@ -281,21 +283,15 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
 
 }
 
-#' @rdname tidyr_verbs
 #' @inheritParams tidyr::fill_
-#' @inheritParams fill.ped
-#' @importFrom tidyr fill_
 #' @export fill_
 #' @export
-fill_.ped <- function(data, fill_cols, .direction=c("down", "up"), keep_attributes=TRUE) {
+#' @rdname tidyr_verbs
+fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
 
-  if (keep_attributes) {
-    data_attr   <- ped_attr(data)
-  }
-  tbl <- reped(fill_(unped(data), fill_cols, .direction))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
+  data_attr   <- ped_attr(data)
+  tbl <- reped(fill_(unped(data), fill_cols, .direction)) 
+  attributes(tbl) <- c(attributes(tbl), data_attr)
 
   return(tbl)
 

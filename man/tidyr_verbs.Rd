@@ -2,14 +2,15 @@
 % Please edit documentation in R/tidyverse-ped-methods.R
 \name{tidyr_verbs}
 \alias{tidyr_verbs}
+\alias{fill}
+\alias{fill_}
 \alias{fill.ped}
 \alias{fill_.ped}
 \title{\code{tidyr} Verbs for \code{ped}-Objects}
 \usage{
 fill.ped(data, ..., .direction = c("down", "up"), keep_attributes = TRUE)
 
-\method{fill_}{ped}(data, fill_cols, .direction = c("down", "up"),
-  keep_attributes = TRUE)
+\method{fill_}{ped}(data, fill_cols, .direction = c("down", "up"))
 }
 \arguments{
 \item{data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
@@ -26,5 +27,9 @@ either "down" (the default) or "up".}
 \item{fill_cols}{Character vector of column names.}
 }
 \value{
-a modified \code{ped} object.
+A modified \code{ped} object.
+}
+\description{
+See \code{tidyr} documentation of the respective functions for
+  description and examples.
 }

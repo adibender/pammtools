@@ -32,5 +32,5 @@ model in the k-th fold.}
 k-fold cross validated prediction error curve (pec)
 }
 \seealso{
-pec::pec ipcw
+\code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 }

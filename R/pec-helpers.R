@@ -10,12 +10,13 @@
 #' @param ... Arguments passed to \code{\link[pam]{int_info}}.
 #' @import dplyr
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom tidyr spread
+#' @importFrom tidyr spread_
 predictSurvProb.pam <- function(
 	object, 
 	newdata, 
 	times, ...) {
 
+	assert_class(object, "pam")
 	## to calculate survival probabilities
 	int_df <- int_info(object) %>% 
 		filter(tstart <= max(times))
@@ -23,16 +24,16 @@ predictSurvProb.pam <- function(
 
 	## calculate survival probabilities
 	surv_df <- combine_df(int_df, newdata) %>% 
-		group_by(.id) %>% 
+		group_by_(".id") %>% 
 		add_survprob(object) %>% 
-		select(.id, tend, survprob)
+		select(one_of(".id", "tend", "survprob"))
 
 	out_df <- get_intervals(object, times) %>% 
 		select(one_of("times", "tend"))
 
 	left_join(out_df, surv_df) %>% 
 		select(one_of(".id", "times", "survprob")) %>% 
-			spread(times, survprob) %>% 
+			spread_("times", "survprob") %>% 
 			select(-one_of(".id")) %>% 
 			as.matrix()
 
@@ -58,7 +59,7 @@ predictSurvProb.pam <- function(
 #' @importFrom magrittr "%<>%"
 #' @importFrom purrr map map2
 #' @importFrom tidyr unnest
-#' @seealso pec::pec ipcw 
+#' @seealso \code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 #' @export
 pec_cv <- function(
 	data, 

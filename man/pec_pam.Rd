@@ -37,5 +37,5 @@ from minimal to maximal time of this length.}
 Fit PAM to train data and calculate PEC on test data
 }
 \seealso{
-pec::pec ipcw
+\code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 }
