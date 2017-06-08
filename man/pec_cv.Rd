@@ -31,3 +31,6 @@ model in the k-th fold.}
 \description{
 k-fold cross validated prediction error curve (pec)
 }
+\seealso{
+pec::pec ipcw
+}

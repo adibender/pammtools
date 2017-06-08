@@ -8,6 +8,10 @@ reped <- function(.data) {
   .data
 }
 
+ped_attr <- function(ped) {
+  attributes(ped)[c("cut", "id_var", "intvars")]
+}
+
 
 #' @name dplyr_verbs
 #' @title \code{dplyr} Verbs for \code{ped}-Objects
@@ -117,18 +121,17 @@ select_.ped <- function(.data, ..., .dots = list()) {
   reped(select_(unped(.data), ..., .dots = .dots))
 }
 
-#' @param keep.attributes conserve attributes? defaults to \code{TRUE}
+#' @param keep_attributes conserve attributes? defaults to \code{TRUE}
 #' @export
 #' @export mutate
 #' @rdname dplyr_verbs
-mutate.ped <- function(.data, ..., keep.attributes=TRUE) {
-  if (keep.attributes) {
-    .data.attr   <- attributes(.data)
-    attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
+mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- ped_attr(.data)
   }
   .data <- reped(mutate(unped(.data), ...))
-  if (keep.attributes) {
-    attributes(.data) <- c(attributes(.data), .data.attr[attr.names])
+  if (keep_attributes) {
+    attributes(.data) <- c(attributes(.data), data_attr)
   }
   return(.data)
 }
@@ -137,14 +140,13 @@ mutate.ped <- function(.data, ..., keep.attributes=TRUE) {
 #' @export
 #' @export mutate_each
 #' @rdname dplyr_verbs
-mutate_each.ped <- function(tbl, funs, ..., keep.attributes=TRUE) {
-  if (keep.attributes) {
-    .data.attr   <- attributes(tbl)
-    attr.names <- setdiff(names(.data.attr), c("class", "row.names", "names"))
+mutate_each.ped <- function(tbl, funs, ..., keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- ped_attr(tbl)
   }
   tbl <- reped(mutate_each(unped(tbl), funs, ...))
-  if (keep.attributes) {
-    attributes(tbl) <- c(attributes(tbl), .data.attr[attr.names])
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
   }
   return(tbl)
 }
@@ -215,9 +217,20 @@ full_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 #' @export left_join
 #' @rdname dplyr_verbs
 left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ...) {
+  ..., keep_attributes=TRUE) {
+
+  if (keep_attributes) {
+    data_attr   <- ped_attr(x)
+  }
   #FIXME?
-  reped(left_join(unped(x), y, by, copy, suffix, ...))
+  tbl <- reped(left_join(unped(x), y, by, copy, suffix, ...))
+
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
+
 }
 
 #' @inheritParams dplyr::right_join
@@ -225,9 +238,19 @@ left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 #' @export right_join
 #' @rdname dplyr_verbs
 right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ...) {
+  ..., keep_attributes=TRUE) {
+
+  if (keep_attributes) {
+    data_attr   <- ped_attr(y)
+  }
   #FIXME?
-  reped(right_join(unped(x), y, by, copy, suffix, ...))
+  tbl <- reped(right_join(unped(x), y, by, copy, suffix, ...))
+
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
 }
 
 
@@ -241,24 +264,39 @@ NULL
 
 #' @rdname tidyr_verbs
 #' @inheritParams tidyr::fill
+#' @param keep_attributes conserve attributes? defaults to \code{TRUE}.
 #' @importFrom tidyr fill
 #' @export fill
 #' @export
-fill.ped <- function(data, ..., .direction=c("down", "up")) {
+fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- ped_attr(data)
+  }
+  tbl <- reped(fill(unped(data), ..., .direction))
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
 
-  reped(fill(unped(data), ..., .direction))
+  return(tbl)
 
 }
 
 #' @rdname tidyr_verbs
 #' @inheritParams tidyr::fill_
+#' @inheritParams fill.ped
 #' @importFrom tidyr fill_
 #' @export fill_
 #' @export
-fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
+fill_.ped <- function(data, fill_cols, .direction=c("down", "up"), keep_attributes=TRUE) {
 
-  reped(fill_(unped(data), fill_cols, .direction))
+  if (keep_attributes) {
+    data_attr   <- ped_attr(data)
+  }
+  tbl <- reped(fill_(unped(data), fill_cols, .direction))
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
 
 }
-
-

@@ -36,3 +36,6 @@ from minimal to maximal time of this length.}
 \description{
 Fit PAM to train data and calculate PEC on test data
 }
+\seealso{
+pec::pec ipcw
+}
