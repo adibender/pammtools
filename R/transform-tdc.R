@@ -96,7 +96,8 @@ split_tdc <- function(
 
 	# 
  	tdc_df %<>% select(one_of(c(id_var, time_var, tdc)))
-	ped2 <- ped %>% left_join(tdc_df, by=c(id_var, "tstart"=time_var)) %>% 
+ 	
+	ped %>% left_join(tdc_df, by=c(id_var, "tstart"=time_var)) %>% 
 		group_by_(.dots=list(id_var)) %>% 
 		fill_(setdiff(tdc, c(id_var, time_var, status_var)))
 
