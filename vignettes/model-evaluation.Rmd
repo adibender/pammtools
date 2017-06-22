@@ -87,14 +87,15 @@ pec_cv_df <- pec_cv(veteran, ped_status~ s(tend) + s(karno) + trt,
   times=seq(0, 400, by=5))
 ```
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 ggplot(pec_cv_df, aes(x=time, y=brier)) + 
   geom_line(aes(color=method)) + 
-  facet_wrap(~.id)
+  facet_wrap(~.id, nrow=2) + 
+  theme(legend.position = "bottom")
 ```
 
 We can summarize over all folds for each time point: 
-```{r}
+```{r, fig.width=5, fig.height=3.5}
 pec_df <- pec_cv_df %>% group_by(method, time) %>% 
   summarize(brier=mean(brier))
 ggplot(pec_df, aes(x=time, y=brier)) +
