@@ -86,6 +86,7 @@ When no cut points are specified, the default is to use the unique event times.
 As can be seen from the above output, the function creates an `id` variable, 
 indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval 
 the subject "visited". Thus,  
+
 - subject `42` was under risk during 5 intervals, 
 - subject `85` was under risk during one interval, 
 - and subject `112` in 33 intervals. 
