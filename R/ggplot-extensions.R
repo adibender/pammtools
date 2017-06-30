@@ -25,7 +25,6 @@
 #' @importFrom ggplot2 layer GeomRibbon
 #' @author Triad Sou <triadsou@@gmail.com>
 #' @export
-
 geom_stepribbon <- function(
   mapping     = NULL,
   data        = NULL,

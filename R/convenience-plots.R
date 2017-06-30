@@ -5,6 +5,7 @@
 #' different smooth are faceted. 
 #' 
 #' @inheritParams get_term
+#' @param x A data frame or object of class \code{pamm}.
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
 #' @return A \code{\link[ggplot2]{ggplot2}} object.
@@ -12,7 +13,13 @@
 #' g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 #' gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 #' @export 
-gg_smooth <- function(data, fit, ...) {
+gg_smooth <- function(x, ...) {
+	UseMethod("gg_smooth", x)
+}
+
+#' @inherit gg_smooth
+#' @export
+gg_smooth.default <- function(x, fit, ...) {
 
 	sobj <- get_terms(data=data, fit=fit, ...)
 
@@ -24,6 +31,20 @@ gg_smooth <- function(data, fit, ...) {
 		ylab(expression(f[j](x[j]))) + xlab(expression(x[j]))
 
 	return(ggsmooth)
+
+}
+
+gg_smooth.pamm <- function(x, ...) {
+
+	smooths1d <- tidy_smooth(unpam(x)) %>% 
+	mutate(
+		lower = fit - se,
+		upper = fit + se)
+	
+	ggplot(smooths1d, aes(x=x, y=fit)) + 
+	geom_ribbon(aes(ymin=lower, ymax = upper), alpha=0.3) + 
+	geom_line() + 
+	facet_wrap(~ylab)
 
 }
 
