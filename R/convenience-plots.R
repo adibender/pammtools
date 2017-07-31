@@ -21,7 +21,7 @@ gg_smooth <- function(x, ...) {
 #' @export
 gg_smooth.default <- function(x, fit, ...) {
 
-	sobj <- get_terms(data=data, fit=fit, ...)
+	sobj <- get_terms(data=x, fit=fit, ...)
 
 	ggsmooth <- ggplot(sobj, aes(x=x, y=eff, group=term)) + 
 		geom_hline(yintercept = 0, lty=3) +

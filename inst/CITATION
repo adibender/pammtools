@@ -1,0 +1,11 @@
+citHeader("To cite PAMs in publications, please use:")
+
+citEntry(entry = "manual",
+  author = "Andreas Bender and Fabian Scheipl",
+  title = "pam: Functions and Utilities for fitting Piece-wise Exponential (Additive) models",,
+  year = "2017",
+  note = "R package version 0.0.615",
+  textVersion = "pam: Functions and Utilities for fitting Piece-wise Exponential 
+  (Additive) Models",
+  url = "https://github.com/adibender/pam"
+)
