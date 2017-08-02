@@ -36,18 +36,17 @@ make_X <- function(
 	Fz <- do.call(rbind, fZ)
 	Fz <- Z * Fz
 	colnames(Fz) <- paste0("V", seq_len(ncol(Fz)))
-	summary(Fz)
 	## craete data frame (start stop format)
 	id <- rep(1:nrow(Fz), each=m)
 
 	## output data set 
 	Xdf        <- data.frame(id=id)
-	Xdf$tstart  <- rep(0:(m-1), times = n)
+	Xdf$tstart <- rep(0:(m-1), times = n)
 	Xdf$tend   <- rep(1:m, times = n)
 	Xdf$intmid <- Xdf$tstart + 0.5
 	Xdf$Z      <- Z[id, ]
 	Xdf$Fz     <- Fz[id, ]
-	Xdf$z_vec  <- as.vector(Z)
+	Xdf$z_vec  <- as.vector(t(Z))
 
 	## Lag Lead Matrix
 	Lmat <- matrix(1, nrow=m, ncol = m)
@@ -127,8 +126,8 @@ sim_wce2 <- function(Xdf, tmax=30) {
 		mutate(
 			status = (time <= tmax)*1,
 			time   = ifelse(time > tmax, tmax, time))
-	first <- !(duplicated(Xdf$id))
-	new_df$Z <- Xdf$Z[first, ]
+	first        <- !(duplicated(Xdf$id))
+	new_df$Z     <- Xdf$Z[first, ]
 	new_df$te_df <- Xdf$te_df[first, ]
 
 	new_df
