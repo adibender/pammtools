@@ -27,7 +27,6 @@ environment:
       GCC_PATH: mingw_32
 
 build_script:
-  - travis-tool.sh install_github tidyverse/purrr
   - travis-tool.sh install_deps
 
 test_script:
