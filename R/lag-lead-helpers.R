@@ -31,10 +31,10 @@ find_interval <- function(
 #' @inheritParams int_info
 #' @importFrom dplyr mutate
 int_info2 <- function(
-  brks    = c(0:12, seq(15, 55, by=5), 61),
-  min.int = 4) {
+  x    = c(0:12, seq(15, 55, by=5), 61),
+  min.time = 4) {
 
-  intlen <- diff(brks)
+  intlen <- diff(x)
   tstart <- c(0, cumsum(intlen)[-length(intlen)])
   tend   <- tstart + intlen
 
@@ -46,8 +46,8 @@ int_info2 <- function(
   tdf$interval <- paste0("(", tdf$tstart, ",", tdf$tend, "]")
   tdf$interval <- factor(tdf$interval, levels=tdf$interval, labels=tdf$interval)
 
-  ind.keep <- which(tstart >= min.int)
-  subset(tdf, tstart >= min.int)
+  ind.keep <- which(tstart >= min.time)
+  subset(tdf, tstart >= min.time)
 
 }
 

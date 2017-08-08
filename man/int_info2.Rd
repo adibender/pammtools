@@ -5,7 +5,14 @@
 \title{Given interval break-points, provides data frame with information regarding
 interval start-/end-points, lengths, midpoints,etc.}
 \usage{
-int_info2(brks = c(0:12, seq(15, 55, by = 5), 61), min.int = 4)
+int_info2(x = c(0:12, seq(15, 55, by = 5), 61), min.time = 4)
+}
+\arguments{
+\item{x}{A numeric vector of cut points in which the follow-up should be
+partitioned in or object of class \code{ped}.}
+
+\item{min.time}{Only intervals that have lower borders larger than
+this value will be included in the resulting data frame.}
 }
 \description{
 Given interval break-points, provides data frame with information regarding
