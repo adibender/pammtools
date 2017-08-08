@@ -15,7 +15,7 @@
 #' @param rng_z RNG for TDC $z(t_e)$, a function of \code{te}. Must return a
 #'   vector of same length as te.
 #' @import checkmate
-#' @importFrom stats runif
+#' @importFrom stats runif arima.sim
 #' @keywords internal
 #' @export
 make_X <- function(
@@ -23,7 +23,7 @@ make_X <- function(
 	m   = 30,
   te  = -29:30,
 	h0  = -2,
-	f0  = function(t, tmax) {0 * t},
+	f0  = function(t) {0 * t},
 	fz = function(t, te, z) {(-(te - min(te))/10 + 0.005 * (te - min(te))^2) * z},
   fwindow = function(t, te) {(te <= t) & (te >= t - 30)},
   rng_z = function(te) {arima.sim(n = length(te), list(ar = c(.8, -.6)))}) {
@@ -53,7 +53,7 @@ make_X <- function(
 	Xdf <- data.frame(id = id)
 	Xdf$tstart <- rep(t - 1, times = n)
 	Xdf$tend   <- rep(t, times = n)
-	Xdf$intmid <- Xdf$tstart + 0.5
+	Xdf$intmid <- Xdf$tstart + (Xdf$tend -Xdf$tstart)/2
 	Xdf$Z      <- Z[id, ]
 	Xdf$Fz <- NA * Xdf$Z
 	Xdf$LL <- NA * Xdf$Z
@@ -62,14 +62,15 @@ make_X <- function(
     Xdf$LL[i,] <- c(mean(diff(te)), diff(te)) * fwindow(t = Xdf$intmid[i],  te = te)
   }
 	colnames(Xdf$Fz) <- paste0("V", seq_len(me))
+	Xdf$z_vec  <- as.vector(t(Z))
 
 	## add baseline + cumulative effects
-	Xdf$eta_base <- h0 + f0(Xdf$intmid, tmax = max(Xdf$intmid))
+	Xdf$eta_base <- h0 + f0(Xdf$intmid)
 	Xdf$eta_wce  <- rowSums(Xdf$Fz * Xdf$LL)
 	Xdf$eta      <- Xdf$eta_base + Xdf$eta_wce
 
-	Xdf$te_df   <- matrix(1:m, nrow = nrow(Xdf), ncol = m, byrow = TRUE)
-	Xdf$time_df <- matrix(1:m, nrow = nrow(Xdf), ncol = m)
+	Xdf$te_df   <- matrix(te, nrow = nrow(Xdf), ncol = me, byrow = TRUE)
+	Xdf$time_df <- matrix(Xdf$tend, nrow = nrow(Xdf), ncol = me)
 
 	Xdf
 }

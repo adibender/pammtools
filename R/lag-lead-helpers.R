@@ -26,7 +26,9 @@ find_interval <- function(
 
 
 ##' Given interval break-points, provides data frame with information regarding
-# interval start-/end-points, lengths, midpoints,etc.
+#' interval start-/end-points, lengths, midpoints,etc.
+#'
+#' @inheritParams int_info
 #' @importFrom dplyr mutate
 int_info2 <- function(
   brks    = c(0:12, seq(15, 55, by=5), 61),
@@ -94,7 +96,6 @@ lag_lead_df <- function(
 #' @return A data frame with intervals as first column and \code{length(te)} 
 #' columns specifying the lag/lead for each \code{te}.
 #' @import checkmate dplyr 
-
 create_Lmat <- function(
   te,
   cut,
@@ -104,8 +105,7 @@ create_Lmat <- function(
   te.add.lead  = 0,
   lead.factor  = 0,
   t.min        = 0) {
-
-  library(checkmate)
+  
   assert_integer(te,         lower = 1, any.missing = FALSE, unique    = TRUE)
   assert_numeric(cut,        lower = 0, any.missing = FALSE, min.len   = 2)
   assert_number(te.add.lag,  lower = 0, upper = max(cut), finite = TRUE)

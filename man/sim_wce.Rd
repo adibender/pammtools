@@ -10,10 +10,10 @@ sim_wce(Xdf, tmax = 30)
 sim_wce2(Xdf, tmax = 30)
 }
 \arguments{
-\item{Xdf}{A data frame containing full (time-dependent) covariate information 
+\item{Xdf}{A data frame containing full (time-dependent) covariate information
 for each subject}
 
-\item{tmax}{The maximal time of follow-up. Survival times after \code{tmax} 
+\item{tmax}{The maximal time of follow-up. Survival times after \code{tmax}
 will be administratively censored.}
 }
 \description{

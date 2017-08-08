@@ -4,11 +4,11 @@
 \alias{make_X}
 \title{Construct full data set with time-dependent covariate (TDC)}
 \usage{
-make_X(n = 500L, m = 30, te = -29:30, h0 = -2, f0 = function(t, tmax)
-  {     0 * t }, fz = function(t, te, z) {     (-(te - min(te))/10 + 0.005 *
-  (te - min(te))^2) * z }, fwindow = function(t, te) {     (te <= t) & (te >=
-  t - 30) }, rng_z = function(te) {     arima.sim(n = length(te), list(ar =
-  c(0.8, -0.6))) })
+make_X(n = 500L, m = 30, te = -29:30, h0 = -2, f0 = function(t) {    
+  0 * t }, fz = function(t, te, z) {     (-(te - min(te))/10 + 0.005 * (te -
+  min(te))^2) * z }, fwindow = function(t, te) {     (te <= t) & (te >= t -
+  30) }, rng_z = function(te) {     arima.sim(n = length(te), list(ar = c(0.8,
+  -0.6))) })
 }
 \arguments{
 \item{n}{Number of subjects to simulate.}

@@ -26,7 +26,8 @@ as_fped <- function(
 
   raw_df  <- data %>% select_if(compose("!", is.matrix))
   surv_df <- split_data(formula, raw_df, cut=cut, max.end=max.end)
-  surv_df <- left_join(surv_df, data_orig[, c("id", "tstart", "z_vec", "eta_base", "eta_wce", "eta")])
+  surv_df <- left_join(surv_df, 
+    data_orig[, c("id", "tstart", "z_vec", "eta_base", "eta_wce", "eta")])
   ## create functional exporsure variables
   surv_df$Z     <- data$Z[surv_df$id, ]
   surv_df$te_df <- data$te_df[surv_df$id, ]

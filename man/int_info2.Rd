@@ -2,10 +2,12 @@
 % Please edit documentation in R/lag-lead-helpers.R
 \name{int_info2}
 \alias{int_info2}
-\title{Given interval break-points, provides data frame with information regarding}
+\title{Given interval break-points, provides data frame with information regarding
+interval start-/end-points, lengths, midpoints,etc.}
 \usage{
 int_info2(brks = c(0:12, seq(15, 55, by = 5), 61), min.int = 4)
 }
 \description{
 Given interval break-points, provides data frame with information regarding
+interval start-/end-points, lengths, midpoints,etc.
 }
