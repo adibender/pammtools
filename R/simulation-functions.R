@@ -1,79 +1,88 @@
 #' Construct full data set with time-dependent covariate (TDC)
-#' 
+#'
 #' @param n Number of subjects to simulate.
-#' @param m = the number of time-points at which TDC is observed.
+#' @param m the number of follow up intervals (\code{t_end = 1:m})
+#' @param te the vector of timepoints at which the TDC was observed
 #' @param h0 A constant component of the baseline hazard.
-#' @param f0 A function of t, representing the smooth part of the baseline hazard.
-#' @param fte A function of the exposure time, representing the functional 
-#' effect of the timing of the TDC.
+#' @param f0 A function of time \code{t}, representing the smooth part of the
+#'   baseline hazard.
+#' @param fz A function of time \code{t}, exposure time \code{te} and the TDC
+#'   \code{z}, representing the partial effect of \code{z} at \code{te} on the
+#'   hazard at \code{t}.
+#' @param fwindow  A function of time \code{t} and exposure time \code{te}
+#'   defining the "window of effectiveness" during which exposures affect the
+#'   hazard at time t. Should return \code{TRUE/FALSE}.
+#' @param rng_z RNG for TDC $z(t_e)$, a function of \code{te}. Must return a
+#'   vector of same length as te.
 #' @import checkmate
 #' @importFrom stats runif
 #' @keywords internal
-#' @export 
+#' @export
 make_X <- function(
 	n   = 500L,
-	m   = 30L,
-	h0  = -3,
-	f0  = function(t) (0*t),
-	fte = function(te) (-2* te + 2.5*te^2)) {
+	m   = 30,
+  te  = -29:30,
+	h0  = -2,
+	f0  = function(t, tmax) {0 * t},
+	fz = function(t, te, z) {(-(te - min(te))/10 + 0.005 * (te - min(te))^2) * z},
+  fwindow = function(t, te) {(te <= t) & (te >= t - 30)},
+  rng_z = function(te) {arima.sim(n = length(te), list(ar = c(.8, -.6)))}) {
 
 	## check inputs
-	assert_int(n, lower=2)
-	assert_int(m, lower=1)
+	assert_int(n, lower = 2)
+	assert_int(m, lower = 1)
+
+	t <- seq_len(m)
+
+	assert_numeric(t, min.len = 1, any.missing = FALSE)
+	assert_true(all(diff(t) == 1))
+	assert_numeric(te, min.len = 1, any.missing = FALSE)
+	assert_true(all(diff(te) == 1))
 	assert_number(h0, lower=-5, upper=5)
 	assert_function(f0)
-	assert_function(fte)
+	assert_function(fz)
+
+	me <- length(te)
+
 
 	# create time-dependent covariate
-	Z <- lapply(seq_len(n), function(z) {
-		runif(m, 0, 1)
-	})
-	Z <- do.call(rbind, Z)
-	# weight by weight function
-	fZ <- lapply(seq_len(n), function(z) {
-		fte(seq_len(m))
-	})
-	Fz <- do.call(rbind, fZ)
-	Fz <- Z * Fz
-	colnames(Fz) <- paste0("V", seq_len(ncol(Fz)))
-	## craete data frame (start stop format)
-	id <- rep(1:nrow(Fz), each=m)
+	Z <- t(replicate(n, rng_z(te)))
 
-	## output data set 
-	Xdf        <- data.frame(id=id)
-	Xdf$tstart <- rep(0:(m-1), times = n)
-	Xdf$tend   <- rep(1:m, times = n)
+	## create data frame (start stop format)
+	id <- rep(seq_len(n), each = m)
+	Xdf <- data.frame(id = id)
+	Xdf$tstart <- rep(t - 1, times = n)
+	Xdf$tend   <- rep(t, times = n)
 	Xdf$intmid <- Xdf$tstart + 0.5
 	Xdf$Z      <- Z[id, ]
-	Xdf$Fz     <- Fz[id, ]
-	Xdf$z_vec  <- as.vector(t(Z))
-
-	## Lag Lead Matrix
-	Lmat <- matrix(1, nrow=m, ncol = m)
-	Lmat[upper.tri(Lmat)] <- 0
-	Xdf$LL <- Lmat[rep(1:m, times=n), ]
+	Xdf$Fz <- NA * Xdf$Z
+	Xdf$LL <- NA * Xdf$Z
+  for (i in seq_len(nrow(Xdf))) {
+    Xdf$Fz[i,] <- fz(t = Xdf$intmid[i], te = te, z = Xdf$Z[i,])
+    Xdf$LL[i,] <- c(mean(diff(te)), diff(te)) * fwindow(t = Xdf$intmid[i],  te = te)
+  }
+	colnames(Xdf$Fz) <- paste0("V", seq_len(me))
 
 	## add baseline + cumulative effects
-	Xdf$eta_base <- h0 + f0(Xdf$intmid, tmax=max(Xdf$intmid))
-	Xdf$eta_wce  <- rowSums(Xdf$Fz*Xdf$LL)
+	Xdf$eta_base <- h0 + f0(Xdf$intmid, tmax = max(Xdf$intmid))
+	Xdf$eta_wce  <- rowSums(Xdf$Fz * Xdf$LL)
 	Xdf$eta      <- Xdf$eta_base + Xdf$eta_wce
 
-	Xdf$te_df   <- matrix(1:m, nrow=nrow(Xdf), ncol=m, byrow=TRUE)
-	Xdf$time_df <- matrix(1:m, nrow=nrow(Xdf), ncol=m)
+	Xdf$te_df   <- matrix(1:m, nrow = nrow(Xdf), ncol = m, byrow = TRUE)
+	Xdf$time_df <- matrix(1:m, nrow = nrow(Xdf), ncol = m)
 
 	Xdf
-
 }
 
 
 #' Simulate survival data using the piece-wise exponential distribution
-#' 
+#'
 #' @rdname sim_wce
-#' @param Xdf A data frame containing full (time-dependent) covariate information 
+#' @param Xdf A data frame containing full (time-dependent) covariate information
 #' for each subject
-#' @param tmax The maximal time of follow-up. Survival times after \code{tmax} 
-#' will be administratively censored. 
-#' @import checkmate 
+#' @param tmax The maximal time of follow-up. Survival times after \code{tmax}
+#' will be administratively censored.
+#' @import checkmate
 #' @importFrom msm rpexp
 #' @keywords internal
 #' @export
@@ -108,7 +117,7 @@ sim_wce <- function(Xdf, tmax=30) {
 #' @rdname sim_wce
 #' @inherit sim_wce
 #' @importFrom dplyr mutate left_join
-#' @keywords internal 
+#' @keywords internal
 #' @export
 sim_wce2 <- function(Xdf, tmax=30) {
 
