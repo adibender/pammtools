@@ -9,6 +9,8 @@
 \arguments{
 \item{x}{A data frame or object of class \code{pamm}.}
 
+\item{fit}{A fitted model object.}
+
 \item{...}{Further arguments passed to \code{\link{get_terms}}}
 }
 \value{
