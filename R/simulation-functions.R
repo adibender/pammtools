@@ -62,7 +62,7 @@ make_X <- function(
     Xdf$LL[i,] <- c(mean(diff(te)), diff(te)) * fwindow(t = Xdf$intmid[i],  te = te)
   }
 	colnames(Xdf$Fz) <- paste0("V", seq_len(me))
-	Xdf$z_vec  <- as.vector(t(Z))
+	# Xdf$z_vec  <- as.vector(t(Z))
 
 	## add baseline + cumulative effects
 	Xdf$eta_base <- h0 + f0(Xdf$intmid)
