@@ -79,9 +79,7 @@ tidy_fixed(pam) # per default intercept is ommitted
 gg_fixed(pam)
 ```
 
-We can see that the estimated mortality risk for male subjects is increased by a
-factor of about 
-$\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
+We can see that the estimated mortality risk for male subjects is increased by a factor of about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
 compared to female subjects.
 
 <!--
@@ -210,8 +208,8 @@ pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
 head(pinfo.sex)
 table(pinfo.sex$sex)
 ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) + 
-	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) + 
-	geom_line(aes(col = sex)) +
+	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) +
+  geom_line(aes(col = sex)) +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 ```

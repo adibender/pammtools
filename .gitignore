@@ -11,3 +11,6 @@ pam.Rproj
 *cache/
 *files/
 *.html
+
+## dropbox
+*.dropbox.attr
