@@ -8,9 +8,6 @@ r:
 
 r_github_packages:
   - jimhester/covr
-  - RcppCore/Rcpp
-  - tidyverse/purrr
-  - tidyverse/dplyr
 
 after_success:
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
