@@ -19,7 +19,7 @@ Imports:
     tidyr,
     ggplot2,
     dplyr (>= 0.7.0),
-    purrr (>= 0.2.3)
+    purrr (>= 0.2.3),
     tibble
 License: GPL-2
 LazyData: true
