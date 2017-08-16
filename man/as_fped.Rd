@@ -5,7 +5,8 @@
 \title{Transform data with one row per subject to functional PED format}
 \usage{
 as_fped(formula, data, data_orig, cut = NULL, ..., max.end = FALSE,
-  ll_fun = function(te, t) {     te <= t })
+  ll_fun = function(te, t) {     te <= t }, keep = c("id", "tstart",
+  "eta_base", "eta_wce", "eta"))
 }
 \arguments{
 \item{formula}{a model formula}
