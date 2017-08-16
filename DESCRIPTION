@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.902
+Version: 0.0.903
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
@@ -39,3 +39,4 @@ URL: http://github.com/adibender/pam
 BugReports: http://github.com/adibender/pam/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Byte-Compile: yes
