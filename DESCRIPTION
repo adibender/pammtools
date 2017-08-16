@@ -39,3 +39,4 @@ URL: http://github.com/adibender/pam
 BugReports: http://github.com/adibender/pam/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Byte-Compile: yes
