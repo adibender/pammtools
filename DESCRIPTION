@@ -14,12 +14,11 @@ Imports:
     mgcv,
     prodlim,
     survival (>= 2.39-5),
-    coxme,
     msm,
     pec,
     checkmate,
     magrittr,
-    tidyr,
+    tidyr (>= 0.7.0),
     ggplot2,
     dplyr (>= 0.7.0),
     purrr (>= 0.2.3),
@@ -30,6 +29,7 @@ LazyData: true
 Suggests:
     RColorBrewer,
     scam,
+    coxme,
     testthat,
     knitr,
     rmarkdown,
@@ -39,4 +39,3 @@ URL: http://github.com/adibender/pam
 BugReports: http://github.com/adibender/pam/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
-Byte-Compile: yes

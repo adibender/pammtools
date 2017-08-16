@@ -67,7 +67,7 @@ combine_cut <- function(
 #' @inheritParams split_data
 #' @param id_var The ID variable name, identifying subjects. 
 #' Needs to be the same name in both data sets.
-#' @importFrom tidyr fill_ fill
+#' @importFrom tidyr fill
 #' @examples
 #' data("pbc", package="survival")# loads both, pbc and pbcseq
 #' pbc$status = 1*(pbc$status == 2)
@@ -99,6 +99,6 @@ split_tdc <- function(
  	
 	ped %>% left_join(tdc_df, by=c(id_var, "tstart"=time_var)) %>% 
 		group_by_(.dots=list(id_var)) %>% 
-		fill_(setdiff(tdc, c(id_var, time_var, status_var)))
+		fill(setdiff(tdc, c(id_var, time_var, status_var)))
 
 }

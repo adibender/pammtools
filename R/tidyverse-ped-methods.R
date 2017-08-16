@@ -274,7 +274,7 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
   if (keep_attributes) {
     data_attr   <- ped_attr(data)
   }
-  tbl <- reped(fill(unped(data), ..., .direction))
+  tbl <- reped(fill(unped(data), ..., .direction=.direction))
   if (keep_attributes) {
     attributes(tbl) <- c(attributes(tbl), data_attr)
   }
@@ -283,16 +283,16 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
 
 }
 
-#' @inheritParams tidyr::fill_
-#' @export fill_
-#' @export
-#' @rdname tidyr_verbs
-fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
+# #' @inheritParams tidyr::fill_
+# #' @export fill_
+# #' @export
+# #' @rdname tidyr_verbs
+# fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
 
-  data_attr   <- ped_attr(data)
-  tbl <- reped(fill_(unped(data), fill_cols, .direction)) 
-  attributes(tbl) <- c(attributes(tbl), data_attr)
+#   data_attr   <- ped_attr(data)
+#   tbl <- reped(fill_(unped(data), fill_cols, .direction)) 
+#   attributes(tbl) <- c(attributes(tbl), data_attr)
 
-  return(tbl)
+#   return(tbl)
 
-}
+# }

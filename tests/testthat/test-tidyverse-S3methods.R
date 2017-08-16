@@ -27,13 +27,13 @@ test_that("ped class is preserved after tidyr operations", {
 	  select(id, day, chol)
 	class(tdc_df) <- c("ped", class(tdc_df))
 
-	## standard verstion
+	## standard version
 	temp <- tidyr::fill(tdc_df, chol)
 	expect_is(temp, "ped")
 	expect_identical(sum(is.na(temp)), 0L)
 
 	## non standard evaluation
-	temp <- tidyr::fill_(tdc_df, c("chol"))
+	temp <- tidyr::fill(tdc_df, c("chol"))
 	expect_is(temp, "ped")
 	expect_identical(sum(is.na(temp)), 0L)
 

@@ -5,26 +5,36 @@
 \alias{fill}
 \alias{fill_}
 \alias{fill.ped}
-\alias{fill_.ped}
 \title{\code{tidyr} Verbs for \code{ped}-Objects}
 \usage{
-fill.ped(data, ..., .direction = c("down", "up"), keep_attributes = TRUE)
-
-\method{fill_}{ped}(data, fill_cols, .direction = c("down", "up"))
+\method{fill}{ped}(data, ..., .direction = c("down", "up"),
+  keep_attributes = TRUE)
 }
 \arguments{
 \item{data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
 
-\item{...}{Specification of columns to fill. Use bare variable names.
-Select all variables between x and z with \code{x:z}, exclude y with
-\code{-y}. For more options, see the \link[dplyr]{select} documentation.}
+\item{...}{Specification of columns to expand.
+
+To find all unique combinations of x, y and z, including those not
+found in the data, supply each variable as a separate argument.
+To find only the combinations that occur in the data, use nest:
+\code{expand(df, nesting(x, y, z))}.
+
+You can combine the two forms. For example,
+\code{expand(df, nesting(school_id, student_id), date)} would produce
+a row for every student for each date.
+
+For factors, the full set of levels (not just those that appear in the
+data) are used. For continuous variables, you may need to fill in values
+that don't appear in the data: to do so use expressions like
+\code{year = 2010:2020} or \code{year = \link{full_seq}(year)}.
+
+Length-zero (empty) elements are automatically dropped.}
 
 \item{.direction}{Direction in which to fill missing values. Currently
 either "down" (the default) or "up".}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}.}
-
-\item{fill_cols}{Character vector of column names.}
 }
 \value{
 A modified \code{ped} object.
