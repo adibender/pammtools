@@ -48,7 +48,7 @@ test_that("Simulation functions produce correct dimensions", {
 		data=sim_wce2(X), 
 		data_orig=X, 
 		cut=0:30, max.end=T,
-		ll_fun = function(te, t) { t-te <= 30 & t-te >=0})
+		ll_fun = function(te, t) { (t-te <= 30) & (t-te >=0)})
 
 	for(i in cnames_X[c(5:7, 11, 12)]) {
 		assert_matrix(instance[[i]], ncols=length(te))

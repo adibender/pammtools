@@ -28,8 +28,7 @@ as_fped <- function(
 
   raw_df  <- data %>% select_if(compose("!", is.matrix))
   surv_df <- split_data(formula, raw_df, cut=cut, max.end=max.end)
-  surv_df <- left_join(surv_df, 
-    data_orig[,keep])
+  surv_df <- left_join(surv_df, data_orig[,keep]) %>% arrange(id, tstart)
   ## create functional exporsure variables
   surv_df$Z     <- data$Z[surv_df$id, ]
   surv_df$Fz    <- data$Z[surv_df$id, ]
@@ -38,7 +37,7 @@ as_fped <- function(
   ## crate Lag-Lead matrix
   times      <- attr(surv_df, "cut")
   te         <- surv_df$te_df[1,]
-  LL         <- Lsimp(te, times[times >0], ll_fun)
+  LL         <- outer(attr(surv_df, "cut"), surv_df$te_df[1,], ll_fun)
   surv_df$LL <- Lmat(LL, surv_df$id)
 
  	## create time_df 
