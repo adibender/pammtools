@@ -17,7 +17,7 @@ find_interval <- function(
   ind <- cut(x, cut, labels=FALSE, ...)
   # if(any(is.na(ind))) ind[is.na(ind)] <- max(ind, na.rm=TRUE)
   if(labels) {
-    ind <- int_info2(min.int=0, brks=cut)[ind, "interval"]   
+    ind <- int_info2(min.time=0, x=cut)[ind, "interval"]   
   }
 
   ind
@@ -124,7 +124,7 @@ create_Lmat <- function(
   ind.end   <-find_interval(ldf$w.end, cut=cut, left.open=TRUE, 
     rightmost.closed = TRUE)
 
-  int.info  <- int_info2(brks=cut, min.int=0)
+  int.info  <- int_info2(x=cut, min.time=0)
   int.keep  <- int.info$interval[which(int.info$tstart >= t.min)]
 
   ints <- apply(cbind(ind.begin, ind.end), 1, function(z) {
