@@ -27,7 +27,7 @@
 #' pinf <- ped_info(ped)
 #' add_term(pinf, pam, term="tend")
 #' @export
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
+#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
 #' @importFrom stats model.matrix vcov
 add_term <- function(
 	newdata,
@@ -43,8 +43,8 @@ add_term <- function(
 	assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
 
 	col_ind <- lapply(term, grep, x=names(object$coefficients)) %>%
-		unlist() %>% 
-		unique() %>% 
+		unlist() %>%
+		unique() %>%
 		sort()
   is_pam <- inherits(object, "gam")
 

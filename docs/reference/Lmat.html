@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Forrest plot of fixed coefficients — gg_fixed • pamm</title>
+<title>Extend instance of Lag-Lead matrix to whole data set — Lmat • pamm</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -125,52 +125,35 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Forrest plot of fixed coefficients</h1>
+    <h1>Extend instance of Lag-Lead matrix to whole data set</h1>
     </div>
 
     
-    <p>Forrest plot of fixed coefficients</p>
+    <p>Extend instance of Lag-Lead matrix to whole data set</p>
     
 
-    <pre class="usage"><span class='fu'>gg_fixed</span>(<span class='no'>x</span>, <span class='kw'>intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>Lmat</span>(<span class='no'>LL</span>, <span class='no'>id</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A model object.</p></td>
+      <th>LL</th>
+      <td><p>An instance of the Lag-Lead matrix (for all time points of the follow-up)</p></td>
     </tr>
     <tr>
-      <th>intercept</th>
-      <td><p>Logical, indicating whether intercept term should be included.
-Defaults to <code>FALSE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Currently not used.</p></td>
+      <th>id</th>
+      <td><p>The id vector of the data set in PED format.</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='tidy_fixed.html'>tidy_fixed</a></code></p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>Sepal.Length</span> ~ <span class='no'>Sepal.Width</span> + <span class='no'>Petal.Length</span> + <span class='no'>Petal.Width</span> + <span class='no'>Species</span>,
-        <span class='kw'>data</span><span class='kw'>=</span><span class='no'>iris</span>)
-<span class='fu'>gg_fixed</span>(<span class='no'>g</span>, <span class='kw'>intercept</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='img'><img src='gg_fixed-11.png' alt='' width='700' height='432.632880098887' /></div><div class='input'><span class='fu'>gg_fixed</span>(<span class='no'>g</span>)</div><div class='img'><img src='gg_fixed-12.png' alt='' width='700' height='432.632880098887' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>

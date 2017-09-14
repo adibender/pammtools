@@ -14,7 +14,7 @@ predict survival probabilities.}
 
 \item{times}{Time points for which survival probabilities should be predicted.}
 
-\item{...}{Arguments passed to \code{\link[pam]{int_info}}.}
+\item{...}{Arguments passed to \code{\link[pamm]{int_info}}.}
 }
 \description{
 This function is needed to work with the \code{pec} package for estimation

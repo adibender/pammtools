@@ -44,7 +44,7 @@ sample_info.data.frame <- function(x, ...) {
 #' @importFrom magrittr %<>%
 #' @export
 #' @rdname sample_info
-#' @seealso \code{\link[pam]{split_data}}
+#' @seealso \code{\link[pamm]{split_data}}
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
@@ -120,8 +120,8 @@ make_newdata <- function(x, ...) {
 
 #' @inherit make_newdata
 #' @param expand A character vector of column names in \code{ped}.
-#' @param n If \code{expand} specified, respective variables will be expanded 
-#' in \code{n} values from minimum to maximum. 
+#' @param n If \code{expand} specified, respective variables will be expanded
+#' in \code{n} values from minimum to maximum.
 #' @importFrom magrittr "%<>%"
 #' @importFrom modelr seq_range
 #' @export
@@ -148,7 +148,7 @@ make_newdata.default <- function(
     } else {
       expanded_df <- x %>%
         ungroup() %>% # ungroup here to obtain sequence from min to max for all data
-        select(one_of(expand)) %>% 
+        select(one_of(expand)) %>%
         as.list() %>%
         map(seq_range, n = n) %>%
         cross_df()
@@ -195,14 +195,14 @@ make_newdata.ped <- function(
         "yield incorrect predictions. Proceed with caution!")
     }
   }
-  
+
   id_var <- attr(x, "id_var")
   g_vars <- group_vars(x)
-  x %<>% 
-    ungroup() %>% 
-    group_by_(id_var) %>% 
-    slice(1) %>% 
-    ungroup(id_var) %>% 
+  x %<>%
+    ungroup() %>%
+    group_by_(id_var) %>%
+    slice(1) %>%
+    ungroup(id_var) %>%
     unped() %>%
     group_by_(.dots = g_vars)
 

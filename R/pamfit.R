@@ -24,11 +24,12 @@ append_ped_attr <- function(pamm, ped) {
 #' by default. The first two can not be overriden. The \code{method} argument
 #' can be specified as usually, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
 #'
-#' @inherit mgcv::gam
+#' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{gam}}.
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
+#' @seealso \code\link[mgcv]{gam}
 #' @export
 pamm <- function(formula, data=list(), method="REML", ...) {
 

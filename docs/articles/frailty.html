@@ -116,7 +116,9 @@
 <span class="kw">library</span>(survival)
 <span class="kw">library</span>(coxme)
 <span class="kw">library</span>(pamm)
-<span class="kw">library</span>(mgcv)</code></pre></div>
+<span class="kw">library</span>(mgcv)
+<span class="kw">library</span>(ggplot2)
+<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</code></pre></div>
 <p>Whenever subjects belonging to a cluster or group could have correlated outcomes, our models must account for such dependency structures. We can do so by including random effects in the model. In the context of survival analysis such effects are called “frailty” terms.</p>
 <div id="ncctg-lung-cancer-data" class="section level2">
 <h2 class="hasAnchor">

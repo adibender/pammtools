@@ -27,7 +27,7 @@
 #' pinfo <- ped_info(ped)
 #' add_hazard(pinfo, pam)
 #' }
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
+#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_cumhazard}}
 #' @rdname add_hazard
 #' @export
 add_hazard <- function(
@@ -139,7 +139,7 @@ get_hazard <- function(
 #' @inheritParams add_hazard
 #' @param interval_length \code{quosure} providing the name of the variable in
 #'  newdata containing the interval lengths. Defaults to \code{intlen}.
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
+#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
 #' @rdname add_hazard
 #' @export
 add_cumhazard <- function(
