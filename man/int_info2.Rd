@@ -18,3 +18,4 @@ this value will be included in the resulting data frame.}
 Given interval break-points, provides data frame with information regarding
 interval start-/end-points, lengths, midpoints,etc.
 }
+\keyword{internal}

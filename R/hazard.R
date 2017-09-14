@@ -21,15 +21,15 @@
 #' \dontrun{
 #' library(mgcv)
 #' data("veteran", package="survival")
-#' ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran, 
+#' ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran,
 #' 	id="id")
 #' pam <- gam(ped_status ~ s(tend, k=5), data = ped, family=poisson(), offset=offset)
 #' pinfo <- ped_info(ped)
 #' add_hazard(pinfo, pam)
 #' }
-#' @export
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
 #' @rdname add_hazard
+#' @export
 add_hazard <- function(
 	newdata,
 	object,
@@ -63,6 +63,7 @@ add_hazard <- function(
 #'
 #' @inheritParams add_hazard
 #' @importFrom stats model.frame
+#' @keywords internal
 get_hazard <- function(
 	newdata,
 	object,
@@ -93,7 +94,7 @@ get_hazard <- function(
 	new_ints <- which(!(prediction_intervals %in% original_intervals))
 	if (length(new_ints)) {
 	 message <- paste0("Intervals in <newdata> contain values (",
-	   paste(prediction_intervals[new_ints], collapse=","), 
+	   paste(prediction_intervals[new_ints], collapse=","),
 	   ") not used in original fit.",
 	   " Setting intervals to values not used for original fit in <object>",
 	   "can invalidate the PEM assumption and yield incorrect predictions.")
@@ -117,7 +118,7 @@ get_hazard <- function(
 	}
 
 	if(type=="response") {
-		pred %<>% 
+		pred %<>%
 			mutate_at(c("hazard", "lower", "upper"), funs(exp(.)))
 	}
 
@@ -127,7 +128,7 @@ get_hazard <- function(
 	if(is.grouped_df(newdata)) {
 		group.df <- select_(newdata, .dots=unlist(groups(newdata)))
 		pred     <- bind_cols(group.df, pred)
-	}	
+	}
 
 	return(pred)
 
@@ -138,9 +139,9 @@ get_hazard <- function(
 #' @inheritParams add_hazard
 #' @param interval_length \code{quosure} providing the name of the variable in
 #'  newdata containing the interval lengths. Defaults to \code{intlen}.
-#' @export
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
 #' @rdname add_hazard
+#' @export
 add_cumhazard <- function(
 	newdata,
 	object,
@@ -172,6 +173,7 @@ add_cumhazard <- function(
 #' Calculate cumulative hazard
 #'
 #' @inheritParams add_cumhazard
+#' @keywords internal
 get_cumhazard <- function(
 	newdata,
 	object,
@@ -197,7 +199,7 @@ get_cumhazard <- function(
 
 
 #' Add survival probabilities estimates to data set
-#' 
+#'
 #' @inherit add_cumhazard
 #' @export
 add_survprob <- function(
@@ -230,6 +232,7 @@ add_survprob <- function(
 #' Calculate survival probabilities
 #'
 #' @inheritParams add_survprob
+#' @keywords internal
 get_survprob <- function(
 	newdata,
 	object,
@@ -242,12 +245,12 @@ get_survprob <- function(
   assert_choice(as.character(interval_length)[2], colnames(newdata))
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
-	newdata %>% 
+	newdata %>%
 		get_cumhazard(object, ci=TRUE, time_variable=time_variable, ...) %>%
 	  mutate(
 		 	survprob  = exp(-cumhazard),
 		 	survlower = exp(-cumlower),
 		 	survupper = exp(-cumupper)) %>%
     select(-one_of(c("cumhazard", "cumlower", "cumupper")))
-	  
+
 }

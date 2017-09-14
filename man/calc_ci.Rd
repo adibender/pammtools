@@ -7,11 +7,12 @@
 calc_ci(ftab)
 }
 \arguments{
-\item{ftab}{A table with two columns, containing coefficients in the first 
+\item{ftab}{A table with two columns, containing coefficients in the first
 column and standard-errors in the second column.}
 }
 \description{
-Given 2 column matrix or data frame, returns 3 column data.frame 
-with coefficient estimate plus lower and upper borders of the 
+Given 2 column matrix or data frame, returns 3 column data.frame
+with coefficient estimate plus lower and upper borders of the
 95% confidence intervals.
 }
+\keyword{internal}

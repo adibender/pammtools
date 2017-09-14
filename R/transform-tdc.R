@@ -11,6 +11,7 @@
 #' @import dplyr
 #' @return A character vector containing names of variables that are not constant
 #' in each group (\code{id_var}).
+#' @keywords internal
 get_tdc <- function(event_df, id_var) {
 
 	event_df %>% group_by_(.dots=list(id_var)) %>%
@@ -40,6 +41,7 @@ get_tdc <- function(event_df, id_var) {
 #' @param cens_value The value that indicates censoring in the
 #' \code{status_var} column.
 #' @import dplyr
+#' @keywords internal
 combine_cut <- function(
 	event_df,
 	tdc_df,

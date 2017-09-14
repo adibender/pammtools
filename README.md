@@ -5,7 +5,7 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 
-## `pamm`: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
+## `pamm`: Functions and Utilities for fitting Piece-wise Exponential (Additive Mixed) Models
 
 ### Installation
 

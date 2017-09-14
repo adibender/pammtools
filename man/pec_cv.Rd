@@ -8,22 +8,22 @@ pec_cv(data, formula_pam, formula_ped = Surv(time, status) ~ ., k = 10L,
   formula_ipcw = Surv(time, status) ~ 1, cut = NULL, method = pamm, ...)
 }
 \arguments{
-\item{data}{The data in standard time-to-event data format which can be tansformed 
+\item{data}{The data in standard time-to-event data format which can be tansformed
 in PED (see \code{\link{split_data}}).}
 
 \item{formula_pam}{The formula used to fit the PAM (see \code{\link{pam}}).}
 
-\item{formula_ped}{The formula used to transform data to PED (see 
+\item{formula_ped}{The formula used to transform data to PED (see
 \code{\link{split_data}}).}
 
 \item{k}{The number of folds to be used in cross-validation.}
 
-\item{formula_ipcw}{The formula used to calculate inverse probability censoring 
+\item{formula_ipcw}{The formula used to calculate inverse probability censoring
 weights (IPCW). See \code{\link[pec]{ipcw}} for details.}
 
 \item{cut}{the vector of timepoints to cut at}
 
-\item{method}{The function to which \code{formula_pam} will be passed to fit the 
+\item{method}{The function to which \code{formula_pam} will be passed to fit the
 model in the k-th fold.}
 
 \item{...}{Further arguments passed to \code{\link{split_data}}.}
@@ -34,3 +34,4 @@ k-fold cross validated prediction error curve (pec)
 \seealso{
 \code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 }
+\keyword{internal}

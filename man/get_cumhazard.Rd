@@ -34,3 +34,4 @@ newdata containing the interval lengths. Defaults to \code{intlen}.}
 \description{
 Calculate cumulative hazard
 }
+\keyword{internal}

@@ -30,3 +30,4 @@ a data frame containing time points at which a time-dependent covariate changes
 its value, returns the unique time at which either event occurs or a
 time-dependent covariate changes its value.
 }
+\keyword{internal}

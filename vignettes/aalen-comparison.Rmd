@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Additive Aalen model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+draft: true
 ---
 
 ## Comparison to estimation of time-dependent covariates from Aalen Model

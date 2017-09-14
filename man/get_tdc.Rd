@@ -22,3 +22,4 @@ For all covariates in the data set, this functions checks if the values
 of the covariate changes per ID or other grouping variable. Returns the names
 of variables that change over time.
 }
+\keyword{internal}

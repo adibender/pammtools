@@ -3,7 +3,7 @@
 \name{as_ped}
 \alias{as_ped}
 \alias{is.ped}
-\title{Function to check if an object is of class \code{ped} or 
+\title{Function to check if an object is of class \code{ped} or
 transform data into piece-wise exponential data (PED) format if possible.}
 \usage{
 as_ped(x, data, tdc_df = NULL, ...)
@@ -23,6 +23,7 @@ is.ped(x)
 A data frame class \code{ped} in piece-wise exponential data (PED) format.
 }
 \description{
-Function to check if an object is of class \code{ped} or 
+Function to check if an object is of class \code{ped} or
 transform data into piece-wise exponential data (PED) format if possible.
 }
+\keyword{internal}

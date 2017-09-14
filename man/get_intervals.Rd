@@ -11,10 +11,10 @@ get_intervals(x, times, ...)
   rightmost.closed = TRUE, ...)
 }
 \arguments{
-\item{x}{An object from which interval information can be obtained, 
+\item{x}{An object from which interval information can be obtained,
 see \code{\link{int_info}}.}
 
-\item{times}{A vector of times for which corresponding interval information 
+\item{times}{A vector of times for which corresponding interval information
 should be returned.}
 
 \item{...}{Further arguments passed to \code{\link[base]{findInterval}}.}

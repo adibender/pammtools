@@ -12,3 +12,4 @@ modus(var)
 \description{
 Calculate the modus
 }
+\keyword{internal}

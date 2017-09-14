@@ -68,7 +68,7 @@ Add cumulative hazard estimate to data set
 \dontrun{
 library(mgcv)
 data("veteran", package="survival")
-ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran, 
+ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran,
 	id="id")
 pam <- gam(ped_status ~ s(tend, k=5), data = ped, family=poisson(), offset=offset)
 pinfo <- ped_info(ped)

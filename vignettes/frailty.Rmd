@@ -26,6 +26,8 @@ library(survival)
 library(coxme)
 library(pamm)
 library(mgcv)
+library(ggplot2)
+theme_set(theme_bw())
 ```
 
 Whenever subjects belonging to a cluster or group could have correlated outcomes,

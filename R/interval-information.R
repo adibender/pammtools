@@ -22,12 +22,12 @@ int_info <- function(x, ...) {
 #' @param min.time Only intervals that have lower borders larger than
 #' this value will be included in the resulting data frame.
 #' @import checkmate dplyr
-#' @export
 #' @examples
 #' ## create interval information from cut points
 #' int_info(c(1, 2.3, 5))
-#' 
+#'
 #' @rdname int_info
+#' @export
 int_info.default <- function(
   x,
   min.time = 0L, ...) {
@@ -69,9 +69,9 @@ int_info.default <- function(
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
 #' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
 #' int_info(ped)
-#' 
-#' @export
+#'
 #' @seealso split_data ped_info
+#' @export
 int_info.ped <- function(x, ...) {
 
   int_info(attr(x, "cut"), ...)
@@ -85,7 +85,7 @@ int_info.ped <- function(x, ...) {
 #' vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
 #' vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
 #' int_info(vet_pam)
-#' 
+#'
 #' @export
 int_info.pamm <- function(x, ...) {
 
@@ -97,9 +97,9 @@ int_info.pamm <- function(x, ...) {
 #' Information on intervals in which times fall
 #'
 #' @inheritParams int_info
-#' @param x An object from which interval information can be obtained, 
+#' @param x An object from which interval information can be obtained,
 #' see \code{\link{int_info}}.
-#' @param times A vector of times for which corresponding interval information 
+#' @param times A vector of times for which corresponding interval information
 #' should be returned.
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
@@ -112,7 +112,7 @@ int_info.pamm <- function(x, ...) {
 #' x <- runif(3, 0, 30)
 #' x
 #' get_intervals(brks, x)
-#' 
+#'
 #' @seealso \code{\link[base]{findInterval}} \code{\link{int_info}}
 #' @rdname get_intervals
 #' @export
@@ -120,16 +120,16 @@ get_intervals <- function(x, times, ...) {
   UseMethod("get_intervals", x)
 }
 
-#' @inherit get_intervals 
+#' @inherit get_intervals
 #' @inheritParams base::findInterval
 #' @seealso \code{\link[base]{findInterval}}
 #' @rdname get_intervals
 #' @export
 get_intervals.default <- function(
-  x, 
-  times, 
+  x,
+  times,
   left.open        = TRUE,
-  rightmost.closed = TRUE, 
+  rightmost.closed = TRUE,
   ...) {
 
   # check inputs
@@ -183,6 +183,7 @@ ped_info <- function(ped) {
 #' The columns \code{ped_riskset, ped_events, ped_censored} provide the
 #' size of the riskset at the beginning of each interval as well as the number
 #' of events and censorings that occured in the interval, respectively.
+#'
 #' @param ped An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.
 #' @import checkmate dplyr
 #' @examples
@@ -194,9 +195,9 @@ ped_info <- function(ped) {
 #' ## add descriptive statistics for riskset at beginning of each interval:
 #' # left_join(riskset_celltype,
 #' #           group_by(ped, celltype, interval) %>% sample_info())
-#' @export
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
+#' @export
 riskset_info <- function(ped) {
   assert_class(ped, classes="ped")
 

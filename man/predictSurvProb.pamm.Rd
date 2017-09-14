@@ -7,9 +7,9 @@
 predictSurvProb.pamm(object, newdata, times, ...)
 }
 \arguments{
-\item{object}{A PAM model object.}
+\item{object}{A PAMM model object.}
 
-\item{newdata}{Data containing covariate information only, for which to 
+\item{newdata}{Data containing covariate information only, for which to
 predict survival probabilities.}
 
 \item{times}{Time points for which survival probabilities should be predicted.}
@@ -17,6 +17,7 @@ predict survival probabilities.}
 \item{...}{Arguments passed to \code{\link[pam]{int_info}}.}
 }
 \description{
-This function is needed to work with the \code{pec} package for estimation 
+This function is needed to work with the \code{pec} package for estimation
 of the time-dependent C-Index and Brier-Score (prediction error)
 }
+\keyword{internal}

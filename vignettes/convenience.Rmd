@@ -26,6 +26,8 @@ library(magrittr)
 library(dplyr)
 library(mgcv)
 library(pamm)
+library(ggplot2)
+theme_set(theme_bw())
 library(grid)
 ```
 
@@ -139,8 +141,6 @@ head(hgb.term)
 We can then use `ggplot2` to produce an equivalent visualization:
 
 ```{r}
-library(ggplot2)
-theme_set(theme_bw())
 ggplot(hgb.term, aes(x = x, y = eff)) +
 	geom_line() +
 	geom_ribbon(aes(ymin = ci.lower, ymax = ci.upper), alpha = 0.3)

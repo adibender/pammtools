@@ -8,3 +8,7 @@
 ^.*\.dropbox\.attr$
 ^.*\.nfs$
 ^data-raw$
+^LICENCE\.md$
+^docs$
+^LICENSE\.md$
+^_pkgdown\.yml$

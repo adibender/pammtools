@@ -12,3 +12,4 @@ tidy_pec(pec)
 \description{
 Tranform data from pec object to tidy format
 }
+\keyword{internal}

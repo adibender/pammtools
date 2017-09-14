@@ -14,3 +14,4 @@ Lmat(LL, id)
 \description{
 Extend instance of Lag-Lead matrix to whole data set
 }
+\keyword{internal}

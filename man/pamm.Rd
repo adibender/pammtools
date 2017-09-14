@@ -2,12 +2,15 @@
 % Please edit documentation in R/pamfit.R
 \name{pamm}
 \alias{pamm}
+\alias{is.pamm}
 \alias{print.pamm}
 \alias{summary.pamm}
 \alias{plot.pamm}
 \title{Fit a piece-wise exponential additive model}
 \usage{
 pamm(formula, data = list(), method = "REML", ...)
+
+is.pamm(x)
 
 \method{print}{pamm}(x, ...)
 
@@ -34,7 +37,7 @@ exponential family \code{"REML"} is the default, and the only other option is \c
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{gam}}.}
 
-\item{x}{An object of class \code{pamm} as returned by \code{\link{pamm}}.}
+\item{x}{Any R object.}
 
 \item{object}{An object of class \code{pamm} as returned by \code{\link{pamm}}.}
 }
@@ -45,10 +48,12 @@ fit a GAM, but doesn't actually fit it.
 Otherwise the function returns an object of class \code{"gam"} as described in \code{\link{gamObject}}.
 }
 \description{
-Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set 
-\code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"} 
-by default. The first two can not be overriden. The \code{method} argument 
+Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set
+\code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}
+by default. The first two can not be overriden. The \code{method} argument
 can be specified as usually, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
+
+Check if object is of class pamm
 }
 \details{
 A generalized additive model (GAM) is a generalized linear model (GLM) in which the linear 
@@ -245,3 +250,4 @@ to environmental modelling. Ecological Modelling 157:157-177
 \code{\link{gam.selection}}, \code{\link{gam.control}}
 \code{\link{gam.check}}, \code{\link{linear.functional.terms}} \code{\link{negbin}}, \code{\link{magic}},\code{\link{vis.gam}}
 }
+\keyword{internal}
