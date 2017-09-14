@@ -312,7 +312,7 @@ karno_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdoc
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position  =</span> <span class="st">"bottom"</span>)
 
 time_df &lt;-ped %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/make_newdata.html">make_newdata</a></span>(<span class="dt">tend=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">51</span>, <span class="dv">200</span>), <span class="dt">karno=</span><span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">100</span>, <span class="dt">by=</span><span class="dv">5</span>)) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">tend=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">51</span>, <span class="dv">200</span>), <span class="dt">karno=</span><span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">100</span>, <span class="dt">by=</span><span class="dv">5</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam3, <span class="dt">term=</span><span class="st">"karno"</span>)
 
 time_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(time_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>karno)) +

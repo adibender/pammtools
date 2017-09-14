@@ -218,7 +218,7 @@ coef_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 ## to visualize smooth effect of age, create data set where all covariates are
 ## fixed to mean values except for age, which varies between min and max
 ## (n = 100)
-age_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/make_newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"age"</span>, <span class="dt">n=</span><span class="dv">100</span>)
+age_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"age"</span>, <span class="dt">n=</span><span class="dv">100</span>)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
 age_df %&lt;&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"age"</span>) %&gt;%
@@ -238,7 +238,7 @@ age_gg &lt;-<span class="st"> </span>smooth_gg +<span class="st"> </span><span c
 
 
 ## same as "age"" for "prio" variable
-prio_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/make_newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"prio"</span>, <span class="dt">n=</span><span class="dv">100</span>)
+prio_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"prio"</span>, <span class="dt">n=</span><span class="dv">100</span>)
 prio_df %&lt;&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"prio"</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cphfit =</span> <span class="kw">predict</span>(<span class="dt">object=</span>cph, ., <span class="dt">type=</span><span class="st">"terms"</span>)[,<span class="dv">7</span>])
 
@@ -349,7 +349,7 @@ tdc_df &lt;-<span class="st"> </span>pbcseq %&gt;%
 ## the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
 ## (see also Details section in ?predict.coxph)
 bili_df &lt;-<span class="st"> </span>pbc_ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">ungroup</a></span>() %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/make_newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"bili"</span>, <span class="dt">n =</span> <span class="dv">100</span>) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"bili"</span>, <span class="dt">n =</span> <span class="dv">100</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pbc_pam, <span class="dt">term=</span><span class="st">"bili"</span>, <span class="dt">relative=</span><span class="ot">TRUE</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cox =</span> <span class="kw">predict</span>(fit2, ., <span class="dt">type=</span><span class="st">"term"</span>)[, <span class="st">"log(bili)"</span>])
 
@@ -361,7 +361,7 @@ bili_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 
 ## Effect of protime
 protime_df &lt;-<span class="st"> </span>pbc_ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">ungroup</a></span>() %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/make_newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"protime"</span>, <span class="dt">n =</span> <span class="dv">100</span>) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"protime"</span>, <span class="dt">n =</span> <span class="dv">100</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pbc_pam, <span class="dt">term=</span><span class="st">"protime"</span>, <span class="dt">relative=</span><span class="ot">TRUE</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cox =</span> <span class="kw">predict</span>(fit2, ., <span class="dt">type=</span><span class="st">"term"</span>)[, <span class="st">"log(protime)"</span>])
 
