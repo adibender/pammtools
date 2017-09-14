@@ -7,7 +7,7 @@
 get_grpvars(data)
 }
 \arguments{
-\item{data}{A data frame (potentially `grouped_df`) from which to extract 
+\item{data}{A data frame (potentially `grouped_df`) from which to extract
 names of grouping variables.}
 }
 \value{
@@ -16,3 +16,4 @@ A character vector (of length 0 if no grouping variables present).
 \description{
 Extract character vector of grouping variables
 }
+\keyword{internal}

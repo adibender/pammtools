@@ -1,13 +1,13 @@
-Package: pam
+Package: pamm
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.904
+Version: 0.0.1.9001
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
-Description: This package provides functions that facilitate fitting 
-    piece-wise exponential (additive) models. 
-    This includes restructuring the data to the needed format. 
+Description: This package provides functions that facilitate fitting
+    piece-wise exponential (additive mixed) models.
+    This includes restructuring the data to the needed format.
 Depends:
     R (>= 3.1.2)
 Imports:
@@ -24,7 +24,7 @@ Imports:
     purrr (>= 0.2.3),
     tibble,
     modelr
-License: GPL-2
+License: MIT + file LICENSE
 LazyData: true
 Suggests:
     RColorBrewer,
@@ -35,8 +35,8 @@ Suggests:
     rmarkdown,
     grid,
     gridExtra
-URL: http://github.com/adibender/pam
-BugReports: http://github.com/adibender/pam/issues
+URL: http://github.com/adibender/pamm
+BugReports: http://github.com/adibender/pamm/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Byte-Compile: yes

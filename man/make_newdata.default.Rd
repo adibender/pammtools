@@ -14,7 +14,7 @@ to a specific values.}
 
 \item{expand}{A character vector of column names in \code{ped}.}
 
-\item{n}{If \code{expand} specified, respective variables will be expanded 
+\item{n}{If \code{expand} specified, respective variables will be expanded
 in \code{n} values from minimum to maximum.}
 }
 \description{

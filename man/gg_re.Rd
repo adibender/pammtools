@@ -7,9 +7,9 @@
 gg_re(x, ...)
 }
 \arguments{
-\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
+\item{x}{A model object.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
+\item{...}{Currently not used.}
 }
 \description{
 Plot Normal QQ plots for random effects
@@ -18,7 +18,7 @@ Plot Normal QQ plots for random effects
 data("lung", package="survival")
 lung$inst <- as.factor(lung$inst) # for mgcv
 ped <- split_data(Surv(time, status)~ph.ecog + inst, data=lung, id="id")
-pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"), 
+pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 	data=ped, family=poisson(), offset=offset)
 gg_re(pam)
 }

@@ -2,15 +2,16 @@
 
 
 
-#' Calculate confidence intervals 
-#' 
-#' Given 2 column matrix or data frame, returns 3 column data.frame 
-#' with coefficient estimate plus lower and upper borders of the 
+#' Calculate confidence intervals
+#'
+#' Given 2 column matrix or data frame, returns 3 column data.frame
+#' with coefficient estimate plus lower and upper borders of the
 #' 95% confidence intervals.
-#' 
-#' @param ftab A table with two columns, containing coefficients in the first 
-#' column and standard-errors in the second column. 
+#'
+#' @param ftab A table with two columns, containing coefficients in the first
+#' column and standard-errors in the second column.
 #' @importFrom tibble as_tibble
+#' @keywords internal
 calc_ci <- function(ftab) {
 
 	colnames(ftab) <- c("coef", "se")
@@ -26,22 +27,22 @@ calc_ci <- function(ftab) {
 }
 
 #' Extract fixed coefficient table from model object
-#' 
+#'
 #' Given a model object, returns data frame with columns \code{variable},
-#' \code{coef} (coefficient), \code{lower} (lower 95\% CI) and 
-#' \code{upper} (upper 95% CI). 
-#' 
+#' \code{coef} (coefficient), \code{lower} (lower 95\% CI) and
+#' \code{upper} (upper 95% CI).
+#'
 #' @param x A model object.
 #' @param ... Currently not used.
-#' @export 
+#' @export
 tidy_fixed <- function(x, ...) {
 	UseMethod("tidy_fixed", x)
 }
 
 #' @inheritParams tidy_fixed
 #' @param intercept Should intercept also be returned?
-#' @rdname tidy_fixed
-#' @export 
+#' @rdname tidiers
+#' @export
 tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
   ftab <- summary(x)[["p.table"]][, 1:2]
@@ -54,7 +55,7 @@ tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
 #' @inheritParams tidy_fixed
 #' @importFrom tibble as_tibble
-#' @rdname tidy_fixed
+#' @rdname tidiers
 #' @export
 tidy_fixed.coxph <- function(x, ...) {
 
@@ -71,6 +72,7 @@ tidy_fixed.coxph <- function(x, ...) {
 #' @param ci A logical value indicating whether confidence intervals should be
 #' calculated and returned. Defaults to \code{TRUE}.
 #' @importFrom dplyr bind_rows
+#' @rdname tidiers
 #' @export
 tidy_smooth <- function(
 	x,
@@ -110,6 +112,7 @@ tidy_smooth <- function(
 #' @importFrom purrr cross_df
 #' @importFrom tibble as_tibble
 #' @import dplyr
+#' @rdname tidiers
 #' @export
 tidy_smooth2d <- function(
 	x,
@@ -153,6 +156,7 @@ tidy_smooth2d <- function(
 #' @importFrom stats ppoints qnorm quantile
 #' @rdname tidy_smooth
 #' @seealso \code{\link[stats]{qqline}}
+#' @rdname tidiers
 #' @export
 tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 

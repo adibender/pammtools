@@ -51,3 +51,4 @@ numeric.}
 \description{
 Calculate predicted hazard
 }
+\keyword{internal}

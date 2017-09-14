@@ -9,15 +9,15 @@ get_end <- function(start, lead, max.end) {
 }
 
 find_interval <- function(
-  x, 
+  x,
   cut = c(0L:12L, seq(15, 55, by = 5), 61),
   labels  = FALSE, ...) {
 
-  
+
   ind <- cut(x, cut, labels=FALSE, ...)
   # if(any(is.na(ind))) ind[is.na(ind)] <- max(ind, na.rm=TRUE)
   if(labels) {
-    ind <- int_info2(min.time=0, x=cut)[ind, "interval"]   
+    ind <- int_info2(min.time=0, x=cut)[ind, "interval"]
   }
 
   ind
@@ -30,6 +30,7 @@ find_interval <- function(
 #'
 #' @inheritParams int_info
 #' @importFrom dplyr mutate
+#' @keywords internal
 int_info2 <- function(
   x    = c(0:12, seq(15, 55, by=5), 61),
   min.time = 4) {
@@ -51,6 +52,7 @@ int_info2 <- function(
 
 }
 
+#' @keywords internal
 lag_lead_df <- function(
   te,
   cut,
@@ -59,13 +61,13 @@ lag_lead_df <- function(
   te.add.lead  = 0,
   lead.const   = 0,
   lead.factor  = 0,
-  labels       = TRUE, 
+  labels       = TRUE,
   ...) {
 
   if(is.null(lead.const)) {
     lead.const <- max(cut)
   }
-  lead    = t_lead(te, te.add.lead = te.add.lead, lead.const = lead.const, 
+  lead    = t_lead(te, te.add.lead = te.add.lead, lead.const = lead.const,
     lead.factor = lead.factor)
   w.begin = (te + te.add.lag) + t.lag
   w.end   = get_end(w.begin, lead, max.end=max(cut))
@@ -80,22 +82,24 @@ lag_lead_df <- function(
     int.end   = find_interval(w.end, cut=cut, labels = labels, ...)
     )
 }
+
 #' creates one instance of Lag/Lead mat
 #' @param te Numeric/Integer vector specifying the times at which exposure occurred.
 #' @param te.add.lag A numeric constant added to te before application of lag time
-#' @param t.lag A numeric constant, specifying the time (from \code{te}) before 
+#' @param t.lag A numeric constant, specifying the time (from \code{te}) before
 #' \code{te} can affect hazard.
 #' @param te.add.lead A numeric constant, added to te before application of lead time.
-#' @param lead.const A numeric constant, specifying the constant amount of time 
+#' @param lead.const A numeric constant, specifying the constant amount of time
 #' after \code{te + t.lag}, in which \code{te} can still affect hazard.
-#' @param lead.factor If the lead time is dynamic, this factor can be set different 
+#' @param lead.factor If the lead time is dynamic, this factor can be set different
 #' to zero, such that \code{t.lead=lead.const + lead.factor*te}.
 #' @param cut The break points dividing the follow up into intervals.
-#' @param t.min If some intervals are not of interest only intervals for t > t.min are 
+#' @param t.min If some intervals are not of interest only intervals for t > t.min are
 #' returned.
-#' @return A data frame with intervals as first column and \code{length(te)} 
+#' @return A data frame with intervals as first column and \code{length(te)}
 #' columns specifying the lag/lead for each \code{te}.
-#' @import checkmate dplyr 
+#' @import checkmate dplyr
+#' @keywords internal
 create_Lmat <- function(
   te,
   cut,
@@ -105,7 +109,7 @@ create_Lmat <- function(
   te.add.lead  = 0,
   lead.factor  = 0,
   t.min        = 0) {
-  
+
   assert_integer(te,         lower = 1, any.missing = FALSE, unique    = TRUE)
   assert_numeric(cut,        lower = 0, any.missing = FALSE, min.len   = 2)
   assert_number(te.add.lag,  lower = 0, upper = max(cut), finite = TRUE)
@@ -115,13 +119,13 @@ create_Lmat <- function(
   assert_number(t.min,       lower = 0, upper = max(cut), finite = TRUE)
 
   # create lag-lead information matrix
-  ldf <- lag_lead_df(te=te, te.add.lag=te.add.lag, te.add.lead=te.add.lead, 
-    t.lag=t.lag, lead.const=lead.const, lead.factor=lead.factor, 
+  ldf <- lag_lead_df(te=te, te.add.lag=te.add.lag, te.add.lead=te.add.lead,
+    t.lag=t.lag, lead.const=lead.const, lead.factor=lead.factor,
     cut=cut, left.open=TRUE, rightmost.closed=TRUE)
 
-  ind.begin <-find_interval(ldf$w.begin, cut=cut, left.open=TRUE, 
+  ind.begin <-find_interval(ldf$w.begin, cut=cut, left.open=TRUE,
     rightmost.closed = TRUE)
-  ind.end   <-find_interval(ldf$w.end, cut=cut, left.open=TRUE, 
+  ind.end   <-find_interval(ldf$w.end, cut=cut, left.open=TRUE,
     rightmost.closed = TRUE)
 
   int.info  <- int_info2(x=cut, min.time=0)
@@ -142,13 +146,15 @@ create_Lmat <- function(
 #' @inheritParams as_fped
 #' @param te_vec The vector of exposure times (times at which Change in TDC occured)
 #' @param t_vec The vector of event/split-times on the scale of the follow-up.
+#' @keywords internal
 Lsimp <- function(te_vec, t_vec, ll_fun=function(te, t) { te <= t}) {
   t(outer(te_vec, t_vec, ll_fun))*1
 }
 
-#' Extend instance of Lag-Lead matrix to whole data set 
+#' Extend instance of Lag-Lead matrix to whole data set
 #' @param LL An instance of the Lag-Lead matrix (for all time points of the follow-up)
-#' @param id The id vector of the data set in PED format. 
+#' @param id The id vector of the data set in PED format.
+#' @keywords internal
 Lmat <- function(LL, id) {
 
   rle_id <- rle(id)

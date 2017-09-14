@@ -25,46 +25,48 @@ opts_chunk$set(
 library(magrittr)
 library(dplyr)
 library(mgcv)
-library(pam)
+library(pamm)
+library(ggplot2)
+theme_set(theme_bw())
 library(grid)
 ```
 
 
 # Convenience functions
 
-Survival analysis entails a set of standard tasks 
-beyond model estimation which need to be performed in most real world applications. 
-These task include: 
+Survival analysis entails a set of standard tasks
+beyond model estimation which need to be performed in most real world applications.
+These task include:
 
-- summary/visualization of estimated effects 
+- summary/visualization of estimated effects
 - extraction/visualization of the estimated baseline hazard
 - extraction/visualization of the predicted (cumulative) hazards or survival probabilities
 for specific covariate specifications
-- comparison of the predicted (cumulative) hazards or survival probabilities for a set 
+- comparison of the predicted (cumulative) hazards or survival probabilities for a set
 of covariate specifications
 - comparison of the predicted (cumulative) hazards or survival probabilities and estimated effects
-resulting from different model specifications or different subsets of the data. 
+resulting from different model specifications or different subsets of the data.
 
-This package contains some convenience functions to achieve these tasks. 
-The overall philosophy of the package was to provide functions that return the 
-underlying data used for visualization in a *tidy* format [@wickham2014], such that everybody 
-can use familiar tools for further processing. In addition, some convenience functions 
-for visualization are also included. 
+This package contains some convenience functions to achieve these tasks.
+The overall philosophy of the package was to provide functions that return the
+underlying data used for visualization in a *tidy* format [@wickham2014], such that everybody
+can use familiar tools for further processing. In addition, some convenience functions
+for visualization are also included.
 
-We use the `mgus2` data [@kyle1993] from the `survival` package for illustration 
-in the following.  
+We use the `mgus2` data [@kyle1993] from the `survival` package for illustration
+in the following.
 
 
-## Summary/visualization of fixed effects 
+## Summary/visualization of fixed effects
 
 ```{r model, cache =TRUE}
 data("mgus2", package = "survival")
 ped <- split_data(Surv(futime, death)~age + hgb + sex, data = mgus2, id = "id")
-pam <- gam(ped_status ~ s(tend) + sex + age + s(hgb), data = ped, 
+pam <- gam(ped_status ~ s(tend) + sex + age + s(hgb), data = ped,
   family = poisson(), offset = offset)
 ```
 
-The easiest way to obtain an overview of the estimated coefficients for fixed effects 
+The easiest way to obtain an overview of the estimated coefficients for fixed effects
 is to simply call `summary` on the fitted model object:
 
 ```{r, dependson="model"}
@@ -72,8 +74,8 @@ summary(pam)
 ```
 
 However, we also provide a convenience function that extracts a fixed coefficient
-table from `mgcv::gam` objects (including confidence intervals) and 
-a convenience function that creates a forrest-type plot: 
+table from `mgcv::gam` objects (including confidence intervals) and
+a convenience function that creates a forrest-type plot:
 
 ```{r}
 tidy_fixed(pam) # per default intercept is ommitted
@@ -84,40 +86,40 @@ We can see that the estimated mortality risk for male subjects is increased by a
 compared to female subjects.
 
 <!--
-Additionally, this package provides a function to visualize fixed coefficients 
-in terms of tree/forest plots: 
+Additionally, this package provides a function to visualize fixed coefficients
+in terms of tree/forest plots:
 
 ```{r}
-## yet to be implemented 
+## yet to be implemented
 ```
 -->
 
 ## Summary/visualization of smooth effects
-A first quick overview over the smooth effects is provided in the bottom part of 
-output of the `summary` call above. The interpretation is the same as as for 
-`mgcv::gam` objects (see `?summary.gam` for details). Briefly, the `edf` column 
-provides the number of effective degrees of freedom used to fit the spline 
-(values larger than 1 indicate non-linearity) and the p-value refers to 
-a significance test against the null hypothesis of "no effect" 
-(i.e., $H_0: f_j(x_j) = 0$; test developed in @wood2013). 
+A first quick overview over the smooth effects is provided in the bottom part of
+output of the `summary` call above. The interpretation is the same as as for
+`mgcv::gam` objects (see `?summary.gam` for details). Briefly, the `edf` column
+provides the number of effective degrees of freedom used to fit the spline
+(values larger than 1 indicate non-linearity) and the p-value refers to
+a significance test against the null hypothesis of "no effect"
+(i.e., $H_0: f_j(x_j) = 0$; test developed in @wood2013).
 
-Usually, however, we want to visualize the non-linear effect by plotting 
-$f_j(x_j)$ over the range of $x_j$ values. One possibility using base R 
+Usually, however, we want to visualize the non-linear effect by plotting
+$f_j(x_j)$ over the range of $x_j$ values. One possibility using base R
 plotting functions is to call the default plot function for `mgcv::gam` objects.
-Note that PAM effects are additive on the log-hazard scale, so we have to plot 
+Note that PAM effects are additive on the log-hazard scale, so we have to plot
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
 ```{r, fig.width=8, warning=FALSE}
-## extract smooths plot data 
+## extract smooths plot data
 shgb <- tidy_smooth(pam) %>% filter(xlab=="hgb")
 ## create plots for hgb effect
-hgb_ggp <- ggplot(shgb, aes(x=x)) + 
-  geom_line(aes(y=fit)) + 
-  geom_ribbon(aes(ymin=low, ymax=high), alpha=0.1) + 
+hgb_ggp <- ggplot(shgb, aes(x=x)) +
+  geom_line(aes(y=fit)) +
+  geom_ribbon(aes(ymin=low, ymax=high), alpha=0.1) +
   ylab("f(hgb)") + xlab("hgb")
-hgb_ggp_log <- ggplot(shgb, aes(x=x)) + 
-  geom_line(aes(y=exp(fit))) + 
-  geom_ribbon(aes(ymin=exp(low), ymax=exp(high)), alpha=0.1) + 
+hgb_ggp_log <- ggplot(shgb, aes(x=x)) +
+  geom_line(aes(y=exp(fit))) +
+  geom_ribbon(aes(ymin=exp(low), ymax=exp(high)), alpha=0.1) +
   ylab("exp(f(hgb))") + xlab("hgb")+
   coord_trans(y="log")
 ## combine into one graph
@@ -128,26 +130,24 @@ grid.draw(
         size = "last"))
 ```
 
-If you want to customize the figure using other graphics packages you can 
-extract the data used for plotting via: 
+If you want to customize the figure using other graphics packages you can
+extract the data used for plotting via:
 
 ```{r}
 hgb.term <- ped %>% get_terms(fit = pam, terms = "hgb")
 head(hgb.term)
 ```
 
-We can then use `ggplot2` to produce an equivalent visualization: 
+We can then use `ggplot2` to produce an equivalent visualization:
 
 ```{r}
-library(ggplot2)
-theme_set(theme_bw())
-ggplot(hgb.term, aes(x = x, y = eff)) + 
-	geom_line() + 
+ggplot(hgb.term, aes(x = x, y = eff)) +
+	geom_line() +
 	geom_ribbon(aes(ymin = ci.lower, ymax = ci.upper), alpha = 0.3)
 ```
 
-For convenience we also include a function that plots mutiple selected smooth 
-effects in one figure^[Note that graphical representation of the baseline hazard is a sloght approximation here -- it should be a *step function*, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.]: 
+For convenience we also include a function that plots mutiple selected smooth
+effects in one figure^[Note that graphical representation of the baseline hazard is a sloght approximation here -- it should be a *step function*, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.]:
 
 ```{r}
 ped %>% gg_smooth(pam, terms = c("tend", "hgb"))
@@ -156,19 +156,19 @@ ped %>% gg_smooth(pam, terms = c("tend", "hgb"))
 
 ## Extraction/Visualization of the baseline hazard
 
-In PAMs the baseline hazard $\lambda_0(t)$ is estimated semi-parametrically as a 
-(potentially) non-linear smoothed step function. Thus the model specification usually 
-looks like 
+In PAMs the baseline hazard $\lambda_0(t)$ is estimated semi-parametrically as a
+(potentially) non-linear smoothed step function. Thus the model specification usually
+looks like
 
 $$
 \log(\lambda(t|x)) = \beta_0 + f_0(t) + \ldots
 $$
 
-Thus the term $f_0(t)$ represents the time-varying part of the log-baseline-hazard. 
+Thus the term $f_0(t)$ represents the time-varying part of the log-baseline-hazard.
 
-To create a data set with all interval cut-points we can use the function 
-`ped_info` applied to an object of class `ped` (**p**iece-wise **e**xponential **d**ata). 
-In addition to information about each interval, the data set returned by the function contains 
+To create a data set with all interval cut-points we can use the function
+`ped_info` applied to an object of class `ped` (**p**iece-wise **e**xponential **d**ata).
+In addition to information about each interval, the data set returned by the function contains
 mean values of continuous variables and the modal values of categorical variables.
 
 ```{r}
@@ -185,42 +185,42 @@ ped_df %>% select(interval, hazard, lower, upper) %>% head()
 ped_df %>% select(interval, hazard, lower, upper) %>% tail()
 ```
 
-Which in turn can be conveniently plotted using respective functions, e.g. 
+Which in turn can be conveniently plotted using respective functions, e.g.
 
 ```{r}
-ggplot(ped_df, aes(x = tend)) + 
-	geom_step(aes(y = hazard)) + 
-	geom_stepribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
+ggplot(ped_df, aes(x = tend)) +
+	geom_step(aes(y = hazard)) +
+	geom_stepribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
 ```
 
-or the cumulative hazard 
+or the cumulative hazard
 
 ```{r}
-gg.chaz <- ped_df %>% add_cumhazard(pam) %>% 
+gg.chaz <- ped_df %>% add_cumhazard(pam) %>%
 	ggplot(aes(x = tend, y = cumhazard, ymin = cumlower, ymax = cumupper))
-gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) + 
+gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
 	ylab(expression(hat(Lambda)(t))) + xlab(expression(t))
 ```
 
 or the survival probabilities
 
 ```{r}
-gg.surv <- ped_df %>% add_survprob(pam) %>% 
+gg.surv <- ped_df %>% add_survprob(pam) %>%
   ggplot(aes(x = tend, y = survprob, ymax = survlower, ymin = survupper))
-gg.surv + geom_line() + geom_ribbon(alpha = 0.2) + 
+gg.surv + geom_line() + geom_ribbon(alpha = 0.2) +
   ylab(expression(hat(S)(t))) + xlab(expression(t))
 ```
 
-This approach is very convenient, as the usual tidy `dplyr` workflow can 
-be maintained throughout, for example, if we wanted to plot the cumulative 
+This approach is very convenient, as the usual tidy `dplyr` workflow can
+be maintained throughout, for example, if we wanted to plot the cumulative
 hazard for different sexes:
 
 ```{r}
 pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
 head(pinfo.sex)
 table(pinfo.sex$sex)
-ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) + 
+ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) +
 	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) +
   geom_line(aes(col = sex)) +
   scale_color_brewer(palette = "Set1") +

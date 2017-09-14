@@ -42,7 +42,7 @@ newdata containing the interval lengths. Defaults to \code{intlen}.}
 Add survival probabilities estimates to data set
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_cumhazard}}
 
-\code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
 }

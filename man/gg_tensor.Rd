@@ -7,16 +7,16 @@
 gg_tensor(x, ci = FALSE, ...)
 }
 \arguments{
-\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
+\item{x}{A model object.}
 
 \item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
+\item{...}{Currently not used.}
 }
 \description{
-Given a gam model this convenience function returns a \code{ggplot2} object 
-depicting 2d smooth terms specified in the model as heat/contour plots. If 
+Given a gam model this convenience function returns a \code{ggplot2} object
+depicting 2d smooth terms specified in the model as heat/contour plots. If
 more than one 2d smooth term is present individual terms are faceted.
 }
 \examples{

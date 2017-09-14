@@ -1,15 +1,11 @@
-# @Author: andreas.bender@stat.uni-muenchen.de
-# @Date:   2017-06-29 13:01:13
-# @Last Modified by:   andreas.bender@stat.uni-muenchen.de
-# @Last Modified time: 2017-06-29 13:45:29
-
 #' Transform a nested data frame to data frame with matrix columns
-#' 
-#' @param nested_df A nested data frame with list columns that contain 
-#' a matrix per row. 
+#'
+#' @param nested_df A nested data frame with list columns that contain
+#' a matrix per row.
 #' @importFrom dplyr select_if slice
 #' @importFrom purrr compose
 #' @importFrom magrittr "%<>%" "%>%"
+#' @keywords internal
 as_matdf <- function(nested_df) {
 
 	ndf  <- select_if(nested_df, compose("!", is.list))

@@ -19,3 +19,4 @@ lag lead matrix will be constructed by calling \code{t(outer(te_vec, t_vec, ll_f
 \description{
 Create one instance of the Lag-Lead matrix
 }
+\keyword{internal}

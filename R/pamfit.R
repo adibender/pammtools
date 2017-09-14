@@ -18,17 +18,18 @@ append_ped_attr <- function(pamm, ped) {
 
 
 #' Fit a piece-wise exponential additive model
-#' 
-#' Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set 
-#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"} 
-#' by default. The first two can not be overriden. The \code{method} argument 
+#'
+#' Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set
+#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}
+#' by default. The first two can not be overriden. The \code{method} argument
 #' can be specified as usually, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
-#' 
-#' @import mgcv
-#' @inherit mgcv::gam
+#'
+#' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{gam}}.
+#' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
+#' @seealso \code\link[mgcv]{gam}
 #' @export
 pamm <- function(formula, data=list(), method="REML", ...) {
 
@@ -48,15 +49,17 @@ pamm <- function(formula, data=list(), method="REML", ...) {
 
 
 #' Check if object is of class pamm
-#' 
-#' @export
+#'
 #' @param x Any R object.
+#' @rdname pamm
+#' @keywords internal
+#' @export
 is.pamm <- function(x) inherits(x, "pamm")
 
 
-#' @param x An object of class \code{pamm} as returned by \code{\link{pamm}}.
 #' @rdname pamm
-#' @export 
+#' @keywords internal
+#' @export
 print.pamm <- function(x, ...) {
 
 	print(unpam(x), ...)
@@ -65,6 +68,7 @@ print.pamm <- function(x, ...) {
 
 #' @rdname pamm
 #' @param object An object of class \code{pamm} as returned by \code{\link{pamm}}.
+#' @keywords internal
 #' @export
 summary.pamm <- function(object, ...) {
 
@@ -73,6 +77,7 @@ summary.pamm <- function(object, ...) {
 }
 
 #' @rdname pamm
+#' @keywords internal
 #' @export
 plot.pamm <- function(x, ...) {
 

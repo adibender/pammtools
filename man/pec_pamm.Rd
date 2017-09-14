@@ -9,26 +9,26 @@ pec_pamm(data, idx_train, idx_test, formula_ped, formula_pam,
   n = 50L, ...)
 }
 \arguments{
-\item{data}{The data in standard time-to-event data format which can be tansformed 
+\item{data}{The data in standard time-to-event data format which can be tansformed
 in PED (see \code{\link{split_data}}).}
 
 \item{idx_train}{Index of rows that indicate training set.}
 
 \item{idx_test}{Index of rows that indicate test set.}
 
-\item{formula_ped}{The formula used to transform data to PED (see 
+\item{formula_ped}{The formula used to transform data to PED (see
 \code{\link{split_data}}).}
 
 \item{formula_pam}{The formula used to fit the PAM (see \code{\link{pam}}).}
 
-\item{formula_ipcw}{The formula used to calculate inverse probability censoring 
+\item{formula_ipcw}{The formula used to calculate inverse probability censoring
 weights (IPCW). See \code{\link[pec]{ipcw}} for details.}
 
 \item{times}{The time points at which prediction error will be evaluated}
 
 \item{cut}{the vector of timepoints to cut at}
 
-\item{n}{If \code{times} argument not specified, will create a sequence 
+\item{n}{If \code{times} argument not specified, will create a sequence
 from minimal to maximal time of this length.}
 
 \item{...}{further arguments passed to \code{\link{split_data}}.}
@@ -39,3 +39,4 @@ Fit PAM to train data and calculate PEC on test data
 \seealso{
 \code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 }
+\keyword{internal}

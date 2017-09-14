@@ -2,25 +2,17 @@
 % Please edit documentation in R/tidiers.R
 \name{tidy_fixed}
 \alias{tidy_fixed}
-\alias{tidy_fixed.gam}
-\alias{tidy_fixed.coxph}
 \title{Extract fixed coefficient table from model object}
 \usage{
 tidy_fixed(x, ...)
-
-\method{tidy_fixed}{gam}(x, intercept = FALSE, ...)
-
-\method{tidy_fixed}{coxph}(x, ...)
 }
 \arguments{
 \item{x}{A model object.}
 
 \item{...}{Currently not used.}
-
-\item{intercept}{Should intercept also be returned?}
 }
 \description{
 Given a model object, returns data frame with columns \code{variable},
-\code{coef} (coefficient), \code{lower} (lower 95\% CI) and 
+\code{coef} (coefficient), \code{lower} (lower 95\% CI) and
 \code{upper} (upper 95% CI).
 }

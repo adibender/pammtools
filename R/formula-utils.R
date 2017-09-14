@@ -1,8 +1,9 @@
 #' Extract variables from the left-hand-side of a formula
 #'
-#' @rdname formula_helpers 
-#' @param formula A \code{\link{formula}} object. 
+#' @rdname formula_helpers
+#' @param formula A \code{\link{formula}} object.
 #' @importFrom stats as.formula
+#' @keywords internal
 get_lhs_vars <- function(formula) {
 
 	if (is.character(formula) ) formula <- as.formula(formula)
@@ -11,9 +12,10 @@ get_lhs_vars <- function(formula) {
 }
 
 #' Extract variables from the right-hand side of a formula
-#' 
-#' @rdname formula_helpers 
+#'
+#' @rdname formula_helpers
 #' @inheritParams get_lhs_vars
+#' @keywords internal
 get_rhs_vars <- function(formula) {
 
 	if (is.character(formula) ) formula <- as.formula(formula)

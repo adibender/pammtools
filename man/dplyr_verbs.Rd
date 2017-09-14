@@ -167,3 +167,4 @@ a modified \code{ped} object (except for \code{do})
 See \code{dplyr} documentation of the respective functions for
   description and examples.
 }
+\keyword{internal}

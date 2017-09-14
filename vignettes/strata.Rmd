@@ -28,43 +28,43 @@ library(ggplot2)
 theme_set(theme_bw())
 library(mgcv)
 library(survival)
-library(pam)
+library(pamm)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
-## Stratified baselines 
+## Stratified baselines
 
-In some cases the proportional hazards assumption for different groups 
-(levels of a factor variable) is violated. One approach to resolve this 
-problem is to fit a so called *stratified* Cox model, where each level 
-$k=1,\ldots,K$ of factor variable $z$ will have its own baseline-hazard: 
+In some cases the proportional hazards assumption for different groups
+(levels of a factor variable) is violated. One approach to resolve this
+problem is to fit a so called *stratified* Cox model, where each level
+$k=1,\ldots,K$ of factor variable $z$ will have its own baseline-hazard:
 
-$\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$. 
+$\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$.
 
-For illustration we again use the `veteran` data (censored at day 400) 
-from the `survival` package, 
-where the celltype of the lung cancer had four levels: 
+For illustration we again use the `veteran` data (censored at day 400)
+from the `survival` package,
+where the celltype of the lung cancer had four levels:
 
 ```{r}
 data("veteran")
-veteran %<>% 
+veteran %<>%
   mutate(
     trt   = 1*(trt == 2),
-    prior = 1*(prior==10)) %>% 
+    prior = 1*(prior==10)) %>%
   filter(time < 400) # restriction for illustration
 table(veteran$celltype)
 ```
 
 ### Stratified Cox model
 Fitting a stratified Cox model using the `coxph` function from the `survival`
-package is simple, including a `strata` term in the model formula. 
+package is simple, including a `strata` term in the model formula.
 
 ```{r, cph}
 cph  <- coxph(Surv(time, status) ~ strata(celltype), data=veteran)
 base <- basehaz(cph)
 ```
 
-The different baselines are visualized below: 
+The different baselines are visualized below:
 ```{r, ggbase, fig.width=5, fig.height=4, dependson="cph", warning=FALSE}
 baseline_gg <- ggplot(base, aes(x=time)) +
   geom_step(aes(y=hazard, group=strata)) +
@@ -74,44 +74,44 @@ baseline_gg + aes(col=strata)
 
 ### Stratified PAM
 
-We can obtain similar results with PAMs by fitting one smooth baseline 
-estimate for each category of `celltype` in the data. 
-Technically, we specify the `by` argument in `mgcv` `s(...)` function. 
+We can obtain similar results with PAMs by fitting one smooth baseline
+estimate for each category of `celltype` in the data.
+Technically, we specify the `by` argument in `mgcv` `s(...)` function.
 
-Note that in contrast to the model specification in `coxph` we need to 
+Note that in contrast to the model specification in `coxph` we need to
 include the `celltype` factor variable in the model specification:
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
 ped <- split_data(Surv(time, status)~., data=veteran, id="id")
-pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped, 
+pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped,
 	family=poisson(), offset=offset)
 ```
 
-Comparing the estimated baselines we get very similar results between 
-the stratified Cox and stratified PAM models. 
+Comparing the estimated baselines we get very similar results between
+the stratified Cox and stratified PAM models.
 
 ```{r, fig.width=6, fig.height=3, dependson="ggbase", warning=FALSE}
-pinf <- ped %>% 
-  group_by(celltype) %>% 
-  ped_info() %>% 
-  add_cumhazard(pam) %>% 
-	rename(strata=celltype) %>% 
+pinf <- ped %>%
+  group_by(celltype) %>%
+  ped_info() %>%
+  add_cumhazard(pam) %>%
+	rename(strata=celltype) %>%
   filter(!(strata == "adeno" & tend > 200))
 baseline_gg +	aes(col="Nelson-Aalen") +
 	geom_line(data=pinf, aes(x=tend, y=cumhazard, group=strata, col="PAM")) +
   geom_ribbon(data=pinf, aes(x=tend, ymin=cumlower, ymax = cumupper,
     group=strata), fill = "black", col = NA, alpha = .2) +
- 	facet_wrap(~strata, nrow=1) + 
+ 	facet_wrap(~strata, nrow=1) +
 	scale_color_manual(name="Method", values=c(Set1[1], 1)) +
   theme(legend.position = "bottom")
 ```
 
-### Stratified Proportional Hazards Model 
+### Stratified Proportional Hazards Model
 
-Both models can be easily extended to incorporate further covariates. 
-If we assume that the covariate effects are not time-varying, this extension 
-constitutes a so called stratified proportional hazards model. For example, 
-including effects for treatment (`trt`), age (`age`) and the Karnofsky Score 
+Both models can be easily extended to incorporate further covariates.
+If we assume that the covariate effects are not time-varying, this extension
+constitutes a so called stratified proportional hazards model. For example,
+including effects for treatment (`trt`), age (`age`) and the Karnofsky Score
 (`karno`), we get the model
 
 $$
@@ -127,5 +127,5 @@ pam2 <- update(pam, .~. + trt + age + karno)
 cbind(pam=coef(pam2)[5:7], cox=coef(cph2))
 ```
 
-Again, covariate estimates are very similar between the two models and 
-can be interpreted in the same way. 
+Again, covariate estimates are very similar between the two models and
+can be interpreted in the same way.
