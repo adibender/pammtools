@@ -10,7 +10,6 @@ pam.Rproj
 # vignette by-products
 *cache/
 *files/
-*.html
 
 ## dropbox
 *.dropbox.attr
