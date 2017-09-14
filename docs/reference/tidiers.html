@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract 1d smooth objects in tidy data format. — tidy_fixed.gam • pamm</title>
+<title>Extract 1d smooth objects in tidy data format. — tidy_smooth • pamm</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -68,7 +68,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/aalen-comparison.html">Vignette Title</a>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
     </li>
     <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
@@ -130,34 +130,16 @@
 
     
     <p>Extract 1d smooth objects in tidy data format.</p>
-<p>Extract 2d smooth objects in tidy format.</p>
     
 
-    <pre class="usage"><span class='co'># S3 method for gam</span>
-<span class='fu'><a href='tidy_fixed.html'>tidy_fixed</a></span>(<span class='no'>x</span>, <span class='kw'>intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for coxph</span>
-<span class='fu'><a href='tidy_fixed.html'>tidy_fixed</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'><a href='tidy_smooth.html'>tidy_smooth</a></span>(<span class='no'>x</span>, <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"fit"</span>, <span class='st'>"se"</span>, <span class='st'>"xlab"</span>, <span class='st'>"ylab"</span>), <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
-
-<span class='fu'><a href='tidy_smooth2d.html'>tidy_smooth2d</a></span>(<span class='no'>x</span>, <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>, <span class='st'>"fit"</span>, <span class='st'>"se"</span>, <span class='st'>"xlab"</span>, <span class='st'>"ylab"</span>, <span class='st'>"main"</span>),
-  <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='tidy_smooth.html'>tidy_smooth</a></span>(<span class='no'>x</span>, <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"fit"</span>, <span class='st'>"se"</span>, <span class='st'>"xlab"</span>, <span class='st'>"ylab"</span>), <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A model object.</p></td>
-    </tr>
-    <tr>
-      <th>intercept</th>
-      <td><p>Should intercept also be returned?</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Currently not used.</p></td>
+      <td><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></td>
     </tr>
     <tr>
       <th>keep</th>
@@ -167,6 +149,10 @@
       <th>ci</th>
       <td><p>A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/plot.gam'>plot.gam</a></code></p></td>
     </tr>
     </table>
     

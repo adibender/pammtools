@@ -68,7 +68,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/aalen-comparison.html">Vignette Title</a>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
     </li>
     <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
@@ -139,11 +139,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A model object.</p></td>
+      <td><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Currently not used.</p></td>
+      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/plot.gam'>plot.gam</a></code></p></td>
     </tr>
     </table>
     
@@ -158,7 +158,7 @@
 <span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='split_data.html'>split_data</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>ph.ecog</span> + <span class='no'>inst</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>lung</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>) + <span class='no'>ph.ecog</span> + <span class='fu'>s</span>(<span class='no'>inst</span>, <span class='kw'>bs</span><span class='kw'>=</span><span class='st'>"re"</span>),
         <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
-<span class='fu'>gg_re</span>(<span class='no'>pam</span>)</div><div class='img'><img src='gg_re-6.png' alt='' width='700' height='432.632880098887' /></div></pre>
+<span class='fu'>gg_re</span>(<span class='no'>pam</span>)</div><div class='img'><img src='gg_re-14.png' alt='' width='700' height='432.632880098887' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

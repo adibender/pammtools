@@ -90,6 +90,8 @@ combine_df <- function(...) {
 #' Given a data set, returns a data frame type object that can be used
 #' as \code{newdata} argument in a call to \code{predict} and similar functions.
 #'
+#' @rdname newdata
+#' @aliases make_newdata
 #' @inheritParams sample_info
 #' @param ... Further specifications of variables that should be set
 #' to a specific values.
@@ -119,6 +121,7 @@ make_newdata <- function(x, ...) {
 
 
 #' @inherit make_newdata
+#' @rdname newdata
 #' @param expand A character vector of column names in \code{ped}.
 #' @param n If \code{expand} specified, respective variables will be expanded
 #' in \code{n} values from minimum to maximum.
@@ -165,6 +168,7 @@ make_newdata.default <- function(
 
 }
 
+#' @rdname newdata
 #' @inherit make_newdata.default
 #' @importFrom magrittr "%<>%"
 #' @export

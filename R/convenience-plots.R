@@ -17,6 +17,7 @@ gg_smooth <- function(x, ...) {
 	UseMethod("gg_smooth", x)
 }
 
+#' @rdname gg_smooth
 #' @inherit gg_smooth
 #' @param fit A fitted model object.
 #' @export
@@ -35,6 +36,7 @@ gg_smooth.default <- function(x, fit, ...) {
 
 }
 
+#' @rdname gg_smooth
 #' @keywords internal
 gg_smooth.pamm <- function(x, ...) {
 

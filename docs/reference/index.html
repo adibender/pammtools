@@ -68,7 +68,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/aalen-comparison.html">Vignette Title</a>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
     </li>
     <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
@@ -127,7 +127,7 @@
     <div class="page-header">
       <h1>
         Reference
-        <small>version&nbsp;0.0.1.9001</small>
+        <small>version&nbsp;0.0.1.9002</small>
       </h1>
     </div>
 
@@ -206,7 +206,7 @@ exponential data format</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="make_newdata.html">make_newdata</a></code> </p>
+            <p><code><a href="newdata.html">make_newdata</a></code> </p>
           </td>
           <td><p>Construct a data frame suitable for prediction</p></td>
         </tr><tr>
@@ -232,15 +232,53 @@ exponential data format</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tidiers.html">tidy_fixed</a></code> <code><a href="tidiers.html">tidy_smooth</a></code> <code><a href="tidiers.html">tidy_smooth2d</a></code> </p>
+            <p><code><a href="tidiers.html">tidy_smooth</a></code> </p>
           </td>
           <td><p>Extract 1d smooth objects in tidy data format.</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="tidy_smooth2d.html">tidy_smooth2d</a></code> </p>
+          </td>
+          <td><p>Extract 2d smooth objects in tidy format.</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="tidy_smooth.html">tidy_re</a></code> </p>
           </td>
           <td><p>Extract random effects objects in tidy data format.</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="get_terms.html">get_terms</a></code> </p>
+          </td>
+          <td><p>Extract the partial effects of non-linear model terms</p></td>
+        </tr>
+      </tbody><tbody>
+        <tr>
+          <th colspan="2">
+            <h2 id="section-augment-functions" class="hasAnchor"><a href="#section-augment-functions" class="anchor"></a>Augment functions</h2>
+            <p class="section-desc"><p>Functions that augment a data set by different quantaties like the hazard rate.</p></p>
+          </th>
+        </tr>
+        <tr>
+          <!--  -->
+          <td>
+            <p><code><a href="add_term.html">add_term</a></code> </p>
+          </td>
+          <td><p>Add info about term effects to data set</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="add_hazard.html">add_hazard</a></code> <code><a href="add_hazard.html">add_cumhazard</a></code> </p>
+          </td>
+          <td><p>Add predicted hazard to data set</p></td>
+        </tr><tr>
+          <!--  -->
+          <td>
+            <p><code><a href="add_survprob.html">add_survprob</a></code> </p>
+          </td>
+          <td><p>Add survival probability estimates to data set</p></td>
         </tr>
       </tbody><tbody>
         <tr>
@@ -291,6 +329,7 @@ exponential data format</p></td>
       <li><a href="#section-transform-data-to-piece-wise-exponential-data-ped-format">Transform data to Piece-wise Exponential Data (PED) format</a></li>
       <li><a href="#section-ped-helper-functions">PED helper functions</a></li>
       <li><a href="#section-extract-information-from-pamms">Extract information from PAMMs</a></li>
+      <li><a href="#section-augment-functions">Augment functions</a></li>
       <li><a href="#section-plot-helpers">Plot helpers</a></li>
     </ul>
   </div>

@@ -7,12 +7,12 @@
 gg_tensor(x, ci = FALSE, ...)
 }
 \arguments{
-\item{x}{A model object.}
+\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
 
 \item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
 
-\item{...}{Currently not used.}
+\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
 Given a gam model this convenience function returns a \code{ggplot2} object

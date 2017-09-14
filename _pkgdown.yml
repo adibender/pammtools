@@ -25,6 +25,14 @@ reference:
       - tidy_smooth
       - tidy_smooth2d
       - tidy_re
+      - get_terms
+  - title: "Augment functions"
+    desc: "Functions that augment a data set by different quantaties like the
+    hazard rate."
+    contents:
+      - add_term
+      - add_hazard
+      - add_survprob
   - title: "Plot helpers"
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
@@ -33,3 +41,16 @@ reference:
       - gg_tensor
       - gg_re
       - geom_stepribbon
+articles:
+  - title: "Articles"
+    desc: "Several articles that describe the usage of PAMMs"
+    contents:
+      - data-transformation
+      - basics
+      - baseline
+      - splines
+      - strata
+      - tdcovar
+      - tveffects
+      - frailty
+      - convenience

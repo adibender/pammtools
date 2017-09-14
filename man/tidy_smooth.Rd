@@ -7,11 +7,11 @@
 tidy_re(x, keep = c("fit", "main", "xlab", "ylab"), ...)
 }
 \arguments{
-\item{x}{A model object.}
+\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
 
 \item{keep}{A vector of variables to keep.}
 
-\item{...}{Currently not used.}
+\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
 Extract random effects objects in tidy data format.

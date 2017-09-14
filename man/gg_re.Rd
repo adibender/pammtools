@@ -7,9 +7,9 @@
 gg_re(x, ...)
 }
 \arguments{
-\item{x}{A model object.}
+\item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
 
-\item{...}{Currently not used.}
+\item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
 Plot Normal QQ plots for random effects
