@@ -22,7 +22,7 @@ sample_info.data.frame <- function(x, ...) {
 
   assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
 
-  cn <- colnames(x)
+  cn  <- colnames(x)
   num <- summarize_if(x, .predicate=is.numeric, funs(mean(., na.rm=TRUE)))
   fac <- summarize_if(x, .predicate=compose("!", is.numeric), modus)
 
@@ -51,23 +51,6 @@ sample_info.ped <- function(x, ...) {
   iv <- attr(x, "intvars")
   x %<>% select(-one_of(iv))
   sample_info.data.frame(x, ...)
-
-}
-
-
-#' Creates sequence from minimum to maximum
-#'
-#' @param x A numeric or integer vector.
-#' @inheritParams base::seq
-#' @import checkmate
-#' @export
-seq_range <- function(x, length.out=100L) {
-
-  assert_numeric(x, finite=TRUE, all.missing=FALSE, min.len=2)
-  assert_number(length.out, lower=2, finite=TRUE)
-
-  range.x <- range(x)
-  seq(range.x[1], range.x[2], length.out=length.out)
 
 }
 
@@ -108,10 +91,8 @@ combine_df <- function(...) {
 #' as \code{newdata} argument in a call to \code{predict} and similar functions.
 #'
 #' @inheritParams sample_info
-#' @inheritParams seq_range
 #' @param ... Further specifications of variables that should be set
-#' to a specific value.
-#' @param expand A character vector of column names in \code{ped}.
+#' to a specific values.
 #' @import dplyr
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df
@@ -119,35 +100,39 @@ combine_df <- function(...) {
 #'   \code{\link{sample_info}}. If variables are specified with specific values
 #'   in \code{...}, the values in from \code{sample_info} will be overwritten.
 #'   If variables are provided in \code{expand}, these will be expanded from \code{min} to
-#'   \code{max} using in \code{length.out} equidistant steps.
+#'   \code{max} using in \code{n} equidistant steps.
 #' @examples
 #' \dontrun{
 #' library(dplyr)
 #' iris %>% make_newdata()
 #' iris %>% make_newdata(Sepal.Length=5)
 #' iris %>% make_newdata(Sepal.Length=c(5, 10), Sepal.Width=c(5, 5.1, 5.2))
-#' iris %>% make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", length.out=5)
+#' iris %>% make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", n=5)
 #' iris %>% group_by(Species) %>%
-#'   make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", length.out=5) %>%
+#'   make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", n=5) %>%
 #'   print(n=30)
 #' }
 #' @export
-make_newdata <- function(x, ..., expand=NULL, length.out=50L) {
+make_newdata <- function(x, ...) {
   UseMethod("make_newdata", x)
 }
 
 
 #' @inherit make_newdata
+#' @param expand A character vector of column names in \code{ped}.
+#' @param n If \code{expand} specified, respective variables will be expanded 
+#' in \code{n} values from minimum to maximum. 
 #' @importFrom magrittr "%<>%"
+#' @importFrom modelr seq_range
 #' @export
 make_newdata.default <- function(
   x,
   ...,
-  expand     = NULL,
-  length.out = 50L) {
+  expand = NULL,
+  n      = 50L) {
 
-  assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
-  assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
+  assert_data_frame(x, all.missing   = FALSE, min.rows = 2, min.cols = 1)
+  assert_character(expand, min.chars = 1, any.missing  = FALSE, null.ok = TRUE)
   assert_subset(expand, colnames(x))
 
   orig_names <- names(x)
@@ -163,8 +148,9 @@ make_newdata.default <- function(
     } else {
       expanded_df <- x %>%
         ungroup() %>% # ungroup here to obtain sequence from min to max for all data
-        select(one_of(expand)) %>% as.list() %>%
-        map(seq_range, length.out=length.out) %>%
+        select(one_of(expand)) %>% 
+        as.list() %>%
+        map(seq_range, n = n) %>%
         cross_df()
     }
   } else {
@@ -179,14 +165,14 @@ make_newdata.default <- function(
 
 }
 
-#' @inherit make_newdata
+#' @inherit make_newdata.default
 #' @importFrom magrittr "%<>%"
 #' @export
 make_newdata.ped <- function(
   x,
   ...,
-  expand     = NULL,
-  length.out = 50L) {
+  expand = NULL,
+  n      = 50L) {
 
   assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
   assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
@@ -198,7 +184,7 @@ make_newdata.ped <- function(
     new_vals <- if (var %in% names(list(...))) {
       list(...)[[var]]
     } else {
-      seq_range(x[[var]], length.out = length.out)
+      seq_range(x[[var]], n = n)
     }
     old_vals <- x[[var]]
     not_seen <- !(new_vals %in% old_vals)
@@ -220,5 +206,5 @@ make_newdata.ped <- function(
     unped() %>%
     group_by_(.dots = g_vars)
 
-  make_newdata(x, ..., expand = expand, length.out = length.out)
+  make_newdata(x, ..., expand = expand, n = n)
 }

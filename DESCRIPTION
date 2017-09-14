@@ -1,6 +1,6 @@
 Package: pam
 Title: Functions and Utilities for fitting Piece-wise Exponential (Additive) models
-Version: 0.0.776
+Version: 0.0.904
 Date: 2017-09-05
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre")),
@@ -12,20 +12,24 @@ Depends:
     R (>= 3.1.2)
 Imports:
     mgcv,
+    prodlim,
     survival (>= 2.39-5),
-    coxme,
+    msm,
+    pec,
     checkmate,
     magrittr,
-    tidyr,
+    tidyr (>= 0.7.0),
     ggplot2,
     dplyr (>= 0.7.0),
     purrr (>= 0.2.3),
-    tibble
+    tibble,
+    modelr
 License: GPL-2
 LazyData: true
 Suggests:
     RColorBrewer,
     scam,
+    coxme,
     testthat,
     knitr,
     rmarkdown,
@@ -35,3 +39,4 @@ URL: http://github.com/adibender/pam
 BugReports: http://github.com/adibender/pam/issues
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Byte-Compile: yes

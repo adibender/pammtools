@@ -12,7 +12,7 @@ get_survprob(newdata, object, ci = TRUE, time_variable = NULL,
   are required. If this is not provided then predictions corresponding to the
                 original data are returned. If \code{newdata} is provided then
                 it should contain all the variables needed for prediction: a
-                warning is generated if not. }
+                warning is generated if not. See details for use with \code{link{linear.functional.terms}}. }
 
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }

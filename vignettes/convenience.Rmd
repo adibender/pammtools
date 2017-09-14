@@ -26,6 +26,7 @@ library(magrittr)
 library(dplyr)
 library(mgcv)
 library(pam)
+library(grid)
 ```
 
 
@@ -79,9 +80,7 @@ tidy_fixed(pam) # per default intercept is ommitted
 gg_fixed(pam)
 ```
 
-We can see that the estimated mortality risk for male subjects is increased by a
-factor of about 
-$\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
+We can see that the estimated mortality risk for male subjects is increased by a factor of about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
 compared to female subjects.
 
 <!--
@@ -109,12 +108,24 @@ Note that PAM effects are additive on the log-hazard scale, so we have to plot
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
 ```{r, fig.width=8, warning=FALSE}
-layout(t(1:2))
-plot(pam, select = 2, ylim = c(-1, 2))
-abline(h = 0, col = "grey")
-plot(pam, select = 2, trans = exp, #plot exp(f(x)) ...
-  ylim = c(-1, 2), ylab = "exp(f(hgb))", log = "y")  #.. but use logarithmic axis for legibility 
-abline(h = 1, col = "grey")
+## extract smooths plot data 
+shgb <- tidy_smooth(pam) %>% filter(xlab=="hgb")
+## create plots for hgb effect
+hgb_ggp <- ggplot(shgb, aes(x=x)) + 
+  geom_line(aes(y=fit)) + 
+  geom_ribbon(aes(ymin=low, ymax=high), alpha=0.1) + 
+  ylab("f(hgb)") + xlab("hgb")
+hgb_ggp_log <- ggplot(shgb, aes(x=x)) + 
+  geom_line(aes(y=exp(fit))) + 
+  geom_ribbon(aes(ymin=exp(low), ymax=exp(high)), alpha=0.1) + 
+  ylab("exp(f(hgb))") + xlab("hgb")+
+  coord_trans(y="log")
+## combine into one graph
+grid.draw(
+    cbind(
+        ggplotGrob(hgb_ggp),
+        ggplotGrob(hgb_ggp_log),
+        size = "last"))
 ```
 
 If you want to customize the figure using other graphics packages you can 
@@ -210,8 +221,8 @@ pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
 head(pinfo.sex)
 table(pinfo.sex$sex)
 ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) + 
-	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) + 
-	geom_line(aes(col = sex)) +
+	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) +
+  geom_line(aes(col = sex)) +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")
 ```

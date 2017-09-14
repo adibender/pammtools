@@ -130,7 +130,7 @@ int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
 int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
 
 gg_baseline <- ggplot(int_df, aes(x = tend)) + 
-  geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +
+  # geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +
   geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
   geom_line(aes(y = cumhazard, col = "PEM")) +
   geom_line(aes(y = pamch,     col = "PAM")) +

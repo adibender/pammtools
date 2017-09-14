@@ -15,9 +15,9 @@ test_that("creating newdata works on ungrouped data", {
 	expect_equal(make_newdata(iris2, Sepal.Length=5)$Sepal.Length, 5)
 	expect_data_frame(make_newdata(iris2, Sepal.Length=c(5, 6)),
 		any.missing=FALSE, nrows=2, ncols=5)
-	expect_data_frame(make_newdata(iris2, expand="Sepal.Length", length.out=2),
+	expect_data_frame(make_newdata(iris2, expand="Sepal.Length", n = 2),
 		any.missing=FALSE, nrows=2, ncols=5)
-	expect_equal(make_newdata(iris2, expand="Sepal.Length", length.out=2)$Sepal.Length,
+	expect_equal(make_newdata(iris2, expand="Sepal.Length", n = 2)$Sepal.Length,
 		c(4.4, 7.1))
 })
 
@@ -30,7 +30,7 @@ test_that("creating newdata fails on ungrouped data", {
 
 	expect_error(make_newdata(iris2, Sepal.length=5))
 	expect_error(make_newdata(iris2, expand="Sepal.length"))
-	expect_error(make_newdata(iris2, expand="Sepal.Length", length.out=-3))
+	expect_error(make_newdata(iris2, expand="Sepal.Length", n = -3))
 
 })
 
@@ -41,9 +41,9 @@ test_that("make_newdata.ped warns about intervals", {
     make_newdata(int_df, tstart = 1.5),
     "Setting interval borders")
   expect_warning(
-    make_newdata(int_df, expand = "tend", length.out = 3),
+    make_newdata(int_df, expand = "tend", n = 3),
     "Setting interval borders")
   expect_warning(
-    make_newdata(int_df, tstart = 1.5, expand = "tend", length.out= 3),
+    make_newdata(int_df, tstart = 1.5, expand = "tend", n = 3),
     "Setting interval borders")
 })

@@ -10,7 +10,7 @@
 #' \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "ribbon")}
 #'
 #' @seealso
-#'   \code{\link[ggplot2:geom_ribbon]{geom_ribbon}} \code{geom_stepribbon}
+#'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
 #'   inherits from \code{geom_ribbon}.
 #' @inheritParams ggplot2:::geom_ribbon
 #' @examples
@@ -25,7 +25,6 @@
 #' @importFrom ggplot2 layer GeomRibbon
 #' @author Triad Sou <triadsou@@gmail.com>
 #' @export
-
 geom_stepribbon <- function(
   mapping     = NULL,
   data        = NULL,

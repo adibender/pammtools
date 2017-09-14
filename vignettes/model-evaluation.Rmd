@@ -1,0 +1,114 @@
+---
+title: "Model evaluation"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{model-evaluation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: pam.bib
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  fig.width  = 4,
+  fig.height = 4,
+  crop       = TRUE)
+```
+
+
+```{r, message=FALSE}
+library(ggplot2)
+theme_set(theme_bw())
+library(dplyr)
+library(pam)
+```
+
+
+Although PAMs are models for time-to-event data that can be represented as 
+Generalized Additive Models, the usual criteria for model evaluation returned 
+by `summary.gam` are of little help in the context of model evaluation. 
+
+We prefer non-parametric measures for model evaluation, which has the advantage 
+that they can be easily compared to the performance of other methods suitable 
+for the analysis of time-to-event data. Currently, two criteria are particularly 
+popular: 
+
+- Predictionn error curves (PEC)
+- Concordance Index (C-Index)
+
+In the following we briefly introduce PECs and demonstrate how they can be 
+calculated and visualized using functions from the `pam` package.
+
+## Prediction error curve (PEC)
+In a nut shell, prediction error curves are Brier Scores evaluated at different 
+time-points. A nice introduction with hands-on examples implemented in R can 
+be found in @Mogensen2012, who also illustrate the usage of the `pec` package. 
+
+
+The central property of a PEC is the so called *Brier Score*: 
+$$
+BS(t, \hat{S}) = E(Y_i(t) - \hat{S}(t|\mathbf{X}_i))^2, 
+$$
+where $Y_i(t) = I(T_i \geq t)$, an indicator if subject $i, i=1,\ldots,n$ is 
+still alive at time $t$. Thus, the Brier Score is low, when a subject didn't 
+experience the event yet and the estimated survival probability is high. 
+As pointed out in @Mogensen2012, important comparison benchmarks are 
+  
+  - 0.33, which corresponds to predicting a random draw from $U[0, 1]$ and
+  
+  - The brier Score of a non-parametric baseline-estimate (e.g. the Kaplan-Meier estimate)
+  
+In case of right censored data, the `pec` package calculates a slightly modified 
+version of the Brier Score, where the squared differences are weighted by the 
+inverse probability of censoring weights (cf. @Gerds2006 for details).
+
+Unfortunately, we can not directly use the `pec` package with PAMs, but in this 
+package we provide some functionality to work around these limitations. 
+
+### Example: Veterans' Data
+For illustration we again consider the Veterans' data [@Kalbfleisch1980]: 
+
+```{r}
+data("veteran", package="survival")
+vet_ped <- split_data(Surv(time, status)~., data=veteran, id="id")
+```
+
+We now fit a model including covariates and compare its PEC to a Kaplan-Meier 
+estimate. For the PAM we fit the model on training data and calculate 
+the PEC on test data (using 10-fold cross validation). The KM will be calculated
+directly on the test data. 
+
+```{r, message=FALSE}
+pec_cv_df <- pec_cv(veteran, ped_status~ s(tend) + s(karno) + trt, 
+  times=seq(0, 400, by=5))
+```
+
+```{r, fig.width=7, fig.height=4}
+ggplot(pec_cv_df, aes(x=time, y=brier)) + 
+  geom_line(aes(color=method)) + 
+  facet_wrap(~.id, nrow=2) + 
+  theme(legend.position = "bottom")
+```
+
+We can summarize over all folds for each time point: 
+```{r, fig.width=5, fig.height=3.5}
+pec_df <- pec_cv_df %>% group_by(method, time) %>% 
+  summarize(brier=mean(brier))
+ggplot(pec_df, aes(x=time, y=brier)) +
+  geom_line(aes(color=method))
+```
+
+Note that we used marginal Kaplan-Meier estimator to calculate the 
+iverse probability censoring weights (IPCW) above. Choosing the correct 
+IPCW model can be difficult and depends on the application at hand. 
+@Mogensen2012 [section 6.2] offers some discussion. Usually, when comparing 
+models of different complexity, the IPCW model should include the union of 
+covariates used in all models. In the `pec_cv` function we can use 
+the `formula_ipcw` argument to specify the IPCW model.
+
+
+### References

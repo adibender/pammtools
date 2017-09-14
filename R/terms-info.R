@@ -43,7 +43,9 @@ add_term <- function(
 	assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
 
 	col_ind <- lapply(term, grep, x=names(object$coefficients)) %>%
-		unlist() %>% unique() %>% sort()
+		unlist() %>% 
+		unique() %>% 
+		sort()
   is_pam <- inherits(object, "gam")
 
   X <- if (is_pam) {
@@ -60,7 +62,7 @@ add_term <- function(
       predict(
         object,
         newdata = data_bar,
-        type = "lpmatrix")[, col_ind, drop = FALSE]
+        type    = "lpmatrix")[, col_ind, drop = FALSE]
   	} else {
   	  model.matrix(object$formula[-2], data = data_bar)[, col_ind, drop = FALSE]
   	}
@@ -76,7 +78,7 @@ add_term <- function(
   	}
   	se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
 		newdata %<>% mutate(
-			low = fit - se.mult * se,
+			low  = fit - se.mult * se,
 			high = fit + se.mult * se)
   }
 
@@ -111,122 +113,5 @@ get_plotinfo <- function(x, ...) {
 	class(po) <- c("mgcv.plotlist", class(po))
 
 	return(po)
-
-}
-
-
-#' Extract 1d smooth objects in tidy data format.
-#'
-#' @inheritParams get_plotinfo
-#' @param keep A vector of variables to keep.
-#' @param ci A logical value indicating whether confidence intervals should be
-#' calculated and returned. Defaults to \code{TRUE}.
-#' @importFrom dplyr bind_rows
-#' @export
-tidy_smooth <- function(
-	x,
-	keep = c("x", "fit", "se", "xlab", "ylab"),
-	ci = TRUE,
-	...) {
-
-	po <- get_plotinfo(x, ...)
-	# index of list elements that are 1d smooths and not random effects
-	ind1d <- vapply(
-		X         = po,
-		FUN       = function(z) !is.null(z[["x"]]) & is.null(z[["main"]]),
-		FUN.VALUE = logical(1))
-	# keep only variables of interest
-	po <- lapply(po[ind1d], "[", i=keep, drop=TRUE)
-
-	# transform to data.frame
-	po <- lapply(po, function(z) {
-		z[["fit"]] <- as.vector(z[["fit"]])
-		temp <- as_tibble(z)
-		if(ci) {
-			temp %<>% mutate(
-				low  = fit - se,
-				high = fit + se)
-		}
-		temp
-	})
-
-	return(bind_rows(po))
-
-}
-
-
-#' Extract 2d smooth objects in tidy format.
-#'
-#' @inheritParams tidy_smooth
-#' @importFrom purrr cross_df
-#' @importFrom tibble as_tibble
-#' @import dplyr
-#' @export
-tidy_smooth2d <- function(
-	x,
-	keep = c("x", "y", "fit","se", "xlab", "ylab", "main"),
-	ci = FALSE,
-	...) {
-
-	po <- get_plotinfo(x, ...)
-
-	ind2d <- vapply(
-		X         = po,
-		FUN       = function(z) !is.null(z[["x"]]) & !is.null(z[["y"]]),
-		FUN.VALUE = logical(1))
-
-	# keep only variables of interes
-	po <- lapply(po[ind2d], "[", i=keep, drop=TRUE)
-
-	# transform to data.frame
-	po <- lapply(po, function(z) {
-		z[["fit"]] <- as.vector(z[["fit"]])
-		p1 <- as_tibble(z[setdiff(keep, c("x", "y"))])
-		xy <- cross_df(z[c("x", "y")])
-		xy <- bind_cols(xy, p1)
-		if(ci) {
-			xy %<>% mutate(
-				low  = fit - se,
-				high = fit + se)
-		}
-		xy
-	})
-
-	return(bind_rows(po))
-
-}
-
-
-#' Extract random effects objects in tidy data format.
-#'
-#' @inheritParams tidy_smooth
-#' @importFrom dplyr bind_rows
-#' @importFrom stats ppoints qnorm quantile
-#' @rdname tidy_smooth
-#' @seealso \code{\link[stats]{qqline}}
-#' @export
-tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
-
-	po <- get_plotinfo(x, ...)
-	ind.re <- vapply(
-		X         = po,
-		FUN       = function(z) !is.null(z[["main"]]) & z[["xlab"]] == "Gaussian quantiles",
-		FUN.VALUE = logical(1))
-
-	po <- lapply(po[ind.re], "[", i=keep, drop=TRUE)
-	po <- lapply(po, function(z) {
-		re.df = do.call(cbind.data.frame, c(z, stringsAsFactors=FALSE))
-		re.df$x = qnorm(ppoints(length(re.df$fit))[order(order(re.df$fit))])
-		# code to calculate qqslope and qqintercept from ?stats::qqline
-		yl <- quantile(re.df$fit, probs=c(0.1, 0.9), type=7, names=FALSE)
-		xl <- qnorm(c(0.1, 0.9))
-		re.df$qqslope <- diff(yl)/diff(xl)
-		re.df$qqintercept <- yl[1L] - re.df$qqslope*xl[1L]
-
-		re.df
-
-	})
-
-	return(bind_rows(po))
 
 }

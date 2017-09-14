@@ -75,7 +75,7 @@ pam <- gam(ped_status ~ s(tend) + s(karno, bs="ps"), data=ped, family=poisson(),
 ```{r}
 # crate data set with varying karno values (from min to max in 100 steps) 
 # and add term contribution of karno from PAM and Cox-PH models
-karno_df <- ped %>% make_newdata(expand = "karno", length.out = 100) %>% 
+karno_df <- ped %>% make_newdata(expand = "karno", n = 100) %>% 
   add_term(pam, term="karno") %>% 
   mutate(
     cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] - 

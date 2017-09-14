@@ -133,8 +133,8 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
 
 ## to visualize smooth effect of age, create data set where all covariates are 
 ## fixed to mean values except for age, which varies between min and max 
-## (length.out=100)
-age_df <- recidivism_long %>% make_newdata(expand="age", length.out=100)
+## (n = 100)
+age_df <- recidivism_long %>% make_newdata(expand="age", n=100)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
 age_df %<>% add_term(pam, term="age") %>% 
@@ -154,7 +154,7 @@ age_gg <- smooth_gg + aes(x=age) +
 
 
 ## same as "age"" for "prio" variable 
-prio_df <- recidivism_long %>% make_newdata(expand="prio", length.out=100)
+prio_df <- recidivism_long %>% make_newdata(expand="prio", n=100)
 prio_df %<>% add_term(pam, term="prio") %>% 
   mutate(cphfit = predict(object=cph, ., type="terms")[,7])
 
@@ -276,7 +276,7 @@ effect of `bili`. A graphical comparison yields similar results:
 ## the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
 ## (see also Details section in ?predict.coxph)
 bili_df <- pbc_ped %>% ungroup() %>% 
-  make_newdata(expand="bili", length.out=100) %>%
+  make_newdata(expand="bili", n = 100) %>%
   add_term(pbc_pam, term="bili", relative=TRUE) %>% 
   mutate(cox = predict(fit2, ., type="term")[, "log(bili)"])
 
@@ -288,7 +288,7 @@ bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) +
 
 ## Effect of protime
 protime_df <- pbc_ped %>% ungroup() %>% 
-  make_newdata(expand="protime", length.out=100) %>% 
+  make_newdata(expand="protime", n = 100) %>% 
   add_term(pbc_pam, term="protime", relative=TRUE) %>% 
   mutate(cox = predict(fit2, ., type="term")[, "log(protime)"])
 

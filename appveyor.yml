@@ -11,8 +11,10 @@ install:
   ps: Bootstrap
 
 # Adapt as necessary starting from here
-cache:
-  - C:\RLibrary
+
+branches:
+  only:
+    - master
 
 environment:
   global: 
@@ -27,6 +29,7 @@ environment:
       GCC_PATH: mingw_32
 
 build_script:
+  - travis-tool.sh r_install curl
   - travis-tool.sh install_deps
 
 test_script:

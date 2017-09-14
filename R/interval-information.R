@@ -9,7 +9,7 @@
 #' partitioned in or object of class \code{ped}.
 #' @param ... Currently ignored.
 #' @rdname int_info
-#' @return data.frame. A data frame containing the start and end times of the
+#' @return A data frame containing the start and end times of the
 #' intervals specified by the \code{x} argument. Additionally the interval
 #' length, interval mid-point and a factor variable of the intervals themselves.
 #' @export
@@ -24,7 +24,9 @@ int_info <- function(x, ...) {
 #' @import checkmate dplyr
 #' @export
 #' @examples
+#' ## create interval information from cut points
 #' int_info(c(1, 2.3, 5))
+#' 
 #' @rdname int_info
 int_info.default <- function(
   x,
@@ -63,49 +65,88 @@ int_info.default <- function(
 #' @import dplyr
 #' @rdname int_info
 #' @examples
+#' ## extract interval information used to create ped object
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
 #' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
 #' int_info(ped)
+#' 
 #' @export
-#' @seealso split_data
+#' @seealso split_data ped_info
 int_info.ped <- function(x, ...) {
 
   int_info(attr(x, "cut"), ...)
 
 }
 
+#' @rdname int_info
+#' @examples
+#' ## extract interval information of ped that was used to fit the model
+#' data("veteran", package="survival")
+#' vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
+#' vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
+#' int_info(vet_pam)
+#' 
+#' @export
+int_info.pamm <- function(x, ...) {
 
-#' Given breaks, return intervals in which times vector falls
+  int_info(x$cut)
+
+}
+
+
+#' Information on intervals in which times fall
 #'
 #' @inheritParams int_info
-#' @param brks Vector of values for which interval information should be returned.
+#' @param x An object from which interval information can be obtained, 
+#' see \code{\link{int_info}}.
+#' @param times A vector of times for which corresponding interval information 
+#' should be returned.
 #' @param ... Further arguments passed to \code{\link[base]{findInterval}}.
 #' @import dplyr
 #' @return A \code{data.frame} containing information on intervals in which
-#' values of x fall.
+#' values of \code{times} fall.
 #' @examples
 #' set.seed(111018)
 #' brks <- c(0, 4.5, 5, 10, 30)
 #' int_info(brks)
 #' x <- runif(3, 0, 30)
-#' get_intervals(brks, x, left.open=TRUE)
+#' x
+#' get_intervals(brks, x)
+#' 
+#' @seealso \code{\link[base]{findInterval}} \code{\link{int_info}}
+#' @rdname get_intervals
 #' @export
-#' @seealso findInterval int_info
+get_intervals <- function(x, times, ...) {
+  UseMethod("get_intervals", x)
+}
 
-get_intervals <- function(brks, x, ...) {
+#' @inherit get_intervals 
+#' @inheritParams base::findInterval
+#' @seealso \code{\link[base]{findInterval}}
+#' @rdname get_intervals
+#' @export
+get_intervals.default <- function(
+  x, 
+  times, 
+  left.open        = TRUE,
+  rightmost.closed = TRUE, 
+  ...) {
 
   # check inputs
-  assert_numeric(brks, lower = 0, any.missing = FALSE)
-  assert_numeric(x, finite = TRUE, all.missing = FALSE)
+  assert_numeric(times, lower = 0, finite = TRUE, all.missing = FALSE)
 
-  int_df <- int_info(brks)
-  int    <- findInterval(x, union(int_df$tstart, int_df$tend), ...)
+  int_df <- int_info(x)
+  int    <- findInterval(
+    x                = times,
+    vec              = union(int_df$tstart, int_df$tend),
+    left.open        = left.open,
+    rightmost.closed = rightmost.closed)
 
   int_df %>%
-    slice(int)      %>%
-    mutate(x = x)   %>%
-    arrange(tstart) %>%
-    select(x, everything())
+    slice(int) %>%
+    mutate(times = times) %>%
+    arrange(times) %>%
+    select(times, everything())
 
 }
 
