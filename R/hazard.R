@@ -198,7 +198,7 @@ get_cumhazard <- function(
 }
 
 
-#' Add survival probabilities estimates to data set
+#' Add survival probability estimates to data set
 #'
 #' @inherit add_cumhazard
 #' @export

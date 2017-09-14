@@ -45,7 +45,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/aalen-comparison.html">Vignette Title</a>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
     </li>
     <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
@@ -190,7 +190,7 @@ in terms of tree/forest plots:
 <p>A first quick overview over the smooth effects is provided in the bottom part of output of the <code>summary</code> call above. The interpretation is the same as as for <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code> objects (see <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/summary.gam">?summary.gam</a></code> for details). Briefly, the <code>edf</code> column provides the number of effective degrees of freedom used to fit the spline (values larger than 1 indicate non-linearity) and the p-value refers to a significance test against the null hypothesis of “no effect” (i.e., <span class="math inline">\(H_0: f_j(x_j) = 0\)</span>; test developed in <span class="citation">Wood (2013)</span>).</p>
 <p>Usually, however, we want to visualize the non-linear effect by plotting <span class="math inline">\(f_j(x_j)\)</span> over the range of <span class="math inline">\(x_j\)</span> values. One possibility using base R plotting functions is to call the default plot function for <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code> objects. Note that PAM effects are additive on the log-hazard scale, so we have to plot <span class="math inline">\(\exp(f_j(x_j))\)</span> (right panel below) in order to read hazard <em>ratios</em> off the figure:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## extract smooths plot data
-shgb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tidy_smooth.html">tidy_smooth</a></span>(pam) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(xlab==<span class="st">"hgb"</span>)
+shgb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tidiers.html">tidy_smooth</a></span>(pam) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(xlab==<span class="st">"hgb"</span>)
 ## create plots for hgb effect
 hgb_ggp &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(shgb, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>x)) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>fit)) +

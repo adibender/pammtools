@@ -49,4 +49,7 @@ can be specified as usually, but defaults to \code{GCV.cp} in \code{\link[mgcv]{
 
 Check if object is of class pamm
 }
+\seealso{
+\code{\link[mgcv]{gam}}
+}
 \keyword{internal}

@@ -29,7 +29,7 @@ append_ped_attr <- function(pamm, ped) {
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
-#' @seealso \code\link[mgcv]{gam}
+#' @seealso \code{\link[mgcv]{gam}}
 #' @export
 pamm <- function(formula, data=list(), method="REML", ...) {
 

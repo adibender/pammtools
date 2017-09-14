@@ -39,9 +39,9 @@ tidy_fixed <- function(x, ...) {
 	UseMethod("tidy_fixed", x)
 }
 
+#' @rdname tidy_fixed
 #' @inheritParams tidy_fixed
 #' @param intercept Should intercept also be returned?
-#' @rdname tidiers
 #' @export
 tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
@@ -53,9 +53,10 @@ tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
 }
 
+#' @rdname tidy_fixed
 #' @inheritParams tidy_fixed
 #' @importFrom tibble as_tibble
-#' @rdname tidiers
+#' @keywords internal
 #' @export
 tidy_fixed.coxph <- function(x, ...) {
 
@@ -67,12 +68,12 @@ tidy_fixed.coxph <- function(x, ...) {
 
 #' Extract 1d smooth objects in tidy data format.
 #'
+#' @rdname tidiers
 #' @inheritParams get_plotinfo
 #' @param keep A vector of variables to keep.
 #' @param ci A logical value indicating whether confidence intervals should be
 #' calculated and returned. Defaults to \code{TRUE}.
 #' @importFrom dplyr bind_rows
-#' @rdname tidiers
 #' @export
 tidy_smooth <- function(
 	x,
@@ -112,7 +113,6 @@ tidy_smooth <- function(
 #' @importFrom purrr cross_df
 #' @importFrom tibble as_tibble
 #' @import dplyr
-#' @rdname tidiers
 #' @export
 tidy_smooth2d <- function(
 	x,
@@ -156,7 +156,6 @@ tidy_smooth2d <- function(
 #' @importFrom stats ppoints qnorm quantile
 #' @rdname tidy_smooth
 #' @seealso \code{\link[stats]{qqline}}
-#' @rdname tidiers
 #' @export
 tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 
