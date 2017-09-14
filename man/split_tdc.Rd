@@ -13,33 +13,33 @@ split_tdc(formula, event_df, tdc_df, id_var, time_var, status_var,
 \item{event_df}{A data frame (potentially) containing time-dependent covariates.}
 
 \item{tdc_df}{A data frame containing information on time-dependent variables
-in long format. Needs to contain a "time" variable indicating when the 
-TDCs change their value. Must have same name as variable indicating event 
+in long format. Needs to contain a "time" variable indicating when the
+TDCs change their value. Must have same name as variable indicating event
 times in \code{event_df}.}
 
-\item{id_var}{The ID variable name, identifying subjects. 
+\item{id_var}{The ID variable name, identifying subjects.
 Needs to be the same name in both data sets.}
 
-\item{time_var}{A character, specifies the column of the event or 
-censoring time in \code{event_df} and the time of measurement for 
+\item{time_var}{A character, specifies the column of the event or
+censoring time in \code{event_df} and the time of measurement for
 the time-dependent covariates in \code{tdc_df}.}
 
-\item{status_var}{As \code{time_var}, but specifies column containing the 
+\item{status_var}{As \code{time_var}, but specifies column containing the
 event indicator. Can be missing in the \code{tdc_df}.}
 
-\item{cens_value}{The value that indicates censoring in the 
+\item{cens_value}{The value that indicates censoring in the
 \code{status_var} column.}
 }
 \description{
 Given to data frames, one containing event time information (one row per subject)
-and one containing information on time-dependent covariates, creates 
-piece-wise exponential data (with one split per event time and time at 
+and one containing information on time-dependent covariates, creates
+piece-wise exponential data (with one split per event time and time at
 which a TDC changes its value).
 }
 \examples{
 data("pbc", package="survival")# loads both, pbc and pbcseq
 pbc$status = 1*(pbc$status == 2)
-pbcseq$time <- pbcseq$day # time of event/measurement must be equal in both data 
+pbcseq$time <- pbcseq$day # time of event/measurement must be equal in both data
 pbcseq$day  <- NULL
 pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status")
 }
