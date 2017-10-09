@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frailty and random effects • pamm</title>
+<title>Frailty and random effects • pammtools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -24,7 +24,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pamm</a>
+      <a class="navbar-brand" href="../index.html">pammtools</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -79,7 +79,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pamm">
+  <a href="http://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -109,7 +109,7 @@
 <span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(survival)
 <span class="kw">library</span>(coxme)
-<span class="kw">library</span>(pamm)
+<span class="kw">library</span>(pammtools)
 <span class="kw">library</span>(mgcv)
 <span class="kw">library</span>(ggplot2)
 <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</code></pre></div>
@@ -178,7 +178,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">data=</span>lung, <span class="dt">id=</span><span class="st">"id"</span>)
 pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>ph.ecog +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(inst, <span class="dt">bs=</span><span class="st">"re"</span>),
     <span class="dt">data=</span>ped, <span class="dt">family=</span><span class="kw">poisson</span>(), <span class="dt">offset=</span>offset)</code></pre></div>
-<p>Comparison of the estimates of the two models shows that they are in close agreement (we use <code>tidy_re</code> from the <code>pamm</code> package to extract random effects):</p>
+<p>Comparison of the estimates of the two models shows that they are in close agreement (we use <code>tidy_re</code> from the <code>pammtools</code> package to extract random effects):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">pam =</span> <span class="kw">coef</span>(pam)[<span class="dv">2</span>], <span class="dt">cox=</span><span class="kw">coef</span>(cme))</code></pre></div>
 <pre><code>##               pam       cox
 ## ph.ecog 0.4963713 0.5073993</code></pre>
@@ -186,7 +186,7 @@ pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 <span class="kw">plot</span>(cme$frail$inst, re$fit, <span class="dt">las=</span><span class="dv">1</span>, <span class="dt">xlab=</span><span class="st">"Frailty (cox)"</span>, <span class="dt">ylab=</span><span class="st">"Frailty (PAM)"</span>)
 <span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</code></pre></div>
 <p><img src="frailty_files/figure-html/unnamed-chunk-6-1.png" width="384" style="display: block; margin: auto;"></p>
-<p>The <code>pamm</code> package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption:</p>
+<p>The <code>pammtools</code> package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gg_re.html">gg_re</a></span>(pam)</code></pre></div>
 <p><img src="frailty_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;"></p>
 </div>

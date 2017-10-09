@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Transformation • pamm</title>
+<title>Data Transformation • pammtools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -24,7 +24,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pamm</a>
+      <a class="navbar-brand" href="../index.html">pammtools</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -79,7 +79,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pamm">
+  <a href="http://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -107,7 +107,7 @@
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
 <span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(pamm)</code></pre></div>
+<span class="kw">library</span>(pammtools)</code></pre></div>
 <p>In this vignette we provide details on transforming data into a format suitable to fit piece-wise exponential (additive) models (PAM). Three main cases need to be distinguished</p>
 <ol style="list-style-type: decimal">
 <li><p>Data without time-dependent covariates</p></li>
@@ -143,7 +143,7 @@ veteran %&lt;&gt;%
 <li><p>define <span class="math inline">\(J+1\)</span> interval break points <span class="math inline">\(t_{\min} = \kappa_0 &lt; \kappa_1 &lt; \cdots &lt; \kappa_J = t_{\max}\)</span></p></li>
 <li><p>create <em>pseudo</em>-observations for each interval <span class="math inline">\(j = 1,\ldots, J\)</span> in which subject <span class="math inline">\(i, i = 1,\ldots,n\)</span> was under risk.</p></li>
 </ul>
-<p>Using the <code>pamm</code> package this is easily achieved with the <code>split_data</code> function as follows:</p>
+<p>Using the <code>pammtools</code> package this is easily achieved with the <code>split_data</code> function as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw">Surv</span>(time, status)~., <span class="dt">data =</span> veteran, <span class="dt">id =</span> <span class="st">"id"</span>)
 ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id %in%<span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(-diagtime, -prior)</code></pre></div>
 <pre><code>##     id tstart tend interval    offset ped_status trt  celltype karno age

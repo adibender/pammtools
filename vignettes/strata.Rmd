@@ -28,7 +28,7 @@ library(ggplot2)
 theme_set(theme_bw())
 library(mgcv)
 library(survival)
-library(pamm)
+library(pammtools)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 

@@ -26,13 +26,13 @@ library(magrittr)
 library(dplyr)
 library(survival)
 library(mgcv)
-library(pamm)
+library(pammtools)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 
 Here we briefly demonstrate how to fit and visualize a simple
-baseline model using the **`pamm`** package.
+baseline model using the **`pammtools`** package.
 We illustrate the procedure using the `veteran` data from the
 `survival` package:
 

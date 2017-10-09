@@ -27,7 +27,7 @@
 #' pinf <- ped_info(ped)
 #' add_term(pinf, pam, term="tend")
 #' @export
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
+#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 #' @importFrom stats model.matrix vcov
 add_term <- function(
 	newdata,

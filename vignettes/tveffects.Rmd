@@ -25,7 +25,7 @@ library(gridExtra)
 library(magrittr)
 library(tidyr)
 library(dplyr)
-library(pamm)
+library(pammtools)
 library(survival)
 library(mgcv)
 Set1    <- RColorBrewer::brewer.pal(9, "Set1")
@@ -310,4 +310,3 @@ and its uncertainty:
 gg_tensor(pam3, ci=TRUE) +
   xlab("t") + ylab(expression(x[plain(karno)]))
 ```
-

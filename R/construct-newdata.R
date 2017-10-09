@@ -44,7 +44,7 @@ sample_info.data.frame <- function(x, ...) {
 #' @importFrom magrittr %<>%
 #' @export
 #' @rdname sample_info
-#' @seealso \code{\link[pamm]{split_data}}
+#' @seealso \code{\link[pammtools]{split_data}}
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables

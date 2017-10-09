@@ -25,7 +25,7 @@ opts_chunk$set(
 library(magrittr)
 library(dplyr)
 library(mgcv)
-library(pamm)
+library(pammtools)
 library(ggplot2)
 theme_set(theme_bw())
 library(grid)

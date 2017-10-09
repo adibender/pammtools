@@ -24,7 +24,7 @@ library(magrittr)
 library(dplyr)
 library(survival)
 library(coxme)
-library(pamm)
+library(pammtools)
 library(mgcv)
 library(ggplot2)
 theme_set(theme_bw())
@@ -83,7 +83,7 @@ pam <- gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 ```
 
 Comparison of the estimates of the two models shows that they are in close
-agreement (we use `tidy_re` from the `pamm` package to extract random effects):
+agreement (we use `tidy_re` from the `pammtools` package to extract random effects):
 
 ```{r}
 cbind(pam = coef(pam)[2], cox=coef(cme))
@@ -92,7 +92,7 @@ plot(cme$frail$inst, re$fit, las=1, xlab="Frailty (cox)", ylab="Frailty (PAM)")
 abline(0, 1)
 ```
 
-The `pamm` package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption:
+The `pammtools` package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption:
 
 ```{r}
 gg_re(pam)

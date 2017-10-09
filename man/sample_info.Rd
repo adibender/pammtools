@@ -22,5 +22,5 @@ Given a data set and grouping variables, this function returns median values
 for numeric variables and modus for characters and factors.
 }
 \seealso{
-\code{\link[pamm]{split_data}}
+\code{\link[pammtools]{split_data}}
 }

@@ -23,7 +23,7 @@ opts_chunk$set(
 ```{r echo = TRUE, message = FALSE}
 library(magrittr)
 library(dplyr)
-library(pamm)
+library(pammtools)
 ```
 
 
@@ -74,7 +74,7 @@ To transform the data into piece-wise exponential data (`ped`) format, we need t
 - create *pseudo*-observations for each interval $j = 1,\ldots, J$ in which subject
   $i, i = 1,\ldots,n$ was under risk.
 
-Using the `pamm` package this is easily achieved with the `split_data` function
+Using the `pammtools` package this is easily achieved with the `split_data` function
 as follows:
 
 ```{r}

@@ -55,7 +55,7 @@ data [@Kalbfleisch1980] provided in the `survival` package:
 ```{r}
 library(survival)
 library(mgcv)
-library(pamm)
+library(pammtools)
 library(dplyr)
 
 data("veteran", package = "survival")

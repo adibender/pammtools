@@ -1,12 +1,14 @@
-#' pamm: Piece-wise exponential Additive Mixed Models
+#' pammtools: Piece-wise exponential Additive Mixed Modeling tools.
 #'
-#' `pamm` provides functions and utilities that facilitate fitting
+#' `pammtools` provides functions and utilities that facilitate fitting
 #' Piece-wise Exponential Additive Mixed Models (PAMMs), including data
 #' transformation and other convenience functions for pre- and post-processing
 #' as well as plotting.
 #'
 #' The best way to get an overview of the functionality provided and how to
-#' fit PAMMs is to view the vignettes included in this package. A summary
+#' fit PAMMs is to view the vignettes included in this package and also
+#' available at \url{https://adibender.github.io/pammtools/}. A
+# summary
 #' of the vignettes content is given below:
 #'
 #' \itemize{
@@ -25,6 +27,6 @@
 #' \item \code{tveffects}: Specifying time-varying effects
 #' }
 #'
-#' @name pamm_package
+#' @name pammtools
 #' @docType package
 NULL

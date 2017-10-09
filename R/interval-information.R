@@ -157,7 +157,8 @@ get_intervals.default <- function(
 #' interval containing interval information, median values for numerical
 #' variables and modi for non-numeric variables in the data set.
 #'
-#' @param ped An object of class \code{ped} as returned by \code{\link[pamm]{split_data}}.
+#' @param ped An object of class \code{ped} as returned by
+#' \code{\link[pammtools]{split_data}}.
 #' @import checkmate dplyr
 #' @examples
 #' data("veteran", package="survival")
@@ -165,7 +166,7 @@ get_intervals.default <- function(
 #' ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 #' @export
 #' @return A data frame with one row for each interval in \code{ped}.
-#' @seealso \code{\link[pamm]{int_info}}, \code{\link[pamm]{sample_info}}
+#' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 ped_info <- function(ped) {
 
   assert_class(ped, classes="ped")
@@ -184,7 +185,8 @@ ped_info <- function(ped) {
 #' size of the riskset at the beginning of each interval as well as the number
 #' of events and censorings that occured in the interval, respectively.
 #'
-#' @param ped An object of class \code{ped} as returned by \code{\link[pamm]{split_data}}.
+#' @param ped An object of class \code{ped} as returned by
+#' \code{\link[pammtools]{split_data}}.
 #' @import checkmate dplyr
 #' @examples
 #' data("veteran", package="survival")
@@ -196,7 +198,7 @@ ped_info <- function(ped) {
 #' # left_join(riskset_celltype,
 #' #           group_by(ped, celltype, interval) %>% sample_info())
 #' @return A data frame with one row for each interval in \code{ped}.
-#' @seealso \code{\link[pamm]{int_info}}, \code{\link[pamm]{sample_info}}
+#' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 #' @export
 riskset_info <- function(ped) {
   assert_class(ped, classes="ped")
@@ -220,8 +222,8 @@ riskset_info <- function(ped) {
 #' Extract information for plotting step functions
 #'
 #'
-#' @param pinfo A data frame as returned by \code{\link[pamm]{ped_info}} and
-#' potentially additional information from predictions, etc.
+#' @param pinfo A data frame as returned by \code{\link[pammtools]{ped_info}}
+#' and potentially additional information from predictions, etc.
 #' @examples
 #' data("veteran", package="survival")
 #' leuk.ped <- split_data(Surv(time, status)~., data=veteran, id="id")

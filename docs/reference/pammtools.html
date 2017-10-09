@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit PAM to train data and calculate PEC on test data — pec_pamm • pammtools</title>
+<title>pammtools: Piece-wise exponential Additive Mixed Modeling tools. — pammtools • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -119,78 +119,45 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit PAM to train data and calculate PEC on test data</h1>
+    <h1>pammtools: Piece-wise exponential Additive Mixed Modeling tools.</h1>
     </div>
 
     
-    <p>Fit PAM to train data and calculate PEC on test data</p>
+    <p>`pammtools` provides functions and utilities that facilitate fitting
+Piece-wise Exponential Additive Mixed Models (PAMMs), including data
+transformation and other convenience functions for pre- and post-processing
+as well as plotting.</p>
     
 
-    <pre class="usage"><span class='fu'>pec_pamm</span>(<span class='no'>data</span>, <span class='no'>idx_train</span>, <span class='no'>idx_test</span>, <span class='no'>formula_ped</span>, <span class='no'>formula_pam</span>,
-  <span class='kw'>formula_ipcw</span> <span class='kw'>=</span> <span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>) ~ <span class='fl'>1</span>, <span class='kw'>times</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='no'>...</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>data</th>
-      <td><p>The data in standard time-to-event data format which can be tansformed
-in PED (see <code><a href='split_data.html'>split_data</a></code>).</p></td>
-    </tr>
-    <tr>
-      <th>idx_train</th>
-      <td><p>Index of rows that indicate training set.</p></td>
-    </tr>
-    <tr>
-      <th>idx_test</th>
-      <td><p>Index of rows that indicate test set.</p></td>
-    </tr>
-    <tr>
-      <th>formula_ped</th>
-      <td><p>The formula used to transform data to PED (see
-<code><a href='split_data.html'>split_data</a></code>).</p></td>
-    </tr>
-    <tr>
-      <th>formula_pam</th>
-      <td><p>The formula used to fit the PAM (see <code>pam</code>).</p></td>
-    </tr>
-    <tr>
-      <th>formula_ipcw</th>
-      <td><p>The formula used to calculate inverse probability censoring
-weights (IPCW). See <code><a href='http://www.rdocumentation.org/packages/pec/topics/ipcw'>ipcw</a></code> for details.</p></td>
-    </tr>
-    <tr>
-      <th>times</th>
-      <td><p>The time points at which prediction error will be evaluated</p></td>
-    </tr>
-    <tr>
-      <th>cut</th>
-      <td><p>the vector of timepoints to cut at</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>If <code>times</code> argument not specified, will create a sequence
-from minimal to maximal time of this length.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>further arguments passed to <code><a href='split_data.html'>split_data</a></code>.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+        
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code><a href='http://www.rdocumentation.org/packages/pec/topics/pec'>pec</a></code>, <code><a href='http://www.rdocumentation.org/packages/pec/topics/ipcw'>ipcw</a></code></p>
+    <p>The best way to get an overview of the functionality provided and how to
+fit PAMMs is to view the vignettes included in this package and also
+available at <a href='https://adibender.github.io/pammtools/'>https://adibender.github.io/pammtools/</a>. A
+of the vignettes content is given below:</p><ul>
+<li><p><code>basics</code>: Introduction to PAMMs and basic modeling.</p></li>
+<li><p><code>baseline</code>: Shows how to estimate and visualize baseline model
+  (without covariates) and comparison to respective Cox-PH model.</p></li>
+<li><p><code>convenience</code>: Convenience functions for post-processing and
+plotting PAMMs</p></li>
+<li><p><code>data-transformation</code>: Transforming data into a format suitable
+  to fit PAMMs</p></li>
+<li><p><code>frailty</code>: Specifying "frailty" terms, i.e., random effects for PAMMs</p></li>
+<li><p><code>splines</code>: Specifying spline smooth terms for PAMMs</p></li>
+<li><p><code>strata</code>: Specifying stratified models in which each level of a
+  grouping variable has a different baseline hazard</p></li>
+<li><p><code>tdcovar</code>: Dealing with time-dependent covariates</p></li>
+<li><p><code>tveffects</code>: Specifying time-varying effects</p></li>
+</ul>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#details">Details</a></li>
           </ul>
 
   </div>

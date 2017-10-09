@@ -76,7 +76,7 @@ add_hazard(pinfo, pam)
 }
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_cumhazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_cumhazard}}
 
-\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 }

@@ -7,7 +7,7 @@
 #' @param newdata Data containing covariate information only, for which to
 #' predict survival probabilities.
 #' @param times Time points for which survival probabilities should be predicted.
-#' @param ... Arguments passed to \code{\link[pamm]{int_info}}.
+#' @param ... Arguments passed to \code{\link[pammtools]{int_info}}.
 #' @import dplyr
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr spread_

@@ -64,5 +64,5 @@ pinf <- ped_info(ped)
 add_term(pinf, pam, term="tend")
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 }
