@@ -45,6 +45,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
+    </li>
+    <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
     </li>
     <li>
@@ -58,6 +61,9 @@
     </li>
     <li>
       <a href="../articles/frailty.html">Frailty and random effects</a>
+    </li>
+    <li>
+      <a href="../articles/model-evaluation.html">Model evaluation</a>
     </li>
     <li>
       <a href="../articles/splines.html">Splines</a>
@@ -99,7 +105,7 @@
       <h1>Data Transformation</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-09-14</h4>
+            <h4 class="date">2017-10-09</h4>
           </div>
 
     
@@ -123,11 +129,11 @@
 <a href="#using-defaults" class="anchor"></a>Using defaults</h3>
 <p>As an example data set we first consider Veterans’ Administration lung cancer study <span class="citation">(Kalbfleisch and Prentice 1980)</span> available from the <code>survival</code> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>)
-veteran <span class="op">%&lt;&gt;%</span>
+veteran %&lt;&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
     <span class="dt">id =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),
-    <span class="dt">trt =</span> <span class="dv">1</span><span class="op">*</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),
-    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>)) <span class="op">%&gt;%</span>
+    <span class="dt">trt =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
+    <span class="dt">prior =</span> <span class="dv">1</span>*(prior !=<span class="st"> </span><span class="dv">0</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id,<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select_helpers.html">everything</a></span>())
 <span class="kw">head</span>(veteran)</code></pre></div>
 <pre><code>##   id trt celltype time status karno diagtime age prior
@@ -144,8 +150,8 @@ veteran <span class="op">%&lt;&gt;%</span>
 <li><p>create <em>pseudo</em>-observations for each interval <span class="math inline">\(j = 1,\ldots, J\)</span> in which subject <span class="math inline">\(i, i = 1,\ldots,n\)</span> was under risk.</p></li>
 </ul>
 <p>Using the <code>pamm</code> package this is easily achieved with the <code>split_data</code> function as follows:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw">Surv</span>(time, status)<span class="op">~</span>., <span class="dt">data =</span> veteran, <span class="dt">id =</span> <span class="st">"id"</span>)
-ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(<span class="op">-</span>diagtime, <span class="op">-</span>prior)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw">Surv</span>(time, status)~., <span class="dt">data =</span> veteran, <span class="dt">id =</span> <span class="st">"id"</span>)
+ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id %in%<span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(-diagtime, -prior)</code></pre></div>
 <pre><code>##     id tstart tend interval    offset ped_status trt  celltype karno age
 ## 1   42      0    1    (0,1] 0.0000000          0   0 smallcell    50  72
 ## 2   42      1    2    (1,2] 0.0000000          0   0 smallcell    50  72
@@ -210,16 +216,16 @@ ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a h
 <a href="#custom-cut-points" class="anchor"></a>Custom cut points</h3>
 <p>Per default the <code>split_data</code> function uses all unique event times as cut points (which is a sensible default as for example the (cumulative) baseline hazard estimates in Cox-PH functions are updated also only at event times).</p>
 <p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data object and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw">Surv</span>(time, status)<span class="op">~</span>., <span class="dt">data =</span> veteran, <span class="dt">cut =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">200</span>, <span class="dv">400</span>),
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw">Surv</span>(time, status)~., <span class="dt">data =</span> veteran, <span class="dt">cut =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">200</span>, <span class="dv">400</span>),
   <span class="dt">id =</span> <span class="st">"id"</span>)
-ped2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(<span class="op">-</span>diagtime, <span class="op">-</span>prior)</code></pre></div>
+ped2 %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id %in%<span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(-diagtime, -prior)</code></pre></div>
 <pre><code>##    id tstart tend interval   offset ped_status trt  celltype karno age
 ## 1  42      0   50   (0,50] 1.945910          1   0 smallcell    50  72
 ## 2  85      0   50   (0,50] 0.000000          1   1  squamous    50  35
 ## 3 112      0   50   (0,50] 3.912023          0   1     adeno    60  62
 ## 4 112     50  200 (50,200] 0.000000          1   1     adeno    60  62</code></pre>
 <p>Note that now subjects <code>42</code> and <code>85</code> have only one row in the data set. The fact that subjects <code>42</code> was in the risk set longer than subject <code>85</code> is, however, still accounted for by the <code>offset</code> variable. Note that the <code>offset</code>s for subject <code>85</code> and subject <code>112</code> in interval <code>(50,200]</code> are only zero because subject <code>85</code> had an observed event time of <code>1</code>, thus <code>log(1-0)=0</code> and subject <code>112</code> had an event at time <code>51</code>, thus <code>log(51-50)=0</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">veteran <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="kw">c</span>(<span class="dv">85</span>, <span class="dv">112</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">veteran %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="kw">c</span>(<span class="dv">85</span>, <span class="dv">112</span>))</code></pre></div>
 <pre><code>## # A tibble: 2 x 9
 ##      id   trt celltype  time status karno diagtime   age prior
 ##   &lt;int&gt; &lt;dbl&gt; &lt;fctr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;

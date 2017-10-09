@@ -45,6 +45,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/aalen-comparison.html">Comparison to Aalen Models</a>
+    </li>
+    <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
     </li>
     <li>
@@ -58,6 +61,9 @@
     </li>
     <li>
       <a href="../articles/frailty.html">Frailty and random effects</a>
+    </li>
+    <li>
+      <a href="../articles/model-evaluation.html">Model evaluation</a>
     </li>
     <li>
       <a href="../articles/splines.html">Splines</a>
@@ -99,7 +105,7 @@
       <h1>Splines</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-09-14</h4>
+            <h4 class="date">2017-10-09</h4>
           </div>
 
     
@@ -112,17 +118,17 @@
 <span class="kw">library</span>(pamm)
 <span class="kw">library</span>(mgcv)
 <span class="kw">library</span>(survival)
-Set1 &lt;-<span class="st"> </span>RColorBrewer<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RColorBrewer/topics/ColorBrewer">brewer.pal</a></span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</code></pre></div>
+Set1 &lt;-<span class="st"> </span>RColorBrewer::<span class="kw">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</code></pre></div>
 <div id="veterans-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#veterans-data" class="anchor"></a>Veteran’s data</h2>
 <p>We first illustrate the estimation on non-linear smooth effects using the <code>veteran</code> data from the survival package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package=</span><span class="st">"survival"</span>)
-veteran <span class="op">%&lt;&gt;%</span>
+veteran %&lt;&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">trt   =</span> <span class="dv">1</span><span class="op">+</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),
-    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior<span class="op">==</span><span class="dv">10</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time <span class="op">&lt;</span><span class="st"> </span><span class="dv">400</span>)
+    <span class="dt">trt   =</span> <span class="dv">1</span>+(trt ==<span class="st"> </span><span class="dv">2</span>),
+    <span class="dt">prior =</span> <span class="dv">1</span>*(prior==<span class="dv">10</span>)) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time &lt;<span class="st"> </span><span class="dv">400</span>)
 <span class="kw">head</span>(veteran)</code></pre></div>
 <pre><code>##   trt celltype time status karno diagtime age prior
 ## 1   1 squamous   72      1    60        7  69     0
@@ -140,26 +146,26 @@ veteran <span class="op">%&lt;&gt;%</span>
 \lambda(t|x) = \exp(f_0(t_j) + f(x_{karno}))
 \]</span> respectively:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Cox-PH
-cph &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(karno, <span class="dt">df=</span><span class="dv">0</span>), <span class="dt">data=</span>veteran)
+cph &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(karno, <span class="dt">df=</span><span class="dv">0</span>), <span class="dt">data=</span>veteran)
 ## PAM
-ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) <span class="op">~</span><span class="st"> </span>., <span class="dt">data=</span>veteran, <span class="dt">id=</span><span class="st">"id"</span>)
-pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(karno, <span class="dt">bs=</span><span class="st">"ps"</span>), <span class="dt">data=</span>ped, <span class="dt">family=</span><span class="kw">poisson</span>(),
+ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span>., <span class="dt">data=</span>veteran, <span class="dt">id=</span><span class="st">"id"</span>)
+pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(karno, <span class="dt">bs=</span><span class="st">"ps"</span>), <span class="dt">data=</span>ped, <span class="dt">family=</span><span class="kw">poisson</span>(),
   <span class="dt">offset=</span>offset)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># crate data set with varying karno values (from min to max in 100 steps)</span>
 <span class="co"># and add term contribution of karno from PAM and Cox-PH models</span>
-karno_df &lt;-<span class="st"> </span>ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand =</span> <span class="st">"karno"</span>, <span class="dt">n =</span> <span class="dv">100</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"karno"</span>) <span class="op">%&gt;%</span>
+karno_df &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand =</span> <span class="st">"karno"</span>, <span class="dt">n =</span> <span class="dv">100</span>) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"karno"</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">cox =</span> <span class="kw">predict</span>(cph, <span class="dt">newdata=</span>., <span class="dt">type=</span><span class="st">"terms"</span>)[, <span class="st">"pspline(karno, df = 0)"</span>] <span class="op">-</span>
-<span class="st">      </span><span class="kw">predict</span>(cph, <span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">karno=</span><span class="kw">mean</span>(veteran<span class="op">$</span>karno))))
-<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(karno_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>karno, <span class="dt">ymin=</span>low, <span class="dt">ymax=</span>high)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>fit, <span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox PH"</span>))<span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>,<span class="dt">values=</span><span class="kw">c</span>(<span class="st">"Cox PH"</span>=Set1[<span class="dv">1</span>],<span class="st">"PAM"</span>=<span class="dv">1</span>)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(x[<span class="kw">plain</span>(karno)])) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(x[<span class="kw">plain</span>(karno)])))</code></pre></div>
+    <span class="dt">cox =</span> <span class="kw">predict</span>(cph, <span class="dt">newdata=</span>., <span class="dt">type=</span><span class="st">"terms"</span>)[, <span class="st">"pspline(karno, df = 0)"</span>] -
+<span class="st">      </span><span class="kw">predict</span>(cph, <span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">karno=</span><span class="kw">mean</span>(veteran$karno))))
+<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(karno_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>karno, <span class="dt">ymin=</span>low, <span class="dt">ymax=</span>high)) +
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>fit, <span class="dt">col=</span><span class="st">"PAM"</span>)) +
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">alpha=</span><span class="fl">0.2</span>) +
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox PH"</span>))+
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>,<span class="dt">values=</span><span class="kw">c</span>(<span class="st">"Cox PH"</span>=Set1[<span class="dv">1</span>],<span class="st">"PAM"</span>=<span class="dv">1</span>)) +
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(x[<span class="kw">plain</span>(karno)])) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(x[<span class="kw">plain</span>(karno)])))</code></pre></div>
 <p><img src="splines_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see <code>vignette("tveffects", package="pam")</code>.</p>
+<p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see <code><a href="https://cran.rstudio.com/web/packages/pam/vignettes/tveffects.html">vignette("tveffects", package="pam")</a></code>.</p>
 </div>
 <div id="mgus-data-age-example" class="section level2">
 <h2 class="hasAnchor">
@@ -170,7 +176,7 @@ karno_df &lt;-<span class="st"> </span>ped <span class="op">%&gt;%</span><span c
 <a href="#cox-ph-workflow" class="anchor"></a>Cox PH workflow</h3>
 <p>The example presented in the vignette goes as follows, using the standard base R workflow and <code>termplot</code> for visualization:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"mgus"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>)
-mfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(age, <span class="dt">df =</span> <span class="dv">4</span>), <span class="dt">data =</span> mgus)
+mfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death) ~<span class="st"> </span>sex +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(age, <span class="dt">df =</span> <span class="dv">4</span>), <span class="dt">data =</span> mgus)
 mfit</code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(futime, death) ~ sex + pspline(age, df = 4), 
@@ -192,7 +198,7 @@ mfit</code></pre></div>
 <h3 class="hasAnchor">
 <a href="#pam-workflow" class="anchor"></a>PAM workflow</h3>
 <p>The equivalent fit using PAMs requires the additional step of transforming the data into a suitable format. We then use <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code> to fit the model:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mgus.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death)<span class="op">~</span>sex <span class="op">+</span><span class="st"> </span>age, <span class="dt">data =</span> mgus, <span class="dt">id =</span> <span class="st">"id"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mgus.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death)~sex +<span class="st"> </span>age, <span class="dt">data =</span> mgus, <span class="dt">id =</span> <span class="st">"id"</span>)
 <span class="kw">head</span>(mgus.ped)</code></pre></div>
 <pre><code>##   id tstart tend interval   offset ped_status    sex age
 ## 1  1      0    6    (0,6] 1.791759          0 female  78
@@ -201,7 +207,7 @@ mfit</code></pre></div>
 ## 4  1     31   32  (31,32] 0.000000          0 female  78
 ## 5  1     32   39  (32,39] 1.945910          0 female  78
 ## 6  1     39   60  (39,60] 3.044522          0 female  78</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pamfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(age, <span class="dt">bs =</span> <span class="st">"ps"</span>), <span class="dt">data =</span> mgus.ped,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pamfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>sex +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(age, <span class="dt">bs =</span> <span class="st">"ps"</span>), <span class="dt">data =</span> mgus.ped,
   <span class="dt">method =</span> <span class="st">"REML"</span>, <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)
 <span class="kw">summary</span>(pamfit)</code></pre></div>
 <pre><code>## 
@@ -228,9 +234,9 @@ mfit</code></pre></div>
 ## R-sq.(adj) =  0.000299   Deviance explained = 5.19%
 ## -REML = 1350.2  Scale est. = 1         n = 28326</code></pre>
 <p>For visualization of the smooth effects we can use the default <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/plot.gam">mgcv::plot.gam</a></code> function:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
 <span class="kw">termplot</span>(mfit, <span class="dt">term =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">col.term =</span> <span class="dv">1</span>, <span class="dt">col.se =</span> <span class="dv">1</span>)
-<span class="kw">plot</span>(pamfit, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="fl">3.5</span>))</code></pre></div>
+<span class="kw">plot</span>(pamfit, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="dv">4</span>, <span class="fl">3.5</span>))</code></pre></div>
 <p><img src="splines_files/figure-html/figpam1-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>In this example the PAM approach estimates a linear effect of age, which is consistent with the estimation using <code>coxph</code>, as there is only weak non-linearity.</p>
 </div>
@@ -238,13 +244,13 @@ mfit</code></pre></div>
 <h3 class="hasAnchor">
 <a href="#mgus-data-hemoglobin-example" class="anchor"></a>MGUS data: Hemoglobin example</h3>
 <p>Another example from the same vignette shows that estimated effects are very similar if the effect of the covariate is in fact strongly non-linear:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death) <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(hgb, <span class="dv">4</span>), mgus2)
-mgus2.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death)<span class="op">~</span>age <span class="op">+</span><span class="st"> </span>hgb, <span class="dt">data =</span> mgus2, <span class="dt">id =</span> <span class="st">"id"</span>)
-pamfit2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status<span class="op">~</span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb), <span class="dt">data =</span> mgus2.ped,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death) ~<span class="st"> </span>age +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(hgb, <span class="dv">4</span>), mgus2)
+mgus2.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death)~age +<span class="st"> </span>hgb, <span class="dt">data =</span> mgus2, <span class="dt">id =</span> <span class="st">"id"</span>)
+pamfit2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status~<span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>age +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb), <span class="dt">data =</span> mgus2.ped,
     <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
 <span class="kw">termplot</span>(fit, <span class="dt">term =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">col.term =</span> <span class="dv">1</span>, <span class="dt">col.se =</span> <span class="dv">1</span>)
-<span class="kw">plot</span>(pamfit2, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">2</span>))</code></pre></div>
+<span class="kw">plot</span>(pamfit2, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="fl">0.5</span>, <span class="dv">2</span>))</code></pre></div>
 <p><img src="splines_files/figure-html/figpam-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="monotonicity-constraints" class="section level3">
@@ -252,14 +258,14 @@ pamfit2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <a href="#monotonicity-constraints" class="anchor"></a>Monotonicity constraints</h3>
 <p>The vignette in the <code>survival</code> package further discusses enforcing monotonicity contraints on the effect of <code>hgb</code>. These can be achieved here more easily using the functionality provided in the <code>scam</code> package (see also <span class="citation">Pya and Wood (2015)</span>). The usage is exactly the same as before, replacing the call to <code>gam</code> with a call to <code>scam</code> and specifying <code>bs = "mpd"</code>. Note that the fit using contraints takes considerably longer compared to the unconstrained fit.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(scam)
-mpam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/scam/topics/scam">scam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb, <span class="dt">bs =</span> <span class="st">"mpd"</span>), <span class="dt">data =</span> mgus2.ped,
+mpam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/scam/topics/scam">scam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>age +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb, <span class="dt">bs =</span> <span class="st">"mpd"</span>), <span class="dt">data =</span> mgus2.ped,
   <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
-<span class="kw">plot</span>(pamfit2, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">2</span>), <span class="dt">main=</span><span class="st">"Unconstrained fit"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
+<span class="kw">plot</span>(pamfit2, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="fl">0.5</span>, <span class="dv">2</span>), <span class="dt">main=</span><span class="st">"Unconstrained fit"</span>)
 <span class="co"># 1.72 = intercept difference between pamfit2 and mpam</span>
-const &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">coef</span>(pamfit2)[<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">coef</span>(mpam)[<span class="dv">1</span>])
+const &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">coef</span>(pamfit2)[<span class="dv">1</span>] -<span class="st"> </span><span class="kw">coef</span>(mpam)[<span class="dv">1</span>])
 <span class="kw">plot</span>(mpam, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">shift =</span> const,
-  <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span><span class="op">-</span>const, <span class="dv">2</span><span class="op">-</span>const), <span class="dt">main=</span><span class="st">"Fit with monotonicity constraint"</span>)</code></pre></div>
+  <span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="fl">0.5</span>-const, <span class="dv">2</span>-const), <span class="dt">main=</span><span class="st">"Fit with monotonicity constraint"</span>)</code></pre></div>
 <p><img src="splines_files/figure-html/figscam-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
