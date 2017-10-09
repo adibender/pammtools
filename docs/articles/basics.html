@@ -105,9 +105,6 @@
     
     
 <div class="contents">
-<div id="basic-modeling" class="section level1">
-<h1 class="hasAnchor">
-<a href="#basic-modeling" class="anchor"></a>Basic modeling</h1>
 <p>In this tutorial we present basic examples for the usage of this package and compare results to the ones obtained with classical approaches, namely using the <code>coxph</code> function from the <code>survival</code> package.</p>
 <p>In the following two sections, we first describe the classical piece-wise exponential model (PEM) and after that the extension to piece-wise exponential additive models (PAM).</p>
 <div id="piece-wise-exponential-model-pem" class="section level2">
@@ -116,7 +113,7 @@
 <p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if</p>
 <ol style="list-style-type: decimal">
 <li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
-<li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/split_data.html">?split_data</a></code> and <a href="data-transformation.html"><code><a href="https://cran.rstudio.com/web/packages/pam/vignettes/data-transformation.html">vignette("data-transformation", package = "pam")</a></code></a>).</p></li>
+<li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/split_data.html">?split_data</a></code> and <a href="data-transformation.html"><code>vignette("data-transformation", package = "pam")</code></a>).</p></li>
 </ol>
 <p>Estimates between the two approaches can differ due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead 1980)</span>. In practice these differences are not very large (see examples below).</p>
 <div id="subset-with-unique-event-times" class="section level3">
@@ -183,7 +180,6 @@ pam.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <pre><code>##             pam         pem         cox
 ## age 0.007543308 0.006413903 0.006413903</code></pre>
 </div>
-</div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
@@ -204,12 +200,8 @@ pam.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#basic-modeling">Basic modeling</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#piece-wise-exponential-model-pem">Piece-wise exponential model (PEM)</a></li>
       <li><a href="#piece-wise-exponential-additive-model">Piece-wise exponential additive model</a></li>
-      </ul>
-</li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>

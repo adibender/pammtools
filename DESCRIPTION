@@ -38,5 +38,4 @@ Suggests:
 URL: http://github.com/adibender/pammtools
 BugReports: http://github.com/adibender/pammtools/issues
 RoxygenNote: 6.0.1
-VignetteBuilder: knitr
 Byte-Compile: yes
