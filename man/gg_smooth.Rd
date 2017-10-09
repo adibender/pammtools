@@ -2,24 +2,33 @@
 % Please edit documentation in R/convenience-plots.R
 \name{gg_smooth}
 \alias{gg_smooth}
+\alias{gg_smooth.default}
+\alias{gg_smooth.pamm}
 \title{Plot smooth 1d terms of gam objects}
 \usage{
 gg_smooth(x, ...)
+
+\method{gg_smooth}{default}(x, fit, ...)
+
+\method{gg_smooth}{pamm}(x, ...)
 }
 \arguments{
 \item{x}{A data frame or object of class \code{pamm}.}
 
 \item{...}{Further arguments passed to \code{\link{get_terms}}}
+
+\item{fit}{A fitted model object.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot2}} object.
 }
 \description{
-Given a gam model this convenience function returns a plot of all 
-smooth terms contained in the model. If more than one smooth is present, the 
+Given a gam model this convenience function returns a plot of all
+smooth terms contained in the model. If more than one smooth is present, the
 different smooth are faceted.
 }
 \examples{
 g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 }
+\keyword{internal}

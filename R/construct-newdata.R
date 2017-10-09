@@ -44,7 +44,7 @@ sample_info.data.frame <- function(x, ...) {
 #' @importFrom magrittr %<>%
 #' @export
 #' @rdname sample_info
-#' @seealso \code{\link[pam]{split_data}}
+#' @seealso \code{\link[pamm]{split_data}}
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
@@ -90,6 +90,8 @@ combine_df <- function(...) {
 #' Given a data set, returns a data frame type object that can be used
 #' as \code{newdata} argument in a call to \code{predict} and similar functions.
 #'
+#' @rdname newdata
+#' @aliases make_newdata
 #' @inheritParams sample_info
 #' @param ... Further specifications of variables that should be set
 #' to a specific values.
@@ -119,9 +121,10 @@ make_newdata <- function(x, ...) {
 
 
 #' @inherit make_newdata
+#' @rdname newdata
 #' @param expand A character vector of column names in \code{ped}.
-#' @param n If \code{expand} specified, respective variables will be expanded 
-#' in \code{n} values from minimum to maximum. 
+#' @param n If \code{expand} specified, respective variables will be expanded
+#' in \code{n} values from minimum to maximum.
 #' @importFrom magrittr "%<>%"
 #' @importFrom modelr seq_range
 #' @export
@@ -148,7 +151,7 @@ make_newdata.default <- function(
     } else {
       expanded_df <- x %>%
         ungroup() %>% # ungroup here to obtain sequence from min to max for all data
-        select(one_of(expand)) %>% 
+        select(one_of(expand)) %>%
         as.list() %>%
         map(seq_range, n = n) %>%
         cross_df()
@@ -165,6 +168,7 @@ make_newdata.default <- function(
 
 }
 
+#' @rdname newdata
 #' @inherit make_newdata.default
 #' @importFrom magrittr "%<>%"
 #' @export
@@ -195,14 +199,14 @@ make_newdata.ped <- function(
         "yield incorrect predictions. Proceed with caution!")
     }
   }
-  
+
   id_var <- attr(x, "id_var")
   g_vars <- group_vars(x)
-  x %<>% 
-    ungroup() %>% 
-    group_by_(id_var) %>% 
-    slice(1) %>% 
-    ungroup(id_var) %>% 
+  x %<>%
+    ungroup() %>%
+    group_by_(id_var) %>%
+    slice(1) %>%
+    ungroup(id_var) %>%
     unped() %>%
     group_by_(.dots = g_vars)
 

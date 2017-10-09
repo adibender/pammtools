@@ -7,6 +7,7 @@
 #' @param ... Currently ignored.
 #' @import magrittr dplyr
 #' @importFrom stats predict setNames
+#' @keywords internal
 get_term <- function(data, fit, term, ...) {
 
 	range.term <- range(data[[term]], na.rm=TRUE)
@@ -40,11 +41,11 @@ get_term <- function(data, fit, term, ...) {
 #' @import checkmate
 #' @return A data frame with 5 columns.
 #' @seealso \code{\link[survival]{coxph}}
-#' @export
 #' @examples
 #' library(survival)
 #' fit <- coxph(Surv(time, status) ~ pspline(karno, df=4), data=veteran)
 #' term.karno <- get_terms(veteran, fit, terms="karno")
+#' @export
 get_terms <- function(data, fit, terms, ...) {
 
   # check inputs

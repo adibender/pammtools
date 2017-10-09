@@ -9,7 +9,8 @@ gg_fixed(x, intercept = FALSE, ...)
 \arguments{
 \item{x}{A model object.}
 
-\item{intercept}{Should intercept also be returned?}
+\item{intercept}{Logical, indicating whether intercept term should be included.
+Defaults to \code{FALSE}.}
 
 \item{...}{Currently not used.}
 }
@@ -17,7 +18,7 @@ gg_fixed(x, intercept = FALSE, ...)
 Forrest plot of fixed coefficients
 }
 \examples{
-g <- mgcv::gam(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species, 
+g <- mgcv::gam(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species,
 	data=iris)
 gg_fixed(g, intercept=TRUE)
 gg_fixed(g)

@@ -1,0 +1,56 @@
+reference:
+  - title: "Transform data to Piece-wise Exponential Data (PED) format"
+    desc: "Functions to transform data sets in different formats to PED format,
+    suitable to be fit by PAMMs."
+    contents:
+      - split_data
+      - split_tdc
+  - title: "PED helper functions"
+    desc: "Functions that help extract (interval-specific) summary information
+    from PED and create newdata, e.g., for prediction and plotting."
+    contents:
+      - int_info
+      - get_intervals
+      - sample_info
+      - riskset_info
+      - ped_info
+      - combine_df
+      - make_newdata
+      - plot_df
+  - title: "Extract information from PAMMs"
+    desc: "Functions that help extract information from fitted model objects,
+    e.g., smooth effects for plotting"
+    contents:
+      - tidy_fixed
+      - tidy_smooth
+      - tidy_smooth2d
+      - tidy_re
+      - get_terms
+  - title: "Augment functions"
+    desc: "Functions that augment a data set by different quantaties like the
+    hazard rate."
+    contents:
+      - add_term
+      - add_hazard
+      - add_survprob
+  - title: "Plot helpers"
+    desc: "Functions that facilitate effect plots (smooth effects, etc.)"
+    contents:
+      - gg_fixed
+      - gg_smooth
+      - gg_tensor
+      - gg_re
+      - geom_stepribbon
+articles:
+  - title: "Articles"
+    desc: "Several articles that describe the usage of PAMMs"
+    contents:
+      - data-transformation
+      - basics
+      - baseline
+      - splines
+      - strata
+      - tdcovar
+      - tveffects
+      - frailty
+      - convenience

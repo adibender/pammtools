@@ -2,7 +2,7 @@
 % Please edit documentation in R/hazard.R
 \name{add_survprob}
 \alias{add_survprob}
-\title{Add survival probabilities estimates to data set}
+\title{Add survival probability estimates to data set}
 \usage{
 add_survprob(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
   time_variable = NULL, interval_length = quo(intlen), ...)
@@ -39,10 +39,10 @@ newdata containing the interval lengths. Defaults to \code{intlen}.}
 \code{\link{get_hazard}}}
 }
 \description{
-Add survival probabilities estimates to data set
+Add survival probability estimates to data set
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_cumhazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_cumhazard}}
 
-\code{\link[mgcv]{predict.gam}}, \code{\link[pam]{add_hazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pamm]{add_hazard}}
 }

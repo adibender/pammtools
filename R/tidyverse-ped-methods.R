@@ -27,6 +27,7 @@ ped_attr <- function(ped) {
 #' @import dplyr
 #' @aliases arrange distinct_ filter full_join group_by group_by_ inner_join left_join mutate mutate_each rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
 # FIXME: replace deprecated "underscore" verbs, [summarise|mutate]_each
+#' @keywords internal
 NULL
 
 #-------------------------------------------------------------------------------
@@ -290,7 +291,7 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
 # fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
 
 #   data_attr   <- ped_attr(data)
-#   tbl <- reped(fill_(unped(data), fill_cols, .direction)) 
+#   tbl <- reped(fill_(unped(data), fill_cols, .direction))
 #   attributes(tbl) <- c(attributes(tbl), data_attr)
 
 #   return(tbl)

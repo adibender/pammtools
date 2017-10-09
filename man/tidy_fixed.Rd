@@ -21,6 +21,7 @@ tidy_fixed(x, ...)
 }
 \description{
 Given a model object, returns data frame with columns \code{variable},
-\code{coef} (coefficient), \code{lower} (lower 95\% CI) and 
+\code{coef} (coefficient), \code{lower} (lower 95\% CI) and
 \code{upper} (upper 95% CI).
 }
+\keyword{internal}

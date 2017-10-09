@@ -7,9 +7,10 @@
 as_matdf(nested_df)
 }
 \arguments{
-\item{nested_df}{A nested data frame with list columns that contain 
+\item{nested_df}{A nested data frame with list columns that contain
 a matrix per row.}
 }
 \description{
 Transform a nested data frame to data frame with matrix columns
 }
+\keyword{internal}

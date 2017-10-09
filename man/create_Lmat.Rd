@@ -12,26 +12,27 @@ create_Lmat(te, cut, t.lag = 1, lead.const = NULL, te.add.lag = 0,
 
 \item{cut}{The break points dividing the follow up into intervals.}
 
-\item{t.lag}{A numeric constant, specifying the time (from \code{te}) before 
+\item{t.lag}{A numeric constant, specifying the time (from \code{te}) before
 \code{te} can affect hazard.}
 
-\item{lead.const}{A numeric constant, specifying the constant amount of time 
+\item{lead.const}{A numeric constant, specifying the constant amount of time
 after \code{te + t.lag}, in which \code{te} can still affect hazard.}
 
 \item{te.add.lag}{A numeric constant added to te before application of lag time}
 
 \item{te.add.lead}{A numeric constant, added to te before application of lead time.}
 
-\item{lead.factor}{If the lead time is dynamic, this factor can be set different 
+\item{lead.factor}{If the lead time is dynamic, this factor can be set different
 to zero, such that \code{t.lead=lead.const + lead.factor*te}.}
 
-\item{t.min}{If some intervals are not of interest only intervals for t > t.min are 
+\item{t.min}{If some intervals are not of interest only intervals for t > t.min are
 returned.}
 }
 \value{
-A data frame with intervals as first column and \code{length(te)} 
+A data frame with intervals as first column and \code{length(te)}
 columns specifying the lag/lead for each \code{te}.
 }
 \description{
 creates one instance of Lag/Lead mat
 }
+\keyword{internal}

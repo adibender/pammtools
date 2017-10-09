@@ -29,16 +29,16 @@ library(ggplot2)
 theme_set(theme_bw())
 library(survival)
 library(mgcv)
-library(pam)
+library(pamm)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
-## Analysis of the recidivism data 
+## Analysis of the recidivism data
 
-In the following, we demonstrate an analysis containing time-dependent covariates, 
-using the well-known recidivism data discussed in detail in @Fox2011. 
-The R-Code of the original analysis using the extended Cox model can be found 
-[here](http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R), 
+In the following, we demonstrate an analysis containing time-dependent covariates,
+using the well-known recidivism data discussed in detail in @Fox2011.
+The R-Code of the original analysis using the extended Cox model can be found
+[here](http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R),
 the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf).
 
 ```{r}
@@ -51,10 +51,10 @@ recidivism <- read.table(
 ```
 
 
-### Data preprocessing 
+### Data preprocessing
 
-In this example we don't need a dedicated function for transformation, 
-as we basically just need to transform the data into long format (equals 
+In this example we don't need a dedicated function for transformation,
+as we basically just need to transform the data into long format (equals
 splitting at each week for which subjects are in the risk set):
 
 ```{r}
@@ -70,52 +70,52 @@ recidivism_long <- recidivism %>%
     offset = log(stop - start)) %>%
   select(subject, start, stop, offset, arrest, employed, fin:educ) %>%
   arrange(subject, stop)
-recidivism_long %<>% 
-  mutate(employed.lag1 = lag(employed, default=0)) %>% 
+recidivism_long %<>%
+  mutate(employed.lag1 = lag(employed, default=0)) %>%
   slice(-1) %>% # exclusion of first week, as lagged information is missing
   ungroup()
 ```
 
 
-### Fitting the models 
+### Fitting the models
 
-Below we fit a PAM and an extended Cox model. In this case the format for 
-both models is the same (which is not always the case for analyses with 
+Below we fit a PAM and an extended Cox model. In this case the format for
+both models is the same (which is not always the case for analyses with
 time-dependent covariates, see the second example below using the `pbc` data):
 The `stop` variable defines the interval endpoints and is used to model
 the baseline log hazard rates.
 
 ```{r}
 ## Fit PAM (smooth effects of age and prio, using P-Splines)
-pam <- gam(arrest ~ s(stop) + fin + s(age, bs="ps") + race + wexp + mar + paro + 
+pam <- gam(arrest ~ s(stop) + fin + s(age, bs="ps") + race + wexp + mar + paro +
   s(prio, bs="ps") + employed.lag1,
   data=recidivism_long, family=poisson(), offset=offset)
 tidy_fixed(pam)
-## respective extended cox model 
+## respective extended cox model
 cph <- coxph(
-  formula = Surv(start, stop, arrest)~ fin + pspline(age) + race + wexp + mar + 
+  formula = Surv(start, stop, arrest)~ fin + pspline(age) + race + wexp + mar +
     paro + pspline(prio) + employed.lag1,
   data=recidivism_long)
 # extract information on fixed coefficients
 tidy_fixed(cph)[c(1, 4:7, 10), ]
 ```
 
-### Graphical comparison of the two models 
+### Graphical comparison of the two models
 The figure below summarizes the comparison between the two models.
 
-<details> 
+<details>
 	<summary>Expand here for R-Code</summary>
 
 ```{r, prisonPrep}
 all_eff <- purrr::map_df(
   list(
-    tidy_fixed(pam), 
-   	tidy_fixed(cph)[-c(2:3, 8:9), ]), 
-  bind_rows, .id="Model") %>% 
+    tidy_fixed(pam),
+   	tidy_fixed(cph)[-c(2:3, 8:9), ]),
+  bind_rows, .id="Model") %>%
   mutate(Model = factor(Model, levels=2:1, labels=c("Cox-PH", "PAM")))
 
 ## plot of fixed coefficients
-coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) + 
+coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
   geom_hline(yintercept = 0, lty=3) +
   geom_pointrange(aes(col=factor(Model), shape=factor(Model)),
     position=position_dodge(width=0.5)) +
@@ -128,64 +128,64 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
     values = c(19, 15),
     limits = rev(levels(all_eff$Model))) +
   coord_flip(ylim=range(-1.5, 1)) +
-  ylab(expression(hat(beta)%+-% 1.96 %.% SE)) + 
+  ylab(expression(hat(beta)%+-% 1.96 %.% SE)) +
   xlab("")
 
-## to visualize smooth effect of age, create data set where all covariates are 
-## fixed to mean values except for age, which varies between min and max 
+## to visualize smooth effect of age, create data set where all covariates are
+## fixed to mean values except for age, which varies between min and max
 ## (n = 100)
 age_df <- recidivism_long %>% make_newdata(expand="age", n=100)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
-age_df %<>% add_term(pam, term="age") %>% 
+age_df %<>% add_term(pam, term="age") %>%
   mutate(cphfit = predict(object=cph, ., type="terms")[,"pspline(age)"])
 
-## prep plot object for smooth effects 
-smooth_gg <- ggplot(age_df, aes(y=fit)) + 
-	geom_line(aes(col="PAM")) + 
-	geom_ribbon(aes(ymin=low, ymax=high), alpha=0.3) + 
-	geom_line(aes(y=cphfit, col="Cox-PH")) + 
-	scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) + 
+## prep plot object for smooth effects
+smooth_gg <- ggplot(age_df, aes(y=fit)) +
+	geom_line(aes(col="PAM")) +
+	geom_ribbon(aes(ymin=low, ymax=high), alpha=0.3) +
+	geom_line(aes(y=cphfit, col="Cox-PH")) +
+	scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) +
   ylab(expression(hat(f)(x))) + theme(legend.position="none")
 
-## plot of the age effect 
-age_gg <- smooth_gg + aes(x=age) + 
+## plot of the age effect
+age_gg <- smooth_gg + aes(x=age) +
   xlab("Age")
 
 
-## same as "age"" for "prio" variable 
+## same as "age"" for "prio" variable
 prio_df <- recidivism_long %>% make_newdata(expand="prio", n=100)
-prio_df %<>% add_term(pam, term="prio") %>% 
+prio_df %<>% add_term(pam, term="prio") %>%
   mutate(cphfit = predict(object=cph, ., type="terms")[,7])
 
-## plot of the prio effect 
-prio_gg <- smooth_gg %+% prio_df + aes(x=prio) + 
+## plot of the prio effect
+prio_gg <- smooth_gg %+% prio_df + aes(x=prio) +
   xlab("Number of prior convictions")
 ```
 
 </details>
 
-As we can see, the estimates of the fixed coefficients (left panel) are 
-very similar between the two models, including the confidence intervals. 
-Using the default settings in both model specifications (using P-Splines 
-for smooth terms), the PAM estimates are smoother compared to the Cox 
-estimates (right panel). 
+As we can see, the estimates of the fixed coefficients (left panel) are
+very similar between the two models, including the confidence intervals.
+Using the default settings in both model specifications (using P-Splines
+for smooth terms), the PAM estimates are smoother compared to the Cox
+estimates (right panel).
 
 ```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prison_prep"}
-## put all plots together 
+## put all plots together
 library(gridExtra)
 grid.arrange(
-  coef_gg +theme(legend.position="bottom"), 
-  age_gg, 
-  prio_gg, 
+  coef_gg +theme(legend.position="bottom"),
+  age_gg,
+  prio_gg,
   layout_matrix=matrix(c(1, 1, 2, 3), ncol=2))
 ```
 
 
 ## Analysis of the `pbc` data
 
-Here we show an example with continuous time-dependent covariates using the 
-Primary Biliary Cirrhosis Data (`pbc`) from the `survival` package (see 
+Here we show an example with continuous time-dependent covariates using the
+Primary Biliary Cirrhosis Data (`pbc`) from the `survival` package (see
 `?pbc` for documentation).
 
 ```{r}
@@ -200,8 +200,8 @@ We first replicate the analysis from `vignette("timedep", package="survival")`:
 # below code copied from survival vignette "timedep"
 temp <- subset(pbc, id <= 312, select=c(id:sex, stage)) # baseline
 pbc2 <- tmerge(temp, temp, id=id, death = event(time, status)) #set range
-pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites), 
-    bili = tdc(day, bili), albumin = tdc(day, albumin), 
+pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites),
+    bili = tdc(day, bili), albumin = tdc(day, albumin),
     protime = tdc(day, protime), alk.phos = tdc(day, alk.phos))
 
 fit1 <- coxph(Surv(time, status==2) ~ log(bili) + log(protime), pbc)
@@ -209,93 +209,93 @@ fit2 <- coxph(Surv(tstart, tstop, death==2) ~ log(bili) + log(protime), pbc2)
 rbind("baseline fit" = coef(fit1), "time dependent" = coef(fit2))
 ```
 
-This demonstrates that results can differ substantially if only the 
-baseline values of TDCs are used for the analysis instead of their complete trajectories over time. 
+This demonstrates that results can differ substantially if only the
+baseline values of TDCs are used for the analysis instead of their complete trajectories over time.
 
 
 ### PAM analysis of the `pbc` data
 
-First we need to transform the data to PED format. In order to do so we 
-perform some minor preprocessing: 
+First we need to transform the data to PED format. In order to do so we
+perform some minor preprocessing:
 
 ```{r}
 ## data set that only contains baseline (t=0) information
-event_df <- pbc %>% 
-  filter(id <= 312) %>% 
-  mutate(event = 1*(status==2)) %>% 
+event_df <- pbc %>%
+  filter(id <= 312) %>%
+  mutate(event = 1*(status==2)) %>%
   select(id, time, event, trt, age, sex, bili, protime)
 
 ## we rename the "day" variable here for use of `split_tdc` function later
-tdc_df <- pbcseq %>% 
-  select(id, day, bili, protime) %>% 
+tdc_df <- pbcseq %>%
+  select(id, day, bili, protime) %>%
   rename(time = day)
 ```
 
-Now we can use the `?split_tdc` function, that needs both data sets, 
-`event_df`, that contains time-to-event information and one row per subject and 
-`tdc_df` that contains information on timing and value of time-dependent 
-covariates. 
+Now we can use the `?split_tdc` function, that needs both data sets,
+`event_df`, that contains time-to-event information and one row per subject and
+`tdc_df` that contains information on timing and value of time-dependent
+covariates.
 
-The `split_tdc` function performs the following tasks: 
+The `split_tdc` function performs the following tasks:
 
   - extract unique event times as well as all measurement times of the TDCs
-  - split the follow-up into intervals according to these times (essentially calling 
+  - split the follow-up into intervals according to these times (essentially calling
   `split_data` with above cut-points on `event_df` after removing all TDCs)
-  - merge the expanded data set with the data set containing information 
+  - merge the expanded data set with the data set containing information
   on TDCs by ID and time
-  - fill in the values of TDCs for any time-points that did not occur in `tdc_df` by 
-  carrying the respective previous value of the TDC forward. 
+  - fill in the values of TDCs for any time-points that did not occur in `tdc_df` by
+  carrying the respective previous value of the TDC forward.
 
 ```{r}
 pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "id", "time", "status")
 filter(tdc_df, id==17)
-pbc_ped %>% 
-  filter(id==17) %>% 
-  semi_join(tdc_df, by=c("id", "tstart"="time")) %>% 
+pbc_ped %>%
+  filter(id==17) %>%
+  semi_join(tdc_df, by=c("id", "tstart"="time")) %>%
   select(id, interval, age, bili, protime)
 ```
 
 
-Now we can fit the model as usual calling `mgcv::gam`: 
+Now we can fit the model as usual calling `mgcv::gam`:
 
 ```{r}
-pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped, 
+pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped,
   family=poisson(), offset=offset)
 cbind(pam=coef(pbc_pam)[2:3], cox=coef(fit2))
 ```
 
-Coefficient estimates are very similar for both models, especially for the 
-effect of `bili`. A graphical comparison yields similar results: 
+Coefficient estimates are very similar for both models, especially for the
+effect of `bili`. A graphical comparison yields similar results:
 
 <details>
   <summary>Expand here for R-Code</summary>
-  
+
 ```{r, fig.keep="none"}
 ## Effect of bilirubin
-## note that we use relative = TRUE in the call to add_term, which calculates 
+## note that we use relative = TRUE in the call to add_term, which calculates
 ## the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
 ## (see also Details section in ?predict.coxph)
-bili_df <- pbc_ped %>% ungroup() %>% 
+bili_df <- pbc_ped %>% ungroup() %>%
   make_newdata(expand="bili", n = 100) %>%
-  add_term(pbc_pam, term="bili", relative=TRUE) %>% 
+  add_term(pbc_pam, term="bili", relative=TRUE) %>%
   mutate(cox = predict(fit2, ., type="term")[, "log(bili)"])
 
-bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) + 
-    geom_line(aes(col="PAM")) + 
-    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
+bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) +
+    geom_line(aes(col="PAM")) +
+    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) +
     geom_line(aes(y=cox, col="Cox")) +
-    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000")) 
+    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000"))
 
 ## Effect of protime
-protime_df <- pbc_ped %>% ungroup() %>% 
-  make_newdata(expand="protime", n = 100) %>% 
-  add_term(pbc_pam, term="protime", relative=TRUE) %>% 
+protime_df <- pbc_ped %>% ungroup() %>%
+  make_newdata(expand="protime", n = 100) %>%
+  add_term(pbc_pam, term="protime", relative=TRUE) %>%
   mutate(cox = predict(fit2, ., type="term")[, "log(protime)"])
 
-protime_gg <- ggplot(protime_df, aes(x=protime, y=fit)) + 
-    geom_line(aes(col="PAM")) + 
-    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) + 
-    geom_line(aes(y=cox, col="Cox")) + 
+protime_gg <- ggplot(protime_df, aes(x=protime, y=fit)) +
+    geom_line(aes(col="PAM")) +
+    geom_ribbon(aes(ymin=low, ymax=high), alpha=0.2) +
+    geom_line(aes(y=cox, col="Cox")) +
     scale_colour_manual(name="Method", values=c("#E41A1C", "#000000"))
 
 ## combine figures

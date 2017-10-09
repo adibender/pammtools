@@ -1,10 +1,11 @@
-#' Function to check if an object is of class \code{ped} or 
+#' Function to check if an object is of class \code{ped} or
 #' transform data into piece-wise exponential data (PED) format if possible.
 #'
 #' @inheritParams survival::survSplit
 #' @param tdc_df A data set containing information on time-dependent covariates (TDC).
-#' @param ... Further arguments passed to methods. 
+#' @param ... Further arguments passed to methods.
 #' @return A data frame class \code{ped} in piece-wise exponential data (PED) format.
+#' @keywords internal
 as_ped <- function(x, data, tdc_df=NULL, ...) {
 	UseMethod("as_ped", x)
 }

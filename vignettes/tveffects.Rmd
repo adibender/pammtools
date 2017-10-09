@@ -13,7 +13,7 @@ vignette: >
 library(knitr)
 opts_chunk$set(
   fig.align = "center",
-  fig.width = 4, 
+  fig.width = 4,
   fig.height = 4,
   crop=TRUE)
 ```
@@ -25,7 +25,7 @@ library(gridExtra)
 library(magrittr)
 library(tidyr)
 library(dplyr)
-library(pam)
+library(pamm)
 library(survival)
 library(mgcv)
 Set1    <- RColorBrewer::brewer.pal(9, "Set1")
@@ -33,49 +33,49 @@ Greens  <- RColorBrewer::brewer.pal(9, "Greens")
 Purples <- RColorBrewer::brewer.pal(9, "Purples")
 ```
 
-In this vignette we show examples of how to fit time-varying effects of 
-time-constant **continuous** covariates. Note that time-varying effects of time-constant 
-**categorical** variables are analogous to stratified proportional 
-hazards models, where observations from different levels of the categorical 
+In this vignette we show examples of how to fit time-varying effects of
+time-constant **continuous** covariates. Note that time-varying effects of time-constant
+**categorical** variables are analogous to stratified proportional
+hazards models, where observations from different levels of the categorical
 variable have different baseline hazards. That setting is described in
 [`vignette("strata", package="pam")`](strata.html).
-**Note that all time-varying effects in a PAM are still assumed to be piece-wise 
+**Note that all time-varying effects in a PAM are still assumed to be piece-wise
 constant over the intervals used to specify the PAM!**
 
 ## Possible specifications of time-variation
 
-In the following we denote the continuous time-constant covariate with $x$ and time with $t$. 
-A time-varying effect of $x$ can then be specified as an interaction 
-term between $x$ and $t$, where different levels of complexity and flexibility for this interaction 
+In the following we denote the continuous time-constant covariate with $x$ and time with $t$.
+A time-varying effect of $x$ can then be specified as an interaction
+term between $x$ and $t$, where different levels of complexity and flexibility for this interaction
 are possible:
 
 a) $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
-time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified transformation of 
+time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified transformation of
 time $t$, e.g. the $\log$-function.
 
 b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
 where $g(t)$ is a known or pre-specified transformation of time
 
-c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation is 
+c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation is
 non-linear and estimated from the data. If $x$ is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category, see [`vignette("strata", package="pam")`](strata.html).
 
 d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
 ## Veteran Data example
 
-For illustration and comparison we use the `veteran` data presented in the 
-vignette of the `survival` package (`vignette("timedep", package = "survival")`). 
-Besides information on survival, the data set contains the 
+For illustration and comparison we use the `veteran` data presented in the
+vignette of the `survival` package (`vignette("timedep", package = "survival")`).
+Besides information on survival, the data set contains the
 Karnofsky performance scores `karno` (the higher the better), `age` and whether
  `prior` therapy occurred, along with some additional covariates, see `help("veteran", package = "survival")` for details:
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
 data("veteran", package="survival")
-veteran %<>% 
+veteran %<>%
   mutate(
     trt   = 1*(trt == 2),
-    prior = 1*(prior==10)) %>% 
+    prior = 1*(prior==10)) %>%
   filter(time < 400) # restriction for illustration
 head(veteran)
 ```
@@ -83,11 +83,11 @@ head(veteran)
 
 ### Extended Cox Model (with known shape of time-variation function)
 
-To fit a time-varying effect of `karno` the authors suggest to use the function 
+To fit a time-varying effect of `karno` the authors suggest to use the function
 $$
 f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
   \beta_{\text{karno},t} \cdot x_{\text{karno}} \cdot \log(t+20).
-$$ 
+$$
 This is an instance of case a) above with $g(t) = \log(t+20).$
 
 ```{r}
@@ -102,63 +102,63 @@ coef(vfit)
 ttcoef <- round(coef(vfit), 3)[3:4]
 ```
 
-Thus the time-varying component of the effect becomes 
+Thus the time-varying component of the effect becomes
 $\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20) = `r ttcoef[1]` + `r ttcoef[2]`\cdot\log(t+20)$:
 
 ```{r}
 t <- seq(0, 400, by = 10)
-plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
+plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
   type = "l", ylab = "Beta(t) for karno", las = 1, ylim=c(-.1, .05), col=Set1[1])
 ```
 
 ### PAM (with known shape of time-variation function)
 
-To fit a PAM with equivalent model specification (except for the baseline hazard) 
+To fit a PAM with equivalent model specification (except for the baseline hazard)
 we can use
 
 ```{r}
 # data transformation
-ped <- split_data(Surv(time, status)~., data = veteran, id = "id") %>% 
+ped <- split_data(Surv(time, status)~., data = veteran, id = "id") %>%
     mutate(logt20 = log(tstart+(tstart-tend)/2 + 20))
 head(ped) %>% select(interval, ped_status, trt, karno, age, prior, logt20)
 
-# fit model 
-pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20, 
+# fit model
+pam <- gam(ped_status ~ s(tend) + trt + prior + karno + karno:logt20,
     data = ped, offset = offset, family = poisson())
 cbind(
   pam = coef(pam)[2:5],
   cox = coef(vfit))
-# compare fits 
-plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20), 
-  type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1, 
+# compare fits
+plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
+  type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1,
   col = Set1[1])
 t_pem <- int_info(ped)$tend
-lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t_pem + 20), 
+lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t_pem + 20),
   col = Set1[2], type = "s")
 ```
 Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
 
 ### PAM (penalized estimation of time-variation function)
 
-In case we don’t want to pre-specify which shape the time-dependency should have, 
-we can specify the effect of `karno` as 
+In case we don’t want to pre-specify which shape the time-dependency should have,
+we can specify the effect of `karno` as
 $f(x_{\text{karno}},t) = f(t)\cdot x_{\text{karno}}$, where $f(t)$
 is estimated from the data:
 
 ```{r, fig.width = 6}
-# no need to specify main effect for karno here 
-pam2 <- gam(ped_status ~ s(tend) + trt + prior + s(tend, by = karno), 
+# no need to specify main effect for karno here
+pam2 <- gam(ped_status ~ s(tend) + trt + prior + s(tend, by = karno),
     data = ped, offset = offset, family = poisson())
-term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>% 
-    mutate_at(c("fit", "low", "high"), function(z) z/.$karno) %>% 
+term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
+    mutate_at(c("fit", "low", "high"), funs(./.data$karno)) %>%
     mutate(
-        cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20), 
-        pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20)) 
-ggplot(term.df, aes(x = tend, y = fit)) + 
-    geom_step(aes(col = "PAM with penalized spline")) + 
-    geom_stepribbon(aes(ymin = low, ymax = high), alpha = 0.2) + 
-    geom_line(aes(y = cox.fit, col = "Cox with log-transform")) + 
-    geom_step(aes(y = pam.fit, col = "PAM with log-transform")) + 
+        cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20),
+        pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20))
+ggplot(term.df, aes(x = tend, y = fit)) +
+    geom_step(aes(col = "PAM with penalized spline")) +
+    geom_stepribbon(aes(ymin = low, ymax = high), alpha = 0.2) +
+    geom_line(aes(y = cox.fit, col = "Cox with log-transform")) +
+    geom_step(aes(y = pam.fit, col = "PAM with log-transform")) +
     scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
     xlab("t") + ylab(expression(hat(f)(t)))
 ```
@@ -168,17 +168,17 @@ The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up t
 
 ### PAM with smooth, smoothly time-varying effect of the Karnosky Score
 
-To fit a non-linear, non-linearly time-varying effect we can specify a 
-two-dimensional interaction between the covariate of interest (here 
-the Karnofsky-Score and a variable that represents time in the respective 
-interval, e.g. interval end-points) using tensor product terms. 
+To fit a non-linear, non-linearly time-varying effect we can specify a
+two-dimensional interaction between the covariate of interest (here
+the Karnofsky-Score and a variable that represents time in the respective
+interval, e.g. interval end-points) using tensor product terms.
 
-In `mgcv::gam` such two-dimensional effects can be directly used 
-either via `te` or `ti` terms in the model specification. The later is 
-especially useful for disentangling the marginal (time-constant) and interaction 
-(time-varying) effects of the respective covariate. 
+In `mgcv::gam` such two-dimensional effects can be directly used
+either via `te` or `ti` terms in the model specification. The later is
+especially useful for disentangling the marginal (time-constant) and interaction
+(time-varying) effects of the respective covariate.
 
-Below we first fit a model using the `te` specification. Note that we did not 
+Below we first fit a model using the `te` specification. Note that we did not
 include a `s(tend)` term here, as the time-variable `tend` is already present
 in the `te` term, thus the effect `te(tend, karno)` also includes the *shape* of the baseline hazard
 as well. The *level* of the baseline log hazard is given by the intercept of the model.
@@ -192,56 +192,56 @@ pam3 <- gam(
   offset = offset)
 ```
 
-The summary of the model indicates that the estimated bivariate function 
+The summary of the model indicates that the estimated bivariate function
 $\hat{f}(x_{\text{karno}}, t)$ is highly non-linear ($edf \approx 8.9$):
 
 ```{r}
 summary(pam3)
 ```
 
-The 3D perspective plot can aid interpretation, where y- and x-axes depict 
-the Karnosky-Score and the time respectively and the z-axis displays the 
-contribution of the effect to the log-hazard for each combination of 
+The 3D perspective plot can aid interpretation, where y- and x-axes depict
+the Karnosky-Score and the time respectively and the z-axis displays the
+contribution of the effect to the log-hazard for each combination of
 $x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
 
 ```{r, fig.width=6, fig.height=6}
 plot(pam3, select = 2, pers = T, theta = 150, ticktype = "detailed")
 ```
-Such 3D plots are sometimes difficult to interpret, thus we also provide 
-a heat-/contourplot (left panel) with respective slices for fixed 
-values of the Karnofsky-Score (middle panel) and fixed time-points/intervals 
-(right panel) below. 
+Such 3D plots are sometimes difficult to interpret, thus we also provide
+a heat-/contourplot (left panel) with respective slices for fixed
+values of the Karnofsky-Score (middle panel) and fixed time-points/intervals
+(right panel) below.
 
-The left panel again depicts the Karnosky Score on the y-axis and the 
-time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using 
-a color gradient, where blue colors indicate log-hazard decrease and 
+The left panel again depicts the Karnosky Score on the y-axis and the
+time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using
+a color gradient, where blue colors indicate log-hazard decrease and
 red colors a log-hazard increase. The grayed out areas depict combinations
-of `karno` and `tend` that were not present in the data. 
-Dotted horizontal and vertical lines indicate slices that are displayed 
-in the middle and right panel. 
+of `karno` and `tend` that were not present in the data.
+Dotted horizontal and vertical lines indicate slices that are displayed
+in the middle and right panel.
 
 
-For fixed $t=0$, we obtain the effect of the Karnofsky-Score on the log-hazard 
-at the beginning of the follow-up (red line left panel), which decreases strongly from low 
-to high values of $x_{\text{karno}}$. 
-<!-- This result is in line with the estimation 
-one would obtain fitting a time-constant, non-linear effect of 
+For fixed $t=0$, we obtain the effect of the Karnofsky-Score on the log-hazard
+at the beginning of the follow-up (red line left panel), which decreases strongly from low
+to high values of $x_{\text{karno}}$.
+<!-- This result is in line with the estimation
+one would obtain fitting a time-constant, non-linear effect of
 $f(x_{\text{karno}})$. ABER DAS IST ZUFALL HIER; DAS MUSS JA NICHT SO SEIN...  -->
 
 Holding the Karnofsky Score constant, we can see how the log hazard
-changes over time for different given values of $x_{\text{karno}}$ (middle panel). 
+changes over time for different given values of $x_{\text{karno}}$ (middle panel).
 For higher values $x_{\text{karno}} >60$ the log-hazard is smaller
-at the beginning and increases over the course of the follow-up 
-(orange and blue lines middle panel). This 
-is consistent with the time-varying effect of the Karnofsky-Score 
+at the beginning and increases over the course of the follow-up
+(orange and blue lines middle panel). This
+is consistent with the time-varying effect of the Karnofsky-Score
 estimated in the previous section. However, the bivariate function indicates
-that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values, 
-decreasing at the beginning and increasing again for later 
-time-points (green line middle panel). 
+that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values,
+decreasing at the beginning and increasing again for later
+time-points (green line middle panel).
 
 <details>
   <summary>Expand here for detailed R-Code</summary>
-  
+
 ```{r}
 ## heat map/contour plot
 te_gg <- gg_tensor(pam3) +
@@ -277,8 +277,8 @@ karno_gg <- ggplot(karno_df, aes(x=tend, y=fit)) +
   xlab("t")+  coord_cartesian(ylim= c(-4, 3))+
   theme(legend.position  = "bottom")
 
-time_df <-ped %>% 
-  make_newdata(tend=c(1, 51, 200), karno=seq(20, 100, by=5)) %>% 
+time_df <-ped %>%
+  make_newdata(tend=c(1, 51, 200), karno=seq(20, 100, by=5)) %>%
   add_term(pam3, term="karno")
 
 time_gg <- ggplot(time_df, aes(x=karno)) +
@@ -297,17 +297,17 @@ time_gg <- ggplot(time_df, aes(x=karno)) +
 grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
 
-The following figure shows the estimated effect (middle panel) along with a 
-pointwise upper (right) and lower (left) CI. Note that we have to be somewhat 
-cautious with interpretation, considering the large uncertainty of the effect 
-estimate, especially for lower Karnofsky-Scoresand later time-points. 
-Also note that the estimate does not include the estimated average 
-time-constant log-hazard 
-(`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`) 
-and its uncertainty: 
+The following figure shows the estimated effect (middle panel) along with a
+pointwise upper (right) and lower (left) CI. Note that we have to be somewhat
+cautious with interpretation, considering the large uncertainty of the effect
+estimate, especially for lower Karnofsky-Scoresand later time-points.
+Also note that the estimate does not include the estimated average
+time-constant log-hazard
+(`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`)
+and its uncertainty:
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
-gg_tensor(pam3, ci=TRUE) + 
+gg_tensor(pam3, ci=TRUE) +
   xlab("t") + ylab(expression(x[plain(karno)]))
 ```
 
