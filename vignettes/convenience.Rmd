@@ -138,14 +138,6 @@ hgb.term <- ped %>% get_terms(fit = pam, terms = "hgb")
 head(hgb.term)
 ```
 
-We can then use `ggplot2` to produce an equivalent visualization:
-
-```{r}
-ggplot(hgb.term, aes(x = x, y = eff)) +
-	geom_line() +
-	geom_ribbon(aes(ymin = ci.lower, ymax = ci.upper), alpha = 0.3)
-```
-
 For convenience we also include a function that plots mutiple selected smooth
 effects in one figure^[Note that graphical representation of the baseline hazard is a sloght approximation here -- it should be a *step function*, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.]:
 
