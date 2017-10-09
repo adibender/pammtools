@@ -10,15 +10,16 @@ get_tdc(event_df, id_var)
 \item{event_df}{A data frame (potentially) containing time-dependent covariates.}
 
 \item{id_var}{A character indicating the grouping variable. For each covariate
-it will be checked if their values change within a group specified by 
+it will be checked if their values change within a group specified by
 \code{id_var}.}
 }
 \value{
-A character vector containing names of variables that are not constant 
+A character vector containing names of variables that are not constant
 in each group (\code{id_var}).
 }
 \description{
-For all covariates in the data set, this functions checks if the values 
+For all covariates in the data set, this functions checks if the values
 of the covariate changes per ID or other grouping variable. Returns the names
 of variables that change over time.
 }
+\keyword{internal}

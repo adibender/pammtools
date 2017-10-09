@@ -7,7 +7,7 @@
 ped_info(ped)
 }
 \arguments{
-\item{ped}{An object of class \code{ped} as returned by \code{\link[pam]{split_data}}.}
+\item{ped}{An object of class \code{ped} as returned by \code{\link[pamm]{split_data}}.}
 }
 \value{
 A data frame with one row for each interval in \code{ped}.
@@ -23,5 +23,5 @@ ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
 ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 }
 \seealso{
-\code{\link[pam]{int_info}}, \code{\link[pam]{sample_info}}
+\code{\link[pamm]{int_info}}, \code{\link[pamm]{sample_info}}
 }

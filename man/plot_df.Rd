@@ -7,7 +7,7 @@
 plot_df(pinfo)
 }
 \arguments{
-\item{pinfo}{A data frame as returned by \code{\link[pam]{ped_info}} and
+\item{pinfo}{A data frame as returned by \code{\link[pamm]{ped_info}} and
 potentially additional information from predictions, etc.}
 }
 \description{

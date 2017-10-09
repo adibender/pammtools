@@ -7,7 +7,7 @@
 rm_grpvars(data)
 }
 \arguments{
-\item{data}{A data frame (potentially `grouped_df`) from which grouping 
+\item{data}{A data frame (potentially `grouped_df`) from which grouping
 variables will be removed.}
 }
 \value{
@@ -16,3 +16,4 @@ Returns \code{data} without grouping variables (and group properties).
 \description{
 Return ungrouped data frame without grouping variables
 }
+\keyword{internal}

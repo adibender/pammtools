@@ -23,33 +23,33 @@ opts_chunk$set(
 ```{r echo = TRUE, message = FALSE}
 library(magrittr)
 library(dplyr)
-library(pam)
+library(pamm)
 ```
 
 
-In this vignette we provide details on transforming data into a format suitable 
-to fit piece-wise exponential (additive) models (PAM). Three main cases need to be 
+In this vignette we provide details on transforming data into a format suitable
+to fit piece-wise exponential (additive) models (PAM). Three main cases need to be
 distinguished
 
-  1. Data without time-dependent covariates 
+  1. Data without time-dependent covariates
 
-  2. Data with time-dependent covariates 
+  2. Data with time-dependent covariates
 
-  3. Data with time-dependent covariates that should be modeled as cumulative 
+  3. Data with time-dependent covariates that should be modeled as cumulative
   effects
 
 
-## Data without time-dependent covariates 
+## Data without time-dependent covariates
 
-In this simple case the data transformation is relatively straight forward and 
-handeled by the `split_data` function. This function internally calls 
-`survival::survSplit`, thus all arguments available for the `survSplit` function 
-are also available to the `split_data` function. 
+In this simple case the data transformation is relatively straight forward and
+handeled by the `split_data` function. This function internally calls
+`survival::survSplit`, thus all arguments available for the `survSplit` function
+are also available to the `split_data` function.
 
 
 ### Using defaults
 
-As an example data set we first consider Veterans’ Administration lung cancer 
+As an example data set we first consider Veterans’ Administration lung cancer
 study [@Kalbfleisch1980] available from the `survival` package:
 
 ```{r}
@@ -58,78 +58,78 @@ veteran %<>%
   mutate(
     id = row_number(),
     trt = 1*(trt == 2),
-    prior = 1*(prior != 0)) %>% 
+    prior = 1*(prior != 0)) %>%
   select(id,everything())
 head(veteran)
 ```
 
 Each row contains information on the survival time (`time`), an event indicator
-(`status`) and the `treatment` information (`6-MP` vs. `placebo`) as the only 
-covariate. 
+(`status`) and the `treatment` information (`6-MP` vs. `placebo`) as the only
+covariate.
 
-To transform the data into piece-wise exponential data (`ped`) format, we need to 
+To transform the data into piece-wise exponential data (`ped`) format, we need to
 
-  - define $J+1$ interval break points $t_{\min} = \kappa_0 < \kappa_1 < \cdots < \kappa_J = t_{\max}$ 
-  
-- create *pseudo*-observations for each interval $j = 1,\ldots, J$ in which subject 
-  $i, i = 1,\ldots,n$ was under risk. 
+  - define $J+1$ interval break points $t_{\min} = \kappa_0 < \kappa_1 < \cdots < \kappa_J = t_{\max}$
 
-Using the `pam` package this is easily achieved with the `split_data` function
-as follows: 
+- create *pseudo*-observations for each interval $j = 1,\ldots, J$ in which subject
+  $i, i = 1,\ldots,n$ was under risk.
+
+Using the `pamm` package this is easily achieved with the `split_data` function
+as follows:
 
 ```{r}
 ped <- split_data(Surv(time, status)~., data = veteran, id = "id")
 ped %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
 
-When no cut points are specified, the default is to use the unique event times. 
-As can be seen from the above output, the function creates an `id` variable, 
-indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval 
-the subject "visited". Thus,  
+When no cut points are specified, the default is to use the unique event times.
+As can be seen from the above output, the function creates an `id` variable,
+indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval
+the subject "visited". Thus,
 
-- subject `42` was under risk during 5 intervals, 
-- subject `85` was under risk during one interval, 
-- and subject `112` in 33 intervals. 
+- subject `42` was under risk during 5 intervals,
+- subject `85` was under risk during one interval,
+- and subject `112` in 33 intervals.
 
-In addition to the optional `id` variable the function also creates 
+In addition to the optional `id` variable the function also creates
 
   - `tstart`: the beginning of each interval
   - `tend`: the end of each interval
   - `interval`: a factor variable denoting the interval
-  - `offset`:  the log of the duration during which the subject was under risk in 
+  - `offset`:  the log of the duration during which the subject was under risk in
   that interval
-  
-Additionally the time-constant covariates (here: `trt`, `celltype`, `karno`, etc.) 
-are repeated $n_i$ number of times, where $n_i$ is the number of intervals during 
+
+Additionally the time-constant covariates (here: `trt`, `celltype`, `karno`, etc.)
+are repeated $n_i$ number of times, where $n_i$ is the number of intervals during
 which subject $i$ was in the risk set.
 
 
-### Custom cut points 
-Per default the `split_data` function uses all unique event times as cut points 
-(which is a sensible default as for example the (cumulative) baseline hazard 
-estimates in Cox-PH functions are updated also only at event times). 
+### Custom cut points
+Per default the `split_data` function uses all unique event times as cut points
+(which is a sensible default as for example the (cumulative) baseline hazard
+estimates in Cox-PH functions are updated also only at event times).
 
-In some cases, however, one might want to reduce the number of cut points, 
-to reduce the size of the resulting data object and/or faster estimation times. 
-To do so the `cut` argument has to be specified. 
+In some cases, however, one might want to reduce the number of cut points,
+to reduce the size of the resulting data object and/or faster estimation times.
+To do so the `cut` argument has to be specified.
 Following the above example, we can use only 4 cut points
-$\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$, 
+$\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$,
 resulting in $J = 3$ intervals:
 
 ```{r}
-ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400), 
+ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400),
   id = "id")
 ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
-Note that now subjects `42` and `85` have only one row in the data set. 
+Note that now subjects `42` and `85` have only one row in the data set.
 The fact that subjects `42` was in the risk set longer than subject `85` is,
 however, still accounted for by the `offset` variable. Note that the `offset`s
-for subject `85` and subject `112` in interval `(50,200]` are only zero 
-because subject `85` had an observed event time of `1`, thus `log(1-0)=0` and 
-subject `112` had an event at time `51`, thus `log(51-50)=0`: 
+for subject `85` and subject `112` in interval `(50,200]` are only zero
+because subject `85` had an observed event time of `1`, thus `log(1-0)=0` and
+subject `112` had an event at time `51`, thus `log(51-50)=0`:
 
 ```{r}
 veteran %>% slice(c(85, 112))
 ```
- 
+
 ## References

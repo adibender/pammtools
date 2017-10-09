@@ -9,8 +9,8 @@ pam.Rproj
 *.Rhistory
 # vignette by-products
 *cache/
-*files/
-*.html
+docs/articles/aalen*
+docs/articles/model-eval*
 
 ## dropbox
 *.dropbox.attr

@@ -26,40 +26,40 @@ library(magrittr)
 library(dplyr)
 library(survival)
 library(mgcv)
-library(pam)
+library(pamm)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
 
-Here we briefly demonstrate how to fit and visualize a simple 
-baseline model using the **`pam`** package. 
-We illustrate the procedure using the `veteran` data from the 
-`survival` package: 
+Here we briefly demonstrate how to fit and visualize a simple
+baseline model using the **`pamm`** package.
+We illustrate the procedure using the `veteran` data from the
+`survival` package:
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>% 
+veteran %<>%
   mutate(
     trt   = 1*(trt == 2),
-    prior = 1*(prior != 10)) %>% 
+    prior = 1*(prior != 10)) %>%
   filter(time < 400)
 ```
 
-The below graph depicts the estimated cumulative hazard using the 
+The below graph depicts the estimated cumulative hazard using the
 Nelson-Aalen estimator:
 
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
 base_df <- basehaz(coxph(Surv(time, status)~1, data = veteran))
-ggplot(base_df, aes(x = time, y = hazard)) + 
-  geom_step() + 
+ggplot(base_df, aes(x = time, y = hazard)) +
+  geom_step() +
   ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle("Nelson-Aalen estimate of the cumulative hazard")
 ```
 
 
-## Data transformation 
-First we need to bring the data in a suitable format 
+## Data transformation
+First we need to bring the data in a suitable format
 (see [`vignette("data-transformation", package = "pam")`](data-transformation.html)).
 
 ```{r}
@@ -78,7 +78,7 @@ Extract cumulative baseline estimate:
 ```{r}
 int_df <- int_info(ped)
 head(int_df)
-int_df %<>% add_cumhazard(pem) %>% 
+int_df %<>% add_cumhazard(pem) %>%
   left_join(base_df, by = c("tend" = "time"))
 head(int_df)
 ```
@@ -86,11 +86,11 @@ head(int_df)
 Visualize the PEM estimate:
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
-ggplot(int_df, aes(x = tend)) + 
-  geom_step(aes(y = hazard, col = "Nelson-Aalen")) + 
-  geom_line(aes(y = cumhazard, col = "PEM")) + 
-  scale_color_manual(name = "Method", values=c(Set1[1:2])) + 
-  theme(legend.position = "bottom") + 
+ggplot(int_df, aes(x = tend)) +
+  geom_step(aes(y = hazard, col = "Nelson-Aalen")) +
+  geom_line(aes(y = cumhazard, col = "PEM")) +
+  scale_color_manual(name = "Method", values=c(Set1[1:2])) +
+  theme(legend.position = "bottom") +
   ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
 all.equal(int_df$cumhazard, int_df$hazard)
@@ -98,18 +98,18 @@ all.equal(int_df$cumhazard, int_df$hazard)
 
 ### Fit the baseline using Piece-wise exponential additive model (PAM)
 
-Alternatively, we could use PAMs. This means estimating the baseline log-hazard 
-rate semi-parametrically as a smooth, non-linear function evaluated at the 
+Alternatively, we could use PAMs. This means estimating the baseline log-hazard
+rate semi-parametrically as a smooth, non-linear function evaluated at the
 end-points `tend` of the intervals defined for our model.
 
-Note that the estimated log-hazard value at time-points `tend` gives the value 
-of the log-hazard rate for the **entire previous interval** as PAMs use hazard 
-rates that are **constant** in each interval - that's where the *piece-wise* in 
-the name of the method comes from. 
+Note that the estimated log-hazard value at time-points `tend` gives the value
+of the log-hazard rate for the **entire previous interval** as PAMs use hazard
+rates that are **constant** in each interval - that's where the *piece-wise* in
+the name of the method comes from.
 
-Estimating the log hazard rate as a smooth function evaluated at `tend` - 
-instead of using an unpenalized estimator without such a smoothness assumption - 
-ensures that the hazard rate does not change too rapidly from interval to 
+Estimating the log hazard rate as a smooth function evaluated at `tend` -
+instead of using an unpenalized estimator without such a smoothness assumption -
+ensures that the hazard rate does not change too rapidly from interval to
 interval unless there is very strong evidence for such changes in the data.
 
 ```{r}
@@ -117,9 +117,9 @@ pam <- gam(ped_status ~ s(tend), data = ped, offset = offset, family = poisson()
 summary(pam)
 ```
 
-### Graphical comparison 
+### Graphical comparison
 
-In the figure below we compare the previous baseline estimates with the 
+In the figure below we compare the previous baseline estimates with the
 PAM estimates. All models are in good agreement.
 
 <details>
@@ -129,7 +129,7 @@ PAM estimates. All models are in good agreement.
 int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
 int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
 
-gg_baseline <- ggplot(int_df, aes(x = tend)) + 
+gg_baseline <- ggplot(int_df, aes(x = tend)) +
   # geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +
   geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
   geom_line(aes(y = cumhazard, col = "PEM")) +
@@ -137,9 +137,9 @@ gg_baseline <- ggplot(int_df, aes(x = tend)) +
   scale_color_manual(
     name   = "Method",
     values = c("PEM" = Set1[2],"PAM" = 1,"Nelson-Aalen" = Set1[1])) +
-  theme(legend.position = "bottom") + 
+  theme(legend.position = "bottom") +
   ylab(expression(hat(Lambda)(t))) + xlab("t") +
-  ggtitle(paste0("Comparison of cumulative hazards using\n", 
+  ggtitle(paste0("Comparison of cumulative hazards using\n",
     "Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"))
 ```
 

@@ -1,6 +1,8 @@
-# pam 0.0.448
+# pamm 0.0.1
 
-* Added a `NEWS.md` file to track changes to the package.
+* Ported `pam` package to `pamm` repo (due to name conflict with `cluster::pam`
+* renamed all S3-methods, documentation entries etc. from `pam` to `pamm`)
+
 
 
 

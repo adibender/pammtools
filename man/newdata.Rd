@@ -2,15 +2,26 @@
 % Please edit documentation in R/construct-newdata.R
 \name{make_newdata}
 \alias{make_newdata}
+\alias{make_newdata.default}
+\alias{make_newdata.ped}
 \title{Construct a data frame suitable for prediction}
 \usage{
 make_newdata(x, ...)
+
+\method{make_newdata}{default}(x, ..., expand = NULL, n = 50L)
+
+\method{make_newdata}{ped}(x, ..., expand = NULL, n = 50L)
 }
 \arguments{
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}
 
 \item{...}{Further specifications of variables that should be set
 to a specific values.}
+
+\item{expand}{A character vector of column names in \code{ped}.}
+
+\item{n}{If \code{expand} specified, respective variables will be expanded
+in \code{n} values from minimum to maximum.}
 }
 \description{
 Given a data set, returns a data frame type object that can be used
