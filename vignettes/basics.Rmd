@@ -21,8 +21,6 @@ opts_chunk$set(
 )
 ```
 
-# Basic modeling
-
 In this tutorial we present basic examples for the usage of this package and
 compare results to the ones obtained with classical approaches, namely using
 the `coxph` function from the `survival` package.

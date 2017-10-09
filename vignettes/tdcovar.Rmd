@@ -104,7 +104,7 @@ tidy_fixed(cph)[c(1, 4:7, 10), ]
 The figure below summarizes the comparison between the two models.
 
 <details>
-	<summary>Expand here for R-Code</summary>
+<summary>Expand here for R-Code</summary>
 
 ```{r, prisonPrep}
 all_eff <- purrr::map_df(

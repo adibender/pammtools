@@ -198,8 +198,7 @@ if <code>se.fit = TRUE</code>. Defaults to <code>FALSE</code>.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>mgcv</span>)
-<span class='fu'>data</span>(<span class='st'>"veteran"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"survival"</span>)
+    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>mgcv</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: nlme</span></div><div class='output co'>#&gt; <span class='message'>This is mgcv 1.8-18. For overview type 'help("mgcv-package")'.</span></div><div class='input'><span class='fu'>data</span>(<span class='st'>"veteran"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"survival"</span>)
 <span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='split_data.html'>split_data</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~ <span class='no'>age</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>veteran</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>tend</span>),
         <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)

@@ -130,7 +130,7 @@ veteran %&lt;&gt;%
 <div id="data-transformation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data-transformation" class="anchor"></a>Data transformation</h2>
-<p>First we need to bring the data in a suitable format (see <a href="data-transformation.html"><code><a href="https://cran.rstudio.com/web/packages/pam/vignettes/data-transformation.html">vignette("data-transformation", package = "pam")</a></code></a>).</p>
+<p>First we need to bring the data in a suitable format (see <a href="data-transformation.html"><code>vignette("data-transformation", package = "pam")</code></a>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use unique event times as interval break points</span>
 ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">data =</span> veteran, <span class="dt">id =</span> <span class="st">"id"</span>)
 <span class="kw">head</span>(ped)</code></pre></div>
