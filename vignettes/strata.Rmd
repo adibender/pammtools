@@ -22,7 +22,6 @@ opts_chunk$set(
 ```
 
 ```{r, message=FALSE}
-library(magrittr)
 library(dplyr)
 library(ggplot2)
 theme_set(theme_bw())
@@ -47,7 +46,7 @@ where the celltype of the lung cancer had four levels:
 
 ```{r}
 data("veteran")
-veteran %<>%
+veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),
     prior = 1*(prior==10)) %>%

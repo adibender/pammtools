@@ -22,7 +22,6 @@ opts_chunk$set(
 ```
 
 ```{r, message=FALSE}
-library(magrittr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -70,7 +69,7 @@ recidivism_long <- recidivism %>%
     offset = log(stop - start)) %>%
   select(subject, start, stop, offset, arrest, employed, fin:educ) %>%
   arrange(subject, stop)
-recidivism_long %<>%
+recidivism_long <- recidivism_long %>%
   mutate(employed.lag1 = lag(employed, default=0)) %>%
   slice(-1) %>% # exclusion of first week, as lagged information is missing
   ungroup()
@@ -137,7 +136,8 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
 age_df <- recidivism_long %>% make_newdata(expand="age", n=100)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
-age_df %<>% add_term(pam, term="age") %>%
+age_df <- age_df %>%
+  add_term(pam, term="age") %>%
   mutate(cphfit = predict(object=cph, ., type="terms")[,"pspline(age)"])
 
 ## prep plot object for smooth effects
@@ -155,7 +155,8 @@ age_gg <- smooth_gg + aes(x=age) +
 
 ## same as "age"" for "prio" variable
 prio_df <- recidivism_long %>% make_newdata(expand="prio", n=100)
-prio_df %<>% add_term(pam, term="prio") %>%
+prio_df <- prio_df %>%
+  add_term(pam, term="prio") %>%
   mutate(cphfit = predict(object=cph, ., type="terms")[,7])
 
 ## plot of the prio effect

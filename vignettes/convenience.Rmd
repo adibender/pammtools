@@ -22,7 +22,6 @@ opts_chunk$set(
 ```
 
 ```{r, message=FALSE}
-library(magrittr)
 library(dplyr)
 library(mgcv)
 library(pammtools)
@@ -172,7 +171,7 @@ tail(ped_df)
 This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:
 
 ```{r}
-ped_df %<>% add_hazard(pam)
+ped_df <- ped_df %>% add_hazard(pam)
 ped_df %>% select(interval, hazard, lower, upper) %>% head()
 ped_df %>% select(interval, hazard, lower, upper) %>% tail()
 ```

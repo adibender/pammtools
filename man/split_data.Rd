@@ -2,7 +2,7 @@
 % Please edit documentation in R/split-data.R
 \name{split_data}
 \alias{split_data}
-\title{Function to transform data without time-dependent covariates into piece-wise 
+\title{Function to transform data without time-dependent covariates into piece-wise
 exponential data format}
 \usage{
 split_data(formula, data, cut = NULL, ..., max.end = FALSE)
@@ -16,21 +16,21 @@ split_data(formula, data, cut = NULL, ..., max.end = FALSE)
 
 \item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
 
-\item{max.end}{logical. Should the last interval span until the last 
-observed censoring or event time (if larger than the largest specified 
+\item{max.end}{logical. Should the last interval span until the last
+observed censoring or event time (if larger than the largest specified
 cut point).}
 }
 \value{
 A data frame class \code{ped} in piece-wise exponential data format.
 }
 \description{
-Function to transform data without time-dependent covariates into piece-wise 
+Function to transform data without time-dependent covariates into piece-wise
 exponential data format
 }
 \examples{
 data("veteran", package="survival")
 head(veteran)
-ped <- split_data(Surv(time, status)~trt + age, data=veteran, 
+ped <- split_data(Surv(time, status)~trt + age, data=veteran,
    cut=c(0, 100, 400), id="id")
 head(ped)
 class(ped) # class ped (piece-wise exponential data)

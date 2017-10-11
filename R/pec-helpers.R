@@ -9,7 +9,6 @@
 #' @param times Time points for which survival probabilities should be predicted.
 #' @param ... Arguments passed to \code{\link[pammtools]{int_info}}.
 #' @import dplyr
-#' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr spread_
 #' @keywords internal
 predictSurvProb.pamm <- function(
@@ -21,7 +20,7 @@ predictSurvProb.pamm <- function(
 	## to calculate survival probabilities
 	int_df <- int_info(object) %>%
 		filter(tstart <= max(times))
-	newdata %<>% mutate(.id = row_number())
+	newdata <- newdata %>% mutate(.id = row_number())
 
 	## calculate survival probabilities
 	surv_df <- combine_df(int_df, newdata) %>%
@@ -57,7 +56,6 @@ predictSurvProb.pamm <- function(
 #' @param ... Further arguments passed to \code{\link{split_data}}.
 #' @import dplyr
 #' @importFrom modelr crossv_kfold
-#' @importFrom magrittr "%<>%"
 #' @importFrom purrr map map2
 #' @importFrom tidyr unnest
 #' @seealso \code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}

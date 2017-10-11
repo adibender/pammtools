@@ -5,7 +5,7 @@
 #' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param term The (non-linear) model term of interest.
 #' @param ... Currently ignored.
-#' @import magrittr dplyr
+#' @import dplyr
 #' @importFrom stats predict setNames
 #' @keywords internal
 get_term <- function(data, fit, term, ...) {

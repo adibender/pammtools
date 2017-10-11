@@ -4,7 +4,6 @@
 #' a matrix per row.
 #' @importFrom dplyr select_if slice
 #' @importFrom purrr compose
-#' @importFrom magrittr "%<>%" "%>%"
 #' @keywords internal
 as_matdf <- function(nested_df) {
 
@@ -15,7 +14,7 @@ as_matdf <- function(nested_df) {
 		unlist()
 
 	ldf <- lapply(ldf, function(z) do.call(rbind, z))
-	ndf %<>% slice(rind) %>% as.data.frame()
+	ndf <- ndf %>% slice(rind) %>% as.data.frame()
 	for(i in seq_along(ldf)) {
 		ndf[[names(ldf)[i]]] <- ldf[[i]]
 	}

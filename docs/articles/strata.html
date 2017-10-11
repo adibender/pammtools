@@ -99,14 +99,13 @@
       <h1>Stratified baseline</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-10</h4>
+            <h4 class="date">2017-10-11</h4>
           </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
-<span class="kw">library</span>(dplyr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(ggplot2)
 <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())
 <span class="kw">library</span>(mgcv)
@@ -120,7 +119,7 @@ Set1 &lt;-<span class="st"> </span>RColorBrewer::<span class="kw">brewer.pal</sp
 <p><span class="math inline">\(\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)\)</span>.</p>
 <p>For illustration we again use the <code>veteran</code> data (censored at day 400) from the <code>survival</code> package, where the celltype of the lung cancer had four levels:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>)
-veteran %&lt;&gt;%
+veteran &lt;-<span class="st"> </span>veteran %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
     <span class="dt">trt   =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
     <span class="dt">prior =</span> <span class="dv">1</span>*(prior==<span class="dv">10</span>)) %&gt;%

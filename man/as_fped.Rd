@@ -17,8 +17,8 @@ as_fped(formula, data, data_orig, cut = NULL, ..., max.end = FALSE,
 
 \item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
 
-\item{max.end}{logical. Should the last interval span until the last 
-observed censoring or event time (if larger than the largest specified 
+\item{max.end}{logical. Should the last interval span until the last
+observed censoring or event time (if larger than the largest specified
 cut point).}
 
 \item{ll_fun}{Function with two arguments that indicates how lag-lead matrix 

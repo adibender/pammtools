@@ -22,7 +22,6 @@ opts_chunk$set(
 
 
 ```{r}
-library(magrittr)
 library(dplyr)
 library(ggplot2)
 theme_set(theme_bw())
@@ -39,7 +38,7 @@ the `veteran` data from the survival package:
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>%
+veteran <- veteran %>%
   mutate(
     trt   = 1+(trt == 2),
     prior = 1*(prior==10)) %>%
