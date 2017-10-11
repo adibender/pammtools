@@ -20,7 +20,7 @@
 #' class(ped) # class ped (piece-wise exponential data)
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
-split_data <- function(formula, data, cut=NULL, ..., max.end=FALSE) {
+split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
 
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
