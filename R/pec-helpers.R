@@ -25,15 +25,15 @@ predictSurvProb.pamm <- function(
 	## calculate survival probabilities
 	surv_df <- combine_df(int_df, newdata) %>%
 		group_by_(".id") %>%
-		add_survprob(object) %>%
-		select(one_of(".id", "tend", "survprob"))
+		add_surv_prob(object) %>%
+		select(one_of(".id", "tend", "surv_prob"))
 
 	out_df <- get_intervals(object, times) %>%
 		select(one_of("times", "tend"))
 
 	left_join(out_df, surv_df) %>%
-		select(one_of(".id", "times", "survprob")) %>%
-			spread_("times", "survprob") %>%
+		select(one_of(".id", "times", "surv_prob")) %>%
+			spread_("times", "surv_prob") %>%
 			select(-one_of(".id")) %>%
 			as.matrix()
 

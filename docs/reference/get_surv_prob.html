@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Forrest plot of fixed coefficients — gg_fixed • pammtools</title>
+<title>Calculate survival probabilities — get_surv_prob • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -119,52 +119,62 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Forrest plot of fixed coefficients</h1>
+    <h1>Calculate survival probabilities</h1>
     </div>
 
     
-    <p>Forrest plot of fixed coefficients</p>
+    <p>Calculate survival probabilities</p>
     
 
-    <pre class="usage"><span class='fu'>gg_fixed</span>(<span class='no'>x</span>, <span class='kw'>intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>get_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fu'>quo</span>(<span class='no'>intlen</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A model object.</p></td>
+      <th>newdata</th>
+      <td><p>A data frame or list containing the values of the model covariates at which predictions
+  are required. If this is not provided then predictions corresponding to the
+                original data are returned. If <code>newdata</code> is provided then
+                it should contain all the variables needed for prediction: a
+                warning is generated if not. See details for use with <code>link{linear.functional.terms}</code>.</p></td>
     </tr>
     <tr>
-      <th>intercept</th>
-      <td><p>Logical, indicating whether intercept term should be included.
-Defaults to <code>FALSE</code>.</p></td>
+      <th>object</th>
+      <td><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ci</th>
+      <td><p>Logical indicating whether to iclude confidence intervals. Defaults
+to <code>TRUE</code></p></td>
+    </tr>
+    <tr>
+      <th>time_variable</th>
+      <td><p>Name of the variable used for the baseline hazard. If
+not given, defaults to <code>"tend"</code> for <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code> fits, else
+<code>"interval"</code>. The latter is assumed to be a factor, the former
+numeric.</p></td>
+    </tr>
+    <tr>
+      <th>interval_length</th>
+      <td><p><code>quosure</code> providing the name of the variable in
+newdata containing the interval lengths. Defaults to <code>intlen</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Currently not used.</p></td>
+      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code> and
+<code><a href='get_hazard.html'>get_hazard</a></code></p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='tidy_fixed.html'>tidy_fixed</a></code></p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>g</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>Sepal.Length</span> ~ <span class='no'>Sepal.Width</span> + <span class='no'>Petal.Length</span> + <span class='no'>Petal.Width</span> + <span class='no'>Species</span>,
-        <span class='kw'>data</span><span class='kw'>=</span><span class='no'>iris</span>)
-<span class='fu'>gg_fixed</span>(<span class='no'>g</span>, <span class='kw'>intercept</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='img'><img src='gg_fixed-5.png' alt='' width='700' height='432.632880098887' /></div><div class='input'><span class='fu'>gg_fixed</span>(<span class='no'>g</span>)</div><div class='img'><img src='gg_fixed-6.png' alt='' width='700' height='432.632880098887' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>

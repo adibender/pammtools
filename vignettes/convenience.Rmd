@@ -188,8 +188,8 @@ ggplot(ped_df, aes(x = tend)) +
 or the cumulative hazard
 
 ```{r}
-gg.chaz <- ped_df %>% add_cumhazard(pam) %>%
-	ggplot(aes(x = tend, y = cumhazard, ymin = cumlower, ymax = cumupper))
+gg.chaz <- ped_df %>% add_cumu_hazard(pam) %>%
+	ggplot(aes(x = tend, y = cumu_hazard, ymin = cumu_lower, ymax = cumu_upper))
 gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
 	ylab(expression(hat(Lambda)(t))) + xlab(expression(t))
 ```
@@ -197,8 +197,8 @@ gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
 or the survival probabilities
 
 ```{r}
-gg.surv <- ped_df %>% add_survprob(pam) %>%
-  ggplot(aes(x = tend, y = survprob, ymax = survlower, ymin = survupper))
+gg.surv <- ped_df %>% add_surv_prob(pam) %>%
+  ggplot(aes(x = tend, y = surv_prob, ymax = surv_lower, ymin = surv_upper))
 gg.surv + geom_line() + geom_ribbon(alpha = 0.2) +
   ylab(expression(hat(S)(t))) + xlab(expression(t))
 ```
@@ -208,11 +208,11 @@ be maintained throughout, for example, if we wanted to plot the cumulative
 hazard for different sexes:
 
 ```{r}
-pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumhazard(pam)
+pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumu_hazard(pam)
 head(pinfo.sex)
 table(pinfo.sex$sex)
-ggplot(pinfo.sex, aes(x = tend, y = cumhazard)) +
-	geom_ribbon(aes(ymin = cumlower, ymax = cumupper, fill = sex), alpha = 0.3) +
+ggplot(pinfo.sex, aes(x = tend, y = cumu_hazard)) +
+	geom_ribbon(aes(ymin = cumu_lower, ymax = cumu_upper, fill = sex), alpha = 0.3) +
   geom_line(aes(col = sex)) +
   scale_color_brewer(palette = "Set1") +
   scale_fill_brewer(palette = "Set1")

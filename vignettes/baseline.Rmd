@@ -78,7 +78,7 @@ Extract cumulative baseline estimate:
 int_df <- int_info(ped)
 head(int_df)
 int_df <- int_df %>%
-  add_cumhazard(pem) %>%
+  add_cumu_hazard(pem) %>%
   left_join(base_df, by = c("tend" = "time"))
 head(int_df)
 ```
@@ -88,12 +88,12 @@ Visualize the PEM estimate:
 ```{r, fig.width = 4.5, fig.height = 4.5}
 ggplot(int_df, aes(x = tend)) +
   geom_step(aes(y = hazard, col = "Nelson-Aalen")) +
-  geom_line(aes(y = cumhazard, col = "PEM")) +
+  geom_line(aes(y = cumu_hazard, col = "PEM")) +
   scale_color_manual(name = "Method", values=c(Set1[1:2])) +
   theme(legend.position = "bottom") +
   ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle("Comparison of cumulative hazards using \n Cox-PH (Nelson-Aalen) vs. PEM")
-all.equal(int_df$cumhazard, int_df$hazard)
+all.equal(int_df$cumu_hazard, int_df$hazard)
 ```
 
 ### Fit the baseline using Piece-wise exponential additive model (PAM)
@@ -130,9 +130,9 @@ int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
 int_df <- int_df %>% mutate(pamch = cumsum(pamhaz * intlen))
 
 gg_baseline <- ggplot(int_df, aes(x = tend)) +
-  # geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +
+  # geom_ribbon(aes(ymin=cumu_lower, ymax=cumu_upper), alpha=0.2) +
   geom_step(aes(y = hazard,    col = "Nelson-Aalen"), lty = 2) +
-  geom_line(aes(y = cumhazard, col = "PEM")) +
+  geom_line(aes(y = cumu_hazard, col = "PEM")) +
   geom_line(aes(y = pamch,     col = "PAM")) +
   scale_color_manual(
     name   = "Method",

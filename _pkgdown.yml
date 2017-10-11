@@ -32,7 +32,7 @@ reference:
     contents:
       - add_term
       - add_hazard
-      - add_survprob
+      - add_surv_prob
   - title: "Plot helpers"
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:

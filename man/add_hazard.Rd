@@ -2,14 +2,15 @@
 % Please edit documentation in R/hazard.R
 \name{add_hazard}
 \alias{add_hazard}
-\alias{add_cumhazard}
+\alias{add_cumu_hazard}
 \title{Add predicted hazard to data set}
 \usage{
 add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
   se.mult = 2, overwrite = FALSE, time_variable = NULL, ...)
 
-add_cumhazard(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
-  time_variable = NULL, interval_length = quo(intlen), ...)
+add_cumu_hazard(newdata, object, ci = TRUE, se.mult = 2,
+  overwrite = FALSE, time_variable = NULL, interval_length = quo(intlen),
+  ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -69,14 +70,16 @@ Add cumulative hazard estimate to data set
 library(mgcv)
 data("veteran", package="survival")
 ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran,
-	id="id")
+ id="id")
 pam <- gam(ped_status ~ s(tend, k=5), data = ped, family=poisson(), offset=offset)
 pinfo <- ped_info(ped)
 add_hazard(pinfo, pam)
 }
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_cumhazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_cumu_hazard}}
+
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 
 \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 }
