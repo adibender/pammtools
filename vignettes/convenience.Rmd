@@ -172,8 +172,8 @@ This data set can be used to conveniently obtain the hazard, cumulative hazard a
 
 ```{r}
 ped_df <- ped_df %>% add_hazard(pam)
-ped_df %>% select(interval, hazard, lower, upper) %>% head()
-ped_df %>% select(interval, hazard, lower, upper) %>% tail()
+ped_df %>% select(interval, hazard, ci_lower, ci_upper) %>% head()
+ped_df %>% select(interval, hazard, ci_lower, ci_upper) %>% tail()
 ```
 
 Which in turn can be conveniently plotted using respective functions, e.g.
@@ -181,7 +181,7 @@ Which in turn can be conveniently plotted using respective functions, e.g.
 ```{r}
 ggplot(ped_df, aes(x = tend)) +
 	geom_step(aes(y = hazard)) +
-	geom_stepribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
+	geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
 ```
 
