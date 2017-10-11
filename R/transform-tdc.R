@@ -93,11 +93,11 @@ split_tdc <- function(
 	# for joining, we remove baseline information of variables that are present
 	# as TDC variables in tdc_df
 	tdc <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, status_var))
-	event_df %<>% select(-one_of(tdc))
+	event_df <- event_df %>%  select(-one_of(tdc))
 	ped <- split_data(formula, data = event_df, cut=utime, id=id_var)
 
 	#
- 	tdc_df %<>% select(one_of(c(id_var, time_var, tdc)))
+ 	tdc_df <- tdc_df %>% select(one_of(c(id_var, time_var, tdc)))
 
 	ped %>% left_join(tdc_df, by=c(id_var, "tstart"=time_var)) %>%
 		group_by_(.dots=list(id_var)) %>%

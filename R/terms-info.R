@@ -16,7 +16,6 @@
 #' if \code{se.fit = TRUE}. Defaults to \code{FALSE}.
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
 #' @import checkmate dplyr mgcv
-#' @importFrom magrittr %<>%
 #' @importFrom stats predict
 #' @examples
 #' library(mgcv)
@@ -77,9 +76,10 @@ add_term <- function(
   	  vcov(object)[col_ind, col_ind]
   	}
   	se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
-		newdata %<>% mutate(
-			low  = fit - se.mult * se,
-			high = fit + se.mult * se)
+		newdata <- newdata %>%
+      mutate(
+        low  = fit - se.mult * se,
+        high = fit + se.mult * se)
   }
 
   return(newdata)

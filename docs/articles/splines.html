@@ -99,14 +99,13 @@
       <h1>Splines</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-09</h4>
+            <h4 class="date">2017-10-11</h4>
           </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
-<span class="kw">library</span>(dplyr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(ggplot2)
 <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())
 <span class="kw">library</span>(pammtools)
@@ -118,7 +117,7 @@ Set1 &lt;-<span class="st"> </span>RColorBrewer::<span class="kw">brewer.pal</sp
 <a href="#veterans-data" class="anchor"></a>Veteran’s data</h2>
 <p>We first illustrate the estimation on non-linear smooth effects using the <code>veteran</code> data from the survival package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package=</span><span class="st">"survival"</span>)
-veteran %&lt;&gt;%
+veteran &lt;-<span class="st"> </span>veteran %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
     <span class="dt">trt   =</span> <span class="dv">1</span>+(trt ==<span class="st"> </span><span class="dv">2</span>),
     <span class="dt">prior =</span> <span class="dv">1</span>*(prior==<span class="dv">10</span>)) %&gt;%

@@ -13,6 +13,7 @@
 #' g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 #' gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 #' @export
+#' @seealso get_terms
 gg_smooth <- function(x, ...) {
 	UseMethod("gg_smooth", x)
 }
@@ -60,7 +61,6 @@ gg_smooth.pamm <- function(x, ...) {
 #' @inheritParams tidy_smooth2d
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate
-#' @importFrom magrittr "%<>%"
 #' @examples
 #' g <- mgcv::gam(Sepal.Length ~ te(Sepal.Width, Petal.Length), data=iris)
 #' gg_tensor(g)
@@ -72,7 +72,8 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 
 	df2d <- tidy_smooth2d(x, ci=ci, se=ci, ...)
 	if (ci) {
-		df2d %<>% gather(type, fit, fit, low, high) %>%
+		df2d <- df2d %>%
+			gather(type, fit, fit, low, high) %>%
 			mutate(
 				type = factor(
 					type,

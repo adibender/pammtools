@@ -2,9 +2,6 @@ context("create newdata")
 
 
 test_that("creating newdata works on ungrouped data", {
-	library(checkmate)
-	library(magrittr)
-	library(dplyr)
 	set.seed(123)
 	iris2 <- iris %>%  group_by(Species) %>% sample_n(2) %>% ungroup()
 
@@ -23,8 +20,6 @@ test_that("creating newdata works on ungrouped data", {
 
 
 test_that("creating newdata fails on ungrouped data", {
-	library(magrittr)
-	library(dplyr)
 	set.seed(123)
 	iris2 <- iris %>% group_by(Species) %>% sample_n(2) %>% ungroup()
 

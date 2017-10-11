@@ -95,9 +95,10 @@ tidy_smooth <- function(
 		z[["fit"]] <- as.vector(z[["fit"]])
 		temp <- as_tibble(z)
 		if(ci) {
-			temp %<>% mutate(
-				low  = fit - se,
-				high = fit + se)
+			temp <- temp %>%
+				mutate(
+					low  = fit - se,
+					high = fit + se)
 		}
 		temp
 	})
@@ -137,9 +138,10 @@ tidy_smooth2d <- function(
 		xy <- cross_df(z[c("x", "y")])
 		xy <- bind_cols(xy, p1)
 		if(ci) {
-			xy %<>% mutate(
-				low  = fit - se,
-				high = fit + se)
+			xy <- xy %>%
+				mutate(
+					low  = fit - se,
+					high = fit + se)
 		}
 		xy
 	})

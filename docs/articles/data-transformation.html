@@ -99,14 +99,13 @@
       <h1>Data Transformation</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-09</h4>
+            <h4 class="date">2017-10-11</h4>
           </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
-<span class="kw">library</span>(dplyr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(pammtools)</code></pre></div>
 <p>In this vignette we provide details on transforming data into a format suitable to fit piece-wise exponential (additive) models (PAM). Three main cases need to be distinguished</p>
 <ol style="list-style-type: decimal">
@@ -123,10 +122,10 @@
 <a href="#using-defaults" class="anchor"></a>Using defaults</h3>
 <p>As an example data set we first consider Veterans’ Administration lung cancer study <span class="citation">(Kalbfleisch and Prentice 1980)</span> available from the <code>survival</code> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>)
-veteran %&lt;&gt;%
+veteran &lt;-<span class="st"> </span>veteran %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">id =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),
-    <span class="dt">trt =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
+    <span class="dt">id    =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),
+    <span class="dt">trt   =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
     <span class="dt">prior =</span> <span class="dv">1</span>*(prior !=<span class="st"> </span><span class="dv">0</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id,<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select_helpers.html">everything</a></span>())
 <span class="kw">head</span>(veteran)</code></pre></div>

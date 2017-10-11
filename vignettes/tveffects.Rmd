@@ -22,7 +22,6 @@ opts_chunk$set(
 library(ggplot2)
 theme_set(theme_bw())
 library(gridExtra)
-library(magrittr)
 library(tidyr)
 library(dplyr)
 library(pammtools)
@@ -72,7 +71,7 @@ Karnofsky performance scores `karno` (the higher the better), `age` and whether
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
 data("veteran", package="survival")
-veteran %<>%
+veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),
     prior = 1*(prior==10)) %>%

@@ -14,22 +14,21 @@ sample_info <- function(x, ...) {
 
 #' @inheritParams sample_info
 #' @import checkmate dplyr
-#' @importFrom magrittr %<>%
 #' @importFrom purrr compose
 #' @export
 #' @rdname sample_info
 sample_info.data.frame <- function(x, ...) {
 
-  assert_data_frame(x, all.missing=FALSE, min.rows=1, min.cols=1)
+  assert_data_frame(x, all.missing = FALSE, min.rows = 1, min.cols = 1)
 
   cn  <- colnames(x)
-  num <- summarize_if(x, .predicate=is.numeric, funs(mean(., na.rm=TRUE)))
-  fac <- summarize_if(x, .predicate=compose("!", is.numeric), modus)
+  num <- summarize_if(x, .predicate = is.numeric, funs(mean(., na.rm = TRUE)))
+  fac <- summarize_if(x, .predicate = compose("!", is.numeric), modus)
 
   nnames <- intersect(names(num), names(fac))
 
   if(length(nnames) != 0) {
-    x <- left_join(num, fac) %>% grouped_df(vars=lapply(nnames, as.name))
+    x <- left_join(num, fac) %>% grouped_df(vars = lapply(nnames, as.name))
   } else {
     x <- bind_cols(num, fac)
   }
@@ -41,7 +40,6 @@ sample_info.data.frame <- function(x, ...) {
 
 #' @inheritParams sample_info
 #' @import checkmate dplyr
-#' @importFrom magrittr %<>%
 #' @export
 #' @rdname sample_info
 #' @seealso \code{\link[pammtools]{split_data}}
@@ -49,7 +47,7 @@ sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
   iv <- attr(x, "intvars")
-  x %<>% select(-one_of(iv))
+  x <- x %>% select(-one_of(iv))
   sample_info.data.frame(x, ...)
 
 }
@@ -125,7 +123,6 @@ make_newdata <- function(x, ...) {
 #' @param expand A character vector of column names in \code{ped}.
 #' @param n If \code{expand} specified, respective variables will be expanded
 #' in \code{n} values from minimum to maximum.
-#' @importFrom magrittr "%<>%"
 #' @importFrom modelr seq_range
 #' @export
 make_newdata.default <- function(
@@ -161,7 +158,7 @@ make_newdata.default <- function(
   }
 
   si_names    <- intersect(names(si), c(names(dots_df), names(expanded_df)))
-  si %<>% select(-one_of(si_names))
+  si <- si %>% select(-one_of(si_names))
 
   combine_df(si, dots_df, expanded_df) %>%
     select(one_of(orig_names))
@@ -170,7 +167,6 @@ make_newdata.default <- function(
 
 #' @rdname newdata
 #' @inherit make_newdata.default
-#' @importFrom magrittr "%<>%"
 #' @export
 make_newdata.ped <- function(
   x,
@@ -202,12 +198,12 @@ make_newdata.ped <- function(
 
   id_var <- attr(x, "id_var")
   g_vars <- group_vars(x)
-  x %<>%
-    ungroup() %>%
+  x <- x %>%
+    ungroup()         %>%
     group_by_(id_var) %>%
-    slice(1) %>%
-    ungroup(id_var) %>%
-    unped() %>%
+    slice(1)          %>%
+    ungroup(id_var)   %>%
+    unped()           %>%
     group_by_(.dots = g_vars)
 
   make_newdata(x, ..., expand = expand, n = n)

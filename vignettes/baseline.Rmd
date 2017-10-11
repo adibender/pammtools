@@ -22,7 +22,6 @@ opts_chunk$set(
 ```{r, message = FALSE}
 library(ggplot2)
 theme_set(theme_bw())
-library(magrittr)
 library(dplyr)
 library(survival)
 library(mgcv)
@@ -38,7 +37,7 @@ We illustrate the procedure using the `veteran` data from the
 
 ```{r}
 data("veteran", package="survival")
-veteran %<>%
+veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),
     prior = 1*(prior != 10)) %>%
@@ -78,7 +77,8 @@ Extract cumulative baseline estimate:
 ```{r}
 int_df <- int_info(ped)
 head(int_df)
-int_df %<>% add_cumhazard(pem) %>%
+int_df <- int_df %>%
+  add_cumhazard(pem) %>%
   left_join(base_df, by = c("tend" = "time"))
 head(int_df)
 ```
@@ -127,7 +127,7 @@ PAM estimates. All models are in good agreement.
 
 ```{r}
 int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
-int_df %<>% mutate(pamch = cumsum(pamhaz * intlen))
+int_df <- int_df %>% mutate(pamch = cumsum(pamhaz * intlen))
 
 gg_baseline <- ggplot(int_df, aes(x = tend)) +
   # geom_ribbon(aes(ymin=cumlower, ymax=cumupper), alpha=0.2) +

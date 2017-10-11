@@ -99,14 +99,13 @@
       <h1>Time-dependent covariates</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-09</h4>
+            <h4 class="date">2017-10-11</h4>
           </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
-<span class="kw">library</span>(tidyr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyr)
 <span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(ggplot2)
 <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())
@@ -140,7 +139,7 @@ recidivism_long &lt;-<span class="st"> </span>recidivism %&gt;%
     <span class="dt">offset =</span> <span class="kw">log</span>(stop -<span class="st"> </span>start)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(subject, start, stop, offset, arrest, employed, fin:educ) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">arrange</a></span>(subject, stop)
-recidivism_long %&lt;&gt;%
+recidivism_long &lt;-<span class="st"> </span>recidivism_long %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">employed.lag1 =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span>(employed, <span class="dt">default=</span><span class="dv">0</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(-<span class="dv">1</span>) %&gt;%<span class="st"> </span><span class="co"># exclusion of first week, as lagged information is missing</span>
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">ungroup</a></span>()</code></pre></div>
@@ -215,7 +214,8 @@ coef_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 age_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"age"</span>, <span class="dt">n=</span><span class="dv">100</span>)
 
 ## add information on contribution of age to linear predictor (partial effect of age)
-age_df %&lt;&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"age"</span>) %&gt;%
+age_df &lt;-<span class="st"> </span>age_df %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"age"</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cphfit =</span> <span class="kw">predict</span>(<span class="dt">object=</span>cph, ., <span class="dt">type=</span><span class="st">"terms"</span>)[,<span class="st">"pspline(age)"</span>])
 
 ## prep plot object for smooth effects
@@ -233,7 +233,8 @@ age_gg &lt;-<span class="st"> </span>smooth_gg +<span class="st"> </span><span c
 
 ## same as "age"" for "prio" variable
 prio_df &lt;-<span class="st"> </span>recidivism_long %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand=</span><span class="st">"prio"</span>, <span class="dt">n=</span><span class="dv">100</span>)
-prio_df %&lt;&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"prio"</span>) %&gt;%
+prio_df &lt;-<span class="st"> </span>prio_df %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pam, <span class="dt">term=</span><span class="st">"prio"</span>) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cphfit =</span> <span class="kw">predict</span>(<span class="dt">object=</span>cph, ., <span class="dt">type=</span><span class="st">"terms"</span>)[,<span class="dv">7</span>])
 
 ## plot of the prio effect

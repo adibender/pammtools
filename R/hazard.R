@@ -15,7 +15,6 @@
 #'   \code{"interval"}. The latter is assumed to be a factor, the former
 #'   numeric.
 #' @import checkmate dplyr mgcv
-#' @importFrom magrittr %<>%
 #' @importFrom stats predict
 #' @examples
 #' \dontrun{
@@ -46,14 +45,14 @@ add_hazard <- function(
 		}
 	} else {
 			rm.vars <- intersect(c("hazard", "se", "lower", "upper"), names(newdata))
-			newdata %<>% select(-one_of(rm.vars))
+			newdata <- newdata %>% select(-one_of(rm.vars))
 	}
 
 	pred <- get_hazard(newdata, object, ci=ci, type=type, se.mult=se.mult,
 	  time_variable = time_variable, ...)
 	stopifnot(nrow(pred) == nrow(newdata))
 
-	newdata %<>% bind_cols(rm_grpvars(pred))
+	newdata <- newdata %>% bind_cols(rm_grpvars(pred))
 
 	return(newdata)
 
@@ -111,14 +110,14 @@ get_hazard <- function(
 	stopifnot(nrow(pred) == nrow(newdata))
 
 	if(ci) {
-		pred %<>%
+		pred <- pred %>%
 			mutate(
 				lower = hazard - se.mult*se,
 				upper = hazard + se.mult*se)
 	}
 
 	if(type=="response") {
-		pred %<>%
+		pred <- pred %>%
 			mutate_at(c("hazard", "lower", "upper"), funs(exp(.)))
 	}
 
@@ -158,13 +157,13 @@ add_cumhazard <- function(
 		}
 	} else {
 			rm.vars <- intersect(c("cumhazard", "cumlower", "cumupper"), names(newdata))
-			newdata %<>% select(-one_of(rm.vars))
+			newdata <- newdata %>% select(-one_of(rm.vars))
 	}
 
 	pred <- get_cumhazard(newdata, object, ci=ci, se.mult=se.mult,
 	  time_variable = time_variable, interval_length = interval_length, ...)
 
-	newdata %<>% bind_cols(rm_grpvars(pred))
+	newdata <- newdata %>% bind_cols(rm_grpvars(pred))
 
 	return(newdata)
 
@@ -218,7 +217,7 @@ add_survprob <- function(
 		}
 	} else {
 			rm.vars <- intersect(c("survprob", "survlower", "survupper"), names(newdata))
-			newdata %<>% select(-one_of(rm.vars))
+			newdata <- newdata %>% select(-one_of(rm.vars))
 	}
 
 	pred <- get_survprob(newdata, object, ci=ci, se.mult=se.mult,

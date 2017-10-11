@@ -20,7 +20,7 @@ rm_grpvars <- function(data) {
 
   if(is.grouped_df(data)) {
     grp.vars <- get_grpvars(data)
-    data %<>% ungroup() %>% select(-one_of(grp.vars))
+    data <- data %>% ungroup() %>% select(-one_of(grp.vars))
   }
   return(data)
 

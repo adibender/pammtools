@@ -21,7 +21,6 @@ opts_chunk$set(
 
 
 ```{r echo = TRUE, message = FALSE}
-library(magrittr)
 library(dplyr)
 library(pammtools)
 ```
@@ -54,10 +53,10 @@ study [@Kalbfleisch1980] available from the `survival` package:
 
 ```{r}
 data("veteran", package = "survival")
-veteran %<>%
+veteran <- veteran %>%
   mutate(
-    id = row_number(),
-    trt = 1*(trt == 2),
+    id    = row_number(),
+    trt   = 1*(trt == 2),
     prior = 1*(prior != 0)) %>%
   select(id,everything())
 head(veteran)

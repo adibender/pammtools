@@ -20,7 +20,6 @@ opts_chunk$set(
 ```
 
 ```{r message=FALSE}
-library(magrittr)
 library(dplyr)
 library(survival)
 library(coxme)
@@ -45,7 +44,7 @@ The data contain survival times (in days) of advanced lung cancer patients
 from different institutions:
 
 ```{r}
-lung %<>% mutate(inst = as.factor(inst))
+lung <- lung %>% mutate(inst = as.factor(inst))
 head(lung)
 
 ## 228 patients from 18 institutions

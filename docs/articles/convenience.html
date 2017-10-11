@@ -99,14 +99,13 @@
       <h1>Convenience functions for post-processing PAMs</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-09</h4>
+            <h4 class="date">2017-10-11</h4>
           </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(magrittr)
-<span class="kw">library</span>(dplyr)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(mgcv)
 <span class="kw">library</span>(pammtools)
 <span class="kw">library</span>(ggplot2)
@@ -247,7 +246,7 @@ hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.r
 ## 5    321   356  35.0     338 (321,356]  67.1  13.7 M     
 ## 6    356   424  68.0     390 (356,424]  67.1  13.7 M</code></pre>
 <p>This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df %&lt;&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_hazard</a></span>(pam)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_hazard</a></span>(pam)
 ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(interval, hazard, lower, upper) %&gt;%<span class="st"> </span><span class="kw">head</span>()</code></pre></div>
 <pre><code>## # A tibble: 6 x 4
 ##   interval  hazard   lower   upper

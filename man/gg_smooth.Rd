@@ -31,4 +31,7 @@ different smooth are faceted.
 g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 }
+\seealso{
+get_terms
+}
 \keyword{internal}
