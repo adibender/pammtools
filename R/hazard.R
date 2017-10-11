@@ -32,16 +32,17 @@
 add_hazard <- function(
   newdata,
   object,
-  type      = c("response", "link"),
-  ci        = TRUE,
-  se.mult   = 2,
-  overwrite = FALSE,
+  type          = c("response", "link"),
+  ci            = TRUE,
+  se.mult       = 2,
+  overwrite     = FALSE,
   time_variable = NULL,
   ...)  {
 
-  if(!overwrite) {
-    if("hazard" %in% names(newdata)) {
-      stop("Data set already contains 'hazard' column. Set `overwrite=TRUE` to overwrite")
+  if (!overwrite) {
+    if ("hazard" %in% names(newdata)) {
+      stop("Data set already contains 'hazard' column.
+        Set `overwrite=TRUE` to overwrite")
     }
   } else {
       rm.vars <- intersect(
@@ -68,13 +69,13 @@ add_hazard <- function(
 get_hazard <- function(
   newdata,
   object,
-  ci      = TRUE,
-  type    = c("response", "link"),
-  se.mult = 2,
+  ci            = TRUE,
+  type          = c("response", "link"),
+  se.mult       = 2,
   time_variable = NULL,
   ...)  {
 
-  assert_data_frame(newdata, all.missing=FALSE)
+  assert_data_frame(newdata, all.missing = FALSE)
   assert_class(object, classes = "glm")
   type <- match.arg(type)
 
@@ -95,7 +96,7 @@ get_hazard <- function(
   new_ints <- which(!(prediction_intervals %in% original_intervals))
   if (length(new_ints)) {
    message <- paste0("Intervals in <newdata> contain values (",
-     paste(prediction_intervals[new_ints], collapse=","),
+     paste(prediction_intervals[new_ints], collapse = ","),
      ") not used in original fit.",
      " Setting intervals to values not used for original fit in <object>",
      "can invalidate the PEM assumption and yield incorrect predictions.")
@@ -118,11 +119,11 @@ get_hazard <- function(
   stopifnot(nrow(pred) == nrow(newdata))
 
   mutate_vars <- c("hazard")
-  if(ci) {
+  if (ci) {
     pred <- pred %>%
       mutate(
-        ci_lower = hazard - se.mult*se,
-        ci_upper = hazard + se.mult*se)
+        ci_lower = hazard - se.mult * se,
+        ci_upper = hazard + se.mult * se)
     mutate_vars <- c(mutate_vars, "ci_lower", "ci_upper")
   }
 
@@ -134,7 +135,7 @@ get_hazard <- function(
   # it is necessary to include the grouping variables here, otherwise
   # functions calculating the cumulative hazard will cumulate over all rows
   # instead of group wise
-  if(is.grouped_df(newdata)) {
+  if (is.grouped_df(newdata)) {
     group.df <- select_(newdata, .dots = unlist(groups(newdata)))
     pred     <- bind_cols(group.df, pred)
   }
@@ -163,9 +164,11 @@ add_cumu_hazard <- function(
   interval_length = quo(intlen),
   ...)  {
 
-  if(!overwrite) {
-    if("cumu_hazard" %in% names(newdata)) {
-      stop("Data set already contains 'hazard' column. Set `overwrite=TRUE` to overwrite")
+  if (!overwrite) {
+    if ("cumu_hazard" %in% names(newdata)) {
+      stop(
+        "Data set already contains 'hazard' column.
+        Set `overwrite=TRUE` to overwrite")
     }
   } else {
       rm.vars <- intersect(c("cumu_hazard", "cumu_lower", "cumu_upper"),
@@ -201,7 +204,7 @@ get_cumu_hazard <- function(
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
 
-  mutate_args <- list(cumu_hazard = quo(cumsum(hazard * (!!interval_length))))
+  mutate_args  <- list(cumu_hazard = quo(cumsum(hazard * (!!interval_length))))
   vars_exclude <- c("hazard", "se")
   if (ci) {
     mutate_args <- mutate_args %>%
@@ -234,9 +237,10 @@ add_surv_prob <- function(
   interval_length = quo(intlen),
   ...)  {
 
-  if(!overwrite) {
-    if("surv_prob" %in% names(newdata)) {
-      stop("Data set already contains 'surv_prob' column. Set `overwrite=TRUE` to overwrite")
+  if (!overwrite) {
+    if ("surv_prob" %in% names(newdata)) {
+      stop("Data set already contains 'surv_prob' column.
+        Set `overwrite=TRUE` to overwrite")
     }
   } else {
       rm.vars <- intersect(
