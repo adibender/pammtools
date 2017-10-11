@@ -136,7 +136,7 @@ get_hazard <- function(
   # functions calculating the cumulative hazard will cumulate over all rows
   # instead of group wise
   if (is.grouped_df(newdata)) {
-    group.df <- select_(newdata, .dots = unlist(groups(newdata)))
+    group.df <- newdata %>% select(one_of(unlist(groups(newdata))))
     pred     <- bind_cols(group.df, pred)
   }
 
@@ -266,15 +266,15 @@ get_surv_prob <- function(
   object,
   ci              = TRUE,
   time_variable   = NULL,
-  interval_length = quo(intlen),
+  interval_length = "intlen",
   ...) {
 
   assert_class(interval_length, "quosure")
   assert_choice(as.character(interval_length)[2], colnames(newdata))
 
-  lengths <- select(rm_grpvars(newdata), !!interval_length)
+  lengths      <- select(rm_grpvars(newdata), !!interval_length)
   exclude_vars <- c("cumu_hazard")
-  mutate_args <- list(surv_prob=quo(exp(-cumu_hazard)))
+  mutate_args  <- list(surv_prob = quo(exp(-cumu_hazard)))
   if (ci) {
     mutate_args <- mutate_args %>%
       append(

@@ -5,7 +5,7 @@
 \title{Calculate survival probabilities}
 \usage{
 get_surv_prob(newdata, object, ci = TRUE, time_variable = NULL,
-  interval_length = quo(intlen), ...)
+  interval_length = "intlen", ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
