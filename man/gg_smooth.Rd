@@ -17,7 +17,7 @@ gg_smooth(x, ...)
 
 \item{...}{Further arguments passed to \code{\link{get_terms}}}
 
-\item{fit}{A fitted model object.}
+\item{fit}{A model object.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot2}} object.

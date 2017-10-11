@@ -126,7 +126,7 @@
     <p>Extract partial effects for specified model terms</p>
     
 
-    <pre class="usage"><span class='fu'>get_term</span>(<span class='no'>data</span>, <span class='no'>fit</span>, <span class='no'>term</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>get_term</span>(<span class='no'>data</span>, <span class='no'>fit</span>, <span class='no'>term</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -145,8 +145,16 @@ first row will be used.</p></td>
       <td><p>The (non-linear) model term of interest.</p></td>
     </tr>
     <tr>
+      <th>n</th>
+      <td><p>Specify the output sequence either by supplying the
+  length of the sequence with <code>n</code>, or the spacing between value
+  with <code>by</code>. Specifying both is an error.</p>
+<p>I recommend that you name these arguments in order to make it clear to
+  the reader.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>Currently ignored.</p></td>
+      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/modelr/topics/seq_range'>seq_range</a></code>.</p></td>
     </tr>
     </table>
     

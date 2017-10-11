@@ -15,19 +15,22 @@ first row will be used.}
 \item{terms}{A character vector (can be length one). Specifies the terms
 for which partial effects will be returned}
 
-\item{...}{Currently ignored.}
+\item{...}{Further arguments passed to \code{\link[modelr]{seq_range}}.}
 }
 \value{
-A data frame with 5 columns.
+A tibble with 5 columns.
 }
 \description{
-Extract the partial effects of non-linear model terms
+This function basically creates a new \code{df} from \code{data} for
+each term in \code{terms}, creating a range from minimum and maximum of the
+code{predict(fit, newdata=df, type="terms")}. Different terms are then
+stacked to a tidy data frame.
 }
 \examples{
 library(survival)
-fit <- coxph(Surv(time, status) ~ pspline(karno, df=4), data=veteran)
-term.karno <- get_terms(veteran, fit, terms="karno")
-}
-\seealso{
-\code{\link[survival]{coxph}}
+library(pammtools)
+fit <- coxph(Surv(time, status) ~ pspline(karno) + pspline(age), data=veteran)
+terms_df <- veteran \%>\% get_terms(fit, terms = c("karno", "age"))
+head(terms_df)
+tail(terms_df)
 }

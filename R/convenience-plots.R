@@ -20,7 +20,7 @@ gg_smooth <- function(x, ...) {
 
 #' @rdname gg_smooth
 #' @inherit gg_smooth
-#' @param fit A fitted model object.
+#' @param fit A model object.
 #' @export
 gg_smooth.default <- function(x, fit, ...) {
 
@@ -29,7 +29,7 @@ gg_smooth.default <- function(x, fit, ...) {
 	ggsmooth <- ggplot(sobj, aes(x=x, y=eff, group=term)) +
 		geom_hline(yintercept = 0, lty=3) +
 		geom_line() +
-		geom_ribbon(aes(ymin=ci.lower, ymax=ci.upper), alpha=0.2) +
+		geom_ribbon(aes(ymin=ci_lower, ymax=ci_upper), alpha=0.2) +
 		facet_wrap(~term, scales="free_x") +
 		ylab(expression(f[j](x[j]))) + xlab(expression(x[j]))
 
