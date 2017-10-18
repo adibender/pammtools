@@ -99,7 +99,7 @@
       <h1>Convenience functions for post-processing PAMs</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-11</h4>
+            <h4 class="date">2017-10-18</h4>
           </div>
 
     
@@ -308,7 +308,8 @@ gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 <span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> cumu_lower, <span class="dt">ymax =</span> cumu_upper, <span class="dt">fill =</span> sex), <span class="dt">alpha =</span> <span class="fl">0.3</span>) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col =</span> sex)) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_brewer">scale_color_brewer</a></span>(<span class="dt">palette =</span> <span class="st">"Set1"</span>) +
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_brewer">scale_fill_brewer</a></span>(<span class="dt">palette =</span> <span class="st">"Set1"</span>)</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_brewer">scale_fill_brewer</a></span>(<span class="dt">palette =</span> <span class="st">"Set1"</span>) +
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(t))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-14-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="references" class="section level2 unnumbered">

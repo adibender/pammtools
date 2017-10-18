@@ -7,6 +7,7 @@
 
 
 ## `pammtools`: Piece-wise exponential Additive Mixed Modeling tools
+<hr>
 
 ### Installation
 
