@@ -204,13 +204,15 @@ hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.r
 <p>If you want to customize the figure using other graphics packages you can extract the data used for plotting via:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hgb.term &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/get_terms.html">get_terms</a></span>(<span class="dt">fit =</span> pam, <span class="dt">terms =</span> <span class="st">"hgb"</span>)
 <span class="kw">head</span>(hgb.term)</code></pre></div>
-<pre><code>##   term        x      eff        se  ci.lower ci.upper
-## 1  hgb 5.700000 1.343664 0.3372254 0.6692131 2.018115
-## 2  hgb 5.833333 1.318374 0.3204017 0.6775710 1.959178
-## 3  hgb 5.966667 1.293107 0.3039764 0.6851541 1.901060
-## 4  hgb 6.100000 1.267890 0.2880331 0.6918239 1.843956
-## 5  hgb 6.233333 1.242758 0.2726550 0.6974476 1.788068
-## 6  hgb 6.366667 1.217744 0.2579154 0.7019135 1.733575</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   term      x   eff    se ci_lower ci_upper
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 hgb    5.70  1.34 0.337    0.669     2.02
+## 2 hgb    5.83  1.32 0.320    0.678     1.96
+## 3 hgb    5.97  1.29 0.304    0.685     1.90
+## 4 hgb    6.10  1.27 0.288    0.692     1.84
+## 5 hgb    6.23  1.24 0.273    0.697     1.79
+## 6 hgb    6.37  1.22 0.258    0.702     1.73</code></pre>
 <p>For convenience we also include a function that plots mutiple selected smooth effects in one figure<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/gg_smooth.html">gg_smooth</a></span>(pam, <span class="dt">terms =</span> <span class="kw">c</span>(<span class="st">"tend"</span>, <span class="st">"hgb"</span>))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-8-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -247,50 +249,50 @@ hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.r
 ## 6    356   424  68.0     390 (356,424]  67.1  13.7 M</code></pre>
 <p>This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_hazard</a></span>(pam)
-ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(interval, hazard, lower, upper) %&gt;%<span class="st"> </span><span class="kw">head</span>()</code></pre></div>
+ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(interval, hazard, ci_lower, ci_upper) %&gt;%<span class="st"> </span><span class="kw">head</span>()</code></pre></div>
 <pre><code>## # A tibble: 6 x 4
-##   interval  hazard   lower   upper
-##   &lt;fctr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (0,1]    0.00868 0.00701 0.0107 
-## 2 (1,2]    0.00841 0.00685 0.0103 
-## 3 (2,3]    0.00815 0.00668 0.00995
-## 4 (3,4]    0.00790 0.00652 0.00958
-## 5 (4,5]    0.00766 0.00636 0.00923
-## 6 (5,6]    0.00743 0.00620 0.00889</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(interval, hazard, lower, upper) %&gt;%<span class="st"> </span><span class="kw">tail</span>()</code></pre></div>
+##   interval  hazard ci_lower ci_upper
+##   &lt;fctr&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (0,1]    0.00868  0.00701  0.0107 
+## 2 (1,2]    0.00841  0.00685  0.0103 
+## 3 (2,3]    0.00815  0.00668  0.00995
+## 4 (3,4]    0.00790  0.00652  0.00958
+## 5 (4,5]    0.00766  0.00636  0.00923
+## 6 (5,6]    0.00743  0.00620  0.00889</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(interval, hazard, ci_lower, ci_upper) %&gt;%<span class="st"> </span><span class="kw">tail</span>()</code></pre></div>
 <pre><code>## # A tibble: 6 x 4
-##   interval  hazard   lower  upper
-##   &lt;fctr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1 (282,287] 0.0158 0.00881 0.0284
-## 2 (287,314] 0.0154 0.00725 0.0325
-## 3 (314,315] 0.0153 0.00719 0.0328
-## 4 (315,321] 0.0153 0.00680 0.0342
-## 5 (321,356] 0.0153 0.00547 0.0426
-## 6 (356,424] 0.0172 0.00244 0.121</code></pre>
+##   interval  hazard ci_lower ci_upper
+##   &lt;fctr&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (282,287] 0.0158  0.00881   0.0284
+## 2 (287,314] 0.0154  0.00725   0.0325
+## 3 (314,315] 0.0153  0.00719   0.0328
+## 4 (315,321] 0.0153  0.00680   0.0342
+## 5 (321,356] 0.0153  0.00547   0.0426
+## 6 (356,424] 0.0172  0.00244   0.121</code></pre>
 <p>Which in turn can be conveniently plotted using respective functions, e.g.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(ped_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend)) +
 <span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> hazard)) +
-<span class="st">    </span><span class="kw"><a href="../reference/geom_stepribbon.html">geom_stepribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">alpha =</span> <span class="fl">0.2</span>) +
+<span class="st">    </span><span class="kw"><a href="../reference/geom_stepribbon.html">geom_stepribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> ci_lower, <span class="dt">ymax =</span> ci_upper), <span class="dt">alpha =</span> <span class="fl">0.2</span>) +
 <span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(lambda)(t))) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(t))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>or the cumulative hazard</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gg.chaz &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_cumhazard</a></span>(pam) %&gt;%
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> cumhazard, <span class="dt">ymin =</span> cumlower, <span class="dt">ymax =</span> cumupper))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gg.chaz &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pam) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> cumu_hazard, <span class="dt">ymin =</span> cumu_lower, <span class="dt">ymax =</span> cumu_upper))
 gg.chaz +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>() +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>) +
 <span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(t))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-12-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>or the survival probabilities</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gg.surv &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_survprob.html">add_survprob</a></span>(pam) %&gt;%
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> survprob, <span class="dt">ymax =</span> survlower, <span class="dt">ymin =</span> survupper))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gg.surv &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_surv_prob.html">add_surv_prob</a></span>(pam) %&gt;%
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> surv_prob, <span class="dt">ymax =</span> surv_lower, <span class="dt">ymin =</span> surv_upper))
 gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>() +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(S)(t))) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(t))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-13-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>This approach is very convenient, as the usual tidy <code>dplyr</code> workflow can be maintained throughout, for example, if we wanted to plot the cumulative hazard for different sexes:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pinfo.sex &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(sex) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/ped_info.html">ped_info</a></span>() %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_cumhazard</a></span>(pam)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pinfo.sex &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(sex) %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/ped_info.html">ped_info</a></span>() %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pam)
 <span class="kw">head</span>(pinfo.sex)</code></pre></div>
 <pre><code>## # A tibble: 6 x 11
 ## # Groups:   sex [1]
-##   tstart  tend intl… intm… inte…   age   hgb sex   cumhaz… cumlow… cumupp…
+##   tstart  tend intl… intm… inte…   age   hgb sex   cumu_h… cumu_l… cumu_u…
 ##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ## 1   0     1.00  1.00 0.500 (0,1]  68.4  13.1 F     0.00646 0.00518 0.00806
 ## 2   1.00  2.00  1.00 1.50  (1,2]  68.4  13.1 F     0.0127  0.0102  0.0158 
@@ -302,8 +304,8 @@ gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 <pre><code>## 
 ##   F   M 
 ## 218 218</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(pinfo.sex, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> cumhazard)) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> cumlower, <span class="dt">ymax =</span> cumupper, <span class="dt">fill =</span> sex), <span class="dt">alpha =</span> <span class="fl">0.3</span>) +
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(pinfo.sex, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> cumu_hazard)) +
+<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> cumu_lower, <span class="dt">ymax =</span> cumu_upper, <span class="dt">fill =</span> sex), <span class="dt">alpha =</span> <span class="fl">0.3</span>) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col =</span> sex)) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_brewer">scale_color_brewer</a></span>(<span class="dt">palette =</span> <span class="st">"Set1"</span>) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_brewer">scale_fill_brewer</a></span>(<span class="dt">palette =</span> <span class="st">"Set1"</span>)</code></pre></div>
