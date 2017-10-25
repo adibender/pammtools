@@ -17,6 +17,11 @@ sample_info(x, ...)
 
 \item{...}{Further arguments passed to specialized methods.}
 }
+\value{
+A data frame containing sample information (for each group).
+Note: When applied to a \code{ped} object, that doesn't contain covariates
+(only interval information), returns data frame with 0 columns.
+}
 \description{
 Given a data set and grouping variables, this function returns median values
 for numeric variables and modus for characters and factors.

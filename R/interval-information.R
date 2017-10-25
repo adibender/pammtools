@@ -173,10 +173,15 @@ ped_info <- function(ped) {
 
   int_df <- int_info(ped)
   sdf    <- sample_info(ped)
-  bind_cols(
-    int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
-    sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
-    grouped_df(vars = groups(sdf))
+  if(is.null(sdf)) {
+    return(int_df)
+  } else {
+    bind_cols(
+      int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
+      sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
+      grouped_df(vars = groups(sdf))
+  }
+
 }
 
 #' Extract risk set information for each interval.

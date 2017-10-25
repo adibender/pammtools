@@ -157,7 +157,7 @@ same src as \code{x}.  This allows you to join tables across srcs, but
 it is a potentially expensive operation so you must opt into it.}
 
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
-\code{y}, these suffixes will be added to the output to disambiguate them.
+\code{y}, these suffixes will be added to the output to diambiguate them.
 Should be a character vector of length 2.}
 }
 \value{

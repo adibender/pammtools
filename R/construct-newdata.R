@@ -43,12 +43,19 @@ sample_info.data.frame <- function(x, ...) {
 #' @export
 #' @rdname sample_info
 #' @seealso \code{\link[pammtools]{split_data}}
+#' @return A data frame containing sample information (for each group).
+#' Note: When applied to a \code{ped} object, that doesn't contain covariates
+#' (only interval information), returns data frame with 0 columns.
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
   iv <- attr(x, "intvars")
   x <- x %>% select(-one_of(iv))
-  sample_info.data.frame(x, ...)
+  if (test_data_frame(x, min.rows = 1, min.cols = 1)) {
+    sample_info.data.frame(x, ...)
+  } else {
+    NULL
+  }
 
 }
 
