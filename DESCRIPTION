@@ -1,6 +1,6 @@
 Package: pammtools
 Title: Piece-wise exponential Additive Mixed Modeling tools
-Version: 0.0.3
+Version: 0.0.3.9000
 Date: 2017-10-10
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
