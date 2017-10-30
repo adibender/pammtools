@@ -6,11 +6,11 @@
 #' @param ... Further arguments passed to methods.
 #' @return A data frame class \code{ped} in piece-wise exponential data (PED) format.
 #' @keywords internal
-as_ped <- function(x, data, tdc_df=NULL, ...) {
+as_ped <- function(x, data, tdc_df = NULL, ...) {
 	UseMethod("as_ped", x)
 }
 
-as_ped.formula <- function(x, data, tdc_df=NULL, ...) {
+as_ped.formula <- function(x, data, tdc_df = NULL, ...) {
 
 	if (is.null(tdc_df)) {
 		split_data(x, data, ...)

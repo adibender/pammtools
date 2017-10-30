@@ -1,14 +1,3 @@
-#' Extract character vector of grouping variables
-#'
-#' @importFrom dplyr groups
-#' @param data A data frame (potentially `grouped_df`) from which to extract
-#' names of grouping variables.
-#' @return A character vector (of length 0 if no grouping variables present).
-#' @keywords internal
-get_grpvars <- function(data) {
-  vapply(groups(data), as.character, character(1))
-}
-
 #' Return ungrouped data frame without grouping variables
 #'
 #' @param data A data frame (potentially `grouped_df`) from which grouping
