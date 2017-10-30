@@ -136,7 +136,7 @@ get_hazard <- function(
   # functions calculating the cumulative hazard will cumulate over all rows
   # instead of group wise
   if (is.grouped_df(newdata)) {
-    group.df <- newdata %>% select(one_of(unlist(groups(newdata))))
+    group.df <- newdata %>% select(one_of(group_vars(newdata)))
     pred     <- bind_cols(group.df, pred)
   }
 

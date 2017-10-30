@@ -13,3 +13,4 @@
 ^LICENSE\.md$
 ^_pkgdown\.yml$
 ^vignettes$
+^README\.Rmd$
