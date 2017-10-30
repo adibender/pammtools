@@ -19,9 +19,12 @@ get_grpvars <- function(data) {
 rm_grpvars <- function(data) {
 
   if(is.grouped_df(data)) {
-    grp.vars <- get_grpvars(data)
-    data <- data %>% ungroup() %>% select(-one_of(grp.vars))
+    grp.vars <- group_vars(data)
+    data     <- data %>%
+      ungroup() %>%
+      select(-one_of(grp.vars))
   }
+
   return(data)
 
 }
