@@ -211,7 +211,7 @@ riskset_info <- function(ped) {
   # how often is interval the last row for a given id when status == 0?
   censored <- ped %>% group_by(id, add = TRUE) %>%
     arrange(tend) %>% slice(n()) %>%
-    filter(ped_status == 0) %>% ungroup(id) %>%
+    filter(.data$ped_status == 0) %>% ungroup(id) %>%
     grouped_df(vars = c(groups(ped), as.symbol("interval"))) %>%
     summarize(ped_censored = n())
 
@@ -219,9 +219,10 @@ riskset_info <- function(ped) {
   ped %>% group_by(interval, add = TRUE) %>%
     summarize(
       ped_riskset = n(),
-      ped_events = sum(ped_status)) %>%
+      ped_events = sum(.data$ped_status)) %>%
     left_join(censored, by = join_vars) %>%
-    mutate(ped_censored = ifelse(is.na(ped_censored), 0, ped_censored))
+    mutate(ped_censored = ifelse(is.na(.data$ped_censored),
+        0, .data$ped_censored))
 }
 
 #' Extract information for plotting step functions

@@ -103,7 +103,7 @@ sim_wce <- function(Xdf, tmax=30) {
 	Xdf$time                    <- new.times[Xdf$id]
 	Xdf$status                  <- 0
 
-	Xdf_sub      <- subset(Xdf, tstart < time)
+	Xdf_sub      <- Xdf[Xdf$tstart < Xdf$time, ]
 	Xdf_sub$time <- round(Xdf_sub$time, 2) + 0.01# round to have less splits,
 	# +0.01 to avoid 0.00 times
 	sub_ind                 <- cumsum(rle(Xdf_sub$id)$lengths)
@@ -134,8 +134,8 @@ sim_wce2 <- function(Xdf, tmax=30) {
 			id   = unique(Xdf$id),
 			time = round(sapply(rt.l, do.call, what = rpexp), 2) + 0.01)	%>% # +0.01 to avoid 0.00 times
 		mutate(
-			status = (time <= tmax)*1,
-			time   = ifelse(time > tmax, tmax, time))
+			status = (.data$time <= tmax)*1,
+			time   = ifelse(.data$time > tmax, tmax, .data$time))
 	first        <- !(duplicated(Xdf$id))
 	new_df$Z     <- Xdf$Z[first, ]
 	new_df$te_df <- Xdf$te_df[first, ]

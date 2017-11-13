@@ -58,6 +58,7 @@ predictSurvProb.pamm <- function(
 #' @importFrom modelr crossv_kfold
 #' @importFrom purrr map map2
 #' @importFrom tidyr unnest
+#' @importFrom rlang .data
 #' @seealso \code{\link[pec]{pec}}, \code{\link[pec]{ipcw}}
 #' @keywords internal
 #' @export
@@ -78,8 +79,8 @@ pec_cv <- function(
 
 	cv_df %>%
 		mutate(
-			idx_train = map(train, as.integer),
-			idx_test  = map(test, as.integer),
+			idx_train = map(.data$train, as.integer),
+			idx_test  = map(.data$test, as.integer),
 			pec       = map2(
 				idx_train,
 				idx_test,
@@ -163,7 +164,7 @@ tidy_pec <- function(pec) {
 	assert_class(pec, "pec")
 
 	as.data.frame(pec[c( "time", "AppErr")]) %>%
-		gather(method, brier, -time) %>%
-		mutate(method = sub("AppErr.", "", method, fixed=TRUE))
+		gather(.data$method, .data$brier, -.data$time) %>%
+		mutate(method = sub("AppErr.", "", .data$method, fixed=TRUE))
 
 }
