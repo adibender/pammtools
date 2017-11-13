@@ -5,7 +5,7 @@
 \title{Add survival probability estimates to data set}
 \usage{
 add_surv_prob(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
-  time_variable = NULL, interval_length = quo(intlen), ...)
+  time_variable = NULL, interval_length = "intlen", ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -32,8 +32,8 @@ not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
 
-\item{interval_length}{\code{quosure} providing the name of the variable in
-newdata containing the interval lengths. Defaults to \code{intlen}.}
+\item{interval_length}{The variable in newdata containing the interval lengths.
+Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}

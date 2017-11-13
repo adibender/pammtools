@@ -108,10 +108,11 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
   # Add variables for piece-wise exponential (additive) model
   split_df  <- split_df %>%
     mutate(
-      ped_status = ifelse(ped_status == 1 & ped_time > max(cut), 0, ped_status),
-      ped_time   = pmin(ped_time, max(cut)),
-      offset     = log(ped_time - tstart)) %>%
-    filter(!(tstart == ped_time))
+      ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
+          0, .data$ped_status),
+      ped_time   = pmin(.data$ped_time, max(cut)),
+      offset     = log(.data$ped_time - tstart)) %>%
+    filter(!(tstart == .data$ped_time))
 
 
   ## combine data with general interval info
@@ -121,7 +122,8 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
   move <- c(id_var, "tstart", "tend", "interval", "intmid", "intlen", "offset",
     "ped_time", "ped_status")
   split_df <- split_df %>%
-    select(one_of(move), everything(), -intmid, -intlen, -ped_time)
+    select(one_of(move), everything(),
+      -one_of(c("intmid", "intlen", "ped_time")))
 
 
   ## set class and and attributes

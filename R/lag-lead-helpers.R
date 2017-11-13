@@ -137,8 +137,7 @@ create_Lmat <- function(
   }) * 1
 
   ints <- data.frame(intsL=int.info$interval, Lcols=ints)
-  filter(ints, intsL %in% int.keep)
-
+  filter(ints, .data$intsL %in% int.keep)
 
 }
 

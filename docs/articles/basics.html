@@ -99,7 +99,7 @@
       <h1>Basic Modeling</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-10-30</h4>
+            <h4 class="date">2017-11-14</h4>
           </div>
 
     
@@ -127,13 +127,13 @@
 
 <span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>)
 <span class="co"># remove ties to illustrate equivalence with Cox approach</span>
-vetu &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(veteran, !<span class="kw">duplicated</span>(time))
-vetu.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">cut =</span> <span class="kw">unique</span>(vetu$time),
+vetu &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(veteran, <span class="op">!</span><span class="kw">duplicated</span>(time))
+vetu.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span>., <span class="dt">cut =</span> <span class="kw">unique</span>(vetu<span class="op">$</span>time),
     <span class="dt">data =</span> vetu, <span class="dt">id =</span> <span class="st">"id"</span>)
-pem.age &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status ~<span class="st"> </span>interval -<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span>age, <span class="dt">data =</span> vetu.ped,
+pem.age &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status <span class="op">~</span><span class="st"> </span>interval <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age, <span class="dt">data =</span> vetu.ped,
     <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)
 ## cox model for comparison
-cph.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span>age, <span class="dt">data =</span> vetu)
+cph.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) <span class="op">~</span><span class="st"> </span>age, <span class="dt">data =</span> vetu)
 ## compare coefficients
 <span class="kw">cbind</span>(
   <span class="dt">pem =</span> <span class="kw">coef</span>(pem.age)[<span class="st">"age"</span>],
@@ -147,11 +147,11 @@ cph.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <a href="#full-data-set" class="anchor"></a>Full data set</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Using the full data set (with ties) yields slightly different results
 <span class="co"># when comparing PEM to Cox-PH</span>
-vet.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">cut =</span> <span class="kw">unique</span>(veteran$time),
+vet.ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span>., <span class="dt">cut =</span> <span class="kw">unique</span>(veteran<span class="op">$</span>time),
     <span class="dt">data =</span> veteran, <span class="dt">id =</span> <span class="st">"id"</span>)
-pem2.age &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status ~<span class="st"> </span>interval -<span class="st"> </span><span class="dv">1</span> +<span class="st"> </span>age, <span class="dt">data =</span> vet.ped,
+pem2.age &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status <span class="op">~</span><span class="st"> </span>interval <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>age, <span class="dt">data =</span> vet.ped,
     <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)
-cph2.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span>age, <span class="dt">data =</span> veteran)
+cph2.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) <span class="op">~</span><span class="st"> </span>age, <span class="dt">data =</span> veteran)
 ## compare coefficient estimate to Cox-PH estimate
 <span class="kw">cbind</span>(
   <span class="dt">pem =</span> <span class="kw">coef</span>(pem2.age)[<span class="st">"age"</span>],
@@ -171,7 +171,7 @@ cph2.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdoc
 <p>Note that coefficient estimates in PAMs are no longer equivalent to those from Cox PH models, since the estimation of the baseline hazard is performed semi-parametrically. In our experience the differences are very small.</p>
 <p>Using the example above we get:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## compare to PAM
-pam.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>age, <span class="dt">data =</span> vetu.ped,
+pam.age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span>age, <span class="dt">data =</span> vetu.ped,
     <span class="dt">family =</span> <span class="st">"poisson"</span>, <span class="dt">offset =</span> offset)
 <span class="kw">cbind</span>(
     <span class="dt">pam =</span> <span class="kw">coef</span>(pam.age)[<span class="st">"age"</span>],
