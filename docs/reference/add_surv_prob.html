@@ -127,7 +127,7 @@
     
 
     <pre class="usage"><span class='fu'>add_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se.mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fu'>quo</span>(<span class='no'>intlen</span>), <span class='no'>...</span>)</pre>
+  <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -169,8 +169,8 @@ numeric.</p></td>
     </tr>
     <tr>
       <th>interval_length</th>
-      <td><p><code>quosure</code> providing the name of the variable in
-newdata containing the interval lengths. Defaults to <code>intlen</code>.</p></td>
+      <td><p>The variable in newdata containing the interval lengths.
+Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
