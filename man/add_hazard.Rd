@@ -9,7 +9,7 @@ add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
   se.mult = 2, overwrite = FALSE, time_variable = NULL, ...)
 
 add_cumu_hazard(newdata, object, ci = TRUE, se.mult = 2,
-  overwrite = FALSE, time_variable = NULL, interval_length = quo(intlen),
+  overwrite = FALSE, time_variable = NULL, interval_length = "intlen",
   ...)
 }
 \arguments{
@@ -57,8 +57,8 @@ numeric.}
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}
 
-\item{interval_length}{\code{quosure} providing the name of the variable in
-newdata containing the interval lengths. Defaults to \code{intlen}.}
+\item{interval_length}{The variable in newdata containing the interval lengths.
+Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 }
 \description{
 Add predicted hazard to data set

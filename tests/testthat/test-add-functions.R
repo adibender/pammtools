@@ -11,11 +11,14 @@ pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
 
 test_that("hazard functions work for PAM", {
 
-  expect_data_frame(haz <- add_hazard(ped_info(ped), pam),
-    nrows = 5, ncols = 11)
+  expect_data_frame(haz <- add_hazard(ped_info(ped), pam), nrows = 5, ncols = 11)
   expect_error(add_hazard(haz, pam))
   expect_data_frame(add_hazard(haz, pam, overwrite = TRUE),
     nrows = 5L, ncols = 11L)
+
+})
+
+test_that("hazard functions accept unquoted bare names", {
 
 })
 
@@ -94,11 +97,15 @@ test_that("works for nonstandard baseline arguments", {
 
   expect_equal(
     add_cumu_hazard(pseudonymous[1:5, ], p_pam, time_variable = "stop",
-      interval_length = dplyr::quo(length))$cumu_hazard,
+      interval_length = length)$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pam)$cumu_hazard)
   expect_equal(
     add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_variable = "int",
-      interval_length = dplyr::quo(length))$cumu_hazard,
+      interval_length = length)$cumu_hazard,
+    add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
+  expect_equal(
+    add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_variable = "int",
+      interval_length = "length")$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
 })
 

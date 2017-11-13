@@ -148,8 +148,8 @@ get_hazard <- function(
 #'
 #' @rdname add_hazard
 #' @inheritParams add_hazard
-#' @param interval_length \code{quosure} providing the name of the variable in
-#'  newdata containing the interval lengths. Defaults to \code{intlen}.
+#' @param interval_length The variable in newdata containing the interval lengths.
+#' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
 #' @importFrom dplyr bind_cols
 #' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 #' @export
@@ -161,8 +161,10 @@ add_cumu_hazard <- function(
   se.mult         = 2,
   overwrite       = FALSE,
   time_variable   = NULL,
-  interval_length = quo(intlen),
+  interval_length = "intlen",
   ...)  {
+
+  interval_length <- quo_name(enquo(interval_length))
 
   if (!overwrite) {
     if ("cumu_hazard" %in% names(newdata)) {
@@ -177,7 +179,8 @@ add_cumu_hazard <- function(
   }
 
   pred <- get_cumu_hazard(newdata, object, ci = ci, se.mult = se.mult,
-    time_variable = time_variable, interval_length = interval_length, ...)
+    time_variable = time_variable, interval_length = interval_length,
+    ...)
 
   newdata <- newdata %>% bind_cols(rm_grpvars(pred))
 
@@ -189,18 +192,20 @@ add_cumu_hazard <- function(
 #'
 #' @inheritParams add_cumu_hazard
 #' @import checkmate dplyr
-#' @importFrom rlang quo UQ UQS
+#' @importFrom rlang UQ sym quo_name .data
 #' @keywords internal
 get_cumu_hazard <- function(
   newdata,
   object,
   ci              = TRUE,
   time_variable   = NULL,
-  interval_length = quo(intlen),
+  interval_length = "intlen",
   ...) {
 
-  assert_class(interval_length, "quosure")
-  assert_choice(as.character(interval_length)[2], colnames(newdata))
+  assert_character(interval_length)
+  assert_subset(interval_length, colnames(newdata))
+
+  interval_length <- sym(interval_length)
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
 
@@ -210,8 +215,8 @@ get_cumu_hazard <- function(
     mutate_args <- mutate_args %>%
       append(
         list(
-          cumu_lower = quo(cumsum(ci_lower * (!!interval_length))),
-          cumu_upper = quo(cumsum(ci_upper * (!!interval_length)))))
+          cumu_lower = quo(cumsum(.data$ci_lower * (!!interval_length))),
+          cumu_upper = quo(cumsum(.data$ci_upper * (!!interval_length)))))
     vars_exclude <- c(vars_exclude, "ci_lower", "ci_upper")
   }
   get_hazard(newdata, object, ci = ci, type = "response",
@@ -234,8 +239,10 @@ add_surv_prob <- function(
   se.mult         = 2,
   overwrite       = FALSE,
   time_variable   = NULL,
-  interval_length = quo(intlen),
+  interval_length = "intlen",
   ...)  {
+
+  interval_length <- quo_name(enquo(interval_length))
 
   if (!overwrite) {
     if ("surv_prob" %in% names(newdata)) {
@@ -250,7 +257,8 @@ add_surv_prob <- function(
   }
 
   pred <- get_surv_prob(newdata, object, ci = ci, se.mult = se.mult,
-    time_variable = time_variable, interval_length = interval_length, ...)
+    time_variable = time_variable, interval_length = interval_length,
+    ...)
 
   newdata %>% bind_cols(rm_grpvars(pred))
 
@@ -269,23 +277,23 @@ get_surv_prob <- function(
   interval_length = "intlen",
   ...) {
 
-  assert_class(interval_length, "quosure")
-  assert_choice(as.character(interval_length)[2], colnames(newdata))
+  assert_character(interval_length)
+  assert_choice(interval_length, colnames(newdata))
 
-  lengths      <- select(rm_grpvars(newdata), !!interval_length)
   exclude_vars <- c("cumu_hazard")
-  mutate_args  <- list(surv_prob = quo(exp(-cumu_hazard)))
+  mutate_args  <- list(surv_prob = quo(exp(-.data$cumu_hazard)))
   if (ci) {
     mutate_args <- mutate_args %>%
       append(
         list(
-          surv_lower = quo(exp(-cumu_lower)),
-          surv_upper = quo(exp(-cumu_upper))))
+          surv_lower = quo(exp(-.data$cumu_lower)),
+          surv_upper = quo(exp(-.data$cumu_upper))))
     exclude_vars <- c(exclude_vars, "cumu_lower", "cumu_upper")
   }
 
   newdata %>%
-    get_cumu_hazard(object, ci = ci, time_variable = time_variable, ...) %>%
+    get_cumu_hazard(object, ci = ci, time_variable = time_variable,
+      interval_length = interval_length, ...) %>%
     mutate(!!!mutate_args) %>%
     select(-one_of(exclude_vars))
 
