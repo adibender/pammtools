@@ -15,7 +15,7 @@
 get_tdc <- function(event_df, id_var) {
 
 	event_df %>% group_by_(.dots=list(id_var)) %>%
-		summarize_all(.funs=funs(any(length(unique(.)) > 1))) %>%
+		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
 		select_if(any) %>%
 		names()
 

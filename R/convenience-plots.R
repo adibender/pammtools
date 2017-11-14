@@ -26,7 +26,7 @@ gg_smooth.default <- function(x, fit, ...) {
 
 	sobj <- get_terms(data=x, fit=fit, ...)
 
-	ggsmooth <- ggplot(sobj, aes(x=x, y=eff, group=term)) +
+	ggsmooth <- ggplot(sobj, aes_string(x="x", y="eff", group="term")) +
 		geom_hline(yintercept = 0, lty=3) +
 		geom_line() +
 		geom_ribbon(aes_string(ymin="ci_lower", ymax="ci_upper"), alpha=0.2) +
@@ -43,11 +43,11 @@ gg_smooth.pamm <- function(x, ...) {
 
 	smooths1d <- tidy_smooth(unpam(x)) %>%
 	mutate(
-		lower = fit - se,
-		upper = fit + se)
+		lower = .data$fit - .data$se,
+		upper = .data$fit + .data$se)
 
-	ggplot(smooths1d, aes(x=x, y=fit)) +
-	geom_ribbon(aes(ymin=lower, ymax = upper), alpha=0.3) +
+	ggplot(smooths1d, aes_string(x="x", y="fit")) +
+	geom_ribbon(aes_string(ymin="lower", ymax = "upper"), alpha=0.3) +
 	geom_line() +
 	facet_wrap(~ylab)
 
@@ -73,16 +73,16 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 	df2d <- tidy_smooth2d(x, ci=ci, se=ci, ...)
 	if (ci) {
 		df2d <- df2d %>%
-			gather(type, fit, fit, low, high) %>%
+			gather("type", "fit", .data$fit, .data$low, .data$high) %>%
 			mutate(
 				type = factor(
-					type,
+					.data$type,
 					levels = c("low", "fit", "high"),
 					labels = c("lower", "fit", "upper")))
 	}
 
 	gg2d <- ggplot(df2d, aes_string(x="x", y="y", z="fit")) +
-		geom_raster(aes(fill=fit)) +
+		geom_raster(aes_string(fill="fit")) +
 		scale_fill_gradient2(
 			name = expression(f(list(x,y))),
 			low  = "steelblue", high = "firebrick2") +
@@ -112,7 +112,7 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 gg_re <- function(x, ...) {
 
 	re <- tidy_re(x, ...)
-	ggplot(re, aes(sample=fit)) +
+	ggplot(re, aes_string(sample="fit")) +
 		geom_abline(aes_string(intercept="qqintercept", slope="qqslope")) +
 		geom_qq(distribution="qnorm") +
 		facet_wrap(~main) +

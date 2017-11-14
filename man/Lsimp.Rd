@@ -11,9 +11,9 @@ Lsimp(te_vec, t_vec, ll_fun = function(te, t) {     te <= t })
 
 \item{t_vec}{The vector of event/split-times on the scale of the follow-up.}
 
-\item{ll_fun}{Function with two arguments that indicates how lag-lead matrix 
-should be contructed. First argument is the time on the scale of the exposure, 
-second argument is the time on the scale of the follow-up. Internally the 
+\item{ll_fun}{Function with two arguments that indicates how lag-lead matrix
+should be contructed. First argument is the time on the scale of the exposure,
+second argument is the time on the scale of the follow-up. Internally the
 lag lead matrix will be constructed by calling \code{t(outer(te_vec, t_vec, ll_fun))}.}
 }
 \description{

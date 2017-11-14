@@ -42,15 +42,15 @@ reference:
       - gg_re
       - geom_stepribbon
 articles:
-    title: "Articles"
+  - title: "Articles"
     desc: "Several articles that describe the usage of PAMMs"
     contents:
-      - data-transformation
-      - basics
-      - baseline
-      - splines
-      - strata
-      - tdcovar
-      - tveffects
-      - frailty
-      - convenience
+    - data-transformation
+    - basics
+    - baseline
+    - splines
+    - strata
+    - tdcovar
+    - tveffects
+    - frailty
+    - convenience

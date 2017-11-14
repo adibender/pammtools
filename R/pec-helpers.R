@@ -19,7 +19,7 @@ predictSurvProb.pamm <- function(
 	assert_class(object, "pamm")
 	## to calculate survival probabilities
 	int_df <- int_info(object) %>%
-		filter(tstart <= max(times))
+		filter(.data$tstart <= max(times))
 	newdata <- newdata %>% mutate(.id = row_number())
 
 	## calculate survival probabilities
@@ -82,8 +82,8 @@ pec_cv <- function(
 			idx_train = map(.data$train, as.integer),
 			idx_test  = map(.data$test, as.integer),
 			pec       = map2(
-				idx_train,
-				idx_test,
+				.data$idx_train,
+				.data$idx_test,
 				.f           = pec_pamm,
 				formula_ped  = formula_ped,
 				formula_pam  = formula_pam,

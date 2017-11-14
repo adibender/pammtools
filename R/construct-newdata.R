@@ -22,7 +22,7 @@ sample_info.data.frame <- function(x, ...) {
   assert_data_frame(x, all.missing = FALSE, min.rows = 1, min.cols = 1)
 
   cn  <- colnames(x)
-  num <- summarize_if(x, .predicate = is.numeric, funs(mean(., na.rm = TRUE)))
+  num <- summarize_if(x, .predicate = is.numeric, ~mean(., na.rm = TRUE))
   fac <- summarize_if(x, .predicate = compose("!", is.numeric), modus)
 
   nnames <- intersect(names(num), names(fac))

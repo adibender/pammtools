@@ -55,7 +55,7 @@ int_info.default <- function(
     mutate(
       intmid = tstart + intlen/2,
       interval = paste0("(", tstart, ",", tend, "]"),
-      interval = factor(interval, levels=interval))
+      interval = factor(.data$interval, levels=.data$interval))
 
   filter(tdf, tstart >= min.time)
 
@@ -210,13 +210,13 @@ riskset_info <- function(ped) {
 
   # how often is interval the last row for a given id when status == 0?
   censored <- ped %>% group_by(id, add = TRUE) %>%
-    arrange(tend) %>% slice(n()) %>%
+    arrange(.data$tend) %>% slice(n()) %>%
     filter(.data$ped_status == 0) %>% ungroup(id) %>%
     grouped_df(vars = c(groups(ped), as.symbol("interval"))) %>%
     summarize(ped_censored = n())
 
   join_vars <- unlist(c(sapply(groups(ped), deparse), "interval"))
-  ped %>% group_by(interval, add = TRUE) %>%
+  ped %>% group_by(.data$interval, add = TRUE) %>%
     summarize(
       ped_riskset = n(),
       ped_events = sum(.data$ped_status)) %>%
@@ -243,9 +243,9 @@ plot_df <- function(pinfo) {
 
   bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>%
     mutate(
-      tend   = lag(tend, default   = min(tstart)),
-      intlen = lag(intlen, default = intlen[1])) %>%
+      tend   = lag(.data$tend, default   = min(.data$tstart)),
+      intlen = lag(.data$intlen, default = .data$intlen[1])) %>%
     select(-one_of("interval", "tstart")) %>%
-    rename(time=tend)
+    rename("time"="tend")
 
 }

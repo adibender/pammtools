@@ -114,22 +114,22 @@ get_hazard <- function(
       hazard = "fit",
       se     = "se.fit") %>%
     mutate(
-      hazard = as.numeric(hazard),
-      se     = as.numeric(se))
+      hazard = as.numeric(.data$hazard),
+      se     = as.numeric(.data$se))
   stopifnot(nrow(pred) == nrow(newdata))
 
   mutate_vars <- c("hazard")
   if (ci) {
     pred <- pred %>%
       mutate(
-        ci_lower = hazard - se.mult * se,
-        ci_upper = hazard + se.mult * se)
+        ci_lower = .data$hazard - se.mult * .data$se,
+        ci_upper = .data$hazard + se.mult * .data$se)
     mutate_vars <- c(mutate_vars, "ci_lower", "ci_upper")
   }
 
   if (type == "response") {
     pred <- pred %>%
-      mutate_at(mutate_vars, funs(exp(.)))
+      mutate_at(mutate_vars, exp)
   }
 
   # it is necessary to include the grouping variables here, otherwise
@@ -209,7 +209,7 @@ get_cumu_hazard <- function(
 
   lengths <- select(rm_grpvars(newdata), !!interval_length)
 
-  mutate_args  <- list(cumu_hazard = quo(cumsum(hazard * (!!interval_length))))
+  mutate_args  <- list(cumu_hazard = quo(cumsum(.data$hazard * (!!interval_length))))
   vars_exclude <- c("hazard", "se")
   if (ci) {
     mutate_args <- mutate_args %>%
