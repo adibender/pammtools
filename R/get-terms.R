@@ -35,8 +35,8 @@ get_term <- function(data, fit, term, n = 100, ...) {
 			eff  = as.numeric(term_info$fit[, index_term]),
 			se   = as.numeric(term_info$se.fit[, index_term])) %>%
 		mutate(
-			ci_lower = eff - 2*se,
-			ci_upper = eff + 2*se) %>%
+			ci_lower = .data$eff - 2*.data$se,
+			ci_upper = .data$eff + 2*.data$se) %>%
 	select(one_of(c("term", term_name, "eff", "se", "ci_lower", "ci_upper"))) %>%
 	rename(x = UQ(term_name)) %>%
 	as_tibble()

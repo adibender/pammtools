@@ -48,7 +48,7 @@ add_term <- function(
   is_pam <- inherits(object, "gam")
 
   X <- if (is_pam) {
-    predict(object, newdata = newdata, type = "lpmatrix", ...)[,col_ind, drop=FALSE]
+    predict(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
   } else  {
     model.matrix(object$formula[-2], data = newdata)[,col_ind, drop=FALSE]
   }
@@ -78,8 +78,8 @@ add_term <- function(
   	se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
 		newdata <- newdata %>%
       mutate(
-        low  = fit - se.mult * se,
-        high = fit + se.mult * se)
+        low  = .data$fit - se.mult * se,
+        high = .data$fit + se.mult * se)
   }
 
   return(newdata)

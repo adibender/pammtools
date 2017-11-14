@@ -97,8 +97,8 @@ tidy_smooth <- function(
 		if(ci) {
 			temp <- temp %>%
 				mutate(
-					low  = fit - se,
-					high = fit + se)
+					low  = .data$fit - .data$se,
+					high = .data$fit + .data$se)
 		}
 		temp
 	})
@@ -140,8 +140,8 @@ tidy_smooth2d <- function(
 		if(ci) {
 			xy <- xy %>%
 				mutate(
-					low  = fit - se,
-					high = fit + se)
+					low  = .data$fit - .data$se,
+					high = .data$fit + .data$se)
 		}
 		xy
 	})
