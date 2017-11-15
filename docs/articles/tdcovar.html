@@ -99,7 +99,7 @@
       <h1>Time-dependent covariates</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-11-14</h4>
+            <h4 class="date">2017-11-15</h4>
           </div>
 
     
@@ -122,7 +122,7 @@ Set1 &lt;-<span class="st"> </span>RColorBrewer::<span class="kw">brewer.pal</sp
 recidivism &lt;-<span class="st"> </span><span class="kw">read.table</span>(
     <span class="dt">file   =</span> <span class="st">"http://math.unm.edu/~james/Rossi.txt"</span>,
     <span class="dt">header =</span> <span class="ot">TRUE</span>) %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">subject=</span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/ranking">row_number</a></span>())</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">subject=</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>())</code></pre></div>
 <div id="data-preprocessing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-preprocessing" class="anchor"></a>Data preprocessing</h3>
@@ -133,14 +133,14 @@ recidivism_long &lt;-<span class="st"> </span>recidivism %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(!<span class="kw">is.na</span>(employed)) %&gt;%<span class="st"> </span><span class="co"># employed unequal to NA only for intervals under risk</span>
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(subject) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">start  =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/ranking">row_number</a></span>()-<span class="dv">1</span>,
-    <span class="dt">stop   =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/ranking">row_number</a></span>(),
-    <span class="dt">arrest =</span> <span class="kw">ifelse</span>(stop ==<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/nth">last</a></span>(stop) &amp;<span class="st"> </span>arrest ==<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
+    <span class="dt">start  =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>()-<span class="dv">1</span>,
+    <span class="dt">stop   =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),
+    <span class="dt">arrest =</span> <span class="kw">ifelse</span>(stop ==<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/nth.html">last</a></span>(stop) &amp;<span class="st"> </span>arrest ==<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
     <span class="dt">offset =</span> <span class="kw">log</span>(stop -<span class="st"> </span>start)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(subject, start, stop, offset, arrest, employed, fin:educ) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">arrange</a></span>(subject, stop)
 recidivism_long &lt;-<span class="st"> </span>recidivism_long %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">employed.lag1 =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/lead-lag">lag</a></span>(employed, <span class="dt">default=</span><span class="dv">0</span>)) %&gt;%
+<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">employed.lag1 =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span>(employed, <span class="dt">default=</span><span class="dv">0</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(-<span class="dv">1</span>) %&gt;%<span class="st"> </span><span class="co"># exclusion of first week, as lagged information is missing</span>
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">ungroup</a></span>()</code></pre></div>
 </div>
@@ -321,7 +321,7 @@ tdc_df &lt;-<span class="st"> </span>pbcseq %&gt;%
 ## 3 17  673 13.6    12.1</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pbc_ped %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id==<span class="dv">17</span>) %&gt;%
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/join">semi_join</a></span>(tdc_df, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">"id"</span>, <span class="st">"tstart"</span>=<span class="st">"time"</span>)) %&gt;%
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">semi_join</a></span>(tdc_df, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">"id"</span>, <span class="st">"tstart"</span>=<span class="st">"time"</span>)) %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, interval, age, bili, protime)</code></pre></div>
 <pre><code>## # A tibble: 3 x 5
 ## # Groups:   id [1]

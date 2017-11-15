@@ -38,7 +38,7 @@ equivalent coefficient estimates as Cox Proportional Hazards models if
 
 (2) all unique event (and censoring) times are used as interval cut points in
 order to transform the data into the format suitable for PEMs
-(see `?split_data` and [`vignette("data-transformation", package = "pam")`](data-transformation.html)).
+(see `?split_data` and the [vignette on data transformation](data-transformation.html)).
 
 Estimates between the two approaches can differ due to a more crude
 handling of ties in the PEM approach [@whitehead1980].

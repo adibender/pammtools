@@ -99,7 +99,7 @@
       <h1>Frailty and random effects</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-11-14</h4>
+            <h4 class="date">2017-11-15</h4>
           </div>
 
     
@@ -130,7 +130,7 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 228 patients from 18 institutions
 <span class="kw">nrow</span>(lung)</code></pre></div>
 <pre><code>## [1] 228</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lung %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(inst) %&gt;%<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/summarise">summarize</a></span>(<span class="dt">n=</span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/n">n</a></span>())</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lung %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(inst) %&gt;%<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(<span class="dt">n=</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>())</code></pre></div>
 <pre><code>## # A tibble: 19 x 2
 ##    inst       n
 ##    &lt;fctr&gt; &lt;int&gt;

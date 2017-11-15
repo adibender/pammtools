@@ -99,7 +99,7 @@
       <h1>Basic Modeling</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-11-14</h4>
+            <h4 class="date">2017-11-15</h4>
           </div>
 
     
@@ -113,7 +113,7 @@
 <p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if</p>
 <ol style="list-style-type: decimal">
 <li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
-<li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/split_data.html">?split_data</a></code> and <a href="data-transformation.html"><code>vignette("data-transformation", package = "pam")</code></a>).</p></li>
+<li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/split_data.html">?split_data</a></code> and the <a href="data-transformation.html">vignette on data transformation</a>).</p></li>
 </ol>
 <p>Estimates between the two approaches can differ due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead 1980)</span>. In practice these differences are not very large (see examples below).</p>
 <div id="subset-with-unique-event-times" class="section level3">
