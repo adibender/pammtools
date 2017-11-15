@@ -36,27 +36,31 @@ In this vignette we show examples of how to fit time-varying effects of
 time-constant **continuous** covariates. Note that time-varying effects of time-constant
 **categorical** variables are analogous to stratified proportional
 hazards models, where observations from different levels of the categorical
-variable have different baseline hazards. That setting is described in
-[`vignette("strata", package="pam")`](strata.html).
+variable have different baseline hazards. That setting is described in the
+[stratification vignette](strata.html).
 **Note that all time-varying effects in a PAM are still assumed to be piece-wise
 constant over the intervals used to specify the PAM!**
 
 ## Possible specifications of time-variation
 
-In the following we denote the continuous time-constant covariate with $x$ and time with $t$.
-A time-varying effect of $x$ can then be specified as an interaction
-term between $x$ and $t$, where different levels of complexity and flexibility for this interaction
-are possible:
+In the following we denote the continuous time-constant covariate with $x$ and
+time with $t$.
+A time-varying effect of $x$ can then be specified as an interaction term between
+$x$ and $t$, where different levels of complexity and flexibility for this
+interaction are possible:
 
 a) $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
-time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified transformation of
-time $t$, e.g. the $\log$-function.
+time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified
+transformation of time $t$, e.g. the $\log$-function.
 
 b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
 where $g(t)$ is a known or pre-specified transformation of time
 
-c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation is
-non-linear and estimated from the data. If $x$ is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different "baseline" hazard for each category, see [`vignette("strata", package="pam")`](strata.html).
+c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation
+is non-linear and estimated from the data. If $x$ is a dummy variable coding for
+levels of a categorical variable this constitutes a stratified model with a
+different "baseline" hazard for each category,
+see the [*strata* vignette](strata.html).
 
 d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
@@ -238,9 +242,6 @@ that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values
 decreasing at the beginning and increasing again for later
 time-points (green line middle panel).
 
-<details>
-  <summary>Expand here for detailed R-Code</summary>
-
 ```{r}
 ## heat map/contour plot
 te_gg <- gg_tensor(pam3) +
@@ -289,8 +290,6 @@ time_gg <- ggplot(time_df, aes(x=karno)) +
   xlab(expression(x[plain(karno)])) + coord_cartesian(ylim= c(-4, 3))+
   theme(legend.position  = "bottom")
 ```
-
-</details>
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
 grid.arrange(te_gg, karno_gg, time_gg, nrow=1)

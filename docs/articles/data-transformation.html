@@ -99,7 +99,7 @@
       <h1>Data Transformation</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2017-11-14</h4>
+            <h4 class="date">2017-11-15</h4>
           </div>
 
     
@@ -124,10 +124,10 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>)
 veteran &lt;-<span class="st"> </span>veteran %&gt;%
 <span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">id    =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/ranking">row_number</a></span>(),
+    <span class="dt">id    =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),
     <span class="dt">trt   =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
     <span class="dt">prior =</span> <span class="dv">1</span>*(prior !=<span class="st"> </span><span class="dv">0</span>)) %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id,<span class="kw"><a href="http://www.rdocumentation.org/packages/dplyr/topics/select_helpers">everything</a></span>())
+<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id,<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select_helpers.html">everything</a></span>())
 <span class="kw">head</span>(veteran)</code></pre></div>
 <pre><code>##   id trt celltype time status karno diagtime age prior
 ## 1  1   0 squamous   72      1    60        7  69     0
