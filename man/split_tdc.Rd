@@ -4,7 +4,7 @@
 \alias{split_tdc}
 \title{Create piece-wise exponential data in case of time-dependent covariates}
 \usage{
-split_tdc(formula, event_df, tdc_df, id_var, time_var, status_var,
+split_tdc(formula, event_df, tdc_df, id_var, time_var, status_var, te_var,
   cens_value = 0)
 }
 \arguments{
