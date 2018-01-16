@@ -1,6 +1,6 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
-Version: 0.0.3.2
+Version: 0.0.3.3
 Date: 2017-10-30
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
@@ -26,8 +26,6 @@ Imports:
     purrr (>= 0.2.3),
     tibble,
     modelr
-License: MIT + file LICENSE
-LazyData: true
 Suggests:
     RColorBrewer,
     scam,
@@ -37,7 +35,9 @@ Suggests:
     rmarkdown,
     grid,
     gridExtra
-URL: http://github.com/adibender/pammtools
-BugReports: http://github.com/adibender/pammtools/issues
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/adibender/pammtools
+BugReports: https://github.com/adibender/pammtools/issues
 RoxygenNote: 6.0.1
 Byte-Compile: yes

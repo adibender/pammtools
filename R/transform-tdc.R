@@ -68,14 +68,14 @@ combine_cut <- function(
 #' @inherit combine_cut
 #' @inheritParams split_data
 #' @param id_var The ID variable name, identifying subjects.
+#' @param te_var The time variable in \code{tdc_df} indicating time points at
+#' which time-dependent covariate (tdc) was observed.
 #' Needs to be the same name in both data sets.
 #' @importFrom tidyr fill
 #' @examples
 #' data("pbc", package="survival")# loads both, pbc and pbcseq
 #' pbc$status = 1*(pbc$status == 2)
-#' pbcseq$time <- pbcseq$day # time of event/measurement must be equal in both data
-#' pbcseq$day  <- NULL
-#' pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status")
+#' pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
 #' @export
 split_tdc <- function(
 	formula,
@@ -85,7 +85,7 @@ split_tdc <- function(
 	time_var,
 	status_var,
 	te_var,
-	cens_value=0) {
+	cens_value = 0) {
 
 	# intervals must be split at each event time and time at which the TDC
 	# changes its value
