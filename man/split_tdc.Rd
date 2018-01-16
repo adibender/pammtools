@@ -17,8 +17,7 @@ in long format. Needs to contain a "time" variable indicating when the
 TDCs change their value. Must have same name as variable indicating event
 times in \code{event_df}.}
 
-\item{id_var}{The ID variable name, identifying subjects.
-Needs to be the same name in both data sets.}
+\item{id_var}{The ID variable name, identifying subjects.}
 
 \item{time_var}{A character, specifies the column of the event or
 censoring time in \code{event_df} and the time of measurement for
@@ -26,6 +25,10 @@ the time-dependent covariates in \code{tdc_df}.}
 
 \item{status_var}{As \code{time_var}, but specifies column containing the
 event indicator. Can be missing in the \code{tdc_df}.}
+
+\item{te_var}{The time variable in \code{tdc_df} indicating time points at
+which time-dependent covariate (tdc) was observed.
+Needs to be the same name in both data sets.}
 
 \item{cens_value}{The value that indicates censoring in the
 \code{status_var} column.}
@@ -39,7 +42,5 @@ which a TDC changes its value).
 \examples{
 data("pbc", package="survival")# loads both, pbc and pbcseq
 pbc$status = 1*(pbc$status == 2)
-pbcseq$time <- pbcseq$day # time of event/measurement must be equal in both data
-pbcseq$day  <- NULL
-pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status")
+pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
 }
