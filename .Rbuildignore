@@ -3,7 +3,6 @@
 
 ## travis
 ^\.travis\.yml$
-^sandbox$
 ^appveyor\.yml$
 ^.*\.dropbox\.attr$
 ^.*\.nfs$
@@ -14,3 +13,4 @@
 ^_pkgdown\.yml$
 ^vignettes$
 ^README\.Rmd$
+^sanbox/$

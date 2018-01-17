@@ -1,6 +1,6 @@
 # ignored folders
 inst/doc
-sandbox
+sandbox/
 
 # RStudio
 .Rproj.user

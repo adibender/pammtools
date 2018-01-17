@@ -47,10 +47,10 @@ combine_cut <- function(
 	tdc_df,
 	time_var,
 	status_var,
-	cens_value=0) {
+	te_var,
+	cens_value = 0) {
 
-
-	tdc_time   <- tdc_df %>% select(one_of(time_var)) %>% unlist() %>% unique()
+	tdc_time   <- tdc_df %>% select(one_of(te_var)) %>% unlist() %>% unique()
 	event_time <- event_df %>% select(one_of(time_var)) %>% unlist()
 	event_time <- event_time[event_df[[status_var]] != cens_value] %>% unique()
 
@@ -68,14 +68,14 @@ combine_cut <- function(
 #' @inherit combine_cut
 #' @inheritParams split_data
 #' @param id_var The ID variable name, identifying subjects.
+#' @param te_var The time variable in \code{tdc_df} indicating time points at
+#' which time-dependent covariate (tdc) was observed.
 #' Needs to be the same name in both data sets.
 #' @importFrom tidyr fill
 #' @examples
 #' data("pbc", package="survival")# loads both, pbc and pbcseq
 #' pbc$status = 1*(pbc$status == 2)
-#' pbcseq$time <- pbcseq$day # time of event/measurement must be equal in both data
-#' pbcseq$day  <- NULL
-#' pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status")
+#' pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
 #' @export
 split_tdc <- function(
 	formula,
@@ -84,22 +84,23 @@ split_tdc <- function(
 	id_var,
 	time_var,
 	status_var,
-	cens_value=0) {
+	te_var,
+	cens_value = 0) {
 
 	# intervals must be split at each event time and time at which the TDC
 	# changes its value
-	utime <- combine_cut(event_df, tdc_df, time_var, status_var,
-		cens_value=cens_value)
+	utime <- combine_cut(event_df, tdc_df, time_var, status_var, te_var,
+		cens_value = cens_value)
 	# for joining, we remove baseline information of variables that are present
 	# as TDC variables in tdc_df
-	tdc <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, status_var))
+	tdc <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, te_var, status_var))
 	event_df <- event_df %>%  select(-one_of(tdc))
-	ped <- split_data(formula, data = event_df, cut=utime, id=id_var)
+	ped <- split_data(formula, data = event_df, cut = utime, id = id_var)
 
 	#
- 	tdc_df <- tdc_df %>% select(one_of(c(id_var, time_var, tdc)))
+ 	tdc_df <- tdc_df %>% select(one_of(c(id_var, te_var, tdc)))
 
-	ped %>% left_join(tdc_df, by=c(id_var, "tstart"=time_var)) %>%
+	ped %>% left_join(tdc_df, by = c(id_var, "tstart" = te_var)) %>%
 		group_by_(.dots=list(id_var)) %>%
 		fill(setdiff(tdc, c(id_var, time_var, status_var)))
 
