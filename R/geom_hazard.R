@@ -27,7 +27,7 @@ geom_hazard <- function(
     data = data,
     mapping = mapping,
     stat = stat,
-    geom = GeomHazardLine,
+    geom = GeomHazard,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
@@ -43,15 +43,14 @@ geom_hazard <- function(
 #' @usage NULL
 #' @export
 
-GeomHazardLine <- ggproto(
-  "GeomHazardLine",
-  GeomLine,
+GeomHazard <- ggproto(
+  "GeomHazard", GeomLine,
   setup_data = function(data, params) {
-    row1 <- data %>% group_by(group) %>% slice(1)
+    row1   <- data %>% group_by(group) %>% slice(1)
     row1$x <- 0
     row1$y <- 0
-    data <- rbind(row1, data)
-    data[order(data$PANEL, data$group, data$x), ]
+    data   <- bind_rows(row1, data)
+    data[order(data$group, data$x), ]
   }
 )
 

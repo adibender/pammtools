@@ -3,7 +3,7 @@
 \docType{data}
 \name{geom_hazard}
 \alias{geom_hazard}
-\alias{GeomHazardLine}
+\alias{GeomHazard}
 \alias{geom_stephazard}
 \alias{GeomStepHazard}
 \title{PAMM (Cumulative) (Step-)Hazard Plots.}
