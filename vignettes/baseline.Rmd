@@ -122,8 +122,8 @@ summary(pam)
 In the figure below we compare the previous baseline estimates with the
 PAM estimates. All models are in good agreement.
 
-<details>
-  <summary>Expand here for R-Code</summary>
+<!-- <details>
+  <summary>Expand here for R-Code</summary> -->
 
 ```{r}
 int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
@@ -143,7 +143,7 @@ gg_baseline <- ggplot(int_df, aes(x = tend)) +
     "Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"))
 ```
 
-</details>
+<!-- </details> -->
 
 ```{r, fig.width = 4.5, fig.height = 4.5}
 gg_baseline

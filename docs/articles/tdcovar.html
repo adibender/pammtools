@@ -29,9 +29,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
@@ -40,7 +40,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -79,9 +79,9 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -92,18 +92,18 @@
 </div>
 <!--/.navbar -->
 
-      
+
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Time-dependent covariates</h1>
                         <h4 class="author">Andreas Bender</h4>
-            
-            <h4 class="date">2017-11-15</h4>
+
+            <h4 class="date">2018-02-16</h4>
           </div>
 
-    
-    
+
+
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyr)
 <span class="kw">library</span>(dplyr)
@@ -157,10 +157,10 @@ pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 ##   variable         coef  lower   upper
 ##   &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 fin           -0.349  -0.732  0.0349
-## 2 race           0.330  -0.289  0.949 
-## 3 wexp          -0.0192 -0.449  0.411 
-## 4 mar           -0.325  -1.09   0.444 
-## 5 paro          -0.0501 -0.444  0.343 
+## 2 race           0.330  -0.289  0.949
+## 3 wexp          -0.0192 -0.449  0.411
+## 4 mar           -0.325  -1.09   0.444
+## 5 paro          -0.0501 -0.444  0.343
 ## 6 employed.lag1 -0.767  -1.20  -0.331</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## respective extended cox model
 cph &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(
@@ -173,17 +173,18 @@ cph &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 ##   variable          coef  lower   upper
 ##   &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 fin           -0.341   -0.727  0.0451
-## 2 race           0.368   -0.254  0.991 
-## 3 wexp          -0.00569 -0.438  0.427 
-## 4 mar           -0.277   -1.05   0.498 
-## 5 paro          -0.109   -0.505  0.288 
+## 2 race           0.368   -0.254  0.991
+## 3 wexp          -0.00569 -0.438  0.427
+## 4 mar           -0.277   -1.05   0.498
+## 5 paro          -0.109   -0.505  0.288
 ## 6 employed.lag1 -0.765   -1.20  -0.327</code></pre>
 </div>
 <div id="graphical-comparison-of-the-two-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#graphical-comparison-of-the-two-models" class="anchor"></a>Graphical comparison of the two models</h3>
 <p>The figure below summarizes the comparison between the two models.</p>
-<p><details><summary>Expand here for R-Code</summary></details></p>
+<!-- <details>
+<summary>Expand here for R-Code</summary> -->
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all_eff &lt;-<span class="st"> </span>purrr::<span class="kw">map_df</span>(
   <span class="kw">list</span>(
     <span class="kw"><a href="../reference/tidy_fixed.html">tidy_fixed</a></span>(pam),
@@ -240,7 +241,7 @@ prio_df &lt;-<span class="st"> </span>prio_df %&gt;%
 ## plot of the prio effect
 prio_gg &lt;-<span class="st"> </span>smooth_gg %+%<span class="st"> </span>prio_df +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>prio) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"Number of prior convictions"</span>)</code></pre></div>
-<p></p>
+<!-- </details> -->
 <p>As we can see, the estimates of the fixed coefficients (left panel) are very similar between the two models, including the confidence intervals. Using the default settings in both model specifications (using P-Splines for smooth terms), the PAM estimates are smoother compared to the Cox estimates (right panel).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## put all plots together
 <span class="kw">library</span>(gridExtra)
@@ -338,7 +339,8 @@ tdc_df &lt;-<span class="st"> </span>pbcseq %&gt;%
 ## log(bili)    1.268859 1.241214
 ## log(protime) 4.272875 3.983400</code></pre>
 <p>Coefficient estimates are very similar for both models, especially for the effect of <code>bili</code>. A graphical comparison yields similar results:</p>
-<p><details><summary>Expand here for R-Code</summary></details></p>
+<!-- <details>
+  <summary>Expand here for R-Code</summary> -->
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Effect of bilirubin
 ## note that we use relative = TRUE in the call to add_term, which calculates
 ## the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
@@ -373,7 +375,7 @@ protime_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rd
         <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplotGrob">ggplotGrob</a></span>(bili_gg),
         <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplotGrob">ggplotGrob</a></span>(protime_gg),
         <span class="dt">size =</span> <span class="st">"last"</span>))</code></pre></div>
-<p></p>
+<!-- </details> -->
 <p><img src="tdcovar_files/figure-html/unnamed-chunk-13-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -409,7 +411,7 @@ protime_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rd
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

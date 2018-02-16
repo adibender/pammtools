@@ -71,7 +71,7 @@ summary(cme$frail$inst)
 ## PAM with gaussian frailty
 
 For an equivalent model using PAMs we first transform the data set and
-then call `mgcv:::gam` for the fit. To include a gaussian random effect
+then call `mgcv:::gam` for the fit. To include a Gaussian random effect
 we set the `bs` argument in the respective penalized `s()` term to `bs='re'` (see description
 in `?smooth.terms`):
 

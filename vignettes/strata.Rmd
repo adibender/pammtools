@@ -42,7 +42,7 @@ $\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)$.
 
 For illustration we again use the `veteran` data (censored at day 400)
 from the `survival` package,
-where the celltype of the lung cancer had four levels:
+where the cell type of the lung cancer had four levels:
 
 ```{r}
 data("veteran")
@@ -110,14 +110,14 @@ baseline_gg +	aes(col="Nelson-Aalen") +
 Both models can be easily extended to incorporate further covariates.
 If we assume that the covariate effects are not time-varying, this extension
 constitutes a so called stratified proportional hazards model. For example,
-including effects for treatment (`trt`), age (`age`) and the Karnofsky Score
+including effects for treatment (`trt`), age (`age`) and the Karnofsky-Score
 (`karno`), we get the model
 
 $$
 \lambda(t|z, \mathbf{x}) =
   \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} + \beta_3\cdot x_{age})
 $$
-where $\lambda_{0k}(t)$ is the baseline for observation with celltype $k$,
+where $\lambda_{0k}(t)$ is the baseline for observation with cell type $k$,
 $k\in \{squamos,\ smallcell,\ adeno,\ large\}$:
 
 ```{r}

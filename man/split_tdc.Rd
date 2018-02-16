@@ -42,5 +42,5 @@ which a TDC changes its value).
 \examples{
 data("pbc", package="survival")# loads both, pbc and pbcseq
 pbc$status = 1*(pbc$status == 2)
-pbc_ped     <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
+pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
 }

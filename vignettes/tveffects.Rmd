@@ -166,7 +166,7 @@ ggplot(term.df, aes(x = tend, y = fit)) +
     xlab("t") + ylab(expression(hat(f)(t)))
 ```
 
-The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky scores on the hazard) afterwards.
+The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.
 
 
 ### PAM with smooth, smoothly time-varying effect of the Karnosky Score
@@ -215,7 +215,7 @@ a heat-/contourplot (left panel) with respective slices for fixed
 values of the Karnofsky-Score (middle panel) and fixed time-points/intervals
 (right panel) below.
 
-The left panel again depicts the Karnosky Score on the y-axis and the
+The left panel again depicts the Karnosky-Score on the y-axis and the
 time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using
 a color gradient, where blue colors indicate log-hazard decrease and
 red colors a log-hazard increase. The grayed out areas depict combinations
@@ -231,7 +231,7 @@ to high values of $x_{\text{karno}}$.
 one would obtain fitting a time-constant, non-linear effect of
 $f(x_{\text{karno}})$. ABER DAS IST ZUFALL HIER; DAS MUSS JA NICHT SO SEIN...  -->
 
-Holding the Karnofsky Score constant, we can see how the log hazard
+Holding the Karnofsky-Score constant, we can see how the log hazard
 changes over time for different given values of $x_{\text{karno}}$ (middle panel).
 For higher values $x_{\text{karno}} >60$ the log-hazard is smaller
 at the beginning and increases over the course of the follow-up
@@ -298,7 +298,7 @@ grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 The following figure shows the estimated effect (middle panel) along with a
 pointwise upper (right) and lower (left) CI. Note that we have to be somewhat
 cautious with interpretation, considering the large uncertainty of the effect
-estimate, especially for lower Karnofsky-Scoresand later time-points.
+estimate, especially for lower Karnofsky-Scores and later time-points.
 Also note that the estimate does not include the estimated average
 time-constant log-hazard
 (`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`)

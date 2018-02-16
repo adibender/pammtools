@@ -20,8 +20,8 @@ test_that("Interval info returned for ped objects", {
 test_that("Sample info returned for data frame", {
 	expect_data_frame(si <- sample_info(veteran), nrows=1L, ncols=8L)
 	expect_equal(colnames(si), colnames(veteran))
-	expect_data_frame(si <- veteran %>% group_by(trt) %>% sample_info(),
-		nrows=2L, ncols=8L)
+	expect_data_frame(si <- veteran %>% group_by(trt, status) %>% sample_info(),
+		nrows=4L, ncols=8L)
 	expect_equal(colnames(si), colnames(veteran))
 })
 

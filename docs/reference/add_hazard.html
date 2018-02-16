@@ -23,8 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -52,9 +52,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
@@ -63,7 +63,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -100,12 +100,12 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-      
+
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -113,7 +113,7 @@
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
       </header>
 
       <div class="row">
@@ -122,10 +122,10 @@
     <h1>Add predicted hazard to data set</h1>
     </div>
 
-    
+
     <p>Add predicted hazard to data set</p>
 <p>Add cumulative hazard estimate to data set</p>
-    
+
 
     <pre class="usage"><span class='fu'>add_hazard</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>), <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>se.mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
@@ -133,7 +133,7 @@
 <span class='fu'>add_cumu_hazard</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se.mult</span> <span class='kw'>=</span> <span class='fl'>2</span>,
   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>,
   <span class='no'>...</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -152,12 +152,12 @@
     <tr>
       <th>type</th>
       <td><p>When this has the value <code>"link"</code> (default) the linear predictor (possibly with
-associated standard errors) is returned. When <code>type="terms"</code> each component of the 
-linear predictor is returned seperately (possibly with standard errors): this includes 
+associated standard errors) is returned. When <code>type="terms"</code> each component of the
+linear predictor is returned seperately (possibly with standard errors): this includes
 parametric model components, followed by each smooth component, but excludes
-any offset and any intercept. <code>type="iterms"</code> is the same, except that any standard errors 
-returned for smooth components will include the uncertainty about the intercept/overall mean.  When 
-<code>type="response"</code> predictions 
+any offset and any intercept. <code>type="iterms"</code> is the same, except that any standard errors
+returned for smooth components will include the uncertainty about the intercept/overall mean.  When
+<code>type="response"</code> predictions
 on the scale of the response are returned (possibly with approximate
 standard errors). When <code>type="lpmatrix"</code> then a matrix is returned
 which yields the values of the linear predictor (minus any offset) when
@@ -202,13 +202,13 @@ numeric.</p></td>
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code>add_cumu_hazard</code>
     <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code>add_hazard</code>
     <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code>add_hazard</code></p>
-    
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"># NOT RUN {
@@ -226,9 +226,9 @@ add_hazard(pinfo, pam)
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
+
       <li><a href="#see-also">See also</a></li>
-      
+
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -241,7 +241,7 @@ add_hazard(pinfo, pam)
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
