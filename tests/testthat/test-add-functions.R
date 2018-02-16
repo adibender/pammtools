@@ -18,9 +18,9 @@ test_that("hazard functions work for PAM", {
 
 })
 
-test_that("hazard functions accept unquoted bare names", {
+# test_that("hazard functions accept unquoted bare names", {
 
-})
+# })
 
 test_that("hazard functions work for PEM", {
 
