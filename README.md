@@ -4,7 +4,9 @@
 `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
 -----------------------------------------------------------------
 
-`pammtools` offers various utilities and convenience functions that facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs)
+`pammtools` offers various utilities and convenience functions that facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs). For a tutorial-like introduction to PAMMs see:
+
+-   Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. <https://doi.org/10.1177/1471082X17748083>.
 
 ### Installation
 

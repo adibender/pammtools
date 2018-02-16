@@ -1,11 +1,22 @@
-citHeader("To cite PAMMs in publications, please use:")
+citHeader("To cite pammtools in publications, please use:")
 
 citEntry(entry = "manual",
   author = "Andreas Bender and Fabian Scheipl",
   title = "pammtools:  Piece-wise Exponential Additive Mixed Modeling tools",
   year = "2017",
-  note = "R package version 0.0.2",
-  textVersion = "pammtools: Piece-wise Exponential Additive Mixed Modeling
-  tools",
+  note = "R package version 0.0.3.2",
+  textVersion = "Andreas Bender, & Fabian Scheipl. (2017, November 14). adibender/pammtools: v0.0.3.2 (Version v0.0.3.2). Zenodo. http://doi.org/10.5281/zenodo.1048832",
   url = "https://github.com/adibender/pammtools"
+)
+
+citHeader("To cite PAMMs in publications, please use:")
+citEntry(
+  entry = "Article",
+  author = "Andreas Bender and Andreas Groll and Fabian Scheipl",
+  title = "A generalized additive model approach to time-to-event analysis",
+  textVersion = "Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling, https://doi.org/10.1177/1471082X17748083.",
+  journal = "Statistical Modelling",
+  year = "2018",
+  doi = "10.1177/1471082X17748083",
+  URL = "https://doi.org/10.1177/1471082X17748083"
 )

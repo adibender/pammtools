@@ -41,7 +41,7 @@ distinguished
 ## Data without time-dependent covariates
 
 In this simple case the data transformation is relatively straight forward and
-handeled by the `split_data` function. This function internally calls
+handled by the `split_data` function. This function internally calls
 `survival::survSplit`, thus all arguments available for the `survSplit` function
 are also available to the `split_data` function.
 

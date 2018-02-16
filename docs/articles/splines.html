@@ -29,9 +29,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
@@ -40,7 +40,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -79,9 +79,9 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -92,18 +92,18 @@
 </div>
 <!--/.navbar -->
 
-      
+
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Splines</h1>
                         <h4 class="author">Andreas Bender</h4>
-            
-            <h4 class="date">2017-11-15</h4>
+
+            <h4 class="date">2018-02-16</h4>
           </div>
 
-    
-    
+
+
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(ggplot2)
@@ -158,7 +158,7 @@ karno_df &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span 
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>,<span class="dt">values=</span><span class="kw">c</span>(<span class="st">"Cox PH"</span>=Set1[<span class="dv">1</span>],<span class="st">"PAM"</span>=<span class="dv">1</span>)) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(x[<span class="kw">plain</span>(karno)])) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(x[<span class="kw">plain</span>(karno)])))</code></pre></div>
 <p><img src="splines_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see the <a href="tveffects.html">time-varying effects vignette</a>.</p>
+<p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky-Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see the <a href="tveffects.html">time-varying effects vignette</a>.</p>
 </div>
 <div id="mgus-data-age-example" class="section level2">
 <h2 class="hasAnchor">
@@ -172,17 +172,17 @@ karno_df &lt;-<span class="st"> </span>ped %&gt;%<span class="st"> </span><span 
 mfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(futime, death) ~<span class="st"> </span>sex +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/pspline">pspline</a></span>(age, <span class="dt">df =</span> <span class="dv">4</span>), <span class="dt">data =</span> mgus)
 mfit</code></pre></div>
 <pre><code>## Call:
-## coxph(formula = Surv(futime, death) ~ sex + pspline(age, df = 4), 
+## coxph(formula = Surv(futime, death) ~ sex + pspline(age, df = 4),
 ##     data = mgus)
-## 
+##
 ##                               coef se(coef)      se2    Chisq   DF      p
 ## sexmale                    0.22784  0.13883  0.13820  2.69335 1.00   0.10
 ## pspline(age, df = 4), lin  0.06682  0.00703  0.00703 90.22974 1.00 &lt;2e-16
 ## pspline(age, df = 4), non                             3.44005 3.05   0.34
-## 
+##
 ## Iterations: 5 outer, 16 Newton-Raphson
-##      Theta= 0.851 
-## Degrees of freedom for terms= 1.0 4.1 
+##      Theta= 0.851
+## Degrees of freedom for terms= 1.0 4.1
 ## Likelihood ratio test=108  on 5.04 df, p=0  n= 241</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">termplot</span>(mfit, <span class="dt">term =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">col.term =</span> <span class="dv">1</span>, <span class="dt">col.se =</span> <span class="dv">1</span>)</code></pre></div>
 <p><img src="splines_files/figure-html/figcox-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -203,27 +203,27 @@ mfit</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pamfit &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>sex +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(age, <span class="dt">bs =</span> <span class="st">"ps"</span>), <span class="dt">data =</span> mgus.ped,
   <span class="dt">method =</span> <span class="st">"REML"</span>, <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)
 <span class="kw">summary</span>(pamfit)</code></pre></div>
-<pre><code>## 
-## Family: poisson 
-## Link function: log 
-## 
+<pre><code>##
+## Family: poisson
+## Link function: log
+##
 ## Formula:
 ## ped_status ~ s(tend) + sex + s(age, bs = "ps")
-## 
+##
 ## Parametric coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
+##             Estimate Std. Error z value Pr(&gt;|z|)
 ## (Intercept)  -9.1597     0.1194 -76.685   &lt;2e-16 ***
-## sexmale       0.2461     0.1362   1.807   0.0708 .  
+## sexmale       0.2461     0.1362   1.807   0.0708 .
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
+##
 ## Approximate significance of smooth terms:
-##           edf Ref.df Chi.sq  p-value    
+##           edf Ref.df Chi.sq  p-value
 ## s(tend) 1.001  1.002  67.11 2.68e-16 ***
 ## s(age)  1.001  1.002  90.01  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
+##
 ## R-sq.(adj) =  0.000299   Deviance explained = 5.19%
 ## -REML = 1350.2  Scale est. = 1         n = 28326</code></pre>
 <p>For visualization of the smooth effects we can use the default <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/plot.gam">mgcv::plot.gam</a></code> function:</p>
@@ -249,9 +249,9 @@ pamfit2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <div id="monotonicity-constraints" class="section level3">
 <h3 class="hasAnchor">
 <a href="#monotonicity-constraints" class="anchor"></a>Monotonicity constraints</h3>
-<p>The vignette in the <code>survival</code> package further discusses enforcing monotonicity contraints on the effect of <code>hgb</code>. These can be achieved here more easily using the functionality provided in the <code>scam</code> package (see also <span class="citation">Pya and Wood (2015)</span>). The usage is exactly the same as before, replacing the call to <code>gam</code> with a call to <code>scam</code> and specifying <code>bs = "mpd"</code>. Note that the fit using contraints takes considerably longer compared to the unconstrained fit.</p>
+<p>The vignette in the <code>survival</code> package further discusses enforcing monotonicity constraints on the effect of <code>hgb</code>. These can be achieved here more easily using the functionality provided in the <code>scam</code> package (see also <span class="citation">Pya and Wood (2015)</span>). The usage is exactly the same as before, replacing the call to <code>gam</code> with a call to <code>scam</code> and specifying <code>bs = "mpd"</code>. Note that the fit using constraints takes considerably longer compared to the unconstrained fit.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(scam)
-mpam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/scam/topics/scam">scam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>age +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb, <span class="dt">bs =</span> <span class="st">"mpd"</span>), <span class="dt">data =</span> mgus2.ped,
+mpam &lt;-<span class="st"> </span><span class="kw">scam</span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>age +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(hgb, <span class="dt">bs =</span> <span class="st">"mpd"</span>), <span class="dt">data =</span> mgus2.ped,
   <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">layout</span>(<span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>))
 <span class="kw">plot</span>(pamfit2, <span class="dt">select =</span> <span class="dv">2</span>, <span class="dt">se =</span> <span class="ot">TRUE</span>, <span class="dt">ylim =</span> <span class="kw">c</span>(-<span class="fl">0.5</span>, <span class="dv">2</span>), <span class="dt">main=</span><span class="st">"Unconstrained fit"</span>)
@@ -294,7 +294,7 @@ const &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw"
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

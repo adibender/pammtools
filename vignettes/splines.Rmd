@@ -88,7 +88,7 @@ ggplot(karno_df, aes(x=karno, ymin=low, ymax=high)) +
 ```
 
 Both methods are in good agreement. The higher the Karnofsky-Score the lower the
-expected log-hazard. For further evaluation of the Karnofsky Score effect using
+expected log-hazard. For further evaluation of the Karnofsky-Score effect using
 time-varying terms of the form $f(t)\cdot x_{karno}$ and $f(x_{karno}, t)$ see
 the [time-varying effects vignette](tveffects.html).
 
@@ -160,10 +160,10 @@ plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2))
 
 ### Monotonicity constraints
 The vignette in the `survival` package further discusses enforcing monotonicity
-contraints on the effect of `hgb`. These can be achieved here more easily
+constraints on the effect of `hgb`. These can be achieved here more easily
 using the functionality provided in the `scam` package (see also @pya2015).
 The usage is exactly the same as before, replacing the call to `gam` with a
-call to `scam` and specifying `bs = "mpd"`. Note that the fit using contraints
+call to `scam` and specifying `bs = "mpd"`. Note that the fit using constraints
 takes considerably longer compared to the unconstrained fit.
 
 ```{r, scammod}

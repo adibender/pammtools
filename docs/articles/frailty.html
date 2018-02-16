@@ -29,9 +29,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
@@ -40,7 +40,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -79,9 +79,9 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -92,18 +92,18 @@
 </div>
 <!--/.navbar -->
 
-      
+
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Frailty and random effects</h1>
                         <h4 class="author">Andreas Bender</h4>
-            
-            <h4 class="date">2017-11-15</h4>
+
+            <h4 class="date">2018-02-16</h4>
           </div>
 
-    
-    
+
+
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(survival)
@@ -132,27 +132,27 @@
 <pre><code>## [1] 228</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lung %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(inst) %&gt;%<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(<span class="dt">n=</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>())</code></pre></div>
 <pre><code>## # A tibble: 19 x 2
-##    inst       n
-##    &lt;fctr&gt; &lt;int&gt;
-##  1 1         36
-##  2 2          5
-##  3 3         19
-##  4 4          4
-##  5 5          9
-##  6 6         14
-##  7 7          8
-##  8 10         4
-##  9 11        18
-## 10 12        23
-## 11 13        20
-## 12 15         6
-## 13 16        16
-## 14 21        13
-## 15 22        17
-## 16 26         6
-## 17 32         7
-## 18 33         2
-## 19 &lt;NA&gt;       1</code></pre>
+##    inst      n
+##    &lt;fct&gt; &lt;int&gt;
+##  1 1        36
+##  2 2         5
+##  3 3        19
+##  4 4         4
+##  5 5         9
+##  6 6        14
+##  7 7         8
+##  8 10        4
+##  9 11       18
+## 10 12       23
+## 11 13       20
+## 12 15        6
+## 13 16       16
+## 14 21       13
+## 15 22       17
+## 16 26        6
+## 17 32        7
+## 18 33        2
+## 19 &lt;NA&gt;      1</code></pre>
 </div>
 <div id="cox-model-with-gaussian-frailty" class="section level2">
 <h2 class="hasAnchor">
@@ -160,10 +160,10 @@
 <p>The penalized Cox model with frailty terms has been described in <span class="citation">Therneau, Grambsch, and Pankratz (2003)</span> and implemented in the <code>coxme</code> package for Gaussian frailties. Below we apply the <code>coxme</code> function to the <code>lung</code> data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cme &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/coxme/topics/coxme">coxme</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span>ph.ecog +<span class="st"> </span>(<span class="dv">1</span>|inst), <span class="dt">data=</span>lung)
 <span class="kw">coef</span>(cme)</code></pre></div>
-<pre><code>##   ph.ecog 
+<pre><code>##   ph.ecog
 ## 0.5073993</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(cme$frail$inst)</code></pre></div>
-<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
 ## -0.102068 -0.041483 -0.009171  0.000000  0.038432  0.102873</code></pre>
 <ul>
 <li>The effect of <code>ph.ecog</code> was estimated to be about <code>0.5</code> on the log-hazard scale.</li>
@@ -173,7 +173,7 @@
 <div id="pam-with-gaussian-frailty" class="section level2">
 <h2 class="hasAnchor">
 <a href="#pam-with-gaussian-frailty" class="anchor"></a>PAM with gaussian frailty</h2>
-<p>For an equivalent model using PAMs we first transform the data set and then call <code>mgcv:::gam</code> for the fit. To include a gaussian random effect we set the <code>bs</code> argument in the respective penalized <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s()</a></code> term to <code>bs='re'</code> (see description in <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/smooth.terms">?smooth.terms</a></code>):</p>
+<p>For an equivalent model using PAMs we first transform the data set and then call <code>mgcv:::gam</code> for the fit. To include a Gaussian random effect we set the <code>bs</code> argument in the respective penalized <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s()</a></code> term to <code>bs='re'</code> (see description in <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/smooth.terms">?smooth.terms</a></code>):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">data=</span>lung, <span class="dt">id=</span><span class="st">"id"</span>)
 pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) +<span class="st"> </span>ph.ecog +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(inst, <span class="dt">bs=</span><span class="st">"re"</span>),
     <span class="dt">data=</span>ped, <span class="dt">family=</span><span class="kw">poisson</span>(), <span class="dt">offset=</span>offset)</code></pre></div>
@@ -228,7 +228,7 @@ pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

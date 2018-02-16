@@ -10,6 +10,17 @@ as_ped <- function(x, data, tdc_df = NULL, ...) {
 	UseMethod("as_ped", x)
 }
 
+as_ped.default <- function(x, .tdc_df = NULL, id_var = "id",...) {
+
+  attr(x, "cut") <- sort(unique(c(x$tstart, x$tend)))
+  attr(x, "id_var") <- id_var
+  attr(x, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset", "ped_status")
+  class(x) <- c("ped", class(x))
+
+  return(x)
+
+}
+
 as_ped.formula <- function(x, data, tdc_df = NULL, ...) {
 
 	if (is.null(tdc_df)) {

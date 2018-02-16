@@ -29,9 +29,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
@@ -40,7 +40,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -79,9 +79,9 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -92,18 +92,18 @@
 </div>
 <!--/.navbar -->
 
-      
+
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Convenience functions for post-processing PAMs</h1>
                         <h4 class="author">Andreas Bender</h4>
-            
-            <h4 class="date">2017-11-15</h4>
+
+            <h4 class="date">2018-02-16</h4>
           </div>
 
-    
-    
+
+
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(mgcv)
@@ -133,28 +133,28 @@ pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
   <span class="dt">family =</span> <span class="kw">poisson</span>(), <span class="dt">offset =</span> offset)</code></pre></div>
 <p>The easiest way to obtain an overview of the estimated coefficients for fixed effects is to simply call <code>summary</code> on the fitted model object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pam)</code></pre></div>
-<pre><code>## 
-## Family: poisson 
-## Link function: log 
-## 
+<pre><code>##
+## Family: poisson
+## Link function: log
+##
 ## Formula:
 ## ped_status ~ s(tend) + sex + age + s(hgb)
-## 
+##
 ## Parametric coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
+##              Estimate Std. Error z value Pr(&gt;|z|)
 ## (Intercept) -9.133845   0.256891 -35.555  &lt; 2e-16 ***
 ## sexM         0.472157   0.068539   6.889 5.62e-12 ***
 ## age          0.055019   0.003398  16.191  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
+##
 ## Approximate significance of smooth terms:
-##           edf Ref.df Chi.sq  p-value    
+##           edf Ref.df Chi.sq  p-value
 ## s(tend) 7.525  8.428  88.12 2.89e-15 ***
 ## s(hgb)  3.384  4.256  87.47  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
+##
 ## R-sq.(adj) =  0.0055   Deviance explained = 5.55%
 ## UBRE = -0.92892  Scale est. = 1         n = 123848</code></pre>
 <p>However, we also provide a convenience function that extracts a fixed coefficient table from <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code> objects (including confidence intervals) and a convenience function that creates a forrest-type plot:</p>
@@ -162,7 +162,7 @@ pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 <pre><code>## # A tibble: 2 x 4
 ##   variable   coef  lower  upper
 ##   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 sexM     0.472  0.335  0.609 
+## 1 sexM     0.472  0.335  0.609
 ## 2 age      0.0550 0.0482 0.0618</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gg_fixed.html">gg_fixed</a></span>(pam)</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -213,7 +213,7 @@ hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.r
 ## 4 hgb    6.10  1.27 0.288    0.692     1.84
 ## 5 hgb    6.23  1.24 0.273    0.697     1.79
 ## 6 hgb    6.37  1.22 0.258    0.702     1.73</code></pre>
-<p>For convenience we also include a function that plots mutiple selected smooth effects in one figure<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<p>For convenience we also include a function that plots multiple selected smooth effects in one figure<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/gg_smooth.html">gg_smooth</a></span>(pam, <span class="dt">terms =</span> <span class="kw">c</span>(<span class="st">"tend"</span>, <span class="st">"hgb"</span>))</code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-8-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
@@ -229,23 +229,23 @@ hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.r
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df  &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ped_info.html">ped_info</a></span>(ped)
 <span class="kw">head</span>(ped_df)</code></pre></div>
 <pre><code>## # A tibble: 6 x 8
-##   tstart  tend intlen intmid interval   age   hgb sex   
+##   tstart  tend intlen intmid interval   age   hgb sex
 ##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fctr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fctr&gt;
-## 1   0     1.00   1.00  0.500 (0,1]     67.1  13.7 M     
-## 2   1.00  2.00   1.00  1.50  (1,2]     67.1  13.7 M     
-## 3   2.00  3.00   1.00  2.50  (2,3]     67.1  13.7 M     
-## 4   3.00  4.00   1.00  3.50  (3,4]     67.1  13.7 M     
-## 5   4.00  5.00   1.00  4.50  (4,5]     67.1  13.7 M     
+## 1   0     1.00   1.00  0.500 (0,1]     67.1  13.7 M
+## 2   1.00  2.00   1.00  1.50  (1,2]     67.1  13.7 M
+## 3   2.00  3.00   1.00  2.50  (2,3]     67.1  13.7 M
+## 4   3.00  4.00   1.00  3.50  (3,4]     67.1  13.7 M
+## 5   4.00  5.00   1.00  4.50  (4,5]     67.1  13.7 M
 ## 6   5.00  6.00   1.00  5.50  (5,6]     67.1  13.7 M</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(ped_df)</code></pre></div>
 <pre><code>## # A tibble: 6 x 8
-##   tstart  tend intlen intmid interval    age   hgb sex   
+##   tstart  tend intlen intmid interval    age   hgb sex
 ##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fctr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;fctr&gt;
-## 1    282   287   5.00    284 (282,287]  67.1  13.7 M     
-## 2    287   314  27.0     300 (287,314]  67.1  13.7 M     
-## 3    314   315   1.00    314 (314,315]  67.1  13.7 M     
-## 4    315   321   6.00    318 (315,321]  67.1  13.7 M     
-## 5    321   356  35.0     338 (321,356]  67.1  13.7 M     
+## 1    282   287   5.00    284 (282,287]  67.1  13.7 M
+## 2    287   314  27.0     300 (287,314]  67.1  13.7 M
+## 3    314   315   1.00    314 (314,315]  67.1  13.7 M
+## 4    315   321   6.00    318 (315,321]  67.1  13.7 M
+## 5    321   356  35.0     338 (321,356]  67.1  13.7 M
 ## 6    356   424  68.0     390 (356,424]  67.1  13.7 M</code></pre>
 <p>This data set can be used to conveniently obtain the hazard, cumulative hazard and survival functions evaluated at the joint mean (and mode) of the covariates for all time points in the data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped_df &lt;-<span class="st"> </span>ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/add_hazard.html">add_hazard</a></span>(pam)
@@ -253,8 +253,8 @@ ped_df %&gt;%<span class="st"> </span><span class="kw"><a href="../reference/dpl
 <pre><code>## # A tibble: 6 x 4
 ##   interval  hazard ci_lower ci_upper
 ##   &lt;fctr&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (0,1]    0.00868  0.00701  0.0107 
-## 2 (1,2]    0.00841  0.00685  0.0103 
+## 1 (0,1]    0.00868  0.00701  0.0107
+## 2 (1,2]    0.00841  0.00685  0.0103
 ## 3 (2,3]    0.00815  0.00668  0.00995
 ## 4 (3,4]    0.00790  0.00652  0.00958
 ## 5 (4,5]    0.00766  0.00636  0.00923
@@ -295,14 +295,14 @@ gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 ##   tstart  tend intl… intm… inte…   age   hgb sex   cumu_h… cumu_l… cumu_u…
 ##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ## 1   0     1.00  1.00 0.500 (0,1]  68.4  13.1 F     0.00646 0.00518 0.00806
-## 2   1.00  2.00  1.00 1.50  (1,2]  68.4  13.1 F     0.0127  0.0102  0.0158 
-## 3   2.00  3.00  1.00 2.50  (2,3]  68.4  13.1 F     0.0188  0.0152  0.0233 
-## 4   3.00  4.00  1.00 3.50  (3,4]  68.4  13.1 F     0.0247  0.0200  0.0305 
-## 5   4.00  5.00  1.00 4.50  (4,5]  68.4  13.1 F     0.0304  0.0247  0.0374 
+## 2   1.00  2.00  1.00 1.50  (1,2]  68.4  13.1 F     0.0127  0.0102  0.0158
+## 3   2.00  3.00  1.00 2.50  (2,3]  68.4  13.1 F     0.0188  0.0152  0.0233
+## 4   3.00  4.00  1.00 3.50  (3,4]  68.4  13.1 F     0.0247  0.0200  0.0305
+## 5   4.00  5.00  1.00 4.50  (4,5]  68.4  13.1 F     0.0304  0.0247  0.0374
 ## 6   5.00  6.00  1.00 5.50  (5,6]  68.4  13.1 F     0.0359  0.0293  0.0441</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(pinfo.sex$sex)</code></pre></div>
-<pre><code>## 
-##   F   M 
+<pre><code>##
+##   F   M
 ## 218 218</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(pinfo.sex, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend, <span class="dt">y =</span> cumu_hazard)) +
 <span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin =</span> cumu_lower, <span class="dt">ymax =</span> cumu_upper, <span class="dt">fill =</span> sex), <span class="dt">alpha =</span> <span class="fl">0.3</span>) +
@@ -331,7 +331,7 @@ gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Note that graphical representation of the baseline hazard is a sloght approximation here – it should be a <em>step function</em>, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.<a href="#fnref1">↩</a></p></li>
+<li id="fn1"><p>Note that graphical representation of the baseline hazard is a slight approximation here – it should be a <em>step function</em>, since the baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.<a href="#fnref1">↩</a></p></li>
 </ol>
 </div>
 </div>
@@ -362,7 +362,7 @@ gg.surv +<span class="st"> </span><span class="kw"><a href="http://www.rdocument
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

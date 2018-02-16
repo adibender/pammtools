@@ -31,11 +31,15 @@ append_ped_attr <- function(pamm, ped) {
 #' @rdname pamm
 #' @seealso \code{\link[mgcv]{gam}}
 #' @export
-pamm <- function(formula, data=list(), method="REML", ...) {
+pamm <- function(formula, data=list(), method="REML", ..., trafo.args=NULL) {
 
 	dots <- list(...)
 	dots$formula = formula
 	dots$family  = poisson()
+  if (!is.null(trafo.args)) {
+    trafo.args$data <- data
+    data <- do.call(split_data, trafo.args)
+  }
 	dots$data    = data
 	dots$offset  = data$offset
 

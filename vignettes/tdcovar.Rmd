@@ -102,8 +102,8 @@ tidy_fixed(cph)[c(1, 4:7, 10), ]
 ### Graphical comparison of the two models
 The figure below summarizes the comparison between the two models.
 
-<details>
-<summary>Expand here for R-Code</summary>
+<!-- <details>
+<summary>Expand here for R-Code</summary> -->
 
 ```{r, prisonPrep}
 all_eff <- purrr::map_df(
@@ -164,7 +164,7 @@ prio_gg <- smooth_gg %+% prio_df + aes(x=prio) +
   xlab("Number of prior convictions")
 ```
 
-</details>
+<!-- </details> -->
 
 As we can see, the estimates of the fixed coefficients (left panel) are
 very similar between the two models, including the confidence intervals.
@@ -268,8 +268,8 @@ cbind(pam=coef(pbc_pam)[2:3], cox=coef(fit2))
 Coefficient estimates are very similar for both models, especially for the
 effect of `bili`. A graphical comparison yields similar results:
 
-<details>
-  <summary>Expand here for R-Code</summary>
+<!-- <details>
+  <summary>Expand here for R-Code</summary> -->
 
 ```{r, fig.keep="none"}
 ## Effect of bilirubin
@@ -307,7 +307,7 @@ grid.draw(
         ggplotGrob(protime_gg),
         size = "last"))
 ```
-</details>
+<!-- </details> -->
 
 ```{r, echo=FALSE, fig.width=6, fig.height=3}
 library(grid)
