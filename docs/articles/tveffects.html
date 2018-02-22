@@ -31,7 +31,7 @@
 <li>
   <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-
+     
   </a>
 </li>
 <li>
@@ -40,11 +40,14 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-
+     
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/atest.html">Test</a>
+    </li>
+    <li>
       <a href="../articles/baseline.html">Baseline Hazard</a>
     </li>
     <li>
@@ -52,6 +55,9 @@
     </li>
     <li>
       <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative Effects (of time-dependent covariates)</a>
     </li>
     <li>
       <a href="../articles/data-transformation.html">Data Transformation</a>
@@ -81,7 +87,7 @@
 <li>
   <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
-
+     
   </a>
 </li>
       </ul>
@@ -92,18 +98,18 @@
 </div>
 <!--/.navbar -->
 
-
+      
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
       <h1>Time-varying effects</h1>
                         <h4 class="author">Andreas Bender</h4>
-
-            <h4 class="date">2018-02-16</h4>
+            
+            <h4 class="date">2018-02-22</h4>
           </div>
 
-
-
+    
+    
 <div class="contents">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
 <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())
@@ -159,7 +165,7 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
   <span class="dt">data    =</span> veteran,
   <span class="dt">tt      =</span> function(x, t, ...) x *<span class="st"> </span><span class="kw">log</span>(t +<span class="st"> </span><span class="dv">20</span>))
 <span class="kw">coef</span>(vfit)</code></pre></div>
-<pre><code>##         trt       prior       karno   tt(karno)
+<pre><code>##         trt       prior       karno   tt(karno) 
 ##  0.07914694  0.12051224 -0.15466404  0.02930082</code></pre>
 <p>Thus the time-varying component of the effect becomes <span class="math inline">\(\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20) = -0.155 + 0.029\cdot\log(t+20)\)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">400</span>, <span class="dt">by =</span> <span class="dv">10</span>)
@@ -238,28 +244,28 @@ pam3 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumen
   <span class="dt">offset =</span> offset)</code></pre></div>
 <p>The summary of the model indicates that the estimated bivariate function <span class="math inline">\(\hat{f}(x_{\text{karno}}, t)\)</span> is highly non-linear (<span class="math inline">\(edf \approx 8.9\)</span>):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pam3)</code></pre></div>
-<pre><code>##
-## Family: poisson
-## Link function: log
-##
+<pre><code>## 
+## Family: poisson 
+## Link function: log 
+## 
 ## Formula:
 ## ped_status ~ trt + prior + s(age) + te(tend, karno)
-##
+## 
 ## Parametric coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)
+##             Estimate Std. Error z value Pr(&gt;|z|)    
 ## (Intercept) -4.96563    0.16877 -29.422   &lt;2e-16 ***
-## trt          0.11795    0.19881   0.593    0.553
-## prior        0.01467    0.20946   0.070    0.944
+## trt          0.11795    0.19881   0.593    0.553    
+## prior        0.01467    0.20946   0.070    0.944    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-##
+## 
 ## Approximate significance of smooth terms:
-##                  edf Ref.df Chi.sq p-value
-## s(age)         1.003  1.006  0.371   0.546
+##                  edf Ref.df Chi.sq p-value    
+## s(age)         1.003  1.006  0.371   0.546    
 ## te(tend,karno) 8.859 11.182 60.369   1e-08 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-##
+## 
 ## R-sq.(adj) =  0.00423   Deviance explained = 6.92%
 ## UBRE = -0.83464  Scale est. = 1         n = 5392</code></pre>
 <p>The 3D perspective plot can aid interpretation, where y- and x-axes depict the Karnosky-Score and the time respectively and the z-axis displays the contribution of the effect to the log-hazard for each combination of <span class="math inline">\(x_{\text{karno}}\)</span> and <span class="math inline">\(t\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
@@ -272,6 +278,7 @@ pam3 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumen
 one would obtain fitting a time-constant, non-linear effect of
 $f(x_{\text{karno}})$. ABER DAS IST ZUFALL HIER; DAS MUSS JA NICHT SO SEIN...  --></p>
 <p>Holding the Karnofsky-Score constant, we can see how the log hazard changes over time for different given values of <span class="math inline">\(x_{\text{karno}}\)</span> (middle panel). For higher values <span class="math inline">\(x_{\text{karno}} &gt;60\)</span> the log-hazard is smaller at the beginning and increases over the course of the follow-up (orange and blue lines middle panel). This is consistent with the time-varying effect of the Karnofsky-Score estimated in the previous section. However, the bivariate function indicates that the log hazard may have a parabolic shape for low <span class="math inline">\(x_{\text{karno}}\)</span> values, decreasing at the beginning and increasing again for later time-points (green line middle panel).</p>
+<p><details><summary>Expand here for R-Code</summary></details></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## heat map/contour plot
 te_gg &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gg_tensor.html">gg_tensor</a></span>(pam3) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">51</span>, <span class="dv">200</span>), <span class="dt">lty =</span> <span class="dv">3</span>) +
@@ -317,7 +324,7 @@ time_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(<span class="kw">list</span>(x[<span class="kw">plain</span>(karno)],t)))) +
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="kw">expression</span>(x[<span class="kw">plain</span>(karno)])) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/coord_cartesian">coord_cartesian</a></span>(<span class="dt">ylim=</span> <span class="kw">c</span>(-<span class="dv">4</span>, <span class="dv">3</span>))+
 <span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position  =</span> <span class="st">"bottom"</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(te_gg, karno_gg, time_gg, <span class="dt">nrow=</span><span class="dv">1</span>)</code></pre></div>
+<p></p>
 <p><img src="tveffects_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>The following figure shows the estimated effect (middle panel) along with a pointwise upper (right) and lower (left) CI. Note that we have to be somewhat cautious with interpretation, considering the large uncertainty of the effect estimate, especially for lower Karnofsky-Scores and later time-points. Also note that the estimate does not include the estimated average time-constant log-hazard (<code>coefficients(pam3)["(Intercept)"]=</code>-4.966) and its uncertainty:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/gg_tensor.html">gg_tensor</a></span>(pam3, <span class="dt">ci=</span><span class="ot">TRUE</span>) +
@@ -353,7 +360,7 @@ time_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
 </div>
 
       </footer>
