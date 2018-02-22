@@ -242,7 +242,10 @@ that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values
 decreasing at the beginning and increasing again for later
 time-points (green line middle panel).
 
-```{r}
+<details>
+  <summary>Expand here for R-Code</summary>
+
+```{r warning=FALSE, fig.width=7, fig.height=3}
 ## heat map/contour plot
 te_gg <- gg_tensor(pam3) +
   geom_vline(xintercept = c(1, 51, 200), lty = 3) +
@@ -290,10 +293,12 @@ time_gg <- ggplot(time_df, aes(x=karno)) +
   xlab(expression(x[plain(karno)])) + coord_cartesian(ylim= c(-4, 3))+
   theme(legend.position  = "bottom")
 ```
+</details>
 
-```{r, fig.width=7, fig.height=3, warning=FALSE}
+```{r, fig.width=7, fig.height=3, warning=FALSE, echo=FALSE}
 grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
+
 
 The following figure shows the estimated effect (middle panel) along with a
 pointwise upper (right) and lower (left) CI. Note that we have to be somewhat
