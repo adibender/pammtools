@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{tdcovar}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: pam.bib
+bibliography: Remote.bib
 ---
 
 ```{r, echo = FALSE}
