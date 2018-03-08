@@ -154,7 +154,7 @@ make_lag_lead_mat <- function(
   data,
   ll_fun = function(t, te) {(t >= te)}) {
 
-  LL <- outer(attr(data, "breaks"), attr(data, "te"), ll_fun)
+  LL <- outer(attr(data, "breaks"), attr(data, "te"), ll_fun)*1L
   LL[attr(data, "id_tseq"), ]
 
 }

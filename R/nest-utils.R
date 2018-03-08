@@ -1,7 +1,10 @@
 #' Create nested data frame from event and time-dependent data
 #'
 #' @inheritParams tidyr::nest
+#' @inheritParams split_data
 #' @inherit split_tdc
+#' @param regular Logical. Indicates whether covariate data was observed on
+#' a regular grid for all observation units.
 #' @import checkmate dplyr
 #' @importFrom tidyr nest
 #' @importFrom tibble as_tibble
@@ -14,6 +17,8 @@ nest_tdc <- function(
   id_var     = "id",
   time_var   = "time",
   status_var = "status",
+  cut        = NULL,
+  regular    = TRUE,
   entry_time = 0,
   cens_value = 0,
   .key       = "tdc") {
@@ -26,9 +31,12 @@ nest_tdc <- function(
 
 
   common_id <- warn_partial_overlap(event_df[[id_var]], tdc_df[[id_var]])
+  ## FIXME: perform only if warning triggered
   event_df  <- filter(event_df, !!sym(id_var) %in% common_id)
   tdc_df    <- filter(tdc_df, !!sym(id_var) %in% common_id)
 
+  # FIXME: should be conditional on intersect(names(event_df), names(tdc_df))
+  # being non-empty
   tdc_vars <- setdiff(
     get_tdc(tdc_df, id_var),
     c(id_var, status_var, time_var, te_var))
@@ -42,14 +50,21 @@ nest_tdc <- function(
   if (!(length(tdc_in_event_df)==0)) {
     event_df <- event_df %>%  select(-one_of(tdc_vars))
   }
-
   # nested_tdc <- left_join(event_df, nested_tdc)
 
   nested_tdc <- event_df %>% left_join(nested_tdc, by = id_var)
 
   # important to calculate unique event times after subsetting
-  utime <- unique(nested_tdc[[time_var]]*nested_tdc[[status_var]]) %>% sort()
-  ute_time <- tdc_df %>% pull(te_var) %>% unique() %>% sort()
+  if(is.null(cut)) {
+    utime <- unique(nested_tdc[[time_var]]*nested_tdc[[status_var]]) %>% sort()
+  } else {
+    utime <- cut
+  }
+  if (!regular) {
+    ute_time <- utime
+  } else {
+    ute_time <- tdc_df %>% pull(te_var) %>% unique() %>% sort()
+  }
 
   # utime <- union(utime, ute_time) %>% unique() %>% sort()
 

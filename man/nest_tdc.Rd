@@ -5,7 +5,8 @@
 \title{Create nested data frame from event and time-dependent data}
 \usage{
 nest_tdc(event_df, tdc_df, te_var, id_var = "id", time_var = "time",
-  status_var = "status", entry_time = 0, cens_value = 0, .key = "tdc")
+  status_var = "status", cut = NULL, regular = TRUE, entry_time = 0,
+  cens_value = 0, .key = "tdc")
 }
 \arguments{
 \item{event_df}{A data frame (potentially) containing time-dependent covariates.}
@@ -27,6 +28,11 @@ the time-dependent covariates in \code{tdc_df}.}
 
 \item{status_var}{As \code{time_var}, but specifies column containing the
 event indicator. Can be missing in the \code{tdc_df}.}
+
+\item{cut}{the vector of timepoints to cut at}
+
+\item{regular}{Logical. Indicates whether covariate data was observed on
+a regular grid for all observation units.}
 
 \item{entry_time}{If scalar, the time-point at which the follow up for each
 observation unit begins. (Eventually, support for subject specific

@@ -1,5 +1,4 @@
-context("Transformation of longitudinal covariates to functional covariates")
-
+context("Test formula special.")
 
 test_that("Formula special func works as expected", {
   ## latency + covar (DLNM approach)
@@ -38,4 +37,28 @@ test_that("Formula special func works as expected", {
   expect_identical(f4$fun_covar,"x")
   expect_identical(f4$by_var, "z")
 
+})
+
+
+context("Transformation of longitudinal covariates to functional covariates")
+
+
+test_that("Covariate to matrix Transformation works", {
+  event_df  <- filter(patient, CombinedID == 1116)
+  tdc_df    <- filter(daily, CombinedID == 1116)
+  ## check nesting
+  nested_df <- nest_tdc(event_df, tdc_df, "Study_Day", "CombinedID",
+    "survhosp", "PatientDied", 0:10, TRUE, 0, 0, "TDC")
+  expect_tibble(nested_df, any.missing=FALSE, nrows=1, ncols=13)
+  expect_identical(colnames(nested_df), c("Year", "CombinedicuID", "CombinedID", "Survdays",
+      "PatientDied", "survhosp", "Gender", "Age", "AdmCatID", "ApacheIIScore",
+      "BMI", "DiagID2", "TDC"))
+  expect_identical(names(attributes(nested_df))[-c(1:3)],
+    c("id_var", "time_var", "status_var", "te_var", "tdc_col", "cens_value",
+      "breaks", "te", "id_n", "id_tseq", "id_teseq"))
+  ## check data trafo
+  expect_error(get_func(nested_df, ~func(t)))
+  f1 <- get_func(nested_df, ~ func(t, t-te, caloriesPercentage))
+  expect_list(f1, types=c("numeric", "numeric", "integer", "numeric"),
+    any.missing=FALSE, len=4, names="named")
 })
