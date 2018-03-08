@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Tranform data from pec object to tidy format — tidy_pec • pammtools</title>
+<title>Time-depedent covariates of the <code><a href='patient.html'>patient</a></code> data set. — daily • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -18,6 +18,8 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -25,6 +27,20 @@
 <script src="../pkgdown.js"></script>
   
   
+<meta property="og:title" content="Time-depedent covariates of the <code><a href='patient.html'>patient</a></code> data set. — daily" />
+
+<meta property="og:description" content="This data set containt the time-dependent covariates (TDCs) for the patient
+data set. Note that nutrition was protocoled for at most 12 days after
+ICU admission. The data set includes:
+ CombinedIDUnique patient identifier. Can be used to merge with
+ patient data
+ Study_DayThe calendar (!) day at which calories (or proteins) were
+ administered
+ caloriesPercentageThe percentage of target calories supplied to the
+   patient by the ICU staff
+ proteinGproKGThe amount of protein supplied to the patient by the
+   ICU staff" />
+<meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -52,7 +68,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -103,7 +119,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,31 +135,37 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Tranform data from pec object to tidy format</h1>
+    <h1>Time-depedent covariates of the <code><a href='patient.html'>patient</a></code> data set.</h1>
     </div>
 
     
-    <p>Tranform data from pec object to tidy format</p>
+    <p>This data set containt the time-dependent covariates (TDCs) for the <code><a href='patient.html'>patient</a></code>
+data set. Note that nutrition was protocoled for at most 12 days after
+ICU admission. The data set includes:</p><dl class='dl-horizontal'>
+ <dt>CombinedID</dt><dd><p>Unique patient identifier. Can be used to merge with
+ <code><a href='patient.html'>patient</a></code> data</p></dd>
+ <dt>Study_Day</dt><dd><p>The calendar (!) day at which calories (or proteins) were
+ administered</p></dd>
+ <dt>caloriesPercentage</dt><dd><p>The percentage of target calories supplied to the
+   patient by the ICU staff</p></dd>
+ <dt>proteinGproKG</dt><dd><p>The amount of protein supplied to the patient by the
+   ICU staff</p></dd></dl>
     
 
-    <pre class="usage"><span class='fu'>tidy_pec</span>(<span class='no'>pec</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>pec</th>
-      <td><p>An object of class pec (see <code><a href='http://www.rdocumentation.org/packages/pec/topics/pec'>pec</a></code>).</p></td>
-    </tr>
-    </table>
+    <pre class="usage"><span class='no'>daily</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>An object of class <code>tbl_df</code> (inherits from <code>tbl</code>, <code>data.frame</code>) with 18797 rows and 4 columns.</p>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#format">Format</a></li>
+          </ul>
 
   </div>
 </div>
@@ -154,7 +176,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

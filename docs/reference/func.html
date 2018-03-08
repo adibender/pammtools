@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate survival data using the piece-wise exponential distribution — sim_wce • pammtools</title>
+<title>A formula special for defining functional covariates — func • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -18,6 +18,8 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -25,6 +27,10 @@
 <script src="../pkgdown.js"></script>
   
   
+<meta property="og:title" content="A formula special for defining functional covariates — func" />
+
+<meta property="og:description" content="A formula special for defining functional covariates" />
+<meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -52,7 +58,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -103,7 +109,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,38 +125,22 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate survival data using the piece-wise exponential distribution</h1>
+    <h1>A formula special for defining functional covariates</h1>
     </div>
 
     
-    <p>Simulate survival data using the piece-wise exponential distribution</p>
+    <p>A formula special for defining functional covariates</p>
     
 
-    <pre class="usage"><span class='fu'>sim_wce</span>(<span class='no'>Xdf</span>, <span class='kw'>tmax</span> <span class='kw'>=</span> <span class='fl'>30</span>)
+    <pre class="usage"><span class='fu'>func</span>(<span class='no'>...</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) {     <span class='no'>te</span> <span class='kw'>&lt;=</span> <span class='no'>t</span> })
 
-<span class='fu'>sim_wce2</span>(<span class='no'>Xdf</span>, <span class='kw'>tmax</span> <span class='kw'>=</span> <span class='fl'>30</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>Xdf</th>
-      <td><p>A data frame containing full (time-dependent) covariate information
-for each subject</p></td>
-    </tr>
-    <tr>
-      <th>tmax</th>
-      <td><p>The maximal time of follow-up. Survival times after <code>tmax</code>
-will be administratively censored.</p></td>
-    </tr>
-    </table>
-    
+<span class='fu'>has_latency</span>(<span class='no'>vars</span>)</pre>
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
   </div>
@@ -162,7 +152,7 @@ will be administratively censored.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

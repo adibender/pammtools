@@ -131,7 +131,7 @@ test_that("survival probabilities functions work for PAM", {
 
 ## test sensibility
 
-test_that("hazards and CI positiv for type response", {
+test_that("hazards and CI positive for type response", {
 
   ped <- split_data(Surv(time, status)~ trt + age, data = veteran, id = "id")
   pam <- gam(ped_status ~ s(tend, k = 5) + trt,

@@ -49,20 +49,20 @@ A time-varying effect of $x$ can then be specified as an interaction term betwee
 $x$ and $t$, where different levels of complexity and flexibility for this
 interaction are possible:
 
-a) $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
+- $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
 time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified
 transformation of time $t$, e.g. the $\log$-function.
 
-b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
+- $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
 where $g(t)$ is a known or pre-specified transformation of time
 
-c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation
+- $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation
 is non-linear and estimated from the data. If $x$ is a dummy variable coding for
 levels of a categorical variable this constitutes a stratified model with a
 different "baseline" hazard for each category,
 see the [*strata* vignette](strata.html).
 
-d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
+- $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
 ## Veteran Data example
 

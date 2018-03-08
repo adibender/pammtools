@@ -102,10 +102,10 @@ tidy_fixed(cph)[c(1, 4:7, 10), ]
 ### Graphical comparison of the two models
 The figure below summarizes the comparison between the two models.
 
-<!-- <details>
-<summary>Expand here for R-Code</summary> -->
+<details>
+<summary>Expand here for R-Code</summary>
 
-```{r, prisonPrep}
+```{r, prisonPrep, fig.keep="none"}
 all_eff <- purrr::map_df(
   list(
     tidy_fixed(pam),
@@ -162,17 +162,7 @@ prio_df <- prio_df %>%
 ## plot of the prio effect
 prio_gg <- smooth_gg %+% prio_df + aes(x=prio) +
   xlab("Number of prior convictions")
-```
 
-<!-- </details> -->
-
-As we can see, the estimates of the fixed coefficients (left panel) are
-very similar between the two models, including the confidence intervals.
-Using the default settings in both model specifications (using P-Splines
-for smooth terms), the PAM estimates are smoother compared to the Cox
-estimates (right panel).
-
-```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prison_prep"}
 ## put all plots together
 library(gridExtra)
 grid.arrange(
@@ -182,6 +172,23 @@ grid.arrange(
   layout_matrix=matrix(c(1, 1, 2, 3), ncol=2))
 ```
 
+</details>
+
+```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prison_prep", echo=FALSE}
+## put all plots together
+library(gridExtra)
+grid.arrange(
+  coef_gg +theme(legend.position="bottom"),
+  age_gg,
+  prio_gg,
+  layout_matrix=matrix(c(1, 1, 2, 3), ncol=2))
+```
+
+As we can see, the estimates of the fixed coefficients (left panel) are
+very similar between the two models, including the confidence intervals.
+Using the default settings in both model specifications (using P-Splines
+for smooth terms), the PAM estimates are smoother compared to the Cox
+estimates (right panel).
 
 ## Analysis of the `pbc` data
 
@@ -226,10 +233,9 @@ event_df <- pbc %>%
   mutate(event = 1*(status==2)) %>%
   select(id, time, event, trt, age, sex, bili, protime)
 
-## we rename the "day" variable here for use of `split_tdc` function later
+## select a subset of variables
 tdc_df <- pbcseq %>%
-  select(id, day, bili, protime) %>%
-  rename(time = day)
+  select(id, day, bili, protime)
 ```
 
 Now we can use the `?split_tdc` function, that needs both data sets,
@@ -248,11 +254,12 @@ The `split_tdc` function performs the following tasks:
   carrying the respective previous value of the TDC forward.
 
 ```{r}
-pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "id", "time", "status")
+pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "day",
+  status_var = "event")
 filter(tdc_df, id==17)
 pbc_ped %>%
   filter(id==17) %>%
-  semi_join(tdc_df, by=c("id", "tstart"="time")) %>%
+  semi_join(tdc_df, by=c("id", "tstart"="day")) %>%
   select(id, interval, age, bili, protime)
 ```
 
@@ -268,8 +275,8 @@ cbind(pam=coef(pbc_pam)[2:3], cox=coef(fit2))
 Coefficient estimates are very similar for both models, especially for the
 effect of `bili`. A graphical comparison yields similar results:
 
-<!-- <details>
-  <summary>Expand here for R-Code</summary> -->
+<details>
+  <summary>Expand here for R-Code</summary>
 
 ```{r, fig.keep="none"}
 ## Effect of bilirubin
@@ -307,7 +314,7 @@ grid.draw(
         ggplotGrob(protime_gg),
         size = "last"))
 ```
-<!-- </details> -->
+</details>
 
 ```{r, echo=FALSE, fig.width=6, fig.height=3}
 library(grid)

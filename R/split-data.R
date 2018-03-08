@@ -109,7 +109,7 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
   split_df  <- split_df %>%
     mutate(
       ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
-          0, .data$ped_status),
+          0L, .data$ped_status),
       ped_time   = pmin(.data$ped_time, max(cut)),
       offset     = log(.data$ped_time - .data$tstart)) %>%
     filter(!(.data$tstart == .data$ped_time))

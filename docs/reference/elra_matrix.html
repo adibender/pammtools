@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Predict survival probabilities at specified time points — predictSurvProb.pamm • pammtools</title>
+<title>Create matrix components for cumulative effects — make_time_mat • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -18,6 +18,8 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -25,6 +27,11 @@
 <script src="../pkgdown.js"></script>
   
   
+<meta property="og:title" content="Create matrix components for cumulative effects — make_time_mat" />
+
+<meta property="og:description" content="These functions are called internally by get_func and
+should usually not be called directly." />
+<meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -52,7 +59,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -103,7 +110,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,35 +126,36 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Predict survival probabilities at specified time points</h1>
+    <h1>Create matrix components for cumulative effects</h1>
     </div>
 
     
-    <p>This function is needed to work with the <code>pec</code> package for estimation
-of the time-dependent C-Index and Brier-Score (prediction error)</p>
+    <p>These functions are called internally by <code><a href='get_func.html'>get_func</a></code> and
+should usually not be called directly.</p>
     
 
-    <pre class="usage"><span class='fu'>predictSurvProb.pamm</span>(<span class='no'>object</span>, <span class='no'>newdata</span>, <span class='no'>times</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>make_time_mat</span>(<span class='no'>data</span>)
+
+<span class='fu'>make_te_mat</span>(<span class='no'>data</span>)
+
+<span class='fu'>make_latency_mat</span>(<span class='no'>data</span>)
+
+<span class='fu'>make_lag_lead_mat</span>(<span class='no'>data</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) {     (<span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>te</span>) })
+
+<span class='fu'>make_z_mat</span>(<span class='no'>data</span>, <span class='no'>z_var</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>A PAMM model object.</p></td>
+      <th>data</th>
+      <td><p>A data set (or similar) from which meta information on cut-points,
+interval-specific time, covariates etc. can be obtained.</p></td>
     </tr>
     <tr>
-      <th>newdata</th>
-      <td><p>Data containing covariate information only, for which to
-predict survival probabilities.</p></td>
-    </tr>
-    <tr>
-      <th>times</th>
-      <td><p>Time points for which survival probabilities should be predicted.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Arguments passed to <code><a href='int_info.html'>int_info</a></code>.</p></td>
+      <th>z_var</th>
+      <td><p>Which should be transformed into functional covariate format
+suitable to fit cumulative effects in <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>mgcv::gam</a></code>.</p></td>
     </tr>
     </table>
     
@@ -168,7 +176,7 @@ predict survival probabilities.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
