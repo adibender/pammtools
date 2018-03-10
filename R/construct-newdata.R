@@ -130,7 +130,6 @@ make_newdata <- function(x, ...) {
 #' @param expand A character vector of column names in \code{ped}.
 #' @param n If \code{expand} specified, respective variables will be expanded
 #' in \code{n} values from minimum to maximum.
-#' @importFrom modelr seq_range
 #' @export
 make_newdata.default <- function(
   x,
