@@ -29,13 +29,16 @@ as_fped <- function(ped, formula) {
 #' Expand time-dependent covariates to functionals
 #'
 #' Given formula specification on how time-dependent covariates affect the
-#' outcome, creates respective functional covariate as well as auxilliary
-#' matrices for time/lattency etc.
+#' outcome, creates respective functional covariate as well as auxiliary
+#' matrices for time/latency etc.
 #'
 #' @param data Data frame (or similar) in which variables specified in ...
 #' will be looked for
-#' @param ... One sided formulas of the form ~func(t,te,x) that specify the
-#' type of cumulative effect desired (see examples). Possible specifications are
+#' @param ... One sided formula of the form \code{~func(t,te,x) + func(t-te, z)}
+#' that specifies the type of cumulative effect desired (see examples).
+#' Currently it is assumed that observations of covariates \code{x}, \code{z}
+#' happened on the same time scale \code{te}.
+#' Possible specifications are
 #' \itemize{
 #' \item \code{func(t,te,x)}: The most general specification.
 #' \item \code{func(t, t-te,x)}: A time-varying DLNM.
@@ -48,9 +51,26 @@ as_fped <- function(ped, formula) {
 get_func <- function(data, formula) {
 
   tf        <- terms(formula, specials="func")
+  # extract components
   terms_vec <- attr(tf, "term.labels")
   func_list <- map(terms_vec, ~eval(expr=parse(text=.)))
-  map(func_list, expand_func, data=data) %>% flatten()
+  ll_funs <- map(func_list, ~.[["ll_fun"]]) # hier mit unique und duplicated arbeiten.
+  time_components <- map(func_list, get_components) %>% transpose() %>%
+    map_lgl(~any(unlist(.)))
+
+  ## create matrices
+  # time components
+  time_mats <- invoke_map(
+    .f   = list(make_time_mat, make_te_mat, make_latency_mat)[time_components],
+    data = data)
+  names(time_mats) <- c("Tmat", "TEmat", "Latency")[time_components]
+  # lag-lead
+  LL_mats <- map(unique(ll_funs), make_lag_lead_mat, data=data)
+  names(LL_mats) <- get_ll_names(ll_funs)
+  # covariates
+  func_covars <- map(func_list, expand_func, data=data) %>% flatten()
+
+  list(time_mats, LL_mats, func_covars) %>% flatten()
 
 }
 
@@ -62,20 +82,12 @@ get_func <- function(data, formula) {
 #' @keywords internal
 expand_func <- function(data, func) {
 
-  time_components <- get_components(func)
-  fun_covars      <- func %>% get_fun_covars()
-  vname           <- func %>% get_vname()
-  time_mats       <- invoke_map(
-    .f = list(make_time_mat, make_te_mat, make_latency_mat)[time_components],
-    data=data)
-  LL_mat <- make_lag_lead_mat(data=data, ll_fun = func$ll_fun)
-  func_mats <- map(fun_covars, ~make_z_mat(data=data, z_var = .))
+  time_components  <- get_components(func)
+  fun_covars       <- func %>% get_fun_covars()
+  func_mats        <- map(fun_covars, ~make_z_mat(data=data, z_var = .))
+  names(func_mats) <- fun_covars
 
-  all_mats <- c(time_mats, list(LL_mat), func_mats)
-  names(all_mats) <- c(paste0(c(c("T.", "TE.", "Latency.")[time_components], "LL."), vname),
-    toupper(fun_covars))
-
-  return(all_mats)
+  return(func_mats)
 
 }
 
@@ -102,6 +114,18 @@ get_fun_covars <- function(func) {
 #' @keywords internal
 get_vname <- function(func) {
   get_fun_covars(func) %>% paste0(collapse=".")
+}
+
+#' @keywords internal
+get_ll_names <- function(ll_funs) {
+
+  if (sum(!duplicated(ll_funs)) > 1) {
+    suffix <- seq_len(sum(!duplicated(ll_funs)))
+  } else {
+    suffix <- ""
+  }
+  paste0("LL", suffix)
+
 }
 
 

@@ -16,8 +16,11 @@ will be looked for}
 \item{func}{Single \code{\link{func}} term \code{\link{get_func}} \code{formula}
 evaluated.}
 
-\item{...}{One sided formulas of the form ~func(t,te,x) that specify the
-type of cumulative effect desired (see examples). Possible specifications are
+\item{...}{One sided formula of the form \code{~func(t,te,x) + func(t-te, z)}
+that specifies the type of cumulative effect desired (see examples).
+Currently it is assumed that observations of covariates \code{x}, \code{z}
+happened on the same time scale \code{te}.
+Possible specifications are
 \itemize{
 \item \code{func(t,te,x)}: The most general specification.
 \item \code{func(t, t-te,x)}: A time-varying DLNM.
@@ -26,7 +29,7 @@ type of cumulative effect desired (see examples). Possible specifications are
 }
 \description{
 Given formula specification on how time-dependent covariates affect the
-outcome, creates respective functional covariate as well as auxilliary
-matrices for time/lattency etc.
+outcome, creates respective functional covariate as well as auxiliary
+matrices for time/latency etc.
 }
 \keyword{internal}
