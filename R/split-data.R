@@ -3,9 +3,13 @@
 #'
 #' @inheritParams survival::survSplit
 #' @param ... Further arguments passed to \code{\link[survival]{survSplit}}
-#' @param max.end logical. Should the last interval span until the last
-#' observed censoring or event time (if larger than the largest specified
-#' cut point).
+#' @param max_time If \code{cut} is unspecified, a maximum time to be considered
+#' can be specified through this argument. Then, all event times after \code{max_time}
+#' will be administratively censored at \code{max_time}.
+#' @param include_last logical. If \code{cut} and \code{max_time} are unspecified,
+#' cut points will be set at observed event times. When \code{include_last = TRUE},
+#' the last interval will span from the last observed event time and the last
+#' observed censoring time (if larger than the largest event time).
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
@@ -20,14 +24,21 @@
 #' class(ped) # class ped (piece-wise exponential data)
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
-split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
+split_data <- function(
+  formula,
+  data,
+  cut          = NULL,
+  max_time     = NULL,
+  ...,
+  include_last = FALSE) {
 
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
   assert_data_frame(data, min.rows = 2, min.cols = 2)
   assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE, min.len = 1,
     null.ok = TRUE)
-  assert_flag(max.end)
+  assert_number(max_time, lower = 0, finite = TRUE, null.ok = TRUE)
+  assert_flag(include_last)
 
 
   ## extract names for event time and status variables
@@ -63,18 +74,21 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
 
   if (is.null(cut)) {
     cut <- unique(data[["ped_time"]][data[["ped_status"]] == 1])
+    if(!is.null(max_time)) {
+      cut <- cut[cut < max_time]
+      cut <- c(cut, max_time)
+    } else {
+      max.fail <- max(data[["ped_time"]][data[["ped_status"]] == 1])
+      max.time <- max(max(data[["ped_time"]]), max(cut))
+      # add last observation to cut if necessary
+      if (include_last & (max.time > max(cut))) {
+        cut <- c(cut, max.time)
+      }
+    }
   }
-  max.fail <- max(data[["ped_time"]][data[["ped_status"]] == 1])
-  max.time <- max(max(data[["ped_time"]]), max(cut))
-
-
   # sort interval cut points in case they are not (so that interval factor
   # variables will be in correct ordering)
   cut <- sort(cut)
-  # add last observation to cut if necessary
-  if (max.end & (max.time > max(cut))) {
-    cut <- c(cut, max.time)
-  }
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)

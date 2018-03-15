@@ -67,7 +67,7 @@ int_info.default <- function(
 #' @examples
 #' ## extract interval information used to create ped object
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
-#' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
+#' ped <- split_data(Surv(time, status)~., data=tdf, id="id", include_last=TRUE)
 #' int_info(ped)
 #'
 #' @seealso split_data ped_info
