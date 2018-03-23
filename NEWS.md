@@ -1,3 +1,11 @@
+#pammtools 0.0.6
+<hr>
+
+## pammtools 0.0.6.0
+* Added functionality to calculate Aaalen-model style cumulative coefficients,
+see `?cumulative_coefficient`
+* Minor fixes in `sample_info` for ped objects
+
 # pammtools 0.0.5
 <hr>
 

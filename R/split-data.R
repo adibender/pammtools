@@ -139,7 +139,6 @@ split_data <- function(
     select(one_of(move), everything(),
       -one_of(c("intmid", "intlen", "ped_time")))
 
-
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
   attr(split_df, "cut") <- cut
@@ -147,6 +146,6 @@ split_data <- function(
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
 
-  return(split_df)
+  split_df
 
 }

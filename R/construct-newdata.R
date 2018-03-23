@@ -1,13 +1,18 @@
 #' Extract information of the sample contained in a data set
 #'
-#' Given a data set and grouping variables, this function returns median values
+#' Given a data set and grouping variables, this function returns mean values
 #' for numeric variables and modus for characters and factors.
 #'
+#' @rdname sample_info
 #' @param x A data frame (or object that inherits from \code{data.frame}).
 #' @param ... Further arguments passed to specialized methods.
 #' @importFrom stats median
+#' @return A data frame containing sample information (for each group).
+#' If applied to an object of class \code{ped}, the sample means of the
+#' original data is returned.
+#' Note: When applied to a \code{ped} object, that doesn't contain covariates
+#' (only interval information), returns data frame with 0 columns.
 #' @export
-#' @rdname sample_info
 sample_info <- function(x, ...) {
   UseMethod("sample_info", x)
 }
@@ -40,17 +45,22 @@ sample_info.data.frame <- function(x, ...) {
 
 #' @inheritParams sample_info
 #' @import checkmate dplyr
+#' @importFrom rlang sym
 #' @export
 #' @rdname sample_info
 #' @seealso \code{\link[pammtools]{split_data}}
-#' @return A data frame containing sample information (for each group).
-#' Note: When applied to a \code{ped} object, that doesn't contain covariates
-#' (only interval information), returns data frame with 0 columns.
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
+  grps <- group_vars(x)
   iv <- attr(x, "intvars")
-  x <- x %>% select(-one_of(iv))
+  id_var <- attr(x, "id_var")
+  x <- x %>%
+    group_by(!!sym(id_var)) %>%
+    slice(1) %>%
+    ungroup() %>%
+    grouped_df(grps) %>%
+    select(-one_of(iv))
   if (test_data_frame(x, min.rows = 1, min.cols = 1)) {
     sample_info.data.frame(x, ...)
   } else {
