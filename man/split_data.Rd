@@ -5,8 +5,7 @@
 \title{Function to transform data without time-dependent covariates into piece-wise
 exponential data format}
 \usage{
-split_data(formula, data, cut = NULL, max_time = NULL, ...,
-  include_last = FALSE)
+split_data(formula, data, cut = NULL, max_time = NULL, ...)
 }
 \arguments{
 \item{formula}{a model formula}
@@ -20,11 +19,6 @@ can be specified through this argument. Then, all event times after \code{max_ti
 will be administratively censored at \code{max_time}.}
 
 \item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
-
-\item{include_last}{logical. If \code{cut} and \code{max_time} are unspecified,
-cut points will be set at observed event times. When \code{include_last = TRUE},
-the last interval will span from the last observed event time and the last
-observed censoring time (if larger than the largest event time).}
 }
 \value{
 A data frame class \code{ped} in piece-wise exponential data format.

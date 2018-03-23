@@ -45,9 +45,6 @@ test_that("Transformation of regular survival data works", {
 	ped <- split_data(Surv(time, status)~., data=veteran)
 	expect_data_frame(ped, nrows=20L, ncols=12L)
 	expect_identical(max(ped$tend), 378)
-	ped <- split_data(Surv(time, status)~., data=veteran, include_last=TRUE)
-	expect_data_frame(ped, nrows=21L, ncols=12L)
-	expect_identical(max(ped$tend), 411)
 
 })
 

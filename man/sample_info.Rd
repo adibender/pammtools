@@ -19,11 +19,13 @@ sample_info(x, ...)
 }
 \value{
 A data frame containing sample information (for each group).
+If applied to an object of class \code{ped}, the sample means of the
+original data is returned.
 Note: When applied to a \code{ped} object, that doesn't contain covariates
 (only interval information), returns data frame with 0 columns.
 }
 \description{
-Given a data set and grouping variables, this function returns median values
+Given a data set and grouping variables, this function returns mean values
 for numeric variables and modus for characters and factors.
 }
 \seealso{

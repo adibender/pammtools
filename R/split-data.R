@@ -6,10 +6,6 @@
 #' @param max_time If \code{cut} is unspecified, a maximum time to be considered
 #' can be specified through this argument. Then, all event times after \code{max_time}
 #' will be administratively censored at \code{max_time}.
-#' @param include_last logical. If \code{cut} and \code{max_time} are unspecified,
-#' cut points will be set at observed event times. When \code{include_last = TRUE},
-#' the last interval will span from the last observed event time and the last
-#' observed censoring time (if larger than the largest event time).
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
@@ -27,10 +23,9 @@
 split_data <- function(
   formula,
   data,
-  cut          = NULL,
-  max_time     = NULL,
-  ...,
-  include_last = FALSE) {
+  cut      = NULL,
+  max_time = NULL,
+  ...) {
 
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
@@ -38,7 +33,6 @@ split_data <- function(
   assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE, min.len = 1,
     null.ok = TRUE)
   assert_number(max_time, lower = 0, finite = TRUE, null.ok = TRUE)
-  assert_flag(include_last)
 
 
   ## extract names for event time and status variables
@@ -77,13 +71,6 @@ split_data <- function(
     if(!is.null(max_time)) {
       cut <- cut[cut < max_time]
       cut <- c(cut, max_time)
-    } else {
-      max.fail <- max(data[["ped_time"]][data[["ped_status"]] == 1])
-      max.time <- max(max(data[["ped_time"]]), max(cut))
-      # add last observation to cut if necessary
-      if (include_last & (max.time > max(cut))) {
-        cut <- c(cut, max.time)
-      }
     }
   }
   # sort interval cut points in case they are not (so that interval factor

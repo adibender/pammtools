@@ -21,7 +21,7 @@ first row will be used.}
   I recommend that you name these arguments in order to make it clear to
   the reader.}
 
-\item{...}{Further arguments passed to \code{\link[modelr]{seq_range}}.}
+\item{...}{Further arguments passed to \code{\link{seq_range}}.}
 }
 \description{
 Extract partial effects for specified model terms
