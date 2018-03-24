@@ -1,0 +1,65 @@
+#' Simulate survival times from the piece-wise exponential distribution
+#'
+#' @param formula A formula that denotes how the linear predictor should be
+#' compriosed in each interval. If you want to include a smooth baseline
+#' or time-varying effects, use \code{t} within your formula as
+#' if it was a covariate in the data, although it is not and should not
+#' be included in the \code{data} provided to \code{sim_pexp}. See examples
+#' below.
+#'
+#' @param data Data in which to look for variables in formula.
+#' @param cut A sequence of time-points starting with 0
+#' @import dplyr
+#' @importFrom msm rpexp
+#' @importFrom lazyeval f_eval
+#' @examples
+#' library(survival)
+#' # set number of times to simulate
+#' n <- 250
+#' # create data set with variables which will affect the hazard rate.
+#' df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6))
+#' # the formula which specifies how covariates affet the hazard rate
+#' f0 <- function(t) {
+#'  dgamma(t, 8, 2) *6
+#' }
+#' form <- ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)
+#' set.seed(24032018)
+#' sim_df <- sim_pexp(form, df, 1:10)
+#' head(sim_df)
+#' plot(survfit(Surv(time, status)~1, data = sim_df ))
+#'
+#' mod <- coxph(Surv(time, status) ~ x1 + pspline(x2), data=sim_df)
+#' coef(mod)[1]
+#' layout(matrix(1:2, nrow=1))
+#' termplot(mod, se = TRUE)
+#' ped <- split_data(Surv(time, status)~., data=sim_df, max_time=10)
+#' library(mgcv)
+#' pam <- gam(ped_status ~ s(tend) + x1 + s(x2), data=ped, family=poisson, offset=offset)
+#' coef(pam)[2]
+#' plot(pam)
+#' @export
+sim_pexp <- function(formula, data, cut) {
+
+  n <- nrow(data)
+  data <- data %>%
+    mutate(
+      id     = row_number(),
+      time   = max(cut),
+      status = 1)
+  ped <- split_data(Surv(time, status)~., data, cut = cut, id="id") %>%
+    rename("t" = "tstart") %>%
+    mutate(rate = exp(lazyeval::f_eval(formula, .)))
+
+  sim_df <- ped %>%
+    group_by(id) %>%
+    summarize(time = msm::rpexp(rate = .data$rate, t = .data$t)) %>%
+    mutate(
+      status = 1L*(.data$time <= max(cut)),
+      time = pmin(.data$time, max(cut))) %>%
+  left_join(select(data, -.data$time, -.data$status))
+
+  attr(sim_df, "formula") <- formula
+
+  sim_df
+
+}

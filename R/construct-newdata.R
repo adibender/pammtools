@@ -216,11 +216,11 @@ make_newdata.ped <- function(
   g_vars <- group_vars(x)
   x <- x %>%
     ungroup()         %>%
-    group_by_(id_var) %>%
+    group_by(!!sym(id_var)) %>%
     slice(1)          %>%
-    ungroup(id_var)   %>%
+    ungroup(!!sym(id_var))   %>%
     unped()           %>%
-    group_by_(.dots = g_vars)
+    grouped_df(g_vars)
 
   make_newdata(x, ..., expand = expand, n = n)
 }
