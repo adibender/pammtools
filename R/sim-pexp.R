@@ -115,10 +115,10 @@ sim_pexp <- function(formula, data, cut) {
   if(!is.null(f2)) {
     terms_f2 <- terms(f2, specials="fcumu")
     f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr=parse(text=.x)))
-    df2      <- map_dfc(f2_ev, ~eta_cumu(data, ., cut))
+    df2      <- map_dfc(f2_ev, function(fc) eta_cumu(data=data, fc, cut=cut))
     ped <- ped %>%
       left_join(df2) %>%
-      mutate(rate = rate*exp(eta_z))
+      mutate(rate = .data$rate*exp(.data$eta_z))
   }
 
   sim_df <- ped %>%
@@ -136,8 +136,25 @@ sim_pexp <- function(formula, data, cut) {
 }
 
 
+#' Add time-dependent covariate to a data set
+#'
+#' Given a data set in standard format (with one row per subject/observation),
+#' this function adds a column with the specified exposure time points
+#' and a column with respective exposures, creatd from \code{rng.fun}.
+#' This function sould usually only be used to create data sets passed
+#' to \code{\link[pammtools]{sim_pexp}}.
+#'
+#' @inheritParams sim_pexp
+#' @param te A numeric vector of exposure times (relative to the
+#' beginning of the follow-up time \code{t})
+#' @param rng_fun A random number generating function that creates
+#' the time-dependent covariates at time points \code{te}.
+#' First argument of the function should be \code{n}, the number of
+#' random numbers to generate. Within \code{add_tdc}, \code{n} will be set
+#' to \code{length(te)}.
+#' @param ... Currently not used.
 #' @import dplyr
-#' @importFrom rlang eval_tidy
+#' @importFrom rlang eval_tidy :=
 #' @importFrom purrr map
 #' @export
 add_tdc <- function(data, te, rng_fun, ...) {
@@ -154,6 +171,12 @@ add_tdc <- function(data, te, rng_fun, ...) {
 
 
 
+#' A formula special used to handle cumulative effect specifications
+#'
+#' Can be used in the second part of the formula specification provided
+#' to \code{\link[pammtools]{sim_pexp}} and should only be used in this
+#' context.
+#'
 #' @importFrom purrr map
 #' @export
 #' @keywords internal
