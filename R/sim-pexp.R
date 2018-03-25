@@ -13,6 +13,7 @@
 #' @import Formula
 #' @importFrom msm rpexp
 #' @importFrom lazyeval f_eval
+#' @importFrom tidyr replace_na
 #' @examples
 #' library(survival)
 #' library(dplyr)
@@ -71,11 +72,12 @@
 #'   ft(t, tmax=10) * 0.8*fdnorm(z)* wpeak2(t-te)
 #' }
 #' # define lag-lead window function
-#' ll_fun <- function(t, te) {t <= te}
+#' ll_fun <- function(t, te) {t >= te}
 #' # simulate data with cumulative effect
 #' sim_df <- sim_pexp(
 #'   formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|
-#'      fcumu(t, te1, z.te1, f_xyz=f_ttez, ll_fun=ll_fun),
+#'      fcumu(t, te1, z.te1, f_xyz=f_ttez, ll_fun=ll_fun) +
+#'      fcumu(t, te2, z.te2, f_xyz=f_ttez, ll_fun=ll_fun),
 #'   data = df,
 #'   cut = 0:10)
 #' plot(survfit(Surv(time, status)~1, data = sim_df ))
@@ -113,11 +115,16 @@ sim_pexp <- function(formula, data, cut) {
 
   # construct eta for time-dependent part
   if(!is.null(f2)) {
-    terms_f2 <- terms(f2, specials="fcumu")
-    f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr=parse(text=.x)))
-    df2      <- map_dfc(f2_ev, function(fc) eta_cumu(data=data, fc, cut=cut))
+    terms_f2 <- terms(f2, specials = "fcumu")
+    f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr = parse(text = .x)))
+    z_form <- list("eta_", map_chr(f2_ev, ~.[["vars"]][2])) %>%
+      reduce(paste0, collapse="+") %>% paste0("~", .) %>% as.formula()
+    df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
     ped <- ped %>%
-      left_join(df2) %>%
+      left_join(reduce(df2, full_join)) %>%
+      mutate_at(vars(contains("eta_")), replace_na, 0) %>%
+      group_by(.data$id, .data$t) %>%
+      mutate(eta_z = !!rlang::get_expr(z_form)) %>%
       mutate(rate = .data$rate*exp(.data$eta_z))
   }
 
@@ -126,8 +133,8 @@ sim_pexp <- function(formula, data, cut) {
     summarize(time = rpexp(rate = .data$rate, t = .data$t)) %>%
     mutate(
       status = 1L*(.data$time <= max(cut)),
-      time = pmin(.data$time, max(cut))) %>%
-  left_join(select(data, -.data$time, -.data$status))
+      time   = pmin(.data$time, max(cut))) %>%
+    left_join(select(data, -.data$time, -.data$status))
 
   attr(sim_df, "formula") <- formula
 
@@ -140,8 +147,8 @@ sim_pexp <- function(formula, data, cut) {
 #'
 #' Given a data set in standard format (with one row per subject/observation),
 #' this function adds a column with the specified exposure time points
-#' and a column with respective exposures, creatd from \code{rng.fun}.
-#' This function sould usually only be used to create data sets passed
+#' and a column with respective exposures, created from \code{rng.fun}.
+#' This function should usually only be used to create data sets passed
 #' to \code{\link[pammtools]{sim_pexp}}.
 #'
 #' @inheritParams sim_pexp
@@ -194,19 +201,19 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
 
 #' @import dplyr
 #' @importFrom tidyr unnest
-#' @importFrom rlang sym
+#' @importFrom rlang sym :=
 #' @keywords internal
 eta_cumu <- function(data, fcumu, cut, ...) {
 
-  vars <- fcumu$vars
-  # func_var <- grep(".", vars, fixed=T, value=T)
-  f_xyz <- fcumu$f_xyz
+  vars   <- fcumu$vars
+  f_xyz  <- fcumu$f_xyz
   ll_fun <- fcumu$ll_fun
+  eta_name <- paste0("eta_", vars[2])
   combine_df(
       data.frame(t=cut),
       select(data, one_of("id", vars))) %>%
     unnest() %>%
     filter(ll_fun(t, !!sym(vars[1]))) %>%
     group_by(.data$id, .data$t) %>%
-    summarize(eta_z = sum(f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
+    summarize(!!eta_name := sum(f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
 }
