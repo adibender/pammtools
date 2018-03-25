@@ -23,7 +23,10 @@ Simulate survival times from the piece-wise exponential distribution
 }
 \examples{
 library(survival)
-# set number of times to simulate
+library(dplyr)
+library(pammtools)
+
+# set number of observations/subjects
 n <- 250
 # create data set with variables which will affect the hazard rate.
 df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6)) \%>\%
