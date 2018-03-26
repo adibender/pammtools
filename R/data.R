@@ -38,3 +38,8 @@
 #'  \item{proteinGproKG}{The amount of protein supplied to the patient by the
 #'    ICU staff}}
 "daily"
+
+
+#' Simulated data with cumulative effects
+#'
+"simdf_elra"

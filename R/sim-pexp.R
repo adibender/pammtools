@@ -117,6 +117,7 @@ sim_pexp <- function(formula, data, cut) {
   if(!is.null(f2)) {
     terms_f2 <- terms(f2, specials = "fcumu")
     f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr = parse(text = .x)))
+    te_vars <- map_chr(f2_ev, ~.[["vars"]][1])
     z_form <- list("eta_", map_chr(f2_ev, ~.[["vars"]][2])) %>%
       reduce(paste0, collapse="+") %>% paste0("~", .) %>% as.formula()
     df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
@@ -126,6 +127,8 @@ sim_pexp <- function(formula, data, cut) {
       group_by(.data$id, .data$t) %>%
       mutate(eta_z = !!rlang::get_expr(z_form)) %>%
       mutate(rate = .data$rate*exp(.data$eta_z))
+  } else {
+    te_vars <- NULL
   }
 
   sim_df <- ped %>%
@@ -136,7 +139,21 @@ sim_pexp <- function(formula, data, cut) {
       time   = pmin(.data$time, max(cut))) %>%
     left_join(select(data, -.data$time, -.data$status))
 
-  attr(sim_df, "formula") <- formula
+  attr(sim_df, "id_var") <- "id"
+  attr(sim_df, "time_var") <- "time"
+  attr(sim_df, "status_var") <- "status"
+  attr(sim_df, "te_var") <- te_vars
+  attr(sim_df, "cens_value") <- 0
+  attr(sim_df, "breaks") <- cut
+  attr(sim_df, "te") <- map_dbl(te_vars, ~select(sim_df, .) %>% pull(.) %>% unique())
+  attr(sim_df, "id_n") <- sim_df %>% pull("time") %>%
+    pmin(max(cut)) %>%
+    map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
+  attr(sim_df, "id_tseq") <- attr(sim_df, "id_n") %>%
+    map(seq_len) %>% unlist()
+  attr(sim_df, "id_teseq") <- rep(seq_along(pull(sim_df, id)),
+    times=attr(sim_df, "id_n"))
+  attr(sim_df, "sim_formula") <- formula
 
   sim_df
 
