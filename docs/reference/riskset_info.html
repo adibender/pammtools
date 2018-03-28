@@ -18,13 +18,21 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Extract risk set information for each interval. — riskset_info" />
+
+<meta property="og:description" content="The columns ped_riskset, ped_events, ped_censored provide the
+size of the riskset at the beginning of each interval as well as the number
+of events and censorings that occured in the interval, respectively." />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +40,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,12 +57,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -97,18 +111,19 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -120,6 +135,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Extract risk set information for each interval.</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/interval-information.R'><code>R/interval-information.R</code></a></small>
     </div>
 
     
@@ -130,7 +146,7 @@ of events and censorings that occured in the interval, respectively.</p>
 
     <pre class="usage"><span class='fu'>riskset_info</span>(<span class='no'>ped</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -155,28 +171,28 @@ of events and censorings that occured in the interval, respectively.</p>
   <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>,<span class='fl'>400</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>100</span>))
 <span class='fu'>riskset_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt; # A tibble: 4 x 4
 #&gt;   interval  ped_riskset ped_events ped_censored
-#&gt; * &lt;fctr&gt;          &lt;int&gt;      &lt;dbl&gt;        &lt;int&gt;
-#&gt; 1 (0,100]           137      79.0             5
-#&gt; 2 (100,200]          53      26.0             3
-#&gt; 3 (200,300]          24      10.0             1
-#&gt; 4 (300,400]          13       7.00            6</div><div class='input'>(<span class='no'>riskset_celltype</span> <span class='kw'>&lt;-</span> <span class='fu'>riskset_info</span>(<span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>ped</span>, <span class='no'>celltype</span>)))</div><div class='output co'>#&gt; # A tibble: 14 x 5
+#&gt; * &lt;fct&gt;           &lt;int&gt;      &lt;dbl&gt;        &lt;int&gt;
+#&gt; 1 (0,100]           137        79.            5
+#&gt; 2 (100,200]          53        26.            3
+#&gt; 3 (200,300]          24        10.            1
+#&gt; 4 (300,400]          13         7.            6</div><div class='input'>(<span class='no'>riskset_celltype</span> <span class='kw'>&lt;-</span> <span class='fu'>riskset_info</span>(<span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>ped</span>, <span class='no'>celltype</span>)))</div><div class='output co'>#&gt; # A tibble: 14 x 5
 #&gt; # Groups:   celltype [4]
 #&gt;    celltype  interval  ped_riskset ped_events ped_censored
-#&gt;  * &lt;fctr&gt;    &lt;fctr&gt;          &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;
-#&gt;  1 squamous  (0,100]            35      13.0          3.00
-#&gt;  2 squamous  (100,200]          19       6.00         0   
-#&gt;  3 squamous  (200,300]          13       4.00         1.00
-#&gt;  4 squamous  (300,400]           8       3.00         5.00
-#&gt;  5 smallcell (0,100]            48      37.0          1.00
-#&gt;  6 smallcell (100,200]          10       5.00         2.00
-#&gt;  7 smallcell (200,300]           3       1.00         0   
-#&gt;  8 smallcell (300,400]           2       2.00         0   
-#&gt;  9 adeno     (0,100]            27      21.0          1.00
-#&gt; 10 adeno     (100,200]           5       5.00         0   
-#&gt; 11 large     (0,100]            27       8.00         0   
-#&gt; 12 large     (100,200]          19      10.0          1.00
-#&gt; 13 large     (200,300]           8       5.00         0   
-#&gt; 14 large     (300,400]           3       2.00         1.00</div><div class='input'>## add descriptive statistics for riskset at beginning of each interval:
+#&gt;  * &lt;fct&gt;     &lt;fct&gt;           &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;
+#&gt;  1 squamous  (0,100]            35        13.           3.
+#&gt;  2 squamous  (100,200]          19         6.           0.
+#&gt;  3 squamous  (200,300]          13         4.           1.
+#&gt;  4 squamous  (300,400]           8         3.           5.
+#&gt;  5 smallcell (0,100]            48        37.           1.
+#&gt;  6 smallcell (100,200]          10         5.           2.
+#&gt;  7 smallcell (200,300]           3         1.           0.
+#&gt;  8 smallcell (300,400]           2         2.           0.
+#&gt;  9 adeno     (0,100]            27        21.           1.
+#&gt; 10 adeno     (100,200]           5         5.           0.
+#&gt; 11 large     (0,100]            27         8.           0.
+#&gt; 12 large     (100,200]          19        10.           1.
+#&gt; 13 large     (200,300]           8         5.           0.
+#&gt; 14 large     (300,400]           3         2.           1.</div><div class='input'>## add descriptive statistics for riskset at beginning of each interval:
 # left_join(riskset_celltype,
 #           group_by(ped, celltype, interval) %>% sample_info())
 </div></pre>
@@ -202,11 +218,14 @@ of events and censorings that occured in the interval, respectively.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

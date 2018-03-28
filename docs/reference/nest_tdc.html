@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create nested data frame from event and time-dependent data — nest_tdc • pammtools</title>
+<title>Create nested data frame from data with time-dependent covariates — nest_tdc • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,12 +25,14 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
-<meta property="og:title" content="Create nested data frame from event and time-dependent data — nest_tdc" />
+<meta property="og:title" content="Create nested data frame from data with time-dependent covariates — nest_tdc" />
 
-<meta property="og:description" content="Create nested data frame from event and time-dependent data" />
+<meta property="og:description" content="Provides methods to nest data with time-dependent covariates (TDCs).
+A formula must be provided where the right hand side (RHS) contains
+the structure of the TDCs" />
 <meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -38,6 +40,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -53,8 +57,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -103,7 +111,7 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -115,6 +123,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -125,71 +134,50 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create nested data frame from event and time-dependent data</h1>
+    <h1>Create nested data frame from data with time-dependent covariates</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/nest-utils.R'><code>R/nest-utils.R</code></a></small>
     </div>
 
     
-    <p>Create nested data frame from event and time-dependent data</p>
+    <p>Provides methods to nest data with time-dependent covariates (TDCs).
+A <code>formula</code> must be provided where the right hand side (RHS) contains
+the structure of the TDCs</p>
     
 
-    <pre class="usage"><span class='fu'>nest_tdc</span>(<span class='no'>event_df</span>, <span class='no'>tdc_df</span>, <span class='no'>te_var</span>, <span class='kw'>id_var</span> <span class='kw'>=</span> <span class='st'>"id"</span>, <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='st'>"time"</span>,
-  <span class='kw'>status_var</span> <span class='kw'>=</span> <span class='st'>"status"</span>, <span class='kw'>entry_time</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>cens_value</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>.key</span> <span class='kw'>=</span> <span class='st'>"tdc"</span>)</pre>
+    <pre class="usage"><span class='fu'>nest_tdc</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for default</span>
+<span class='fu'>nest_tdc</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for list</span>
+<span class='fu'>nest_tdc</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>event_df</th>
-      <td><p>A data frame (potentially) containing time-dependent covariates.</p></td>
+      <th>data</th>
+      <td><p>A suitable data structure (e.g. unnested data frame with
+concurrent TDCs or a list wehre each element is a data frame, potentially
+containing TDCs as specified in the RHS of <code>formula</code>).
+Only TDCs present in <code>formula</code> will be returned.</p></td>
     </tr>
     <tr>
-      <th>tdc_df</th>
-      <td><p>A data frame containing information on time-dependent variables
-in long format. Needs to contain a "time" variable indicating when the
-TDCs change their value. Must have same name as variable indicating event
-times in <code>event_df</code>.</p></td>
+      <th>formula</th>
+      <td><p>A two sided formula with a two part RHS, where the second
+part indicates the structure of the TDC structure.</p></td>
     </tr>
     <tr>
-      <th>te_var</th>
-      <td><p>The time variable in <code>tdc_df</code> indicating time points at
-which time-dependent covariate (tdc) was observed.
-Needs to be the same name in both data sets.</p></td>
+      <th>...</th>
+      <td><p>Further arguments passed to methods.</p></td>
     </tr>
     <tr>
-      <th>id_var</th>
-      <td><p>The ID variable name, identifying subjects.</p></td>
+      <th>vars</th>
+      <td><p>A character vector of TDCs that will be nested.</p></td>
     </tr>
     <tr>
-      <th>time_var</th>
-      <td><p>A character, specifies the column of the event or
-censoring time in <code>event_df</code> and the time of measurement for
-the time-dependent covariates in <code>tdc_df</code>.</p></td>
-    </tr>
-    <tr>
-      <th>status_var</th>
-      <td><p>As <code>time_var</code>, but specifies column containing the
-event indicator. Can be missing in the <code>tdc_df</code>.</p></td>
-    </tr>
-    <tr>
-      <th>entry_time</th>
-      <td><p>If scalar, the time-point at which the follow up for each
-observation unit begins. (Eventually, support for subject specific
-entry time could be supported through this argument).</p></td>
-    </tr>
-    <tr>
-      <th>cens_value</th>
-      <td><p>The value that indicates censoring in the
-<code>status_var</code> column.</p></td>
-    </tr>
-    <tr>
-      <th>.key</th>
-      <td><p>The name of the new column, as a string or symbol.</p>
-<p>This argument is passed by expression and supports
-<a href='http://www.rdocumentation.org/packages/rlang/topics/quasiquotation'>quasiquotation</a> (you can unquote strings
-and symbols). The name is captured from the expression with
-<code><a href='http://www.rdocumentation.org/packages/rlang/topics/quo_label'>rlang::quo_name()</a></code> (note that this kind of interface where
-symbols do not represent actual objects is now discouraged in the
-tidyverse; we support it here for backward compatibility).</p></td>
+      <th>id</th>
+      <td><p>A character giving the name of the ID column.</p></td>
     </tr>
     </table>
     
@@ -216,5 +204,8 @@ tidyverse; we support it here for backward compatibility).</p></td>
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

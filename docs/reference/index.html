@@ -18,13 +18,16 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Function reference" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +35,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,12 +52,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -97,18 +106,19 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -119,10 +129,7 @@
       <div class="row">
   <div class="col-md-9">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.0.3.2</small>
-      </h1>
+      <h1>Reference</h1>
     </div>
 
     <div class="contents">
@@ -143,14 +150,14 @@
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="split_data.html">split_data</a></code> </p>
+            <p><code><a href="split_data.html">split_data()</a></code> </p>
           </td>
           <td><p>Function to transform data without time-dependent covariates into piece-wise
 exponential data format</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="split_tdc.html">split_tdc</a></code> </p>
+            <p><code><a href="split_tdc.html">split_tdc()</a></code> </p>
           </td>
           <td><p>Create piece-wise exponential data in case of time-dependent covariates</p></td>
         </tr>
@@ -164,49 +171,49 @@ exponential data format</p></td>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="int_info.html">int_info</a></code> </p>
+            <p><code><a href="int_info.html">int_info()</a></code> </p>
           </td>
           <td><p>Create start/end times and interval information</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="get_intervals.html">get_intervals</a></code> </p>
+            <p><code><a href="get_intervals.html">get_intervals()</a></code> </p>
           </td>
           <td><p>Information on intervals in which times fall</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="sample_info.html">sample_info</a></code> </p>
+            <p><code><a href="sample_info.html">sample_info()</a></code> </p>
           </td>
           <td><p>Extract information of the sample contained in a data set</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="riskset_info.html">riskset_info</a></code> </p>
+            <p><code><a href="riskset_info.html">riskset_info()</a></code> </p>
           </td>
           <td><p>Extract risk set information for each interval.</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="ped_info.html">ped_info</a></code> </p>
+            <p><code><a href="ped_info.html">ped_info()</a></code> </p>
           </td>
           <td><p>Extract interval information and median/modus values for covariates</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="combine_df.html">combine_df</a></code> </p>
+            <p><code><a href="combine_df.html">combine_df()</a></code> </p>
           </td>
           <td><p>Combines multiple data frames</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="newdata.html">make_newdata</a></code> </p>
+            <p><code><a href="newdata.html">make_newdata()</a></code> </p>
           </td>
           <td><p>Construct a data frame suitable for prediction</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="plot_df.html">plot_df</a></code> </p>
+            <p><code><a href="plot_df.html">plot_df()</a></code> </p>
           </td>
           <td><p>Extract information for plotting step functions</p></td>
         </tr>
@@ -220,31 +227,31 @@ exponential data format</p></td>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="tidy_fixed.html">tidy_fixed</a></code> </p>
+            <p><code><a href="tidy_fixed.html">tidy_fixed()</a></code> </p>
           </td>
           <td><p>Extract fixed coefficient table from model object</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tidiers.html">tidy_smooth</a></code> </p>
+            <p><code><a href="tidiers.html">tidy_smooth()</a></code> </p>
           </td>
           <td><p>Extract 1d smooth objects in tidy data format.</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tidy_smooth2d.html">tidy_smooth2d</a></code> </p>
+            <p><code><a href="tidy_smooth2d.html">tidy_smooth2d()</a></code> </p>
           </td>
           <td><p>Extract 2d smooth objects in tidy format.</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="tidy_smooth.html">tidy_re</a></code> </p>
+            <p><code><a href="tidy_smooth.html">tidy_re()</a></code> </p>
           </td>
           <td><p>Extract random effects objects in tidy data format.</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="get_terms.html">get_terms</a></code> </p>
+            <p><code><a href="get_terms.html">get_terms()</a></code> </p>
           </td>
           <td><p>Extract the partial effects of non-linear model terms</p></td>
         </tr>
@@ -258,19 +265,19 @@ exponential data format</p></td>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="add_term.html">add_term</a></code> </p>
+            <p><code><a href="add_term.html">add_term()</a></code> </p>
           </td>
           <td><p>Add info about term effects to data set</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="add_hazard.html">add_hazard</a></code> <code><a href="add_hazard.html">add_cumu_hazard</a></code> </p>
+            <p><code><a href="add_hazard.html">add_hazard()</a></code> <code><a href="add_hazard.html">add_cumu_hazard()</a></code> </p>
           </td>
           <td><p>Add predicted hazard to data set</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="add_surv_prob.html">add_surv_prob</a></code> </p>
+            <p><code><a href="add_surv_prob.html">add_surv_prob()</a></code> </p>
           </td>
           <td><p>Add survival probability estimates to data set</p></td>
         </tr>
@@ -284,31 +291,31 @@ exponential data format</p></td>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="gg_fixed.html">gg_fixed</a></code> </p>
+            <p><code><a href="gg_fixed.html">gg_fixed()</a></code> </p>
           </td>
           <td><p>Forrest plot of fixed coefficients</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="gg_smooth.html">gg_smooth</a></code> </p>
+            <p><code><a href="gg_smooth.html">gg_smooth()</a></code> </p>
           </td>
           <td><p>Plot smooth 1d terms of gam objects</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="gg_tensor.html">gg_tensor</a></code> </p>
+            <p><code><a href="gg_tensor.html">gg_tensor()</a></code> </p>
           </td>
           <td><p>Plot tensor product effects</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="gg_re.html">gg_re</a></code> </p>
+            <p><code><a href="gg_re.html">gg_re()</a></code> </p>
           </td>
           <td><p>Plot Normal QQ plots for random effects</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="geom_stepribbon.html">geom_stepribbon</a></code> </p>
+            <p><code><a href="geom_stepribbon.html">geom_stepribbon()</a></code> </p>
           </td>
           <td><p>Step ribbon plots.</p></td>
         </tr>
@@ -335,11 +342,14 @@ exponential data format</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

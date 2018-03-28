@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Given interval break-points, provides data frame with information regarding
-interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools</title>
+<title>Cumulative coefficients — get_cumu_coef • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -19,13 +18,27 @@ interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools<
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Cumulative coefficients — get_cumu_coef" />
+
+<meta property="og:description" content="These functions are designed to mimick the cumulative coefficients
+usually used in additive hazards models (Aalen model) to depict (time-varying)
+covariate effects. For PAMMs, these can be interpreted as the differences
+between the cumulative hazard rates where all covariates except one have the
+same values. For the a numeric covariate of interest we calculate
+Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
+the cumulative hazard of the reference level is substracted from
+the cumulative hazards eveluated at all non reference levels. Standard
+errors are calculated using the delta method." />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,6 +46,8 @@ interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools<
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -48,12 +63,16 @@ interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools<
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -98,18 +117,19 @@ interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools<
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -120,29 +140,43 @@ interval start-/end-points, lengths, midpoints,etc. — int_info2 • pammtools<
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Given interval break-points, provides data frame with information regarding
-interval start-/end-points, lengths, midpoints,etc.</h1>
+    <h1>Cumulative coefficients</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/cumulative-coefficient.R'><code>R/cumulative-coefficient.R</code></a></small>
     </div>
 
     
-    <p>Given interval break-points, provides data frame with information regarding
-interval start-/end-points, lengths, midpoints,etc.</p>
+    <p>These functions are designed to mimick the cumulative coefficients
+usually used in additive hazards models (Aalen model) to depict (time-varying)
+covariate effects. For PAMMs, these can be interpreted as the differences
+between the cumulative hazard rates where all covariates except one have the
+same values. For the a numeric covariate of interest we calculate
+Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
+the cumulative hazard of the reference level is substracted from
+the cumulative hazards eveluated at all non reference levels. Standard
+errors are calculated using the delta method.</p>
     
 
-    <pre class="usage"><span class='fu'>int_info2</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>:<span class='fl'>12</span>, <span class='fu'>seq</span>(<span class='fl'>15</span>, <span class='fl'>55</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>5</span>), <span class='fl'>61</span>), <span class='kw'>min.time</span> <span class='kw'>=</span> <span class='fl'>4</span>)</pre>
+    <pre class="usage"><span class='fu'>get_cumu_coef</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>terms</span>, <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A numeric vector of cut points in which the follow-up should be
-partitioned in or object of class <code>ped</code>.</p></td>
+      <th>model</th>
+      <td><p>Object from which to extract cumulative coefficients.</p></td>
     </tr>
     <tr>
-      <th>min.time</th>
-      <td><p>Only intervals that have lower borders larger than
-this value will be included in the resulting data frame.</p></td>
+      <th>data</th>
+      <td><p>Additional data if necessary.</p></td>
+    </tr>
+    <tr>
+      <th>terms</th>
+      <td><p>A character vector of variables for which the cumulative
+coefficient should be calculated.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Further arguments passed to <code><a href='add_hazard.html'>add_cumu_hazard</a></code>.</p></td>
     </tr>
     </table>
     
@@ -163,11 +197,14 @@ this value will be included in the resulting data frame.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

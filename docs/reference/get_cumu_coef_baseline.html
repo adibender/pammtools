@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>creates one instance of Lag/Lead mat — create_Lmat • pammtools</title>
+<title>Cumulative coefficients — get_cumu_coef_baseline • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -18,13 +18,27 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Cumulative coefficients — get_cumu_coef_baseline" />
+
+<meta property="og:description" content="These functions are designed to mimick the cumulative coefficients
+usually used in additive hazards models (Aalen model) to depict (time-varying)
+covariate effects. For PAMMs, these can be interpreted as the differences
+between the cumulative hazard rates where all covariates except one have the
+same values. For the a numeric covariate of interest we calculate
+Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
+the cumulative hazard of the reference level is substracted from
+the cumulative hazards eveluated at all non reference levels. Standard
+errors are calculated using the delta method." />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +46,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,12 +63,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -97,18 +117,19 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -119,61 +140,40 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>creates one instance of Lag/Lead mat</h1>
+    <h1>Cumulative coefficients</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/cumulative-coefficient.R'><code>R/cumulative-coefficient.R</code></a></small>
     </div>
 
     
-    <p>creates one instance of Lag/Lead mat</p>
+    <p>These functions are designed to mimick the cumulative coefficients
+usually used in additive hazards models (Aalen model) to depict (time-varying)
+covariate effects. For PAMMs, these can be interpreted as the differences
+between the cumulative hazard rates where all covariates except one have the
+same values. For the a numeric covariate of interest we calculate
+Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
+the cumulative hazard of the reference level is substracted from
+the cumulative hazards eveluated at all non reference levels. Standard
+errors are calculated using the delta method.</p>
     
 
-    <pre class="usage"><span class='fu'>create_Lmat</span>(<span class='no'>te</span>, <span class='no'>cut</span>, <span class='kw'>t.lag</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>lead.const</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>te.add.lag</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>te.add.lead</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>lead.factor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>t.min</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>get_cumu_coef_baseline</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>te</th>
-      <td><p>Numeric/Integer vector specifying the times at which exposure occurred.</p></td>
+      <th>data</th>
+      <td><p>Additional data if necessary.</p></td>
     </tr>
     <tr>
-      <th>cut</th>
-      <td><p>The break points dividing the follow up into intervals.</p></td>
+      <th>model</th>
+      <td><p>Object from which to extract cumulative coefficients.</p></td>
     </tr>
     <tr>
-      <th>t.lag</th>
-      <td><p>A numeric constant, specifying the time (from <code>te</code>) before
-<code>te</code> can affect hazard.</p></td>
-    </tr>
-    <tr>
-      <th>lead.const</th>
-      <td><p>A numeric constant, specifying the constant amount of time
-after <code>te + t.lag</code>, in which <code>te</code> can still affect hazard.</p></td>
-    </tr>
-    <tr>
-      <th>te.add.lag</th>
-      <td><p>A numeric constant added to te before application of lag time</p></td>
-    </tr>
-    <tr>
-      <th>te.add.lead</th>
-      <td><p>A numeric constant, added to te before application of lead time.</p></td>
-    </tr>
-    <tr>
-      <th>lead.factor</th>
-      <td><p>If the lead time is dynamic, this factor can be set different
-to zero, such that <code>t.lead=lead.const + lead.factor*te</code>.</p></td>
-    </tr>
-    <tr>
-      <th>t.min</th>
-      <td><p>If some intervals are not of interest only intervals for t &gt; t.min are
-returned.</p></td>
+      <th>...</th>
+      <td><p>Further arguments passed to <code><a href='add_hazard.html'>add_cumu_hazard</a></code>.</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A data frame with intervals as first column and <code>length(te)</code>
-columns specifying the lag/lead for each <code>te</code>.</p>
     
 
   </div>
@@ -181,9 +181,7 @@ columns specifying the lag/lead for each <code>te</code>.</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>
@@ -194,11 +192,14 @@ columns specifying the lag/lead for each <code>te</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

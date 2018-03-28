@@ -8,8 +8,11 @@
 <title>Stratified baseline • pammtools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Stratified baseline">
+<meta property="og:description" content="">
+<meta name="twitter:card" content="summary">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -24,8 +27,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
@@ -54,9 +61,6 @@
       <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
     </li>
     <li>
-      <a href="../articles/cumulative-effects.html">Cumulative Effects (of time-dependent covariates)</a>
-    </li>
-    <li>
       <a href="../articles/data-transformation.html">Data Transformation</a>
     </li>
     <li>
@@ -77,7 +81,7 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -102,32 +106,35 @@
       <h1>Stratified baseline</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-02-16</h4>
-          </div>
+            <h4 class="date">2018-03-28</h4>
+      
+      <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/strata.Rmd"><code>vignettes/strata.Rmd</code></a></small>
+
+    </div>
 
     
     
 <div class="contents">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(ggplot2)
-<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())
-<span class="kw">library</span>(mgcv)
-<span class="kw">library</span>(survival)
-<span class="kw">library</span>(pammtools)
-Set1 &lt;-<span class="st"> </span>RColorBrewer::<span class="kw">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(mgcv)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(survival)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pammtools)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">Set1 &lt;-<span class="st"> </span>RColorBrewer<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RColorBrewer/topics/ColorBrewer">brewer.pal</a></span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</a></code></pre></div>
 <div id="stratified-baselines" class="section level2">
 <h2 class="hasAnchor">
 <a href="#stratified-baselines" class="anchor"></a>Stratified baselines</h2>
 <p>In some cases the proportional hazards assumption for different groups (levels of a factor variable) is violated. One approach to resolve this problem is to fit a so called <em>stratified</em> Cox model, where each level <span class="math inline">\(k=1,\ldots,K\)</span> of factor variable <span class="math inline">\(z\)</span> will have its own baseline-hazard:</p>
 <p><span class="math inline">\(\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)\)</span>.</p>
 <p>For illustration we again use the <code>veteran</code> data (censored at day 400) from the <code>survival</code> package, where the cell type of the lung cancer had four levels:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"veteran"</span>)
-veteran &lt;-<span class="st"> </span>veteran %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(
-    <span class="dt">trt   =</span> <span class="dv">1</span>*(trt ==<span class="st"> </span><span class="dv">2</span>),
-    <span class="dt">prior =</span> <span class="dv">1</span>*(prior==<span class="dv">10</span>)) %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time &lt;<span class="st"> </span><span class="dv">400</span>) <span class="co"># restriction for illustration</span>
-<span class="kw">table</span>(veteran$celltype)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span>(<span class="st">"veteran"</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">veteran &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">    <span class="dt">trt   =</span> <span class="dv">1</span><span class="op">*</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior<span class="op">==</span><span class="dv">10</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time <span class="op">&lt;</span><span class="st"> </span><span class="dv">400</span>) <span class="co"># restriction for illustration</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">table</span>(veteran<span class="op">$</span>celltype)</a></code></pre></div>
 <pre><code>## 
 ##  squamous smallcell     adeno     large 
 ##        30        48        27        26</code></pre>
@@ -135,38 +142,38 @@ veteran &lt;-<span class="st"> </span>veteran %&gt;%
 <h3 class="hasAnchor">
 <a href="#stratified-cox-model" class="anchor"></a>Stratified Cox model</h3>
 <p>Fitting a stratified Cox model using the <code>coxph</code> function from the <code>survival</code> package is simple, including a <code>strata</code> term in the model formula.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cph  &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) ~<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/strata">strata</a></span>(celltype), <span class="dt">data=</span>veteran)
-base &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/basehaz">basehaz</a></span>(cph)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">cph  &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status) <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/strata">strata</a></span>(celltype), <span class="dt">data=</span>veteran)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">base &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/basehaz">basehaz</a></span>(cph)</a></code></pre></div>
 <p>The different baselines are visualized below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">baseline_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(base, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>time)) +
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>hazard, <span class="dt">group=</span>strata)) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>)
-baseline_gg +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span>strata)</code></pre></div>
-<p><img src="strata_files/figure-html/ggbase-1.png" width="480" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">baseline_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(base, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>time)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>hazard, <span class="dt">group=</span>strata)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">baseline_gg <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span>strata)</a></code></pre></div>
+<p><img src="../docs/articles/strata_files/figure-html/ggbase-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="stratified-pam" class="section level3">
 <h3 class="hasAnchor">
 <a href="#stratified-pam" class="anchor"></a>Stratified PAM</h3>
 <p>We can obtain similar results with PAMs by fitting one smooth baseline estimate for each category of <code>celltype</code> in the data. Technically, we specify the <code>by</code> argument in <code>mgcv</code> <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s(...)</a></code> function.</p>
 <p>Note that in contrast to the model specification in <code>coxph</code> we need to include the <code>celltype</code> factor variable in the model specification:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)~., <span class="dt">data=</span>veteran, <span class="dt">id=</span><span class="st">"id"</span>)
-pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status ~<span class="st"> </span>celltype +<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend, <span class="dt">by=</span>celltype), <span class="dt">data=</span>ped,
-    <span class="dt">family=</span><span class="kw">poisson</span>(), <span class="dt">offset=</span>offset)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/split_data.html">split_data</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span>., <span class="dt">data=</span>veteran, <span class="dt">id=</span><span class="st">"id"</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span>celltype <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend, <span class="dt">by=</span>celltype), <span class="dt">data=</span>ped,</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="dt">family=</span><span class="kw">poisson</span>(), <span class="dt">offset=</span>offset)</a></code></pre></div>
 <p>Comparing the estimated baselines we get very similar results between the stratified Cox and stratified PAM models.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pinf &lt;-<span class="st"> </span>ped %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(celltype) %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/ped_info.html">ped_info</a></span>() %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pam) %&gt;%
-<span class="st">    </span><span class="kw"><a href="../reference/dplyr_verbs.html">rename</a></span>(<span class="dt">strata=</span>celltype) %&gt;%
-<span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(!(strata ==<span class="st"> "adeno"</span> &amp;<span class="st"> </span>tend &gt;<span class="st"> </span><span class="dv">200</span>))
-baseline_gg +<span class="st">   </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span><span class="st">"Nelson-Aalen"</span>) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="dt">data=</span>pinf, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>tend, <span class="dt">y=</span>cumu_hazard, <span class="dt">group=</span>strata, <span class="dt">col=</span><span class="st">"PAM"</span>)) +
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">data=</span>pinf, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>tend, <span class="dt">ymin=</span>cumu_lower, <span class="dt">ymax =</span> cumu_upper,
-    <span class="dt">group=</span>strata), <span class="dt">fill =</span> <span class="st">"black"</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">alpha =</span> .<span class="dv">2</span>) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/facet_wrap">facet_wrap</a></span>(~strata, <span class="dt">nrow=</span><span class="dv">1</span>) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(Set1[<span class="dv">1</span>], <span class="dv">1</span>)) +
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</code></pre></div>
-<p><img src="strata_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">pinf &lt;-<span class="st"> </span>ped <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(celltype) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/ped_info.html">ped_info</a></span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pam) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="../reference/dplyr_verbs.html">rename</a></span>(<span class="dt">strata=</span>celltype) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(<span class="op">!</span>(strata <span class="op">==</span><span class="st"> "adeno"</span> <span class="op">&amp;</span><span class="st"> </span>tend <span class="op">&gt;</span><span class="st"> </span><span class="dv">200</span>))</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">baseline_gg <span class="op">+</span><span class="st">   </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span><span class="st">"Nelson-Aalen"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="dt">data=</span>pinf, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>tend, <span class="dt">y=</span>cumu_hazard, <span class="dt">group=</span>strata, <span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="dt">data=</span>pinf, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>tend, <span class="dt">ymin=</span>cumu_lower, <span class="dt">ymax =</span> cumu_upper,</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="dt">group=</span>strata), <span class="dt">fill =</span> <span class="st">"black"</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">alpha =</span> <span class="fl">.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/facet_wrap">facet_wrap</a></span>(<span class="op">~</span>strata, <span class="dt">nrow=</span><span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(Set1[<span class="dv">1</span>], <span class="dv">1</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</a></code></pre></div>
+<p><img src="../docs/articles/strata_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div id="stratified-proportional-hazards-model" class="section level3">
 <h3 class="hasAnchor">
@@ -176,17 +183,14 @@ baseline_gg +<span class="st">   </span><span class="kw"><a href="http://www.rdo
 \lambda(t|z, \mathbf{x}) =
   \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} + \beta_3\cdot x_{age})
 \]</span> where <span class="math inline">\(\lambda_{0k}(t)\)</span> is the baseline for observation with cell type <span class="math inline">\(k\)</span>, <span class="math inline">\(k\in \{squamos,\ smallcell,\ adeno,\ large\}\)</span>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cph2 &lt;-<span class="st"> </span><span class="kw">update</span>(cph, .~. +<span class="st"> </span>trt +<span class="st"> </span>age +<span class="st"> </span>karno)
-pam2 &lt;-<span class="st"> </span><span class="kw">update</span>(pam, .~. +<span class="st"> </span>trt +<span class="st"> </span>age +<span class="st"> </span>karno)
-<span class="kw">cbind</span>(<span class="dt">pam=</span><span class="kw">coef</span>(pam2)[<span class="dv">5</span>:<span class="dv">7</span>], <span class="dt">cox=</span><span class="kw">coef</span>(cph2))</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">cph2 &lt;-<span class="st"> </span><span class="kw">update</span>(cph, .<span class="op">~</span>. <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>karno)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">pam2 &lt;-<span class="st"> </span><span class="kw">update</span>(pam, .<span class="op">~</span>. <span class="op">+</span><span class="st"> </span>trt <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>karno)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">cbind</span>(<span class="dt">pam=</span><span class="kw">coef</span>(pam2)[<span class="dv">5</span><span class="op">:</span><span class="dv">7</span>], <span class="dt">cox=</span><span class="kw">coef</span>(cph2))</a></code></pre></div>
 <pre><code>##               pam         cox
 ## trt    0.31096123  0.32764309
 ## age   -0.01642337 -0.01679495
 ## karno -0.03670427 -0.03696870</code></pre>
 <p>Again, covariate estimates are very similar between the two models and can be interpreted in the same way.</p>
-<div id="refs" class="references">
-
-</div>
 </div>
 </div>
 </div>
@@ -215,6 +219,8 @@ pam2 &lt;-<span class="st"> </span><span class="kw">update</span>(pam, .~. +<spa
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>

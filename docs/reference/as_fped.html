@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Transform data with one row per subject to functional PED format — as_fped • pammtools</title>
+<title>Transform nested to functional piece-wise exponential data format — as_fped • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -18,13 +18,19 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Transform nested to functional piece-wise exponential data format — as_fped" />
+
+<meta property="og:description" content="Transform nested to functional piece-wise exponential data format" />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +38,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,12 +55,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -97,18 +109,19 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="http://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -119,58 +132,28 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Transform data with one row per subject to functional PED format</h1>
+    <h1>Transform nested to functional piece-wise exponential data format</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/trafo-cumulative.R'><code>R/trafo-cumulative.R</code></a></small>
     </div>
 
     
-    <p>Transform data with one row per subject to functional PED format</p>
+    <p>Transform nested to functional piece-wise exponential data format</p>
     
 
-    <pre class="usage"><span class='fu'>as_fped</span>(<span class='no'>formula</span>, <span class='no'>data</span>, <span class='no'>data_orig</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>max.end</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>te</span>, <span class='no'>t</span>) {     <span class='no'>te</span> <span class='kw'>&lt;=</span> <span class='no'>t</span> }, <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"id"</span>, <span class='st'>"tstart"</span>,
-  <span class='st'>"eta_base"</span>, <span class='st'>"eta_wce"</span>, <span class='st'>"eta"</span>))</pre>
+    <pre class="usage"><span class='fu'>as_fped</span>(<span class='no'>ped</span>, <span class='no'>formula</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>ped</th>
+      <td><p>Piece-wise Exponential Data (PED) with time-dependet covariates.</p></td>
+    </tr>
     <tr>
       <th>formula</th>
       <td><p>a model formula</p></td>
     </tr>
-    <tr>
-      <th>data</th>
-      <td><p>a data frame</p></td>
-    </tr>
-    <tr>
-      <th>cut</th>
-      <td><p>the vector of timepoints to cut at</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p></td>
-    </tr>
-    <tr>
-      <th>max.end</th>
-      <td><p>logical. Should the last interval span until the last
-observed censoring or event time (if larger than the largest specified
-cut point).</p></td>
-    </tr>
-    <tr>
-      <th>ll_fun</th>
-      <td><p>Function with two arguments that indicates how lag-lead matrix
-should be contructed. First argument is the time on the scale of the exposure,
-second argument is the time on the scale of the follow-up. Internally the
-lag lead matrix will be constructed by calling <code>t(outer(te_vec, t_vec, ll_fun))</code>.</p></td>
-    </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A data frame class <code>ped</code> in piece-wise exponential data format.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <p><code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p>
     
 
   </div>
@@ -178,11 +161,7 @@ lag lead matrix will be constructed by calling <code>t(outer(te_vec, t_vec, ll_f
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>
@@ -193,11 +172,14 @@ lag lead matrix will be constructed by calling <code>t(outer(te_vec, t_vec, ll_f
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

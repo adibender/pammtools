@@ -25,8 +25,6 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
 <meta property="og:title" content="Survival data of critically ill ICU patients — patient" />
 
 <meta property="og:description" content="A data set containing the survival time (or hospital release time) among
@@ -49,6 +47,8 @@ The following variables are provided:
  BMIPatient's Body Mass Index
  DiagID2Diagnosis at admission in 9 categories  " />
 <meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -56,6 +56,8 @@ The following variables are provided:
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -71,8 +73,12 @@ The following variables are provided:
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -121,7 +127,7 @@ The following variables are provided:
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -133,6 +139,7 @@ The following variables are provided:
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -144,12 +151,13 @@ The following variables are provided:
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Survival data of critically ill ICU patients</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/data.R'><code>R/data.R</code></a></small>
     </div>
 
     
     <p>A data set containing the survival time (or hospital release time) among
 other covariates. This is a subset of the data discussed in
-<a href='"https://doi.org/10.1093/biostatistics/kxy003"'>Bender et. al., 2018</a>.
+<a href='https://doi.org/10.1093/biostatistics/kxy003'>Bender et. al., 2018</a>.
 The full data is available <a href='https://github.com/adibender/elra-biostats'>here</a>.
 The following variables are provided:</p><dl class='dl-horizontal'>
  <dt>Year</dt><dd><p>The year of ICU Admission</p></dd>
@@ -198,5 +206,8 @@ The following variables are provided:</p><dl class='dl-horizontal'>
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

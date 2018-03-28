@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function to check if an object is of class <code>ped</code> or
-transform data into piece-wise exponential data (PED) format if possible. — as_ped • pammtools</title>
+<title>Transform data to Piece-wise Exponential Data (PED) — as_ped • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -19,13 +18,19 @@ transform data into piece-wise exponential data (PED) format if possible. — as
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Transform data to Piece-wise Exponential Data (PED) — as_ped" />
+
+<meta property="og:description" content="Transform data to Piece-wise Exponential Data (PED)" />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -33,6 +38,8 @@ transform data into piece-wise exponential data (PED) format if possible. — as
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -48,8 +55,12 @@ transform data into piece-wise exponential data (PED) format if possible. — as
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -78,9 +89,6 @@ transform data into piece-wise exponential data (PED) format if possible. — as
       <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
     </li>
     <li>
-      <a href="../articles/cumulative-effects.html">Cumulative Effects (of time-dependent covariates)</a>
-    </li>
-    <li>
       <a href="../articles/data-transformation.html">Data Transformation</a>
     </li>
     <li>
@@ -101,7 +109,7 @@ transform data into piece-wise exponential data (PED) format if possible. — as
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -113,6 +121,7 @@ transform data into piece-wise exponential data (PED) format if possible. — as
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -123,43 +132,46 @@ transform data into piece-wise exponential data (PED) format if possible. — as
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to check if an object is of class <code>ped</code> or
-transform data into piece-wise exponential data (PED) format if possible.</h1>
+    <h1>Transform data to Piece-wise Exponential Data (PED)</h1>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/as-ped.R'><code>R/as-ped.R</code></a></small>
     </div>
 
     
-    <p>Function to check if an object is of class <code>ped</code> or
-transform data into piece-wise exponential data (PED) format if possible.</p>
+    <p>Transform data to Piece-wise Exponential Data (PED)</p>
     
 
-    <pre class="usage"><span class='fu'>as_ped</span>(<span class='no'>x</span>, <span class='no'>data</span>, <span class='kw'>tdc_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
 
 <span class='fu'>is.ped</span>(<span class='no'>x</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>any R object.</p></td>
-    </tr>
     <tr>
       <th>data</th>
       <td><p>a data frame</p></td>
     </tr>
     <tr>
-      <th>tdc_df</th>
-      <td><p>A data set containing information on time-dependent covariates (TDC).</p></td>
+      <th>formula</th>
+      <td><p>a model formula</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Further arguments passed to methods.</p></td>
+      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>any R object.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame class <code>ped</code> in piece-wise exponential data (PED) format.</p>
+    <p>A data frame class <code>ped</code> in piece-wise exponential data format.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p><code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p>
     
 
   </div>
@@ -169,6 +181,8 @@ transform data into piece-wise exponential data (PED) format if possible.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>
@@ -186,5 +200,8 @@ transform data into piece-wise exponential data (PED) format if possible.</p>
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+
