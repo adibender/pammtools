@@ -68,19 +68,21 @@
 #' }
 #' fdnorm <- function(x) (dnorm(x,1.5,2)+1.5*dnorm(x,7.5,1))
 #' wpeak2 <- function(lag) 15*dnorm(lag,8,10)
-#' f_ttez <- function(t, te, z) {
+#' wdnorm <- function(lag) 5*(dnorm(lag,4,6)+dnorm(lag,25,4))
+#' f_ttez1 <- function(t, te, z) {
 #'   ft(t, tmax=10) * 0.8*fdnorm(z)* wpeak2(t-te)
 #' }
 #' f_ttez2 <- function(t, te, z) {
 #'   wdnorm(t-te)*z
 #' }
+#'
 #' # define lag-lead window function
 #' ll_fun <- function(t, te) {t >= te}
 #' ll_fun2 <- function(t, te) {t - 2 >= te}
 #' # simulate data with cumulative effect
 #' sim_df <- sim_pexp(
 #'   formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|
-#'      fcumu(t, te1, z.te1, f_xyz=f_ttez, ll_fun=ll_fun) +
+#'      fcumu(t, te1, z.te1, f_xyz=f_ttez1, ll_fun=ll_fun) +
 #'      fcumu(t, te2, z.te2, f_xyz=f_ttez2, ll_fun=ll_fun2),
 #'   data = df,
 #'   cut = 0:10)
@@ -154,7 +156,7 @@ sim_pexp <- function(formula, data, cut) {
   attr(sim_df, "breaks") <- cut
   attr(sim_df, "te") <- imap(te_vars, ~select(sim_df, .x) %>% pull(.x) %>%
     unique()) %>% flatten()
-  attr(sim_df, "ll_funs") <- ll_funs
+  if(exists("ll_funs")) attr(sim_df, "ll_funs") <- ll_funs
   attr(sim_df, "id_n") <- sim_df %>% pull("time") %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
