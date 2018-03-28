@@ -1,31 +1,3 @@
-# #' @keywords internal
-# as_historical <- function(ntdc_df, tdc_var, idx_rep) {
-
-#   tdc_col <- attr(ntdc_df, "tdc_col")
-#   te_var  <- attr(ntdc_df, "te_var")
-#   tdc_df  <- ntdc_df %>%
-#     unnest() %>%
-#     select(!!id_var, !!te_var, !!tdc_var)
-
-# }
-
-
-#' Transform nested to functional piece-wise exponential data format
-#'
-#' @param ped Piece-wise Exponential Data (PED) with time-dependet covariates.
-#' @inheritParams split_tdc
-#' @keywords internal
-as_fped <- function(ped, formula) {
-
-  # func_mat_list <- as_func(ped, formula)
-  # for(i in seq_along(func_mat_list)) {
-  #   ped[[names(func_mat_list)[i]]] <- I(func_mat_list[[i]])
-  # }
-
-}
-
-
-
 #' Expand time-dependent covariates to functionals
 #'
 #' Given formula specification on how time-dependent covariates affect the
@@ -159,7 +131,6 @@ make_latency_mat <- function(data, te) {
 
 #' @rdname elra_matrix
 #' @inherit make_time_mat
-#' @inheritParams as_fped
 #' @keywords internal
 make_lag_lead_mat <- function(
   data,

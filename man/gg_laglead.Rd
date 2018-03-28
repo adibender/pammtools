@@ -23,6 +23,10 @@ gg_laglead(x, ...)
 
 \item{te}{A vector of exposure times}
 
+\item{ll_fun}{Function with that indicates how the lag-lead matrix
+should be contructed. First argument is the follow up time
+second argument is the time of exposure.s}
+
 \item{high_col}{Color used to highlight exposure times within the lag-lead window.}
 
 \item{low_col}{Color of exposure times outside the lag-lead window.}
