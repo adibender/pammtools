@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{splines}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 bibliography: Remote.bib
 ---
 
@@ -70,8 +69,12 @@ pam <- gam(ped_status ~ s(tend) + s(karno, bs="ps"), data=ped, family=poisson(),
   offset=offset)
 ```
 
+The Figure below visualizes the smooth estimates from both models:
 
-```{r}
+<details>
+  <summary>Expand here to see R-Code</summary>
+
+```{r, gg_karno}
 # crate data set with varying karno values (from min to max in 100 steps)
 # and add term contribution of karno from PAM and Cox-PH models
 karno_df <- ped %>% make_newdata(expand = "karno", n = 100) %>%
@@ -79,12 +82,18 @@ karno_df <- ped %>% make_newdata(expand = "karno", n = 100) %>%
   mutate(
     cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] -
       predict(cph, newdata=data.frame(karno=mean(veteran$karno))))
-ggplot(karno_df, aes(x=karno, ymin=low, ymax=high)) +
+gg_karno <- ggplot(karno_df, aes(x=karno, ymin=low, ymax=high)) +
   geom_line(aes(y=fit, col="PAM")) +
   geom_ribbon(alpha=0.2) +
   geom_line(aes(y=cox, col="Cox PH"))+
   scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1)) +
   xlab(expression(x[plain(karno)])) + ylab(expression(hat(f)(x[plain(karno)])))
+gg_karno
+```
+</details>
+
+```{r dependson="gg_karno", echo=FALSE, fig.width = 5, fig.height = 4}
+gg_karno
 ```
 
 Both methods are in good agreement. The higher the Karnofsky-Score the lower the

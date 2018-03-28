@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{data-transformation}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 bibliography: Remote.bib
 ---
 
@@ -22,6 +21,7 @@ opts_chunk$set(
 
 ```{r echo = TRUE, message = FALSE}
 library(dplyr)
+library(tidyr)
 library(pammtools)
 ```
 
@@ -30,12 +30,11 @@ In this vignette we provide details on transforming data into a format suitable
 to fit piece-wise exponential (additive) models (PAM). Three main cases need to be
 distinguished
 
-  1. Data without time-dependent covariates
+  1. [Data without time-dependent covariates](data-transformation.html#data-without-time-dependent-covariates)
 
-  2. Data with time-dependent covariates
+  2. [Data with time-dependent covariates](data-transformation.html#data-with-time-dependent-covariates)
 
-  3. Data with time-dependent covariates that should be modeled as cumulative
-  effects
+  3. [Data with time-dependent covariates that should be modeled as cumulative effects](data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects)
 
 
 ## Data without time-dependent covariates
@@ -121,7 +120,7 @@ ped2 <- split_data(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400
 ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
 Note that now subjects `42` and `85` have only one row in the data set.
-The fact that subjects `42` was in the risk set longer than subject `85` is,
+The fact that subject `42` was in the risk set longer than subject `85` is,
 however, still accounted for by the `offset` variable. Note that the `offset`s
 for subject `85` and subject `112` in interval `(50,200]` are only zero
 because subject `85` had an observed event time of `1`, thus `log(1-0)=0` and
@@ -129,6 +128,202 @@ subject `112` had an event at time `51`, thus `log(51-50)=0`:
 
 ```{r}
 veteran %>% slice(c(85, 112))
+```
+
+## Data with time-dependent covariates
+In case of data with time-dependent covariates (that should not be
+modeled as cumulative effects), we must split the follow-up at
+desired cut-points and *additionally* at the time-points at which
+the TDC changes its value.
+
+We assume that the data is provided in two data sets, one that
+contains time-to-event data and time-constant covariates and one data set
+that contains information of time-dependent covariates.
+
+For illustration, we use the `pbc` data from the `survival` package.
+
+
+## Data with time-dependent covariates (with cumulative effects)
+
+Here we demonstrate data transformation of data with TDCs
+($\mathbf{z}=\{z(t_{e,q}),q=1,\ldots,Q\}$, that subsequently
+will be modeled as cumulative effects defined as
+
+$$
+g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
+$$
+Here
+
+  - the three-variate function $h(t,t_e,z(t_e))$ defines the  so-called
+  *partial effects* of the TDC $z(t_e)$ observed at exposure time
+  $t_e$ on the hazard at time $t$ [@Bender2018]. The general partial effect definition
+  given above is only one possibility, other common choices are<br>&nbsp;
+      - $h(t-t_e)z(t_e)$ (This is the WCE model by @Sylvestre2009) <br>&nbsp;
+      - $h(t-t_e)z(t_e)$ (This is the DLNM model by @Gasparrini2017)<br>&nbsp;
+
+  - the cumulative effect $g(\mathbf{z}, t)$ at follow-up time $t$ is the
+  integral (or sum) of the partial effects over exposure times $t_e$ contained
+  within $\mathcal{T}(t)$<br>&nbsp;
+
+  - the so called lag-lead window (or window of effectiveness) is denoted by
+  $\mathcal{T}(t)$. The most common definition is
+  $\mathcal{T}(t) = \{t_{e,q}: t \geq t_{e,q}, q=1,\ldots, Q\}$,
+  which means that all exposures that were observed prior to $t$ or at $t$ are
+  eligible.
+
+ As before we use the function `as_ped` to transform the data and additionally
+use the  formula special `func` (for **fun**ctional **c**ovariate) to
+specify the partial effect structure on the right-hand side of the formula.
+
+Let $t$ (`time`) the follow up time, $\mathbf{z}_1$ (`z1`) and $\mathbf{z}_2$ (`z2`)
+two TDCs observed at different exposure time grids $t_e$ (`te1`) and $s_e$ (`te2`)
+with lag-lead windows $\mathcal{T}_1(t) = \{t_{e,q}: t \geq t_{e,q}\}$
+and $\mathcal{T}_2(t) = \{s_{e,k}: t \geq s_{e,k} + 2\}$ (defined by
+`ll2 <- function(t, te) { t >= te + 2}`).
+
+The table below gives a selection of possible partial effects and the usage of
+`func` to create matrices needed to estimate different types of cumulative
+effects of $\mathbf{z}_1$ and $\mathbf{z}_2$:
+
+|                                   partial effect                                   |                                `as_ped` specification                                |
+|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| $\int_{\mathcal{T}_1}h(t-t_e, z_1(t_e))$                                            | `func(latency(te1), z1, te_var= "te1")`                                              |
+| $\int_{\mathcal{T}_1}h(t, t-t_e, z_1(t_e))$                                        | `func(time, latency(te1), z1, te_var="te1")`                                         |
+| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e))$                                          | `func(time, te1, z1, te_var="te1")`                                                  |
+| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e)) + \int_{\mathcal{T}_2}h(t-s_e, z_2(s_e))$ | `func(time, te1, z1, te_var="te1") + func(latency(te2), z2, te_var="te2", ll_fun=ll2)` |
+| ...                                                                                | ...                                                                                     |
+
+
+Note that
+
+  - the variable representing follow-up time $t$ in `func` (here `time`) must
+  match the time variable specified on the left-hand side of the `formula`
+
+  - the variable representing exposure time $t_e$ (here `te1` and `te2`) must be
+  wrapped within `latency()` to tell `as_ped` to calculate $t-t_e$
+
+  - by default, $\mathcal{T}(t)$ is defined as `function(t,te) {t >= te}`,
+  thus for $\mathcal{T}_1$ the lag-lead window must not be explicitly specified.
+  In case you want to use a custom lag-lead window, provide the respective
+  function to the `ll_fun` argument in `func` (see `ll2` in the examples above)
+
+  - `func` makes no difference between partial effects such as $h(t-t_e, z(t_e))$
+  and $h(t-t_e)z(t_e)$ as the necessary data transformation is the same in both
+  cases. Later, however, when fitting the model, a distinction must be made
+
+  - more than one $z$ variable can be provided to `func`, which can be convenient,
+  when multiple covariates should have the same time components and the
+  same lag-lead window
+
+  - multiple `func` terms can be specified, having different exposure times
+  `t_e`, `s_e` and/or different lag-lead windows for different covariates
+  $\mathbf{z}_1$, $\mathbf{z}_2$
+
+  - To tell `func` which of the variables specified is the exposure time $t_e$,
+  the `te_var` argument must be specified within each `func` term. The
+  follow-up time component $t$ will be automatically recognized via the left-hand
+  side of the `formula`.
+
+
+### One time-dependent covariate
+For illustration we use the ICU patients
+data sets `patient` and `daily` provided in the **`pammtools`** package, with
+follow-up time `survhosp` ($t$), exposure time `Study_Day` ($t_e$) and TDCs
+`caloriesPercentage` $\mathbf{z}_1$ and `proteinGproKG` ($\mathbf{z}_2$):
+
+```{r}
+head(patient)
+head(daily)
+```
+
+Below we illustrate the usage of `as_ped` and `func` to obtain covariate
+matrices for the latency matrix of follow up time and exposure time and
+a matrix of the TDC (`caloriesPercentage`). The follow up will be split
+in 30 intervals with interval breaks points `0:30`. By default,
+the exposure time provided to `te_var` will be used as a suffix to the new
+matrix columns to indicate with respect to what exposure the columns had been
+constructed, however, you can override the suffix by specifying the
+`suffix` argument to `func`.
+
+```{r}
+ped <- as_ped(
+  data    = list(patient, daily),
+  formula = Surv(survhosp, PatientDied) ~ . |
+    func(latency(Study_Day), caloriesPercentage, te_var="Study_Day"),
+  cut     = 0:30,
+  id = "CombinedID")
+str(ped, 1)
+```
+
+As you can see, the data is transformed to the PED format as before and
+two additional matrix columns are added, `Study_Day_latency` and
+`caloriesPercentage`.<br>&nbsp;
+
+
+### Two time-dependent covariates observed on the same exposure time grid
+
+Using the same data, we show a slightly more complex example with two
+functional covariate terms with partial effects
+$h(t, t-t_e, z_1(t_e))$ and $h(t-t_e, z_2(t_e))$.
+As in the case of ICU patient data, both TDCs were observed on the same exposure
+time grid, we want to use the same lag-lead window and the latency term
+$t-t_e$ occurs in both partial effects, we only need to specify one `func` term.
+
+```{r}
+ped <- as_ped(
+  data = list(patient, daily),
+  formula = Surv(survhosp, PatientDied) ~ . |
+    func(survhosp, latency(Study_Day), caloriesPercentage, proteinGproKG,
+      te_var = "Study_Day"),
+  cut = 0:30,
+  id = "CombinedID")
+str(ped, 1)
+```
+
+### Multiple TDCs observed at different exposure time grids
+
+To illustrate data transformation when TDCs $\mathbf{z}_1$ and $\mathbf{z}_2$
+were observed on different exposure time grids ($t_e$ and $s_e$) and
+are assumed to have different lag_lead windows $\mathcal{T}_1(t)$ and
+$\mathcal{T}_2(t)$, we use simulated data `simdf_elra` contained in
+**`pammtools`** (see example in `sim_pexp` for data generation).
+
+```{r}
+simdf_elra
+simdf_elra %>% slice(1) %>% select(id, te1) %>% unnest()
+simdf_elra %>% slice(1) %>% select(id, te2) %>% unnest()
+```
+
+Note that `te1` has a maximum length of 10, while `te2` has a maximum length
+of `11` and while `te1` was observed during the follow up, `te2` was partially
+observed before the beginning of the follow up.
+
+If we wanted to estimate the following cumulative effects
+
+  - $g(\mathbf{z}_1, t) = \int_{\mathcal{T}_1(t)} h(t, t-t_e, z_1(s_e))$ and
+  - $g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_e, z_2(s_e))$
+
+with $\mathcal{T}_1(t)  = \{t_e: t \geq t_e + 2\}$ and
+$\mathcal{T}_2(t)  = \{s_e: t \geq s_e\}$ the data transformation function must
+reflect the different exposure times as well as different lag-lead window
+specifications as illustrated below:
+
+```{r}
+ped_sim <- as_ped(
+  data = simdf_elra,
+  formula = Surv(time, status)~.|func(time, latency(te1), z.te1, te_var="te1") +
+    func(latency(te2), z.te2, te_var = "te2"),
+  cut = 0:10,
+  id = "id")
+str(ped_sim,1)
+```
+
+Note how the matrix covariates associated with `te1` have 10 columns while
+matrix covariates associated with `te2` have 11 columns. Note also that
+the lag-lead matrices differ
+```{r}
+ped_sim %>% select(id, LL_te1) %>% head(16)
+ped_sim %>% select(id, LL_te2) %>% head(16)
 ```
 
 ## References

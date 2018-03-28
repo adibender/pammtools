@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{convenience}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 bibliography: Remote.bib
 ---
 
@@ -28,6 +27,7 @@ library(pammtools)
 library(ggplot2)
 theme_set(theme_bw())
 library(grid)
+library(gridExtra)
 ```
 
 
@@ -76,7 +76,7 @@ However, we also provide a convenience function that extracts a fixed coefficien
 table from `mgcv::gam` objects (including confidence intervals) and
 a convenience function that creates a forrest-type plot:
 
-```{r}
+```{r, fig.width=3, fig.height=3}
 tidy_fixed(pam) # per default intercept is ommitted
 gg_fixed(pam)
 ```
@@ -108,7 +108,7 @@ plotting functions is to call the default plot function for `mgcv::gam` objects.
 Note that PAM effects are additive on the log-hazard scale, so we have to plot
 $\exp(f_j(x_j))$ (right panel below) in order to read hazard *ratios* off the figure:
 
-```{r, fig.width=8, warning=FALSE}
+```{r, fig.width=8, fig.height=4, warning=FALSE}
 ## extract smooths plot data
 shgb <- tidy_smooth(pam) %>% filter(xlab=="hgb")
 ## create plots for hgb effect
@@ -142,7 +142,7 @@ effects in one figure^[Note that graphical representation of the baseline hazard
 is a slight approximation here -- it should be a *step function*, since the
 baseline is piecewise constant over the intervals, cf. the baseline hazard function plotted correctly below.]:
 
-```{r}
+```{r, fig.width = 8, fig.height=4}
 ped %>% gg_smooth(pam, terms = c("tend", "hgb"))
 ```
 
@@ -180,7 +180,7 @@ ped_df %>% select(interval, hazard, ci_lower, ci_upper) %>% tail()
 
 Which in turn can be conveniently plotted using respective functions, e.g.
 
-```{r}
+```{r, fig.width=4, fig.height=3}
 ggplot(ped_df, aes(x = tend)) +
 	geom_step(aes(y = hazard)) +
 	geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
@@ -189,7 +189,7 @@ ggplot(ped_df, aes(x = tend)) +
 
 or the cumulative hazard
 
-```{r}
+```{r, fig.width=4, fig.height=3}
 gg.chaz <- ped_df %>% add_cumu_hazard(pam) %>%
 	ggplot(aes(x = tend, y = cumu_hazard, ymin = cumu_lower, ymax = cumu_upper))
 gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
@@ -198,7 +198,7 @@ gg.chaz + geom_line() + geom_ribbon(alpha = 0.2) +
 
 or the survival probabilities
 
-```{r}
+```{r, fig.width=4, fig.height=3}
 gg.surv <- ped_df %>% add_surv_prob(pam) %>%
   ggplot(aes(x = tend, y = surv_prob, ymax = surv_lower, ymin = surv_upper))
 gg.surv + geom_line() + geom_ribbon(alpha = 0.2) +
@@ -209,7 +209,7 @@ This approach is very convenient, as the usual tidy `dplyr` workflow can
 be maintained throughout, for example, if we wanted to plot the cumulative
 hazard for different sexes:
 
-```{r}
+```{r, fig.width=5, fig.height=3}
 pinfo.sex <- ped %>% group_by(sex) %>% ped_info() %>% add_cumu_hazard(pam)
 head(pinfo.sex)
 table(pinfo.sex$sex)

@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{tdcovar}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 bibliography: Remote.bib
 ---
 
@@ -110,22 +109,20 @@ all_eff <- purrr::map_df(
   list(
     tidy_fixed(pam),
    	tidy_fixed(cph)[-c(2:3, 8:9), ]),
-  bind_rows, .id="Model") %>%
-  mutate(Model = factor(Model, levels=2:1, labels=c("Cox-PH", "PAM")))
+  bind_rows, .id="Method") %>%
+  mutate(Method = factor(Method, levels=2:1, labels=c("Cox-PH", "PAM")))
 
 ## plot of fixed coefficients
 coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=lower, ymax=upper)) +
   geom_hline(yintercept = 0, lty=3) +
-  geom_pointrange(aes(col=factor(Model), shape=factor(Model)),
+  geom_pointrange(aes(col=Method, shape=Method),
     position=position_dodge(width=0.5)) +
   scale_colour_manual(
-    name   = "Method",
     values = c(1, Set1[1]),
-    limits = rev(levels(all_eff$Model))) +
+    limits = rev(levels(all_eff$Method))) +
   scale_shape_manual(
-    name   = "Method",
     values = c(19, 15),
-    limits = rev(levels(all_eff$Model))) +
+    limits = rev(levels(all_eff$Method))) +
   coord_flip(ylim=range(-1.5, 1)) +
   ylab(expression(hat(beta)%+-% 1.96 %.% SE)) +
   xlab("")
