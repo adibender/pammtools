@@ -57,10 +57,13 @@ as_ped.list <- function(data, formula, ...) {
     stop("Two data sets provided in 'data' but no specification of
       time-dependent covariate effects in 'formula'")
     } else {
+
       nested_fdf <- nest_tdc(data, form, ...)
       ped <- as_ped(nested_fdf, formula, ...)
     }
   }
+
+  ped
 
 }
 #' @rdname as_ped
