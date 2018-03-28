@@ -1,20 +1,51 @@
 context("Test as_ped functions")
 
-test_that("Attributes and class are appended when data already PED format", {
+test_that("Trafo works and attributes are appended", {
   # preparations
   data("veteran", package="survival")
   veteran <- veteran[c(1:3, 135:137), ]
-  ped <- split_data(Surv(time, status)~ trt + age, data=veteran, cut=c(0, 100, 400))
-  attributes(ped)[c("cut", "id_var", "intvars")] <- NULL
-  class(ped) <- class(ped)[-1]
+  ped <- as_ped(
+    data    = veteran,
+    formula = Surv(time, status)~ trt + age,
+    cut     = c(0, 100, 400))
   # retransform to ped
-  ped2 <- as_ped(ped)
-  expect_data_frame(ped2, nrow = 10L, ncols = 8L)
-  expect_is(ped2, "ped")
-  expect_subset(c("ped_status", "tstart", "tend", "interval", "offset"), names(ped2))
-  expect_is(attr(ped2, "cut"), "numeric")
-  expect_is(attr(ped2, "intvars"), "character")
-  expect_is(attr(ped2, "id_var"), "character")
-  expect_equal(attr(ped2, "id_var"), "id")
+  expect_data_frame(ped, nrow = 10L, ncols = 8L)
+  expect_is(ped, "ped")
+  expect_subset(c("ped_status", "tstart", "tend", "interval", "offset"), names(ped))
+  expect_is(attr(ped, "cut"), "numeric")
+  expect_is(attr(ped, "intvars"), "character")
+  expect_is(attr(ped, "id_var"), "character")
+  expect_equal(attr(ped, "id_var"), "id")
+  expect_equal(is.ped(ped), TRUE)
+
+  ped <- as_ped(
+    data = veteran,
+    formula = Surv(time, status)~ trt + age)
+  expect_data_frame(ped, nrows = 21L, ncols=8L)
+
+
+})
+
+test_that("Trafo works for list objects (with TDCs)", {
+
+  event_df  <- filter(patient, CombinedID == 1116)
+  ped <- as_ped(data=list(event_df), formula=Surv(survhosp, PatientDied)~ .,
+    cut = 0:30, id = "CombinedID")
+  expect_data_frame(ped, nrows=10, ncols = 15)
+  tdc_df    <- filter(daily, CombinedID == 1116)
+  ## check nesting
+  ped <- as_ped(
+    data    = list(event_df, tdc_df),
+    formula = Surv(survhosp, PatientDied)~.|func(Study_Day, caloriesPercentage, te_var="Study_Day") +
+      func(proteinGproKG, te_var="Study_Day"),
+    cut     = 0:30,
+    id  = "CombinedID")
+  expect_data_frame(ped, nrows = 10, ncols = 19)
+  ped <- as_ped(
+      data    = list(event_df, tdc_df),
+      formula = Surv(survhosp, PatientDied)~.|func(Study_Day, caloriesPercentage, te_var="Study_Day") +
+        func(proteinGproKG, te_var="Study_Day"),
+      id  = "CombinedID")
+    expect_data_frame(ped, nrows = 1, ncols = 19)
 
 })
