@@ -117,8 +117,9 @@ sim_pexp <- function(formula, data, cut) {
   if(!is.null(f2)) {
     terms_f2 <- terms(f2, specials = "fcumu")
     f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr = parse(text = .x)))
-    te_vars <- map_chr(f2_ev, ~.[["vars"]][1])
-    z_form <- list("eta_", map_chr(f2_ev, ~.[["vars"]][2])) %>%
+    te_vars <- map_chr(f2_ev, ~.x[["vars"]][1])
+    names(te_vars) <- te_vars# useful for imap use later
+    z_form <- list("eta_", map_chr(f2_ev, ~.x[["vars"]][2])) %>%
       reduce(paste0, collapse="+") %>% paste0("~", .) %>% as.formula()
     df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
     ped <- ped %>%
@@ -145,7 +146,8 @@ sim_pexp <- function(formula, data, cut) {
   attr(sim_df, "te_var") <- te_vars
   attr(sim_df, "cens_value") <- 0
   attr(sim_df, "breaks") <- cut
-  attr(sim_df, "te") <- map_dbl(te_vars, ~select(sim_df, .) %>% pull(.) %>% unique())
+  attr(sim_df, "te") <- imap(te_vars, ~select(sim_df, .x) %>% pull(.x) %>%
+    unique()) %>% flatten()
   attr(sim_df, "id_n") <- sim_df %>% pull("time") %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)

@@ -16,6 +16,10 @@ df <- df %>%
   add_tdc(te2, rng_z)
 df
 
+# baseline hazard
+f0 <- function(t) {
+ dgamma(t, 8, 2) *6
+}
 # define tri-variate function of time, exposure time and exposure z
 ft <- function(t, tmax) {
   -1*cos(t/tmax*pi)
