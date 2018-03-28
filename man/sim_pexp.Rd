@@ -78,13 +78,17 @@ wpeak2 <- function(lag) 15*dnorm(lag,8,10)
 f_ttez <- function(t, te, z) {
   ft(t, tmax=10) * 0.8*fdnorm(z)* wpeak2(t-te)
 }
+f_ttez2 <- function(t, te, z) {
+  wdnorm(t-te)*z
+}
 # define lag-lead window function
 ll_fun <- function(t, te) {t >= te}
+ll_fun2 <- function(t, te) {t - 2 >= te}
 # simulate data with cumulative effect
 sim_df <- sim_pexp(
   formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|
      fcumu(t, te1, z.te1, f_xyz=f_ttez, ll_fun=ll_fun) +
-     fcumu(t, te2, z.te2, f_xyz=f_ttez, ll_fun=ll_fun),
+     fcumu(t, te2, z.te2, f_xyz=f_ttez2, ll_fun=ll_fun2),
   data = df,
   cut = 0:10)
 plot(survfit(Surv(time, status)~1, data = sim_df ))
