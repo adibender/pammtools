@@ -50,84 +50,81 @@ as_fped <- function(ped, formula) {
 #' @keywords internal
 get_func <- function(data, formula) {
 
-  tf        <- terms(formula, specials="func")
+  tf  <- terms(formula, specials="func")
   # extract components
   terms_vec <- attr(tf, "term.labels")
   func_list <- map(terms_vec, ~eval(expr=parse(text=.)))
-  ll_funs <- map(func_list, ~.[["ll_fun"]]) # hier mit unique und duplicated arbeiten.
-  time_components <- map(func_list, get_components) %>% transpose() %>%
-    map_lgl(~any(unlist(.)))
 
   ## create matrices
-  # time components
-  time_mats <- invoke_map(
-    .f   = list(make_time_mat, make_te_mat, make_latency_mat)[time_components],
-    data = data)
-  names(time_mats) <- c("Tmat", "TEmat", "Latency")[time_components]
-  # lag-lead
-  LL_mats <- map(unique(ll_funs), make_lag_lead_mat, data=data)
-  names(LL_mats) <- get_ll_names(ll_funs)
-  # covariates
-  func_covars <- map(func_list, expand_func, data=data) %>% flatten()
-
-  list(time_mats, LL_mats, func_covars) %>% flatten()
+  map(func_list, ~expand_func(data=data, .)) %>% flatten()
 
 }
 
 #' @rdname get_func
 #' @inheritParams get_func
-#' @param func Single \code{\link{func}} term \code{\link{get_func}} \code{formula}
-#' evaluated.
+#' @param func Single evaluated \code{\link{func}} term.
 #' @importFrom purrr map invoke_map
 #' @keywords internal
 expand_func <- function(data, func) {
 
-  time_components  <- get_components(func)
-  fun_covars       <- func %>% get_fun_covars()
-  func_mats        <- map(fun_covars, ~make_z_mat(data=data, z_var = .))
-  names(func_mats) <- fun_covars
-
-  return(func_mats)
-
-}
-
-#' Extract time-scales information from \code{func} object
-#'
-#' Given \code{func} object, looks up which of the three time-components
-#' (follow-up time, time of exposure, latency) are needed
-#'
-#' @inheritParams expand_func
-#' @importFrom purrr map_lgl
-#' @keywords internal
-get_components <- function(func) {
-  map_lgl(func[c("lgl_time", "lgl_te", "lgl_latency")], any)
-}
-
-#' @inherit get_components
-#' @importFrom purrr flatten_chr
-#' @keywords internal
-get_fun_covars <- function(func) {
-   func[c("fun_covar", "by_var")] %>% flatten_chr()
-}
-
-#' @inherit get_components
-#' @keywords internal
-get_vname <- function(func) {
-  get_fun_covars(func) %>% paste0(collapse=".")
-}
-
-#' @keywords internal
-get_ll_names <- function(ll_funs) {
-
-  if (sum(!duplicated(ll_funs)) > 1) {
-    suffix <- seq_len(sum(!duplicated(ll_funs)))
-  } else {
-    suffix <- ""
+  col_vars <- func$col_vars
+  te_var <- func$te_var
+  te <- pull(data, te_var) %>% unlist() %>% unique() %>% sort()
+  time_var <- attr(data, "time_var")
+  id_var <- attr(data, "id_var")
+  lgl_var_in_data <- map_lgl(col_vars, ~ . %in% colnames(data))
+  if (!all(lgl_var_in_data)) {
+    stop(paste0("The following variables provided to 'formula' are not contained
+      in 'data': ", col_vars[!lgl_var_in_data]))
   }
-  paste0("LL", suffix)
+  ncols_vars <- get_ncols(data, col_vars[!(col_vars == time_var)])
+  if (!all(diff(ncols_vars) == 0)) {
+    stop(paste0("The following variables have unequal maximum number of elements per ",
+      id_var, ": ", paste0(col_vars[!(col_vars == time_var)], sep="; ")))
+  } else {
+    nz <- ncols_vars[1]
+  }
+
+  # create list of matrices for covariates/time matrices provided in func
+  hist_mats <- list()
+  for(i in seq_along(col_vars)) {
+    hist_mats[[i]] <- if(col_vars[i] == attr(data, "time_var")) {
+      make_time_mat(data, nz)
+    } else if (col_vars[i] == func$latency_var) {
+      make_latency_mat(data, te)
+    } else {
+      make_z_mat(data, col_vars[i], nz)
+    }
+  }
+  if(any(c(time_var, te_var) %in% col_vars)) {
+      hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
+      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var, te_var, func$suffix)
+  } else {
+       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var, func$suffix)
+  }
+
+  hist_mats
 
 }
 
+make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix="") {
+
+  if (suffix != "") {
+    return(paste(col_vars, suffix, sep="_"))
+  } else {
+    if (!is.null(te_var))  {
+      te_ind <- col_vars == te_var
+      col_vars[!te_ind] <- paste(col_vars[!te_ind], te_var,  sep="_")
+    }
+    if (!is.null(latency_var)) {
+      latency_ind <- col_vars == latency_var
+      col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency", sep="_")
+    }
+  }
+
+  return(col_vars)
+
+}
 
 #' Create matrix components for cumulative effects
 #'
@@ -138,36 +135,26 @@ get_ll_names <- function(ll_funs) {
 #' interval-specific time, covariates etc. can be obtained.
 #'
 #' @keywords internal
-make_time_mat <- function(data) {
+make_time_mat <- function(data, nz) {
+
   brks    <- attr(data, "breaks")
   id_tseq <- attr(data, "id_tseq")
-  te      <- attr(data, "te")
-  Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol=length(te))
+  Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol=nz)
   Tmat
+
 }
 
 #' @rdname elra_matrix
 #' @inherit make_time_mat
 #' @keywords internal
-make_te_mat <- function(data) {
-
-    te      <- attr(data, "te")
-    id_tseq <- attr(data, "id_tseq")
-    TEmat   <- matrix(te, nrow=length(id_tseq), ncol=length(te), byrow=TRUE)
-    TEmat
-}
-
-#' @rdname elra_matrix
-#' @inherit make_time_mat
-#' @keywords internal
-make_latency_mat <- function(data) {
+make_latency_mat <- function(data, te) {
 
   time        <- attr(data, "breaks")[-1]
   id_tseq     <- attr(data, "id_tseq")
-  te          <- attr(data, "te")
-  Latency_mat <- outer(time, te, "-")
+  Latency_mat <- outer(time, te, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
-  Latency_mat[id_tseq, ]
+  Latency_mat[id_tseq, , drop=FALSE]
+
 }
 
 #' @rdname elra_matrix
@@ -176,10 +163,11 @@ make_latency_mat <- function(data) {
 #' @keywords internal
 make_lag_lead_mat <- function(
   data,
+  te,
   ll_fun = function(t, te) {(t >= te)}) {
 
-  LL <- outer(attr(data, "breaks"), attr(data, "te"), ll_fun)*1L
-  LL[attr(data, "id_tseq"), ]
+  LL <- outer(attr(data, "breaks"), te, ll_fun)*1L
+  LL[attr(data, "id_tseq"), , drop=FALSE]
 
 }
 
@@ -190,12 +178,16 @@ make_lag_lead_mat <- function(
 #' @importFrom purrr map
 #' @importFrom dplyr pull
 #' @keywords internal
-make_z_mat <- function(data, z_var) {
+make_z_mat <- function(data, z_var, nz, ...) {
 
-  te_ind <- seq_along(attr(data, "te"))
-  Z <- map(data[[attr(data, "tdc_col")]], ~pull(.x, z_var)) %>%
-    map(.f=~.x[te_ind])
+  te_ind <- seq_len(nz)
+  Z <- map(data[[z_var]], .f=~unlist(.x)[te_ind])
   Z <- do.call(rbind, Z)
-  Z[attr(data, "id_teseq"), ]
+  Z[attr(data, "id_teseq"), , drop=FALSE]
 
  }
+
+get_ncols <- function(data, col_vars) {
+  map(col_vars, function(var) pull(data, var)) %>%
+    map_int(function(z) max(map_int(z, nrow)))
+}

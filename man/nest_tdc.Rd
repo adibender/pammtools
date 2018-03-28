@@ -2,54 +2,34 @@
 % Please edit documentation in R/nest-utils.R
 \name{nest_tdc}
 \alias{nest_tdc}
-\title{Create nested data frame from event and time-dependent data}
+\alias{nest_tdc.default}
+\alias{nest_tdc.list}
+\title{Create nested data frame from data with time-dependent covariates}
 \usage{
-nest_tdc(event_df, tdc_df, te_var, id_var = "id", time_var = "time",
-  status_var = "status", cut = NULL, regular = TRUE, entry_time = 0,
-  cens_value = 0, .key = "tdc")
+nest_tdc(data, formula, ...)
+
+\method{nest_tdc}{default}(data, formula, ...)
+
+\method{nest_tdc}{list}(data, formula, ...)
 }
 \arguments{
-\item{event_df}{A data frame (potentially) containing time-dependent covariates.}
+\item{data}{A suitable data structure (e.g. unnested data frame with
+concurrent TDCs or a list wehre each element is a data frame, potentially
+containing TDCs as specified in the RHS of \code{formula}).
+Only TDCs present in \code{formula} will be returned.}
 
-\item{tdc_df}{A data frame containing information on time-dependent variables
-in long format. Needs to contain a "time" variable indicating when the
-TDCs change their value. Must have same name as variable indicating event
-times in \code{event_df}.}
+\item{formula}{A two sided formula with a two part RHS, where the second
+part indicates the structure of the TDC structure.}
 
-\item{te_var}{The time variable in \code{tdc_df} indicating time points at
-which time-dependent covariate (tdc) was observed.
-Needs to be the same name in both data sets.}
+\item{...}{Further arguments passed to methods.}
 
-\item{id_var}{The ID variable name, identifying subjects.}
+\item{vars}{A character vector of TDCs that will be nested.}
 
-\item{time_var}{A character, specifies the column of the event or
-censoring time in \code{event_df} and the time of measurement for
-the time-dependent covariates in \code{tdc_df}.}
-
-\item{status_var}{As \code{time_var}, but specifies column containing the
-event indicator. Can be missing in the \code{tdc_df}.}
-
-\item{cut}{the vector of timepoints to cut at}
-
-\item{regular}{Logical. Indicates whether covariate data was observed on
-a regular grid for all observation units.}
-
-\item{entry_time}{If scalar, the time-point at which the follow up for each
-observation unit begins. (Eventually, support for subject specific
-entry time could be supported through this argument).}
-
-\item{cens_value}{The value that indicates censoring in the
-\code{status_var} column.}
-
-\item{.key}{The name of the new column, as a string or symbol.
-
-This argument is passed by expression and supports
-\link[rlang:quasiquotation]{quasiquotation} (you can unquote strings
-and symbols). The name is captured from the expression with
-\code{\link[rlang:quo_name]{rlang::quo_name()}} (note that this kind of interface where
-symbols do not represent actual objects is now discouraged in the
-tidyverse; we support it here for backward compatibility).}
+\item{id}{A character giving the name of the ID column.}
 }
 \description{
-Create nested data frame from event and time-dependent data
+Provides methods to nest data with time-dependent covariates (TDCs).
+A \code{formula} must be provided where the right hand side (RHS) contains
+the structure of the TDCs
 }
+\keyword{internal}

@@ -2,21 +2,18 @@
 % Please edit documentation in R/trafo-cumulative.R
 \name{make_time_mat}
 \alias{make_time_mat}
-\alias{make_te_mat}
 \alias{make_latency_mat}
 \alias{make_lag_lead_mat}
 \alias{make_z_mat}
 \title{Create matrix components for cumulative effects}
 \usage{
-make_time_mat(data)
+make_time_mat(data, nz)
 
-make_te_mat(data)
+make_latency_mat(data, te)
 
-make_latency_mat(data)
+make_lag_lead_mat(data, te, ll_fun = function(t, te) {     (t >= te) })
 
-make_lag_lead_mat(data, ll_fun = function(t, te) {     (t >= te) })
-
-make_z_mat(data, z_var)
+make_z_mat(data, z_var, nz, ...)
 }
 \arguments{
 \item{data}{A data set (or similar) from which meta information on cut-points,

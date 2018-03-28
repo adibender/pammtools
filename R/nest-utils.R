@@ -1,118 +1,107 @@
-#' Create nested data frame from event and time-dependent data
+#' Create nested data frame from data with time-dependent covariates
+#'
+#' Provides methods to nest data with time-dependent covariates (TDCs).
+#' A \code{formula} must be provided where the right hand side (RHS) contains
+#' the structure of the TDCs
 #'
 #' @inheritParams tidyr::nest
 #' @inheritParams split_data
-#' @inherit split_tdc
-#' @param regular Logical. Indicates whether covariate data was observed on
-#' a regular grid for all observation units.
+#' @param data A suitable data structure (e.g. unnested data frame with
+#' concurrent TDCs or a list wehre each element is a data frame, potentially
+#' containing TDCs as specified in the RHS of \code{formula}).
+#' Only TDCs present in \code{formula} will be returned.
+#' @param formula A two sided formula with a two part RHS, where the second
+#' part indicates the structure of the TDC structure.
+#' @param ... Further arguments passed to methods.
 #' @import checkmate dplyr
 #' @importFrom tidyr nest
-#' @importFrom tibble as_tibble
-#' @importFrom purrr invoke_map map map_int reduce
+#' @importFrom purrr map map_int reduce
 #' @export
-nest_tdc <- function(
-  event_df,
-  tdc_df,
-  te_var,
-  id_var     = "id",
-  time_var   = "time",
-  status_var = "status",
-  cut        = NULL,
-  regular    = TRUE,
-  entry_time = 0,
-  cens_value = 0,
-  .key       = "tdc") {
+#' @keywords internal
+nest_tdc <- function(data, formula,...) {
+  UseMethod("nest_tdc", data)
+}
 
+#' @inherit nest_tdc
+#' @rdname nest_tdc
+#' @param vars A character vector of TDCs that will be nested.
+#' @param id A character giving the name of the ID column.
+#' @export
+nest_tdc.default <- function(data, formula, ...) {
 
-  assert_data_frame(event_df)
-  assert_data_frame(tdc_df)
-  assert_subset(c(id_var, time_var, status_var), colnames(event_df))
-  assert_subset(c(id_var, te_var), colnames(tdc_df))
+  dots <- list(...)
+  id <- dots$id
 
+  tdc_vars     <- names_tdc(formula)
+  outcome_vars <- names_lhs(formula)
+  time_var     <- outcome_vars[1]
+  tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
-  common_id <- warn_partial_overlap(event_df[[id_var]], tdc_df[[id_var]])
-  ## FIXME: perform only if warning triggered
-  event_df  <- filter(event_df, !!sym(id_var) %in% common_id)
-  tdc_df    <- filter(tdc_df, !!sym(id_var) %in% common_id)
-
-  # FIXME: should be conditional on intersect(names(event_df), names(tdc_df))
-  # being non-empty
-  tdc_vars <- setdiff(
-    get_tdc(tdc_df, id_var),
-    c(id_var, status_var, time_var, te_var))
-
-  nested_tdc <- tdc_df %>%
-    as_tibble() %>%
-    select(!!id_var, !!te_var, one_of(tdc_vars)) %>%
-    nest(one_of(te_var, tdc_vars), .key = !!.key)
-
-  tdc_in_event_df <- intersect(tdc_vars, names(event_df))
-  if (!(length(tdc_in_event_df)==0)) {
-    event_df <- event_df %>%  select(-one_of(tdc_vars))
-  }
-  # nested_tdc <- left_join(event_df, nested_tdc)
-
-  nested_tdc <- event_df %>% left_join(nested_tdc, by = id_var)
-
-  # important to calculate unique event times after subsetting
-  if(is.null(cut)) {
-    utime <- unique(nested_tdc[[time_var]]*nested_tdc[[status_var]]) %>% sort()
+  if (!any(colnames(data) %in% tdc_vars)) {
+    return(data)
   } else {
-    utime <- cut
-  }
-  if (!regular) {
-    ute_time <- utime
-  } else {
-    ute_time <- tdc_df %>% pull(te_var) %>% unique() %>% sort()
+    nested_df <- map(tdc_vars,
+        ~nest(data=data[, c(id, .)], -one_of(id), .key = !!.)) %>%
+      reduce(left_join)# Would be better to have numeric vecotrs within each list element
+      class(nested_df) <- c("nested_fdf", class(nested_df))
   }
 
-  # utime <- union(utime, ute_time) %>% unique() %>% sort()
-
-  attr(nested_tdc, "id_var")     <- id_var
-  attr(nested_tdc, "time_var")   <- time_var
-  attr(nested_tdc, "status_var") <- status_var
-  attr(nested_tdc, "te_var")     <- te_var
-  attr(nested_tdc, "tdc_col")    <- .key
-  attr(nested_tdc, "cens_value") <- cens_value
-  attr(nested_tdc, "breaks")     <- utime
-  attr(nested_tdc, "te")         <- ute_time
-  attr(nested_tdc, "id_n") <- nested_tdc %>% pull(time_var) %>%
-    pmin(max(utime)) %>%
-    map_int(findInterval, vec=utime, left.open=TRUE, rightmost.closed=TRUE)
-  # attr(nested_tdc, "id_te_n") <- map_int(nested_tdc[["tdc"]], ~nrow(.))
-  attr(nested_tdc, "id_tseq") <- attr(nested_tdc, "id_n") %>%
-    map(seq_len) %>% unlist()
-  attr(nested_tdc, "id_teseq") <- rep(seq_along(common_id),
-    times=attr(nested_tdc, "id_n"))
-
-  class(nested_tdc) <- c("ntdc_df", class(nested_tdc))
-
-  nested_tdc
+  nested_df
 
 }
 
 
-# #' Transform a nested data frame to data frame with matrix columns
-# #'
-# #' @param nested_df A nested data frame with list columns that contain
-# #' a matrix per row.
-# #' @importFrom dplyr select_if slice
-# #' @importFrom purrr compose
-# #' @keywords internal
-# as_matdf <- function(nested_df) {
 
-# 	ndf  <- select_if(nested_df, compose("!", is.list))
-# 	ldf  <- select_if(nested_df, is.list)
-# 	nrep <- sapply(ldf[[1]], function(z) nrow(z))
-# 	rind <- lapply(seq_len(nrow(ndf)), function(z) rep(z, nrep[z])) %>%
-# 		unlist()
+#' @inherit nest_tdc
+#' @rdname nest_tdc
+#' @export
+nest_tdc.list <- function(data, formula, ...) {
 
-# 	ldf <- lapply(ldf, function(z) do.call(rbind, z))
-# 	ndf <- ndf %>% slice(rind) %>% as.data.frame()
-# 	for(i in seq_along(ldf)) {
-# 		ndf[[names(ldf)[i]]] <- ldf[[i]]
-# 	}
+  dots         <- list(...)
+  tdc_vars     <- names_tdc(formula)
+  outcome_vars <- names_lhs(formula)
+  time_var     <- outcome_vars[1]
+  tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
-# 	return(ndf)
+  nested_df <- map(data, ~nest_tdc(., formula = formula, id=dots$id,...)) %>%
+    reduce(left_join)
 
-# }
+  ## add atrributes
+  if(!is.null(dots$cut)) {
+    cut <- dots$cut
+  } else {
+    cut <- nested_df %>% pull(time_var) %>% unique() %>% sort()
+  }
+  id_n <- nested_df %>% pull(time_var) %>%
+    pmin(max(cut)) %>%
+    map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
+
+  attr_old <- attributes(nested_df)
+  attributes(nested_df) <- c(attr_old, list(
+    id_var     = dots$id,
+    time_var   = time_var,
+    status_var = outcome_vars[2],
+    tdc_vars   = tdc_vars,
+    breaks     = cut,
+    id_n       = id_n,
+    id_tseq    = id_n %>% map(seq_len) %>% unlist(),
+    id_teseq   = rep(seq_along(nested_df[[dots$id]]), times = id_n)))
+
+  class(nested_df) <- c("nested_fdf", class(nested_df))
+
+  nested_df
+
+}
+
+
+names_tdc <- function(formula, specials = "func") {
+
+  f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
+  terms_f <- terms(f2, specials = specials)
+  all.vars(terms_f)
+
+}
+
+names_lhs <- function(formula, specials="Surv") {
+  all.vars(formula(Formula(formula), lsh=TRUE, rhs=FALSE))
+}

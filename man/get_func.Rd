@@ -13,8 +13,7 @@ expand_func(data, func)
 \item{data}{Data frame (or similar) in which variables specified in ...
 will be looked for}
 
-\item{func}{Single \code{\link{func}} term \code{\link{get_func}} \code{formula}
-evaluated.}
+\item{func}{Single evaluated \code{\link{func}} term.}
 
 \item{...}{One sided formula of the form \code{~func(t,te,x) + func(t-te, z)}
 that specifies the type of cumulative effect desired (see examples).

@@ -29,7 +29,7 @@ split_data <- function(
 
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
-  assert_data_frame(data, min.rows = 2, min.cols = 2)
+  assert_data_frame(data, min.rows = 1, min.cols = 2)
   assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE, min.len = 1,
     null.ok = TRUE)
   assert_number(max_time, lower = 0, finite = TRUE, null.ok = TRUE)

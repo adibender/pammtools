@@ -1,6 +1,6 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
-Version: 0.0.6.4
+Version: 0.0.7.0
 Date: 2018-02-14
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
@@ -8,7 +8,7 @@ Authors@R: c(
 Description: This package provides functions that facilitate fitting
     piece-wise exponential (additive mixed) models.
     This includes restructuring the data to the needed format and various
-    convenience functions, e.g. for ploting the results.
+    convenience functions, e.g., for ploting the results.
 Depends:
     R (>= 3.1.2)
 Imports:
