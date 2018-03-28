@@ -13,7 +13,9 @@ get_laglead <- function(x, ...) {
 #' @rdname get_laglead
 #' @inherit get_laglead
 #' @param te A vector of exposure times
-#' @inheritParams sim_pexp
+#' @param ll_fun Function with that indicates how the lag-lead matrix
+#' should be contructed. First argument is the follow up time
+#' second argument is the time of exposure.s
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing
 #' @export
@@ -90,8 +92,8 @@ gg_laglead.LL_df <- function(
   grid_col   = "lightgrey",
   ...) {
 
-  gg_ll <- ggplot(x, aes(x = t, y = te)) +
-    geom_tile(aes(fill = LL), colour = grid_col) +
+  gg_ll <- ggplot(x, aes_string(x = "t", y = "te")) +
+    geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     xlab(expression(t)) + ylab(expression(t[e])) +
     theme(legend.position = "none")
