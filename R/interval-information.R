@@ -74,7 +74,7 @@ int_info.default <- function(
 #' @export
 int_info.ped <- function(x, ...) {
 
-  int_info(attr(x, "cut"), ...)
+  int_info(attr(x, "breaks"), ...)
 
 }
 
@@ -89,7 +89,7 @@ int_info.ped <- function(x, ...) {
 #' @export
 int_info.pamm <- function(x, ...) {
 
-  int_info(x$cut)
+  int_info(x$breaks)
 
 }
 

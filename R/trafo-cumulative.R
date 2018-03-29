@@ -27,9 +27,20 @@ get_func <- function(data, formula) {
   terms_vec <- attr(tf, "term.labels")
   func_list <- map(terms_vec, ~eval(expr=parse(text=.)))
   n_func <- length(func_list)
+  ll_funs <- map(func_list, ~.x[["ll_fun"]])
+  te_vars <- map(func_list, ~.x[["te_var"]])
+  te <- map(te_vars, ~pull(data, .x) %>% unlist() %>% unique() %>% sort())
+
+  names(te) <- names(te_vars) <- names(ll_funs) <- te_vars
 
   ## create matrices
-  map(func_list, ~expand_func(data=data, ., n_func=n_func)) %>% flatten()
+  func_mats <- map(func_list, ~expand_func(data=data, ., n_func=n_func)) %>% flatten()
+
+  list(
+    func_mats = func_mats,
+    ll_funs   = ll_funs,
+    te_vars   = te_vars,
+    te        = te)
 
 }
 

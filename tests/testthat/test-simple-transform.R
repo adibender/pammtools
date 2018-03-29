@@ -10,7 +10,7 @@ test_that("Transformation of regular survival data works", {
 		data=veteran, cut=c(0, 100, 400)), nrows=10L, ncols=8L)
 	expect_is(ped, "ped")
 	expect_subset(c("ped_status", "tstart", "tend", "interval", "offset"), names(ped))
-	expect_is(attr(ped, "cut"), "numeric")
+	expect_is(attr(ped, "breaks"), "numeric")
 	expect_is(attr(ped, "intvars"), "character")
 	expect_is(attr(ped, "id_var"), "character")
 	expect_equal(attr(ped, "id_var"), "id")

@@ -37,11 +37,11 @@ test_that("Covariate to matrix Transformation works", {
   expect_error(get_func(nested_df, ~func(t)))
   f1 <- get_func(nested_df, ~ func(survhosp,latency(Study_Day), caloriesPercentage,
     te_var = "Study_Day"))
-  expect_list(f1, types=c("numeric", "numeric", "numeric", "integer"),
+  expect_list(f1$func_mats, types=c("numeric", "numeric", "numeric", "integer"),
     any.missing=FALSE, len=4, names="named")
   f2 <- get_func(nested_df,
       ~func(survhosp,latency(Study_Day), caloriesPercentage, te_var = "Study_Day") +
       func(proteinGproKG, te_var = "Study_Day"))
-  expect_list(f2, types=c(rep("numeric", 3), "integer", "numeric"),
+  expect_list(f2$func_mats, types=c(rep("numeric", 3), "integer", "numeric"),
     any.missing = FALSE, len=5, names="named")
 })

@@ -17,6 +17,6 @@ test_that("split_tdc works correctly", {
 
 	expect_data_frame(pbc_ped, nrows=93L, ncols=8L)
 	expect_is(pbc_ped, "ped")
-	expect_subset(c("cut", "id_var", "intvars"), names(attributes(pbc_ped)))
+	expect_subset(c("breaks", "id_var", "intvars"), names(attributes(pbc_ped)))
 
 })

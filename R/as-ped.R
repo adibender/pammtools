@@ -26,14 +26,22 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   vars_elra <- all.vars(form_elra)
   vars_elra <- vars_elra[!(vars_elra == attr(data, "time_var"))]
   func_components <- get_func(data, form_elra)
+  te_vars <- func_components[["te_vars"]] %>% unlist()
+  te      <- func_components[["te"]]
+  ll_funs <- func_components[["ll_funs"]]
+  names(te_vars) <- names(ll_funs) <- te_vars
 
   form_ped <- formula(Form, lhs=1, rhs = 1)
   ped <- select(data, -one_of(vars_elra)) %>%
     as_ped.data.frame(formula = form_ped, ...)
 
+  func_components <- func_components$func_mats
   for(i in seq_along(func_components)) {
-    ped[[names(func_components)[i]]] <- I(func_components[[i]])
+    ped[[names(func_components)[i]]] <- func_components[[i]]
   }
+  attr(ped, "ll_funs")  <- ll_funs
+  attr(ped, "te")      <- te
+  attr(ped, "te_vars") <- te_vars
 
   ped
 
@@ -68,4 +76,5 @@ as_ped.list <- function(data, formula, ...) {
 }
 #' @rdname as_ped
 #' @param x any R object.
+#' @export
 is.ped <- function(x) inherits(x, "ped")

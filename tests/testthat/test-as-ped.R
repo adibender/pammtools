@@ -12,7 +12,7 @@ test_that("Trafo works and attributes are appended", {
   expect_data_frame(ped, nrow = 10L, ncols = 8L)
   expect_is(ped, "ped")
   expect_subset(c("ped_status", "tstart", "tend", "interval", "offset"), names(ped))
-  expect_is(attr(ped, "cut"), "numeric")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
