@@ -4,7 +4,7 @@
 \alias{func}
 \title{A formula special for defining functional covariates}
 \usage{
-func(..., te_var, ll_fun = function(t, te) {     t >= te }, suffix = "")
+func(..., te_var, ll_fun = function(t, te) {     t >= te }, suffix = NULL)
 }
 \description{
 A formula special for defining functional covariates

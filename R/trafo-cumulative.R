@@ -26,9 +26,10 @@ get_func <- function(data, formula) {
   # extract components
   terms_vec <- attr(tf, "term.labels")
   func_list <- map(terms_vec, ~eval(expr=parse(text=.)))
+  n_func <- length(func_list)
 
   ## create matrices
-  map(func_list, ~expand_func(data=data, .)) %>% flatten()
+  map(func_list, ~expand_func(data=data, ., n_func=n_func)) %>% flatten()
 
 }
 
@@ -37,7 +38,7 @@ get_func <- function(data, formula) {
 #' @param func Single evaluated \code{\link{func}} term.
 #' @importFrom purrr map invoke_map
 #' @keywords internal
-expand_func <- function(data, func) {
+expand_func <- function(data, func, n_func) {
 
   col_vars <- func$col_vars
   te_var <- func$te_var
@@ -68,20 +69,26 @@ expand_func <- function(data, func) {
       make_z_mat(data, col_vars[i], nz)
     }
   }
+  if (is.null(func$suffix) & n_func == 1) {
+    suffix <- ""
+  } else {
+    suffix <- func$suffix
+  }
   if(any(c(time_var, te_var) %in% col_vars)) {
       hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
-      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var, te_var, func$suffix)
+      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var, te_var, suffix)
   } else {
-       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var, func$suffix)
+       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var, suffix)
   }
 
   hist_mats
 
 }
 
-make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix="") {
+#' @keywords internal
+make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL) {
 
-  if (suffix != "") {
+  if (!is.null(suffix)) {
     return(paste(col_vars, suffix, sep="_"))
   } else {
     if (!is.null(te_var))  {

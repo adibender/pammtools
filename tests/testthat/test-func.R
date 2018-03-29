@@ -8,7 +8,7 @@ test_that("Formula special func works as expected", {
   expect_identical(f1$te_var, "te")
   expect_identical(f1$col_vars, c("t", "te", "x"))
   expect_function(f1$ll_fun, args=c("t", "te"))
-  expect_identical(f1$suffix, "")
+  expect_identical(f1$suffix, NULL)
 
 })
 

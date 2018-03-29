@@ -7,7 +7,7 @@
 \usage{
 get_func(data, formula)
 
-expand_func(data, func)
+expand_func(data, func, n_func)
 }
 \arguments{
 \item{data}{Data frame (or similar) in which variables specified in ...

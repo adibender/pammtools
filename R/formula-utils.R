@@ -29,7 +29,10 @@ get_rhs_vars <- function(formula) {
 #' @importFrom purrr map
 #' @export
 #' @keywords internal
-func <- function(..., te_var, ll_fun = function(t, te) {t >= te}, suffix="") {
+func <- function(...,
+  te_var,
+  ll_fun = function(t, te) {t >= te},
+  suffix = NULL) {
 
   vars        <- as.list(substitute(list(...)))[-1]
   vars_chr    <- vars %>% map(~as.character(.))
