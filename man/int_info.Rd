@@ -41,7 +41,7 @@ int_info(c(1, 2.3, 5))
 
 ## extract interval information used to create ped object
 tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
-ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
+ped <- split_data(Surv(time, status)~., data=tdf, id="id")
 int_info(ped)
 
 ## extract interval information of ped that was used to fit the model

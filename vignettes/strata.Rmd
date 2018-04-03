@@ -6,8 +6,7 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{strata}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-bibliography: pam.bib
+bibliography: Remote.bib
 ---
 
 ```{r, echo = FALSE}
@@ -64,7 +63,7 @@ base <- basehaz(cph)
 ```
 
 The different baselines are visualized below:
-```{r, ggbase, fig.width=5, fig.height=4, dependson="cph", warning=FALSE}
+```{r, ggbase, fig.width=6, fig.height=4, dependson="cph", warning=FALSE}
 baseline_gg <- ggplot(base, aes(x=time)) +
   geom_step(aes(y=hazard, group=strata)) +
 	ylab(expression(hat(Lambda)(t))) + xlab("t")

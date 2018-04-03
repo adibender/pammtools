@@ -67,14 +67,14 @@ int_info.default <- function(
 #' @examples
 #' ## extract interval information used to create ped object
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
-#' ped <- split_data(Surv(time, status)~., data=tdf, id="id", max.end=TRUE)
+#' ped <- split_data(Surv(time, status)~., data=tdf, id="id")
 #' int_info(ped)
 #'
 #' @seealso split_data ped_info
 #' @export
 int_info.ped <- function(x, ...) {
 
-  int_info(attr(x, "cut"), ...)
+  int_info(attr(x, "breaks"), ...)
 
 }
 
@@ -89,7 +89,7 @@ int_info.ped <- function(x, ...) {
 #' @export
 int_info.pamm <- function(x, ...) {
 
-  int_info(x$cut)
+  int_info(x$breaks)
 
 }
 

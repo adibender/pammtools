@@ -18,13 +18,16 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="pkgdown.css" rel="stylesheet">
 <script src="jquery.sticky-kit.min.js"></script>
 <script src="pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Citation and Authors" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +35,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,8 +52,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">pammtools</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="index.html">pammtools</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -77,9 +86,6 @@
       <a href="articles/convenience.html">Convenience functions for post-processing PAMs</a>
     </li>
     <li>
-      <a href="articles/cumulative-effects.html">Cumulative Effects (of time-dependent covariates)</a>
-    </li>
-    <li>
       <a href="articles/data-transformation.html">Data Transformation</a>
     </li>
     <li>
@@ -100,7 +106,7 @@
   </ul>
 </li>
 <li>
-  <a href="news/index.html">News</a>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -112,6 +118,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -128,13 +135,13 @@
 
     <p>Bender A and Scheipl F (2017).
 <em>pammtools:  Piece-wise Exponential Additive Mixed Modeling tools</em>.
-R package version 0.0.2, <a href="https://github.com/adibender/pammtools">https://github.com/adibender/pammtools</a>. 
+R package version 0.0.3.2, <a href="https://github.com/adibender/pammtools">https://github.com/adibender/pammtools</a>. 
 </p>
     <pre>@Manual{,
   author = {Andreas Bender and Fabian Scheipl},
   title = {pammtools:  Piece-wise Exponential Additive Mixed Modeling tools},
   year = {2017},
-  note = {R package version 0.0.2},
+  note = {R package version 0.0.3.2},
   url = {https://github.com/adibender/pammtools},
 }</pre>
     <p>Bender A, Groll A and Scheipl F (2018).
@@ -150,13 +157,26 @@ doi: <a href="http://doi.org/10.1177/1471082X17748083">10.1177/1471082X17748083<
   doi = {10.1177/1471082X17748083},
   url = {https://doi.org/10.1177/1471082X17748083},
 }</pre>
+    <p>Bender, Andreas, Scheipl, Fabian, Hartl, Wolfgang, Day, G A, Küchenhoff and Helmut (2018).
+&ldquo;Penalized estimation of complex, non-linear exposure-lag-response associations.&rdquo;
+<em>Biostatistics</em>.
+doi: <a href="http://doi.org/10.1093/biostatistics/kxy003">10.1093/biostatistics/kxy003</a>, <a href="https://dx.doi.org/10.1093/biostatistics/kxy003">https://dx.doi.org/10.1093/biostatistics/kxy003</a>. 
+</p>
+    <pre>@Article{,
+  author = {{Bender} and {Andreas} and {Scheipl} and {Fabian} and {Hartl} and {Wolfgang} and {Day} and Andrew G and {Küchenhoff} and {Helmut}},
+  title = {Penalized estimation of complex, non-linear exposure-lag-response associations},
+  journal = {Biostatistics},
+  year = {2018},
+  doi = {10.1093/biostatistics/kxy003},
+  url = {https://dx.doi.org/10.1093/biostatistics/kxy003},
+}</pre>
     <div class="page-header">
       <h1>Authors</h1>
     </div>
 
     <ul class="list-unstyled">
       <li>
-        <p><strong>Andreas Bender</strong>. Author, maintainer. <a href='https://orcid.org/0000-0001-5628-8611' target='orcid.widget' rel='noopener noreferrer' style='vertical-align:top;'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' height=16></a>
+        <p><strong>Andreas Bender</strong>. Author, maintainer. <a href='https://orcid.org/0000-0001-5628-8611' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' height='16'></a>
         </p>
       </li>
       <li>
@@ -182,5 +202,8 @@ doi: <a href="http://doi.org/10.1177/1471082X17748083">10.1177/1471082X17748083<
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

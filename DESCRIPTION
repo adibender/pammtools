@@ -1,22 +1,19 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
-Version: 0.0.3.4
-Date: 2017-10-30
+Version: 0.0.7.6
+Date: 2018-02-14
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
 Description: This package provides functions that facilitate fitting
     piece-wise exponential (additive mixed) models.
     This includes restructuring the data to the needed format and various
-    convenience functions, e.g. for ploting the results.
+    convenience functions, e.g., for ploting the results.
 Depends:
     R (>= 3.1.2)
 Imports:
     mgcv,
-    prodlim,
     survival (>= 2.39-5),
-    msm,
-    pec,
     checkmate,
     magrittr,
     rlang,
@@ -25,7 +22,9 @@ Imports:
     dplyr (>= 0.7.0),
     purrr (>= 0.2.3),
     tibble,
-    modelr
+    msm,
+    lazyeval,
+    Formula
 Suggests:
     RColorBrewer,
     scam,

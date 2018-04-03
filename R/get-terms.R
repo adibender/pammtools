@@ -4,8 +4,8 @@
 #' first row will be used.
 #' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param term The (non-linear) model term of interest.
-#' @param ... Further arguments passed to \code{\link[modelr]{seq_range}}.
-#' @inheritParams modelr::seq_range
+#' @param ... Further arguments passed to \code{\link{seq_range}}.
+#' @inheritParams seq_range
 #' @import dplyr
 #' @importFrom stats predict
 #' @importFrom rlang UQ

@@ -4,7 +4,7 @@ data("veteran", package="survival")
 ped <- split_data(Surv(time, status)~ trt + age, data=veteran,
 	cut=seq(0,400, by=100), id="id")
 
-ped <- ped[ped$id %in% c(1:3, 135:137), ]
+ped <- filter(ped, id %in% c(1:3, 135:137))
 
 
 test_that("Interval infos correct", {

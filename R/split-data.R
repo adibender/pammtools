@@ -3,9 +3,9 @@
 #'
 #' @inheritParams survival::survSplit
 #' @param ... Further arguments passed to \code{\link[survival]{survSplit}}
-#' @param max.end logical. Should the last interval span until the last
-#' observed censoring or event time (if larger than the largest specified
-#' cut point).
+#' @param max_time If \code{cut} is unspecified, a maximum time to be considered
+#' can be specified through this argument. Then, all event times after \code{max_time}
+#' will be administratively censored at \code{max_time}.
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
@@ -20,14 +20,19 @@
 #' class(ped) # class ped (piece-wise exponential data)
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
-split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
+split_data <- function(
+  formula,
+  data,
+  cut      = NULL,
+  max_time = NULL,
+  ...) {
 
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
-  assert_data_frame(data, min.rows = 2, min.cols = 2)
+  assert_data_frame(data, min.rows = 1, min.cols = 2)
   assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE, min.len = 1,
     null.ok = TRUE)
-  assert_flag(max.end)
+  assert_number(max_time, lower = 0, finite = TRUE, null.ok = TRUE)
 
 
   ## extract names for event time and status variables
@@ -63,18 +68,14 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
 
   if (is.null(cut)) {
     cut <- unique(data[["ped_time"]][data[["ped_status"]] == 1])
+    if(!is.null(max_time)) {
+      cut <- cut[cut < max_time]
+      cut <- c(cut, max_time)
+    }
   }
-  max.fail <- max(data[["ped_time"]][data[["ped_status"]] == 1])
-  max.time <- max(max(data[["ped_time"]]), max(cut))
-
-
   # sort interval cut points in case they are not (so that interval factor
   # variables will be in correct ordering)
   cut <- sort(cut)
-  # add last observation to cut if necessary
-  if (max.end & (max.time > max(cut))) {
-    cut <- c(cut, max.time)
-  }
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)
@@ -109,7 +110,7 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
   split_df  <- split_df %>%
     mutate(
       ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
-          0, .data$ped_status),
+          0L, .data$ped_status),
       ped_time   = pmin(.data$ped_time, max(cut)),
       offset     = log(.data$ped_time - .data$tstart)) %>%
     filter(!(.data$tstart == .data$ped_time))
@@ -125,14 +126,13 @@ split_data <- function(formula, data, cut = NULL, ..., max.end = FALSE) {
     select(one_of(move), everything(),
       -one_of(c("intmid", "intlen", "ped_time")))
 
-
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
-  attr(split_df, "cut") <- cut
+  attr(split_df, "breaks") <- cut
   attr(split_df, "id_var") <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
 
-  return(split_df)
+  split_df
 
 }

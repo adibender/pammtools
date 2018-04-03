@@ -4,8 +4,9 @@
 \alias{split_tdc}
 \title{Create piece-wise exponential data in case of time-dependent covariates}
 \usage{
-split_tdc(formula, event_df, tdc_df, id_var, time_var, status_var, te_var,
-  cens_value = 0)
+split_tdc(formula, event_df, tdc_df, te_var, id_var = "id",
+  time_var = "time", status_var = "status", cens_value = 0,
+  entry_time = 0, ...)
 }
 \arguments{
 \item{formula}{a model formula}
@@ -17,6 +18,10 @@ in long format. Needs to contain a "time" variable indicating when the
 TDCs change their value. Must have same name as variable indicating event
 times in \code{event_df}.}
 
+\item{te_var}{The time variable in \code{tdc_df} indicating time points at
+which time-dependent covariate (tdc) was observed.
+Needs to be the same name in both data sets.}
+
 \item{id_var}{The ID variable name, identifying subjects.}
 
 \item{time_var}{A character, specifies the column of the event or
@@ -26,12 +31,14 @@ the time-dependent covariates in \code{tdc_df}.}
 \item{status_var}{As \code{time_var}, but specifies column containing the
 event indicator. Can be missing in the \code{tdc_df}.}
 
-\item{te_var}{The time variable in \code{tdc_df} indicating time points at
-which time-dependent covariate (tdc) was observed.
-Needs to be the same name in both data sets.}
-
 \item{cens_value}{The value that indicates censoring in the
 \code{status_var} column.}
+
+\item{entry_time}{If scalar, the time-point at which the follow up for each
+observation unit begins. (Eventually, support for subject specific
+entry time could be supported through this argument).}
+
+\item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
 }
 \description{
 Given to data frames, one containing event time information (one row per subject)
@@ -42,5 +49,5 @@ which a TDC changes its value).
 \examples{
 data("pbc", package="survival")# loads both, pbc and pbcseq
 pbc$status = 1*(pbc$status == 2)
-pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, "id", "time", "status", "day")
+pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, te_var="day")
 }

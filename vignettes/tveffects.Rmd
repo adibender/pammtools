@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{tveffects}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, echo = FALSE}
@@ -49,20 +48,20 @@ A time-varying effect of $x$ can then be specified as an interaction term betwee
 $x$ and $t$, where different levels of complexity and flexibility for this
 interaction are possible:
 
-a) $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
+- $\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))$: Linear effect of $x$ with
 time-variation given by $g(t)$, where $g(\cdot)$ is a known or pre-specified
 transformation of time $t$, e.g. the $\log$-function.
 
-b) $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
+- $f_x(x)\cdot g(t)$: Non-linear effect of $x$, (linearly) time-varying with $g(t)$,
 where $g(t)$ is a known or pre-specified transformation of time
 
-c) $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation
+- $f_t(t)\cdot x$: A *varying coefficient model* in $x$, where time-variation
 is non-linear and estimated from the data. If $x$ is a dummy variable coding for
 levels of a categorical variable this constitutes a stratified model with a
 different "baseline" hazard for each category,
 see the [*strata* vignette](strata.html).
 
-d) $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
+- $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
 ## Veteran Data example
 
@@ -148,22 +147,34 @@ we can specify the effect of `karno` as
 $f(x_{\text{karno}},t) = f(t)\cdot x_{\text{karno}}$, where $f(t)$
 is estimated from the data:
 
-```{r, fig.width = 6}
+```{r, pam_tv_karno}
 # no need to specify main effect for karno here
 pam2 <- gam(ped_status ~ s(tend) + trt + prior + s(tend, by = karno),
     data = ped, offset = offset, family = poisson())
+```
+
+The figure below visualizes the estimate of the time-varying effect of `karno`
+for all three models
+<details>
+  <summary>*Expand here to see R-Code*</summary>
+```{r gg_tv_karno, dependson="pam_tv_karno"}
 term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
     mutate_at(c("fit", "low", "high"), funs(./.data$karno)) %>%
     mutate(
         cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20),
         pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20))
-ggplot(term.df, aes(x = tend, y = fit)) +
+gg_tv_karno <- ggplot(term.df, aes(x = tend, y = fit)) +
     geom_step(aes(col = "PAM with penalized spline")) +
     geom_stepribbon(aes(ymin = low, ymax = high), alpha = 0.2) +
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) +
     geom_step(aes(y = pam.fit, col = "PAM with log-transform")) +
     scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
     xlab("t") + ylab(expression(hat(f)(t)))
+```
+</details>
+
+```{r, dependson="gg_tv_karno", echo=FALSE, fig.width=6.5}
+gg_tv_karno
 ```
 
 The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.
@@ -243,7 +254,7 @@ decreasing at the beginning and increasing again for later
 time-points (green line middle panel).
 
 <details>
-  <summary>Expand here for R-Code</summary>
+  <summary>*Expand here to see R-Code*</summary>
 
 ```{r warning=FALSE, fig.width=7, fig.height=3}
 ## heat map/contour plot
