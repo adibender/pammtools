@@ -32,8 +32,8 @@ nest_tdc.default <- function(data, formula, ...) {
   dots <- list(...)
   id <- dots$id
 
-  tdc_vars     <- names_tdc(formula)
-  outcome_vars <- names_lhs(formula)
+  tdc_vars     <- get_tdc_vars(formula)
+  outcome_vars <- get_lhs_vars(formula)
   time_var     <- outcome_vars[1]
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
@@ -58,8 +58,8 @@ nest_tdc.default <- function(data, formula, ...) {
 nest_tdc.list <- function(data, formula, ...) {
 
   dots         <- list(...)
-  tdc_vars     <- names_tdc(formula)
-  outcome_vars <- names_lhs(formula)
+  tdc_vars     <- get_tdc_vars(formula)
+  outcome_vars <- get_lhs_vars(formula)
   time_var     <- outcome_vars[1]
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
@@ -91,17 +91,4 @@ nest_tdc.list <- function(data, formula, ...) {
 
   nested_df
 
-}
-
-
-names_tdc <- function(formula, specials = "func") {
-
-  f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
-  terms_f <- terms(f2, specials = specials)
-  all.vars(terms_f)
-
-}
-
-names_lhs <- function(formula, specials="Surv") {
-  all.vars(formula(Formula(formula), lsh=TRUE, rhs=FALSE))
 }

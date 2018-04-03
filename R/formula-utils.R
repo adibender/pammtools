@@ -2,26 +2,38 @@
 #'
 #' @rdname formula_helpers
 #' @param formula A \code{\link{formula}} object.
-#' @importFrom stats as.formula
+#' @import Formula
 #' @keywords internal
 get_lhs_vars <- function(formula) {
 
+
 	if (is.character(formula) ) formula <- as.formula(formula)
-	all.vars(formula[-3])
+	formula(Formula(formula), lhs = TRUE, rhs = FALSE) %>% all.vars()
 
 }
 
 #' Extract variables from the right-hand side of a formula
 #'
 #' @rdname formula_helpers
-#' @inheritParams get_lhs_vars
+#' @inherit get_lhs_vars
 #' @keywords internal
 get_rhs_vars <- function(formula) {
 
 	if (is.character(formula) ) formula <- as.formula(formula)
-	all.vars(formula[-2])
+	formula(Formula(formula), lhs = FALSE, rhs=TRUE) %>% all.vars()
 
 }
+
+
+#' @inherit get_lhs_vars
+get_tdc_vars <- function(formula, specials = "func") {
+
+  f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
+  terms_f <- terms(f2, specials = specials)
+  all.vars(terms_f)
+
+}
+
 
 #' A formula special for defining functional covariates
 #'
