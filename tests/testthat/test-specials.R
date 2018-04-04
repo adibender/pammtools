@@ -1,6 +1,6 @@
 context("Test formula special.")
 
-test_that("Formula special func works as expected", {
+test_that("Formula special 'func' works as expected", {
   ## time + latency + covar (DLNM approach)
   f1 <- func(t, latency(te), x, te_var="te")
   expect_list(f1, any.missing = FALSE, len = 5)
@@ -11,6 +11,19 @@ test_that("Formula special func works as expected", {
   expect_identical(f1$suffix, NULL)
 
 })
+
+test_that("Formula special 'concurrent' works as expected", {
+  ## time + latency + covar (DLNM approach)
+  f1 <- concurrent(x1, x2, te_var="te")
+  expect_list(f1, any.missing = FALSE, len = 4)
+  expect_identical(f1$te_var, "te")
+  expect_identical(f1$col_vars, c("x1", "x2"))
+  expect_function(f1$ll_fun, args=c("t"))
+  expect_identical(f1$suffix, NULL)
+
+})
+
+
 
 
 context("Transformation of longitudinal covariates to functional covariates")
