@@ -128,7 +128,7 @@ eval_concurrent <- function(formula) {
 
 #' @inherit get_func
 has_special <- function(formula, special = "func") {
-  if(!has_tdc_form) {
+  if(!has_tdc_form(formula)) {
     return(FALSE)
   } else {
     formula <- formula(Formula(formula), lhs=FALSE, rhs = 2)

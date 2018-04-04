@@ -58,3 +58,7 @@ has_tdc_form <- function(formula) {
   length_form[2] > 1
 
 }
+
+has_lhs <- function(formula) {
+  length(Formula(formula))[1] > 0
+}

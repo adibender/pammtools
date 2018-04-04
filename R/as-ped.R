@@ -21,19 +21,46 @@ as_ped.data.frame <- function(data, formula, ...) {
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
 
-  Form <- Formula(formula)
-  form_elra <- formula(Form, lhs=FALSE, rhs = 2)
-  vars_elra <- all.vars(form_elra)
-  vars_elra <- vars_elra[!(vars_elra == attr(data, "time_var"))]
-  func_components <- get_func(data, form_elra)
-  te_vars <- func_components[["te_vars"]] %>% unlist()
-  te      <- func_components[["te"]]
-  ll_funs <- func_components[["ll_funs"]]
-  names(te_vars) <- names(ll_funs) <- te_vars
+  dots <- list(...)
 
-  form_ped <- formula(Form, lhs=1, rhs = 1)
-  ped <- select(data, -one_of(vars_elra)) %>%
-    as_ped.data.frame(formula = form_ped, ...)
+  if(!has_tdc_form(formula)) {
+    as_ped.data.frame(nested_fdf, formula, ...)
+  } else {
+    contains_func       <- has_special(formula, "func")
+    contains_concurrent <- has_special(formula, "concurrent")
+    if(!(contains_concurrent | contains_func)) {
+      stop("The RHS of 'formula' must contain either 'concurrent' or 'func' specials.")
+    } else {
+      tdc_vars <- get_tdc_vars(formula)
+      tdc_vars <- tdc_vars[!(tdc_vars == attr(data, "time_var"))]
+      if(contains_concurrent) {
+        concurrent_components <- get_concurrent(data, formula)
+        cc_times <- get_te(concurrent_components)
+        cut <- get_cut(nested_fdf, formula, cut=dots$cut, max_time=dots$max_time)
+        dots$cut <- union(cut, cc_times) %>% sort()
+      }
+
+      dots$formula <- get_ped_form(formula)
+      dots$data <- select(data, -one_of(tdc_vars))
+      ped <-  do.call(as_ped.data.frame, args = dots)
+
+      if(contains_func) {
+        func_components <- get_func(data, formula)
+        te_vars <- func_components[["te_vars"]] %>% unlist()
+        te      <- func_components[["te"]]
+        ll_funs <- func_components[["ll_funs"]]
+        names(te_vars) <- names(ll_funs) <- te_vars
+        func_attr <- list(
+          te_vars = te_vars,
+          te      = te,
+          ll_funs = ll_funs)
+      }
+    }
+
+  }
+
+
+
 
   func_components <- func_components$func_mats
   for(i in seq_along(func_components)) {

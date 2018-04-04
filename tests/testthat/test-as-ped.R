@@ -43,8 +43,9 @@ test_that("Trafo works for list objects (with TDCs)", {
   expect_data_frame(ped, nrows = 10, ncols = 19)
   ped <- as_ped(
       data    = list(event_df, tdc_df),
-      formula = Surv(survhosp, PatientDied)~.|func(Study_Day, caloriesPercentage, te_var="Study_Day") +
-        func(proteinGproKG, te_var="Study_Day"),
+      formula = Surv(survhosp, PatientDied)~.|
+        func(Study_Day, caloriesPercentage, te_var="Study_Day") +
+          func(proteinGproKG, te_var="Study_Day"),
       id  = "CombinedID")
     expect_data_frame(ped, nrows = 1, ncols = 19)
 
