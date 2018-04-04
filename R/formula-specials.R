@@ -81,6 +81,8 @@ concurrent <- function(...,
 #' @keywords internal
 get_func <- function(data, formula) {
 
+  stopifnot(has_tdc_form(formula))
+
   func_list <- eval_func(formula)
 
   n_func <- length(func_list)
@@ -105,6 +107,17 @@ get_func <- function(data, formula) {
 eval_func <- function(formula) {
 
   tf  <- terms(get_tdc_form(formula), specials="func")
+  # extract components
+  terms_vec <- attr(tf, "term.labels")
+
+  map(terms_vec, ~eval(expr=parse(text=.)))
+
+}
+
+#' @keywords internal
+eval_concurrent <- function(formula) {
+
+  tf  <- terms(get_tdc_form(formula), specials="concurrent")
   # extract components
   terms_vec <- attr(tf, "term.labels")
 
