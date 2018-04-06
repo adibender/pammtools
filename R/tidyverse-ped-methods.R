@@ -15,9 +15,9 @@ ped_attr <- function(ped) {
 
 #' @name dplyr_verbs
 #' @title \code{dplyr} Verbs for \code{ped}-Objects
-#' @param .data an  object of class \code{ped}, see \code{\link{split_data}}.
-#' @param tbl an  object of class \code{ped}, see \code{\link{split_data}}.
-#' @param x an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param .data an  object of class \code{ped}, see \code{\link{as_ped}}.
+#' @param tbl an  object of class \code{ped}, see \code{\link{as_ped}}.
+#' @param x an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @param funs see \code{\link[dplyr]{summarize_all}}
 #' @param ... see \code{dplyr} documentation
 #' @param .dots see \code{dplyr} documentation
@@ -258,7 +258,7 @@ right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
 
 #' @name tidyr_verbs
 #' @title \code{tidyr} Verbs for \code{ped}-Objects
-#' @param data an  object of class \code{ped}, see \code{\link{split_data}}.
+#' @param data an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @return A modified \code{ped} object.
 #' @importFrom tidyr fill fill_
 #' @description See \code{tidyr} documentation of the respective functions for

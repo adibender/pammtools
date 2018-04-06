@@ -8,7 +8,7 @@ riskset_info(ped)
 }
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by
-\code{\link[pammtools]{split_data}}.}
+\code{\link[pammtools]{as_ped}}.}
 }
 \value{
 A data frame with one row for each interval in \code{ped}.
@@ -20,7 +20,7 @@ of events and censorings that occured in the interval, respectively.
 }
 \examples{
 data("veteran", package="survival")
-ped <- split_data(Surv(time, status)~ ., data = veteran, id = "id",
+ped <- veteran \%>\% as_ped(Surv(time, status)~ ., id = "id",
   cut = seq(0,400, by = 100))
 riskset_info(ped)
 (riskset_celltype <- riskset_info(group_by(ped, celltype)))

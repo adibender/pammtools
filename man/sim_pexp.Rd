@@ -49,7 +49,7 @@ termplot(mod, se = TRUE)
 
 # and using PAMs
 layout(1)
-ped <- split_data(Surv(time, status)~., data=sim_df, max_time=10)
+ped <- sim_df \%>\% as_ped(Surv(time, status)~., max_time=10)
 library(mgcv)
 pam <- gam(ped_status ~ s(tend) + x1 + s(x2), data=ped, family=poisson, offset=offset)
 coef(pam)[2]

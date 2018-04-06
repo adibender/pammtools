@@ -20,6 +20,7 @@
 #' class(ped) # class ped (piece-wise exponential data)
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
+#' @keywords internal
 split_data <- function(
   formula,
   data,
@@ -36,20 +37,20 @@ split_data <- function(
 
 
   ## extract names for event time and status variables
-  tvars <- all.vars(update(formula, .~0))
+  surv_vars <- all.vars(update(formula, .~0))
   vars <- if ("." %in% all.vars(formula)) {
       names(data)
     } else {
       all.vars(formula)
     }
-  uvars <- union(tvars, vars)
+  uvars <- union(surv_vars, vars)
   if (!all(uvars %in% vars)) {
     stop(paste("Variables provided in formula not in data set:",
       paste0(setdiff(uvars, vars), collapse = ", ")))
   }
 
 
-  if (length(tvars)!= 2) {
+  if (length(surv_vars)!= 2) {
     stop(
       "Currently a formula of the form Surv(time, event)~., is required.\n
       See ?Surv for more details.")
@@ -61,21 +62,13 @@ split_data <- function(
       Variables ",
       intersect(proposed.names, names(data)), " allready in data set."))
   }
-  data    <- rename(data, !!!set_names(tvars, as.list(proposed.names)))
+  data    <- rename(data, !!!set_names(surv_vars, as.list(proposed.names)))
   formula <- as.formula(
     paste0("Surv(ped_time, ped_status)",
       paste0(formula[-2], collapse = "")))
 
-  if (is.null(cut)) {
-    cut <- unique(data[["ped_time"]][data[["ped_status"]] == 1])
-    if(!is.null(max_time)) {
-      cut <- cut[cut < max_time]
-      cut <- c(cut, max_time)
-    }
-  }
-  # sort interval cut points in case they are not (so that interval factor
-  # variables will be in correct ordering)
-  cut <- sort(cut)
+  # obtain interval breaks points
+  cut <- get_cut(data, formula, cut=cut, max_time=max_time)
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)

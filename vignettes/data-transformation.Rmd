@@ -132,7 +132,7 @@ veteran %>% slice(c(85, 112))
 
 ## Data with time-dependent covariates
 In case of data with time-dependent covariates (that should not be
-modeled as cumulative effects), we must split the follow-up at
+modeled as cumulative effects), the follow-up is usually split at
 desired cut-points and *additionally* at the time-points at which
 the TDC changes its value.
 
@@ -141,6 +141,43 @@ contains time-to-event data and time-constant covariates and one data set
 that contains information of time-dependent covariates.
 
 For illustration, we use the `pbc` data from the `survival` package.
+Before the actual data transformation we perform the data preprocessing
+in `vignette("timedep", package="survival")`:
+
+```{r}
+data("pbc", package="survival")
+pbc <- pbc %>% filter(id <= 312) %>%
+  mutate(status = 1L*(status == 2)) %>%
+  select(id:sex, bili, protime)
+```
+
+We want to transform the data such that we could fit a concurrent effect of
+the time-dependent covariates `bili` and `protime`, therefore, the RHS of
+the formula passed to `as_ped` needs to contain an additional component,
+separated by `|` and all variables for which should be transformed to the
+concurrent format specified within the `concurrent` special. The data sets
+are provided within a list. In `concurrent`, we also have to specify the name of
+the variable which stores information on the time points at which the TDCs are
+updated.
+
+```{r}
+ped_pbc <- as_ped(
+  data    = list(pbc, pbcseq),
+  formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+  id      = "id")
+```
+
+Multiple data sets can be provided within the list and multiple `concurrent`
+terms with different `te_var` arguments can be specified. If different
+`te_var` arguments are provided, the union of both will be used as cut points
+in addition to usual cut points.
+
+**Warning**: For time-points on the follow up that have no observation of the
+TDC, the last observation will be carried forward until the next update
+is available.
+
+
+
 
 ## Data with time-dependent covariates (with cumulative effects)
 
@@ -165,14 +202,14 @@ Here
   within $\mathcal{T}(t)$<br>&nbsp;
 
   - the so called lag-lead window (or window of effectiveness) is denoted by
-  $\mathcal{T}(t)$. This represents the set of exposure times at which exposures 
+  $\mathcal{T}(t)$. This represents the set of exposure times at which exposures
   can affect the hazard rate at time $t$. The most common definition is
   $\mathcal{T}(t) = \{t_{e,q}: t \geq t_{e,q}, q=1,\ldots, Q\}$,
   which means that all exposures that were observed prior to $t$ or at $t$ are
   eligible.
 
  As before we use the function `as_ped` to transform the data and additionally
-use the  formula special `func` (for **fun**ctional **c**ovariate) to
+use the  formula special `cumulative` (for **fun**ctional **c**ovariate) to
 specify the partial effect structure on the right-hand side of the formula.
 
 Let $t$ (`time`) the follow up time, $\mathbf{z}_1$ (`z1`) and $\mathbf{z}_2$ (`z2`)
@@ -182,21 +219,21 @@ and $\mathcal{T}_2(t) = \{s_{e,k}: t \geq s_{e,k} + 2\}$ (defined by
 `ll2 <- function(t, te) { t >= te + 2}`).
 
 The table below gives a selection of possible partial effects and the usage of
-`func` to create matrices needed to estimate different types of cumulative
+`cumulative` to create matrices needed to estimate different types of cumulative
 effects of $\mathbf{z}_1$ and $\mathbf{z}_2$:
 
 |                                   partial effect                                   |                                `as_ped` specification                                |
 |------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| $\int_{\mathcal{T}_1}h(t-t_e, z_1(t_e))$                                            | `func(latency(te1), z1, te_var= "te1")`                                              |
-| $\int_{\mathcal{T}_1}h(t, t-t_e, z_1(t_e))$                                        | `func(time, latency(te1), z1, te_var="te1")`                                         |
-| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e))$                                          | `func(time, te1, z1, te_var="te1")`                                                  |
-| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e)) + \int_{\mathcal{T}_2}h(t-s_e, z_2(s_e))$ | `func(time, te1, z1, te_var="te1") + func(latency(te2), z2, te_var="te2", ll_fun=ll2)` |
+| $\int_{\mathcal{T}_1}h(t-t_e, z_1(t_e))$                                            | `cumulative(latency(te1), z1, te_var= "te1")`                                              |
+| $\int_{\mathcal{T}_1}h(t, t-t_e, z_1(t_e))$                                        | `cumulative(time, latency(te1), z1, te_var="te1")`                                         |
+| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e))$                                          | `cumulative(time, te1, z1, te_var="te1")`                                                  |
+| $\int_{\mathcal{T}_1}h(t, t_e, z_1(t_e)) + \int_{\mathcal{T}_2}h(t-s_e, z_2(s_e))$ | `cumulative(time, te1, z1, te_var="te1") + cumulative(latency(te2), z2, te_var="te2", ll_fun=ll2)` |
 | ...                                                                                | ...                                                                                     |
 
 
 Note that
 
-  - the variable representing follow-up time $t$ in `func` (here `time`) must
+  - the variable representing follow-up time $t$ in `cumulative` (here `time`) must
   match the time variable specified on the left-hand side of the `formula`
 
   - the variable representing exposure time $t_e$ (here `te1` and `te2`) must be
@@ -205,22 +242,22 @@ Note that
   - by default, $\mathcal{T}(t)$ is defined as `function(t,te) {t >= te}`,
   thus for $\mathcal{T}_1$ it is not necessary to explicitly specify the lag-lead window.
   In case you want to use a custom lag-lead window, provide the respective
-  function to the `ll_fun` argument in `func` (see `ll2` in the examples above)
+  function to the `ll_fun` argument in `cumulative` (see `ll2` in the examples above)
 
-  - `func` makes no difference between partial effects such as $h(t-t_e, z(t_e))$
+  - `cumulative` makes no difference between partial effects such as $h(t-t_e, z(t_e))$
   and $h(t-t_e)z(t_e)$ as the necessary data transformation is the same in both
   cases. Later, however, when fitting the model, a distinction must be made
 
-  - more than one $z$ variable can be provided to `func`, which can be convenient
+  - more than one $z$ variable can be provided to `cumulative`, which can be convenient
   if multiple covariates should have the same time components and the
   same lag-lead window
 
-  - multiple `func` terms can be specified, having different exposure times
+  - multiple `cumulative` terms can be specified, having different exposure times
   `t_e`, `s_e` and/or different lag-lead windows for different covariates
   $\mathbf{z}_1$, $\mathbf{z}_2$
 
-  - To tell `func` which of the variables specified is the exposure time $t_e$,
-  the `te_var` argument must be specified within each `func` term. The
+  - To tell `cumulative` which of the variables specified is the exposure time $t_e$,
+  the `te_var` argument must be specified within each `cumulative` term. The
   follow-up time component $t$ will be automatically recognized via the left-hand
   side of the `formula`.
 
@@ -237,20 +274,20 @@ head(patient)
 head(daily)
 ```
 
-Below we illustrate the usage of `as_ped` and `func` to obtain covariate
+Below we illustrate the usage of `as_ped` and `cumulative` to obtain covariate
 matrices for the latency matrix of follow up time and exposure time and
 a matrix of the TDC (`caloriesPercentage`). The follow up will be split
 in 30 intervals with interval breaks points `0:30`. By default,
 the exposure time provided to `te_var` will be used as a suffix for the names of the new
 matrix columns to indicate the exposure they refer to,
 however, you can override the suffix by specifying the
-`suffix` argument to `func`.
+`suffix` argument to `cumulative`.
 
 ```{r}
 ped <- as_ped(
   data    = list(patient, daily),
   formula = Surv(survhosp, PatientDied) ~ . |
-    func(latency(Study_Day), caloriesPercentage, te_var="Study_Day"),
+    cumulative(latency(Study_Day), caloriesPercentage, te_var="Study_Day"),
   cut     = 0:30,
   id = "CombinedID")
 str(ped, 1)
@@ -268,13 +305,13 @@ functional covariate terms with partial effects
 $h(t, t-t_e, z_1(t_e))$ and $h(t-t_e, z_2(t_e))$.
 As in the case of ICU patient data, both TDCs were observed on the same exposure
 time grid, we want to use the same lag-lead window and the latency term
-$t-t_e$ occurs in both partial effects, we only need to specify one `func` term.
+$t-t_e$ occurs in both partial effects, we only need to specify one `cumulative` term.
 
 ```{r}
 ped <- as_ped(
   data = list(patient, daily),
   formula = Surv(survhosp, PatientDied) ~ . |
-    func(survhosp, latency(Study_Day), caloriesPercentage, proteinGproKG,
+    cumulative(survhosp, latency(Study_Day), caloriesPercentage, proteinGproKG,
       te_var = "Study_Day"),
   cut = 0:30,
   id = "CombinedID")
@@ -312,8 +349,8 @@ specifications as illustrated below:
 ```{r}
 ped_sim <- as_ped(
   data = simdf_elra,
-  formula = Surv(time, status)~.|func(time, latency(te1), z.te1, te_var="te1") +
-    func(latency(te2), z.te2, te_var = "te2"),
+  formula = Surv(time, status)~.| cumulative(time, latency(te1), z.te1, te_var="te1") +
+    cumulative(latency(te2), z.te2, te_var = "te2"),
   cut = 0:10,
   id = "id")
 str(ped_sim,1)

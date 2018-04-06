@@ -28,6 +28,3 @@ Note: When applied to a \code{ped} object, that doesn't contain covariates
 Given a data set and grouping variables, this function returns mean values
 for numeric variables and modus for characters and factors.
 }
-\seealso{
-\code{\link[pammtools]{split_data}}
-}

@@ -8,7 +8,7 @@ ped_info(ped)
 }
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by
-\code{\link[pammtools]{split_data}}.}
+\code{\link[pammtools]{as_ped}}.}
 }
 \value{
 A data frame with one row for each interval in \code{ped}.
@@ -20,7 +20,7 @@ variables and modi for non-numeric variables in the data set.
 }
 \examples{
 data("veteran", package="survival")
-ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
+ped <- veteran \%>\% as_ped(Surv(time, status)~ trt + age, id="id")
 ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 }
 \seealso{

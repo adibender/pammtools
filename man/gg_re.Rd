@@ -17,7 +17,7 @@ Plot Normal QQ plots for random effects
 \examples{
 data("lung", package="survival")
 lung$inst <- as.factor(lung$inst) # for mgcv
-ped <- split_data(Surv(time, status)~ph.ecog + inst, data=lung, id="id")
+ped <- lung \%>\% as_ped(Surv(time, status)~ph.ecog + inst, id="id")
 pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 	data=ped, family=poisson(), offset=offset)
 gg_re(pam)

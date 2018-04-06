@@ -11,12 +11,10 @@ split_tdc(formula, event_df, tdc_df, te_var, id_var = "id",
 \arguments{
 \item{formula}{a model formula}
 
-\item{event_df}{A data frame (potentially) containing time-dependent covariates.}
+\item{event_df}{Data frame (or similar) containing survival information.}
 
-\item{tdc_df}{A data frame containing information on time-dependent variables
-in long format. Needs to contain a "time" variable indicating when the
-TDCs change their value. Must have same name as variable indicating event
-times in \code{event_df}.}
+\item{tdc_df}{Data frame (or similar) containing information on time-dependent
+covariates}
 
 \item{te_var}{The time variable in \code{tdc_df} indicating time points at
 which time-dependent covariate (tdc) was observed.

@@ -102,7 +102,7 @@ summarise_each.ped(tbl, funs, ...)
   ".y"), ..., keep_attributes = TRUE)
 }
 \arguments{
-\item{.data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
+\item{.data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{...}{see \code{dplyr} documentation}
 
@@ -112,9 +112,9 @@ override existing groups. To add to the existing groups, use
 
 \item{.dots}{see \code{dplyr} documentation}
 
-\item{x}{an  object of class \code{ped}, see \code{\link{split_data}}.}
+\item{x}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
-\item{tbl}{an  object of class \code{ped}, see \code{\link{split_data}}.}
+\item{tbl}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{size}{For \code{sample_n()}, the number of rows to select.
 For \code{sample_frac()}, the fraction of rows to select.

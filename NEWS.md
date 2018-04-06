@@ -1,9 +1,12 @@
-# pammtools 0.0.7
+# pammtools 0.0.8
 
-## pammtools 0.0.7.3
+* All data transformation is now hadled using `as_ped` (see
+[data transformation vignette](../articles/data-transformation.html))
 
-+ Added support for data transformation of TDCs for cumulative effects
-(see `as_ped` and the [data transformation vignette](articles/data-transformation.html))
+* Data transformation includes
+    - standard time-to-event data
+    - time-to-event data with concurrent effects of time-dependent covariates
+    - time-to-event data with cumulative effects of time-dependent covariates
 
 * Added functionality to flexibly simulate data from PEXP including cumulative effects, see `?sim_pexp`
 
@@ -13,11 +16,8 @@ see `?cumulative_coefficient`
 
 * Breaking change in `split_data`:
     - removed `max.end` argument
-    - added `max.time` argument to introduce administrative censoring at
-    `max_time`  when no custom cut-points provided
-
-
-* Readded details tags in vignettes (after pandoc update)
+    - added `max_time` argument to introduce administrative censoring at
+    `max_time` when no custom interval split points are provided
 
 
 # pammtools 0.0.3

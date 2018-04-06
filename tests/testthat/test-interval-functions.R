@@ -1,7 +1,7 @@
 context("Interal info and median and modus information")
 
 data("veteran", package="survival")
-ped <- split_data(Surv(time, status)~ trt + age, data=veteran,
+ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
 	cut=seq(0,400, by=100), id="id")
 
 ped <- filter(ped, id %in% c(1:3, 135:137))

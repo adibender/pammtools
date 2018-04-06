@@ -4,8 +4,9 @@ test_that("Cumulative coefficients work for PAMMs", {
   data("patient")
   set.seed(123)
   patient <- patient %>% dplyr::sample_n(100)
-  patient_ped <- split_data(Surv(survhosp, PatientDied)~ Gender + ApacheIIScore,
-    data = patient, id = "CombinedID")
+  patient_ped <- patient %>% as_ped(
+    formula = Surv(survhosp, PatientDied)~ Gender + ApacheIIScore,
+    id = "CombinedID")
   pamm <- mgcv::gam(
     formula = ped_status ~ Gender + s(tend, by = as.ordered(Gender)) +
       s(tend, by = ApacheIIScore),

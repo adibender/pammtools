@@ -203,7 +203,7 @@ We first replicate the analysis from `vignette("timedep", package="survival")`:
 
 ```{r}
 # below code copied from survival vignette "timedep"
-temp <- subset(pbc, id <= 312, select=c(id:sex, stage)) # baseline
+temp <- subset(pbc, id <= 312, select=c(id:sex)) # baseline
 pbc2 <- tmerge(temp, temp, id=id, death = event(time, status)) #set range
 pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites),
     bili = tdc(day, bili), albumin = tdc(day, albumin),
@@ -220,48 +220,22 @@ baseline values of TDCs are used for the analysis instead of their complete traj
 
 ### PAM analysis of the `pbc` data
 
-First we need to transform the data to PED format. In order to do so we
-perform some minor preprocessing:
+Data transformation as usual is performed using the `as_ped` function
+as described in the [data-transformation vignette](data-transformation.html)
+
 
 ```{r}
-## data set that only contains baseline (t=0) information
-event_df <- pbc %>%
-  filter(id <= 312) %>%
-  mutate(event = 1*(status==2)) %>%
-  select(id, time, event, trt, age, sex, bili, protime)
-
-## select a subset of variables
-tdc_df <- pbcseq %>%
-  select(id, day, bili, protime)
-```
-
-Now we can use the `?split_tdc` function, that needs both data sets,
-`event_df`, that contains time-to-event information and one row per subject and
-`tdc_df` that contains information on timing and value of time-dependent
-covariates.
-
-The `split_tdc` function performs the following tasks:
-
-  - extract unique event times as well as all measurement times of the TDCs
-  - split the follow-up into intervals according to these times (essentially calling
-  `split_data` with above cut-points on `event_df` after removing all TDCs)
-  - merge the expanded data set with the data set containing information
-  on TDCs by ID and time
-  - fill in the values of TDCs for any time-points that did not occur in `tdc_df` by
-  carrying the respective previous value of the TDC forward.
-
-```{r}
-pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "day",
-  status_var = "event")
-filter(tdc_df, id==17)
-pbc_ped %>%
-  filter(id==17) %>%
-  semi_join(tdc_df, by=c("id", "tstart"="day")) %>%
-  select(id, interval, age, bili, protime)
+pbc <- pbc %>% filter(id <= 312) %>%
+  select(id:sex, bili, protime) %>%
+  mutate(status = 1L*(status == 2))
+pbc_ped <- as_ped(
+  data = list(pbc, pbcseq),
+  formula = Surv(time, status)~.|concurrent(bili, protime, te_var="day"),
+  id = "id")
 ```
 
 
-Now we can fit the model as usual calling `mgcv::gam`:
+Now we can fit the model with `mgcv::gam`:
 
 ```{r}
 pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped,

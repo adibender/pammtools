@@ -38,3 +38,4 @@ class(ped) # class ped (piece-wise exponential data)
 \seealso{
 \code{\link[survival]{survSplit}}
 }
+\keyword{internal}

@@ -1,108 +1,11 @@
-#' Expand time-dependent covariates to functionals
-#'
-#' Given formula specification on how time-dependent covariates affect the
-#' outcome, creates respective functional covariate as well as auxiliary
-#' matrices for time/latency etc.
-#'
-#' @param data Data frame (or similar) in which variables specified in ...
-#' will be looked for
-#' @param ... One sided formula of the form \code{~func(t,te,x) + func(t-te, z)}
-#' that specifies the type of cumulative effect desired (see examples).
-#' Currently it is assumed that observations of covariates \code{x}, \code{z}
-#' happened on the same time scale \code{te}.
-#' Possible specifications are
-#' \itemize{
-#' \item \code{func(t,te,x)}: The most general specification.
-#' \item \code{func(t, t-te,x)}: A time-varying DLNM.
-#' \item \code{func(t-te,x}: A DLNM.
-#' \item \code{func(t-te,by=x) A WCE}}
-#' @importFrom purrr flatten map
-#' @importFrom stats terms
-#' @export
 #' @keywords internal
-get_func <- function(data, formula) {
-
-  tf  <- terms(formula, specials="func")
-  # extract components
-  terms_vec <- attr(tf, "term.labels")
-  func_list <- map(terms_vec, ~eval(expr=parse(text=.)))
-  n_func <- length(func_list)
-  ll_funs <- map(func_list, ~.x[["ll_fun"]])
-  te_vars <- map(func_list, ~.x[["te_var"]])
-  te <- map(te_vars, ~pull(data, .x) %>% unlist() %>% unique() %>% sort())
-
-  names(te) <- names(te_vars) <- names(ll_funs) <- te_vars
-
-  ## create matrices
-  func_mats <- map(func_list, ~expand_func(data=data, ., n_func=n_func)) %>% flatten()
-
-  list(
-    func_mats = func_mats,
-    ll_funs   = ll_funs,
-    te_vars   = te_vars,
-    te        = te)
-
-}
-
-#' @rdname get_func
-#' @inheritParams get_func
-#' @param func Single evaluated \code{\link{func}} term.
-#' @importFrom purrr map invoke_map
-#' @keywords internal
-expand_func <- function(data, func, n_func) {
-
-  col_vars <- func$col_vars
-  te_var <- func$te_var
-  te <- pull(data, te_var) %>% unlist() %>% unique() %>% sort()
-  time_var <- attr(data, "time_var")
-  id_var <- attr(data, "id_var")
-  lgl_var_in_data <- map_lgl(col_vars, ~ . %in% colnames(data))
-  if (!all(lgl_var_in_data)) {
-    stop(paste0("The following variables provided to 'formula' are not contained
-      in 'data': ", col_vars[!lgl_var_in_data]))
-  }
-  ncols_vars <- get_ncols(data, col_vars[!(col_vars == time_var)])
-  if (!all(diff(ncols_vars) == 0)) {
-    stop(paste0("The following variables have unequal maximum number of elements per ",
-      id_var, ": ", paste0(col_vars[!(col_vars == time_var)], sep="; ")))
-  } else {
-    nz <- ncols_vars[1]
-  }
-
-  # create list of matrices for covariates/time matrices provided in func
-  hist_mats <- list()
-  for(i in seq_along(col_vars)) {
-    hist_mats[[i]] <- if(col_vars[i] == attr(data, "time_var")) {
-      make_time_mat(data, nz)
-    } else if (col_vars[i] == func$latency_var) {
-      make_latency_mat(data, te)
-    } else {
-      make_z_mat(data, col_vars[i], nz)
-    }
-  }
-  if (is.null(func$suffix) & n_func == 1) {
-    suffix <- ""
-  } else {
-    suffix <- func$suffix
-  }
-  if(any(c(time_var, te_var) %in% col_vars)) {
-      hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
-      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var, te_var, suffix)
-  } else {
-       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var, suffix)
-  }
-
-  hist_mats
-
-}
-
-#' @keywords internal
-make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL) {
+make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL,
+  nfunc = 1) {
 
   if (!is.null(suffix)) {
     return(paste(col_vars, suffix, sep="_"))
   } else {
-    if (!is.null(te_var))  {
+    if (!is.null(te_var) & nfunc > 1)  {
       te_ind <- col_vars == te_var
       col_vars[!te_ind] <- paste(col_vars[!te_ind], te_var,  sep="_")
     }
@@ -118,7 +21,7 @@ make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL)
 
 #' Create matrix components for cumulative effects
 #'
-#' These functions are called internally by \code{\link{get_func}} and
+#' These functions are called internally by \code{\link{get_cumulative}} and
 #' should usually not be called directly.
 #' @rdname elra_matrix
 #' @param data A data set (or similar) from which meta information on cut-points,

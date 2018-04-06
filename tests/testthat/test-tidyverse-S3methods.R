@@ -3,8 +3,7 @@ context("Tidyverse methods for specific classes")
 test_that("ped class is preserved after dplyr operations", {
 	data("veteran", package = "survival")
 	veteran <- dplyr::slice(veteran, 1:2)
-	ped <- split_data(Surv(time, status)~ trt + age, cut=c(0, 100, 400), 
-		data = veteran, id = "id")
+	ped <- as_ped(veteran, Surv(time, status)~ trt + age, cut=c(0, 100, 400), id = "id")
 
 	expect_is(filter(ped, id == 1), "ped")
 	expect_is(slice(ped, 1), "ped")
@@ -22,8 +21,8 @@ test_that("ped class is preserved after dplyr operations", {
 test_that("ped class is preserved after tidyr operations", {
 
 	data("pbc", package = "survival")
-	tdc_df <- pbcseq %>% 
-		filter(id %in% 1:5) %>% 
+	tdc_df <- pbcseq %>%
+		filter(id %in% 1:5) %>%
 	  select(id, day, chol)
 	class(tdc_df) <- c("ped", class(tdc_df))
 
@@ -38,4 +37,3 @@ test_that("ped class is preserved after tidyr operations", {
 	expect_identical(sum(is.na(temp)), 0L)
 
 })
-

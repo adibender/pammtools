@@ -62,7 +62,7 @@ First we need to bring the data in a suitable format
 
 ```{r}
 # Use unique event times as interval break points
-ped <- split_data(Surv(time, status)~., data = veteran, id = "id")
+ped <- veteran %>% as_ped(Surv(time, status)~., id = "id")
 head(ped)
 ```
 

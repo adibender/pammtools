@@ -20,8 +20,7 @@
 #' \dontrun{
 #' library(mgcv)
 #' data("veteran", package="survival")
-#' ped <- split_data(Surv(time, status)~. cut=seq(0, 500, by=100), data=veteran,
-#'  id="id")
+#' ped <- veteran %>% as_ped(Surv(time, status)~. cut=seq(0, 500, by=100), id="id")
 #' pam <- gam(ped_status ~ s(tend, k=5), data = ped, family=poisson(), offset=offset)
 #' pinfo <- ped_info(ped)
 #' add_hazard(pinfo, pam)

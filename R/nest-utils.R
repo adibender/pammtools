@@ -32,13 +32,20 @@ nest_tdc.default <- function(data, formula, ...) {
   dots <- list(...)
   id <- dots$id
 
-  tdc_vars     <- names_tdc(formula)
-  outcome_vars <- names_lhs(formula)
+  tdc_vars     <- dots$tdc_vars
+  outcome_vars <- dots$outcome_vars
+  if(is.null(tdc_vars)) {
+    tdc_vars <- get_tdc_vars(formula)
+  }
+  if(is.null(outcome_vars)) {
+    outcome_vars <- get_lhs_vars(formula)
+  }
   time_var     <- outcome_vars[1]
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
-  if (!any(colnames(data) %in% tdc_vars)) {
-    return(data)
+  if (!any(colnames(data) %in% tdc_vars) | !has_tdc(data, id)) {
+    vars_to_exclude <- intersect(colnames(data), tdc_vars)
+    return(data %>% select(-one_of(vars_to_exclude)))
   } else {
     nested_df <- map(tdc_vars,
         ~nest(data=data[, c(id, .)], -one_of(id), .key = !!.)) %>%
@@ -46,7 +53,7 @@ nest_tdc.default <- function(data, formula, ...) {
       class(nested_df) <- c("nested_fdf", class(nested_df))
   }
 
-  nested_df
+  nested_df %>% as_tibble()
 
 }
 
@@ -57,21 +64,49 @@ nest_tdc.default <- function(data, formula, ...) {
 #' @export
 nest_tdc.list <- function(data, formula, ...) {
 
-  dots         <- list(...)
-  tdc_vars     <- names_tdc(formula)
-  outcome_vars <- names_lhs(formula)
+  dots <- list(...)
+  cut  <- dots[["cut"]]
+
+  ## preprocess information on time-dependent covariates
+  lgl_concurrent <- has_special(formula, special = "concurrent")
+  lgl_cumulative <- has_special(formula)
+  tdc_vars <- character(0)
+
+  if (lgl_concurrent) {
+    # obtain information on concurrent effects
+    ccr <- prep_concurrent(data, formula)
+    # update cut points
+    ccr_time <- ccr[["ccr_time"]]
+    # update vector of TDCs
+    ccr_te_vars <- map_chr(ccr[["ccr_list"]], ~.x[["te_var"]]) %>% unique()
+    ccr_vars <- map(ccr[["ccr_list"]], ~.x[["col_vars"]]) %>% unlist()
+    tdc_vars <- c(tdc_vars, ccr_te_vars, ccr_vars)
+
+  } else {
+    ccr      <- NULL
+    ccr_time <- NULL
+  }
+
+  if (lgl_cumulative) {
+    func_list    <- eval_special(formula)
+    func_vars    <- map(func_list, ~.x[["col_vars"]]) %>% unlist()
+    func_te_vars <- map_chr(func_list, ~.x[["te_var"]]) %>% unique()
+    tdc_vars     <- c(tdc_vars, func_vars, func_te_vars) %>% unique()
+  } else {
+    func_list <- NULL
+  }
+  # remove outcome vars from TDCs vector
+  outcome_vars <- get_lhs_vars(formula)
   time_var     <- outcome_vars[1]
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
-  nested_df <- map(data, ~nest_tdc(., formula = formula, id=dots$id,...)) %>%
-    reduce(left_join)
+  nested_df <- map(data, ~nest_tdc(.x, formula = formula, id=dots$id,
+      tdc_vars=tdc_vars, outcome_vars = outcome_vars)) %>%
+    reduce(left_join) %>% as_tibble()
 
   ## add atrributes
-  if(!is.null(dots$cut)) {
-    cut <- dots$cut
-  } else {
-    cut <- nested_df %>% pull(time_var) %>% unique() %>% sort()
-  }
+  cut <- get_cut(nested_df, formula, cut=dots$cut, max_time=dots$max_time)
+
   id_n <- nested_df %>% pull(time_var) %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
@@ -83,6 +118,9 @@ nest_tdc.list <- function(data, formula, ...) {
     status_var = outcome_vars[2],
     tdc_vars   = tdc_vars,
     breaks     = cut,
+    ccr        = ccr,
+    ccr_breaks = ccr_time,
+    func_list  = func_list,
     id_n       = id_n,
     id_tseq    = id_n %>% map(seq_len) %>% unlist(),
     id_teseq   = rep(seq_along(nested_df[[dots$id]]), times = id_n)))
@@ -91,17 +129,4 @@ nest_tdc.list <- function(data, formula, ...) {
 
   nested_df
 
-}
-
-
-names_tdc <- function(formula, specials = "func") {
-
-  f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
-  terms_f <- terms(f2, specials = specials)
-  all.vars(terms_f)
-
-}
-
-names_lhs <- function(formula, specials="Surv") {
-  all.vars(formula(Formula(formula), lsh=TRUE, rhs=FALSE))
 }

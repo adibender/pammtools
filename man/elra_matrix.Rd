@@ -23,7 +23,7 @@ interval-specific time, covariates etc. can be obtained.}
 suitable to fit cumulative effects in \code{mgcv::gam}.}
 }
 \description{
-These functions are called internally by \code{\link{get_func}} and
+These functions are called internally by \code{\link{get_cumulative}} and
 should usually not be called directly.
 }
 \keyword{internal}

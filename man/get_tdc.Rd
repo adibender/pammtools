@@ -4,10 +4,10 @@
 \alias{get_tdc}
 \title{Extract time-dependent covariates from data set}
 \usage{
-get_tdc(event_df, id_var)
+get_tdc(data, id_var)
 }
 \arguments{
-\item{event_df}{A data frame (potentially) containing time-dependent covariates.}
+\item{data}{A data frame (potentially) containing time-dependent covariates.}
 
 \item{id_var}{A character indicating the grouping variable. For each covariate
 it will be checked if their values change within a group specified by

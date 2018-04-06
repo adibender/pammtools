@@ -59,7 +59,7 @@ matrices for time/latency etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
       </span>
     </div>
 
@@ -135,7 +135,7 @@ matrices for time/latency etc." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Expand time-dependent covariates to functionals</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/trafo-cumulative.R'><code>R/trafo-cumulative.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/formula-specials.R'><code>R/formula-specials.R</code></a></small>
     </div>
 
     
@@ -146,7 +146,7 @@ matrices for time/latency etc.</p>
 
     <pre class="usage"><span class='fu'>get_func</span>(<span class='no'>data</span>, <span class='no'>formula</span>)
 
-<span class='fu'>expand_func</span>(<span class='no'>data</span>, <span class='no'>func</span>)</pre>
+<span class='fu'>expand_func</span>(<span class='no'>data</span>, <span class='no'>func</span>, <span class='no'>n_func</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,7 +158,7 @@ will be looked for</p></td>
     </tr>
     <tr>
       <th>func</th>
-      <td><p>Single evaluated <code><a href='func.html'>func</a></code> term.</p></td>
+      <td><p>Single evaluated <code><a href='specials.html'>func</a></code> term.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -167,8 +167,8 @@ that specifies the type of cumulative effect desired (see examples).
 Currently it is assumed that observations of covariates <code>x</code>, <code>z</code>
 happened on the same time scale <code>te</code>.
 Possible specifications are</p><ul>
-<li><p><code><a href='func.html'>func(t,te,x)</a></code>: The most general specification.</p></li>
-<li><p><code><a href='func.html'>func(t, t-te,x)</a></code>: A time-varying DLNM.</p></li>
+<li><p><code><a href='specials.html'>func(t,te,x)</a></code>: The most general specification.</p></li>
+<li><p><code><a href='specials.html'>func(t, t-te,x)</a></code>: A time-varying DLNM.</p></li>
 <li><p><code>func(t-te,x</code>: A DLNM.</p></li>
 <li><p><code>func(t-te,by=x) A WCE</code></p></li>
 </ul></td>

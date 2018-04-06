@@ -2,7 +2,7 @@ context("Convenience functions for calculation of hazard and similar")
 
 library(mgcv)
 data("veteran", package = "survival")
-ped <- split_data(Surv(time, status)~ trt + age, data = veteran,
+ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
   cut = c(0, 50, 100, 200, 300, 400), id = "id")
 pam <- gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)
@@ -133,7 +133,7 @@ test_that("survival probabilities functions work for PAM", {
 
 test_that("hazards and CI positive for type response", {
 
-  ped <- split_data(Surv(time, status)~ trt + age, data = veteran, id = "id")
+  ped <- veteran %>% as_ped(Surv(time, status)~ trt + age, id = "id")
   pam <- gam(ped_status ~ s(tend, k = 5) + trt,
     data = ped, family = poisson(), offset = offset)
   haz_test <- add_hazard(ped_info(ped), pam) %>%

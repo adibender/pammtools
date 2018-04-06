@@ -43,6 +43,18 @@ unique interval information from object." />
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
 
 
   </head>
@@ -60,7 +72,7 @@ unique interval information from object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
       </span>
     </div>
 
@@ -132,11 +144,12 @@ unique interval information from object." />
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create start/end times and interval information</h1>
     <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/interval-information.R'><code>R/interval-information.R</code></a></small>
+    <div class="hidden name"><code>int_info.Rd</code></div>
     </div>
 
     
@@ -184,7 +197,7 @@ length, interval mid-point and a factor variable of the intervals themselves.</p
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>split_data ped_info</p>
+    <div class='dont-index'><p>as_ped ped_info</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -195,12 +208,12 @@ length, interval mid-point and a factor variable of the intervals themselves.</p
 #&gt; 3    2.3  5.0    2.7   3.65  (2.3,5]</div><div class='input'>
 <span class='co'>## extract interval information used to create ped object</span>
 <span class='no'>tdf</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>time</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2.3</span>, <span class='fl'>5</span>), <span class='kw'>status</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>))
-<span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='split_data.html'>split_data</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>tdf</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
+<span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tdf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
 <span class='fu'>int_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt;   tstart tend intlen intmid interval
 #&gt; 1      0  2.3    2.3   1.15  (0,2.3]</div><div class='input'>
 <span class='co'>## extract interval information of ped that was used to fit the model</span>
 <span class='fu'>data</span>(<span class='st'>"veteran"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"survival"</span>)
-<span class='no'>vet_ped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='split_data.html'>split_data</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>age</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>veteran</span>, <span class='kw'>cut</span><span class='kw'>=</span><span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='kw'>by</span><span class='kw'>=</span><span class='fl'>100</span>))
+<span class='no'>vet_ped</span> <span class='kw'>&lt;-</span> <span class='no'>veteran</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>age</span>, <span class='kw'>cut</span><span class='kw'>=</span><span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='kw'>by</span><span class='kw'>=</span><span class='fl'>100</span>))
 <span class='no'>vet_pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pamm.html'>pamm</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>, <span class='kw'>k</span><span class='kw'>=</span><span class='fl'>3</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>vet_ped</span>)
 <span class='fu'>int_info</span>(<span class='no'>vet_pam</span>)</div><div class='output co'>#&gt;   tstart tend intlen intmid  interval
 #&gt; 1      0  100    100     50   (0,100]

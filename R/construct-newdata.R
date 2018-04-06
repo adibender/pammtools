@@ -48,7 +48,6 @@ sample_info.data.frame <- function(x, ...) {
 #' @importFrom rlang sym
 #' @export
 #' @rdname sample_info
-#' @seealso \code{\link[pammtools]{split_data}}
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables

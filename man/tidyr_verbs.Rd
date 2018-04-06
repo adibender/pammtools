@@ -11,7 +11,7 @@
   keep_attributes = TRUE)
 }
 \arguments{
-\item{data}{an  object of class \code{ped}, see \code{\link{split_data}}.}
+\item{data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{...}{Specification of columns to expand.
 

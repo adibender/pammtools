@@ -12,7 +12,7 @@ as_ped.data.frame <- function(data, formula, ...) {
 
   dots         <- list(...)
   dots$data    <- data
-  dots$formula <- formula
+  dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
   do.call(split_data, dots)
 
 }
@@ -21,27 +21,24 @@ as_ped.data.frame <- function(data, formula, ...) {
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
 
-  Form <- Formula(formula)
-  form_elra <- formula(Form, lhs=FALSE, rhs = 2)
-  vars_elra <- all.vars(form_elra)
-  vars_elra <- vars_elra[!(vars_elra == attr(data, "time_var"))]
-  func_components <- get_func(data, form_elra)
-  te_vars <- func_components[["te_vars"]] %>% unlist()
-  te      <- func_components[["te"]]
-  ll_funs <- func_components[["ll_funs"]]
-  names(te_vars) <- names(ll_funs) <- te_vars
+  dots <- list(...)
+  # update interval break points (if neccessary)
+  cut <- attr(data, "breaks")
+  ccr_breaks <- attr(data, "ccr_breaks")
+  cut <- union(cut, ccr_breaks) %>% sort()
 
-  form_ped <- formula(Form, lhs=1, rhs = 1)
-  ped <- select(data, -one_of(vars_elra)) %>%
-    as_ped.data.frame(formula = form_ped, ...)
+  ped <- data %>%
+    select_if(is.atomic) %>%
+    as_ped.data.frame(formula = formula, id = dots$id, cut = cut, max_time = dots$max_time)
 
-  func_components <- func_components$func_mats
-  for(i in seq_along(func_components)) {
-    ped[[names(func_components)[i]]] <- func_components[[i]]
+
+  if(has_special(formula, "concurrent")) {
+    ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
   }
-  attr(ped, "ll_funs")  <- ll_funs
-  attr(ped, "te")      <- te
-  attr(ped, "te_vars") <- te_vars
+
+  if(has_special(formula, "cumulative")) {
+    ped <- add_cumulative(ped, data=data, formula=formula)
+  }
 
   ped
 
