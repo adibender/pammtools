@@ -2,7 +2,7 @@ context("Test formula special.")
 
 test_that("Formula special 'func' works as expected", {
   ## time + latency + covar (DLNM approach)
-  cumu1 <- eval_func(~.|func(t, latency(te), x, te_var="te"))[[1]]
+  cumu1 <- eval_special(~.|func(t, latency(te), x, te_var="te"))[[1]]
   expect_list(cumu1, any.missing = FALSE, len = 5)
   expect_identical(cumu1$latency_var, "te")
   expect_identical(cumu1$te_var, "te")
@@ -14,16 +14,27 @@ test_that("Formula special 'func' works as expected", {
 
 test_that("Formula special 'concurrent' works as expected", {
   ## time + latency + covar (DLNM approach)
-  ccr1 <- eval_concurrent(~.|concurrent(x1, x2, te_var="te"))[[1]]
+  ccr1 <- eval_special(~.|concurrent(x1, x2, te_var="te"), special="concurrent")[[1]]
   expect_list(ccr1, any.missing = FALSE, len = 4)
   expect_identical(ccr1$te_var, "te")
   expect_identical(ccr1$col_vars, c("x1", "x2"))
   expect_function(ccr1$ll_fun, args=c("t"))
   expect_identical(ccr1$suffix, NULL)
 
+  data("pbc", package="survival")
+  event_df <- pbc %>%
+    filter(id <= 5) %>%
+    mutate(event = 1L*(status==2)) %>%
+    select(id, time, event, sex, bili, protime, albumin)
+  tdc_df <- pbcseq %>%
+    filter(id <= 5) %>%
+    select(id, day, bili, protime, albumin)
+  formula <- Surv(time, event)~. |concurrent(bili, protime, te_var="day") +
+    concurrent(albumin, te_var  = "day")
+  nested_fdf <- nest_tdc(list(event_df, tdc_df), formula, id="id")
+  ped_ccr <- as_ped(list(event_df, tdc_df), formula, id="id")
+
 })
-
-
 
 
 context("Transformation of longitudinal covariates to functional covariates")
@@ -35,8 +46,8 @@ test_that("Covariate to matrix Transformation works", {
   ## check nesting
   nested_df <- nest_tdc(
     data    = list(event_df, tdc_df),
-    formula = Surv(survhosp, status)~.|func(Study_Day, caloriesPercentage) +
-      func(proteinGproKG),
+    formula = Surv(survhosp, status)~.|func(Study_Day, caloriesPercentage, te_var="Study_Day") +
+      func(proteinGproKG, te_var="Study_Day"),
     cut     = 0:30,
     id  = "CombinedID")
   expect_tibble(nested_df, any.missing=FALSE, nrows=1, ncols=15)
@@ -45,11 +56,11 @@ test_that("Covariate to matrix Transformation works", {
       "BMI", "DiagID2", "Study_Day", "caloriesPercentage", "proteinGproKG"))
   expect_identical(names(attributes(nested_df))[-c(1:3)],
     c("id_var", "time_var", "status_var", "tdc_vars",
-      "breaks", "id_n", "id_tseq", "id_teseq"))
+      "breaks", "func_list", "id_n", "id_tseq", "id_teseq"))
   ## check data trafo
   expect_error(get_func(nested_df, ~func(t)))
-  f1 <- get_func(nested_df, ~ .|func(survhosp, latency(Study_Day), caloriesPercentage,
-    te_var = "Study_Day"))
+  f1 <- get_func(nested_df, ~ .|
+      func(survhosp, latency(Study_Day), caloriesPercentage, te_var = "Study_Day"))
   expect_list(f1$func_mats, types=c("numeric", "numeric", "numeric", "integer"),
     any.missing=FALSE, len=4, names="named")
   f2 <- get_func(nested_df,

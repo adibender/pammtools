@@ -12,7 +12,7 @@ as_ped.data.frame <- function(data, formula, ...) {
 
   dots         <- list(...)
   dots$data    <- data
-  dots$formula <- formula
+  dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
   do.call(split_data, dots)
 
 }
@@ -22,53 +22,23 @@ as_ped.data.frame <- function(data, formula, ...) {
 as_ped.nested_fdf <- function(data, formula, ...) {
 
   dots <- list(...)
+  # update interval break points (if neccessary)
+  cut <- attr(data, "breaks")
+  ccr_breaks <- attr(data, "ccr_breaks")
+  cut <- union(cut, ccr_breaks) %>% sort()
 
-  if(!has_tdc_form(formula)) {
-    as_ped.data.frame(nested_fdf, formula, ...)
-  } else {
-    contains_func       <- has_special(formula, "func")
-    contains_concurrent <- has_special(formula, "concurrent")
-    if(!(contains_concurrent | contains_func)) {
-      stop("The RHS of 'formula' must contain either 'concurrent' or 'func' specials.")
-    } else {
-      tdc_vars <- get_tdc_vars(formula)
-      tdc_vars <- tdc_vars[!(tdc_vars == attr(data, "time_var"))]
-      if(contains_concurrent) {
-        concurrent_components <- get_concurrent(data, formula)
-        cc_times <- get_te(concurrent_components)
-        cut <- get_cut(nested_fdf, formula, cut=dots$cut, max_time=dots$max_time)
-        dots$cut <- union(cut, cc_times) %>% sort()
-      }
+  ped <- data %>%
+    select_if(is.atomic) %>%
+    as_ped.data.frame(formula = formula, id = dots$id, cut = cut, max_time = dots$max_time)
 
-      dots$formula <- get_ped_form(formula)
-      dots$data <- select(data, -one_of(tdc_vars))
-      ped <-  do.call(as_ped.data.frame, args = dots)
 
-      if(contains_func) {
-        func_components <- get_func(data, formula)
-        te_vars <- func_components[["te_vars"]] %>% unlist()
-        te      <- func_components[["te"]]
-        ll_funs <- func_components[["ll_funs"]]
-        names(te_vars) <- names(ll_funs) <- te_vars
-        func_attr <- list(
-          te_vars = te_vars,
-          te      = te,
-          ll_funs = ll_funs)
-      }
-    }
-
+  if(has_special(formula, "concurrent")) {
+    ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
   }
 
-
-
-
-  func_components <- func_components$func_mats
-  for(i in seq_along(func_components)) {
-    ped[[names(func_components)[i]]] <- func_components[[i]]
+  if(has_special(formula, "func")) {
+    ped <- add_cumulative(ped, data=data, formula=formula)
   }
-  attr(ped, "ll_funs")  <- ll_funs
-  attr(ped, "te")      <- te
-  attr(ped, "te_vars") <- te_vars
 
   ped
 

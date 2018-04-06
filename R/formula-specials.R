@@ -43,8 +43,8 @@ concurrent <- function(...,
   ll_fun = function(t) {t == t},
   suffix = NULL) {
 
-  vars        <- as.list(substitute(list(...)))[-1]
-  vars_chr    <- vars %>% map(~as.character(.)) %>% unlist()
+  vars     <- as.list(substitute(list(...)))[-1]
+  vars_chr <- vars %>% map(~as.character(.)) %>% unlist()
 
 
   list(
@@ -83,7 +83,7 @@ get_func <- function(data, formula) {
 
   stopifnot(has_tdc_form(formula))
 
-  func_list <- eval_func(formula)
+  func_list <- eval_special(formula)
 
   n_func <- length(func_list)
   ll_funs <- map(func_list, ~.x[["ll_fun"]])
@@ -104,35 +104,34 @@ get_func <- function(data, formula) {
 }
 
 #' @keywords internal
-eval_func <- function(formula) {
+eval_special <- function(formula, special="func") {
 
-  tf  <- terms(get_tdc_form(formula), specials="func")
+  tf  <- terms(get_tdc_form(formula), specials = special)
+  ind_special <- attr(tf, "specials")[[special]]
   # extract components
-  terms_vec <- attr(tf, "term.labels")
-
-  map(terms_vec, ~eval(expr=parse(text=.)))
+  if (!is.null(ind_special)) {
+    terms_vec <- attr(tf, "term.labels")[ind_special]
+    map(terms_vec, ~eval(expr=parse(text=.)))
+  } else {
+    NULL
+  }
 
 }
 
+
+#' Querries on formula objects
+#'
+#' @rdname specials
+#' @inheritParams as_ped
+#' @param special The name of the special whose existence in the
+#' \code{formula} should be checked
 #' @keywords internal
-eval_concurrent <- function(formula) {
-
-  tf  <- terms(get_tdc_form(formula), specials="concurrent")
-  # extract components
-  terms_vec <- attr(tf, "term.labels")
-
-  map(terms_vec, ~eval(expr=parse(text=.)))
-
-}
-
-
-#' @inherit get_func
 has_special <- function(formula, special = "func") {
   if(!has_tdc_form(formula)) {
     return(FALSE)
   } else {
     formula <- formula(Formula(formula), lhs=FALSE, rhs = 2)
-    terms <- terms(formula, specials = specials)
+    terms <- terms(formula, specials = special)
     if(is.null(attr(terms, "specials")[[special]])) {
       return(FALSE)
     } else {
@@ -156,10 +155,10 @@ get_te_from_concurrent <- function(concurrent) {
 expand_func <- function(data, func, n_func) {
 
   col_vars <- func$col_vars
-  te_var <- func$te_var
-  te <- pull(data, te_var) %>% unlist() %>% unique() %>% sort()
+  te_var   <- func$te_var
+  te       <- pull(data, te_var) %>% unlist() %>% unique() %>% sort()
   time_var <- attr(data, "time_var")
-  id_var <- attr(data, "id_var")
+  id_var   <- attr(data, "id_var")
   lgl_var_in_data <- map_lgl(col_vars, ~ . %in% colnames(data))
   if (!all(lgl_var_in_data)) {
     stop(paste0("The following variables provided to 'formula' are not contained
@@ -198,4 +197,43 @@ expand_func <- function(data, func, n_func) {
 
   hist_mats
 
+}
+
+#' Extract information on concurrent effects
+#'
+#' @keywords internal
+#' @param x A suitable object from which variables contained in
+#' \code{formula} can be extracted.
+#' @param ... Further arguments passed to methods.
+prep_concurrent <- function(x, formula, ...) {
+  UseMethod("prep_concurrent", x)
+}
+
+#' @rdname prep_concurrent
+#' @inherit prep_concurrent
+prep_concurrent.list <- function(x, formula, ...) {
+
+  lgl_concurrent <- has_special(formula, "concurrent")
+
+  if(lgl_concurrent) {
+    ccr_list <- eval_special(formula, special="concurrent")
+    ccr_te_vars <- map_chr(ccr_list, ~.x[["te_var"]]) %>% unique()
+    ccr_time <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
+      reduce(union) %>% sort()
+  }
+
+  list(
+    ccr_list = ccr_list,
+    ccr_time = ccr_time)
+
+}
+
+
+get_te <- function(data, te_var) {
+  if (te_var %in% colnames(data)) {
+    te <- pull(data, te_var) %>% unique()
+  } else {
+    te <- NULL
+  }
+  te
 }

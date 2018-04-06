@@ -3,15 +3,28 @@
 \name{func}
 \alias{func}
 \alias{concurrent}
+\alias{has_special}
 \title{Formula specials for defining  time-dependent covariates}
 \usage{
 func(..., te_var, ll_fun = function(t, te) {     t >= te }, suffix = NULL)
 
 concurrent(..., te_var, ll_fun = function(t) {     t == t }, suffix = NULL)
+
+has_special(formula, special = "func")
+}
+\arguments{
+\item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
+
+\item{formula}{a model formula}
+
+\item{special}{The name of the special whose existence in the
+\code{formula} should be checked}
 }
 \description{
 So far, two specials are implemented. \code{concurrent} is used when
 the goal is to estimate a concurrent effect of the TDC. \code{func}
 is used when the goal is to estimate a cumulative effect of the TDC.
+
+Querries on formula objects
 }
 \keyword{internal}

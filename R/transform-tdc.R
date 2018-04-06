@@ -4,7 +4,7 @@
 #' of the covariate changes per ID or other grouping variable. Returns the names
 #' of variables that change over time.
 #'
-#' @param event_df A data frame (potentially) containing time-dependent covariates.
+#' @param data A data frame (potentially) containing time-dependent covariates.
 #' @param id_var A character indicating the grouping variable. For each covariate
 #' it will be checked if their values change within a group specified by
 #' \code{id_var}.
@@ -12,12 +12,22 @@
 #' @return A character vector containing names of variables that are not constant
 #' in each group (\code{id_var}).
 #' @keywords internal
-get_tdc <- function(event_df, id_var) {
+get_tdc <- function(data, id_var) {
 
-	event_df %>% group_by_(.dots=list(id_var)) %>%
+	data %>% group_by_(.dots=list(id_var)) %>%
 		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
 		select_if(any) %>%
 		names()
+
+}
+
+#' @inherit get_tdc
+has_tdc <- function(data, id_var) {
+
+	data %>% group_by(!!sym(id_var)) %>%
+		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
+		select(-one_of(id_var)) %>%
+		summarize_all(any) %>% unlist() %>% any()
 
 }
 
@@ -50,7 +60,7 @@ combine_cut <- function(
 	te_var,
 	cens_value = 0) {
 
-	tdc_time   <- tdc_df %>% select(one_of(te_var)) %>% unlist() %>% unique()
+	tdc_time   <- tdc_df %>% pull(te_var) %>% unlist() %>% unique()
 	event_time <- event_df %>% select(one_of(time_var)) %>% unlist()
 	event_time <- event_time[event_df[[status_var]] != cens_value] %>% unique()
 
@@ -67,6 +77,9 @@ combine_cut <- function(
 #'
 #' @inherit combine_cut
 #' @inheritParams split_data
+#' @param event_df Data frame (or similar) containing survival information.
+#' @param tdc_df Data frame (or similar) containing information on time-dependent
+#' covariates
 #' @param id_var The ID variable name, identifying subjects.
 #' @param te_var The time variable in \code{tdc_df} indicating time points at
 #' which time-dependent covariate (tdc) was observed.
@@ -138,5 +151,45 @@ split_tdc <- function(
   class(ped) <- c("ped", class(ped))
 
   return(ped)
+
+}
+
+
+add_concurrent <- function(ped, data, id_var) {
+
+	ccr <- attr(data, "ccr")
+
+	for(ccr_i in ccr[["ccr_list"]]) {
+		tdc_vars_i <- ccr_i[["col_vars"]]
+		te_var_i   <- ccr_i[["te_var"]]
+		ccr_vars_i <- c(te_var_i, tdc_vars_i)
+		ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
+			unnest()
+		ped <- ped %>%
+			left_join(ccr_i_df, by = c(id_var, "tstart"=te_var_i)) %>%
+			group_by(!!sym(id_var)) %>%
+			fill(tdc_vars_i)
+
+		attr(ped, "ccr") <- ccr
+
+	}
+
+	ped
+
+
+}
+
+add_cumulative <- function(ped, data, formula) {
+
+	func_components <- get_func(data, formula)
+	func_matrices <- func_components$func_mats
+  for(i in seq_along(func_matrices)) {
+  	ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
+  }
+  attr(ped, "ll_funs") <- func_components$ll_funs
+  attr(ped, "te")      <- func_components$te
+  attr(ped, "te_vars") <- func_components$te_vars
+
+  ped
 
 }
