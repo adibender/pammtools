@@ -64,7 +64,7 @@ respectively:
 ## Cox-PH
 cph <- coxph(Surv(time, status) ~ pspline(karno, df=0), data=veteran)
 ## PAM
-ped <- split_data(Surv(time, status) ~ ., data=veteran, id="id")
+ped <- veteran %>% as_ped(Surv(time, status) ~ ., id="id")
 pam <- gam(ped_status ~ s(tend) + s(karno, bs="ps"), data=ped, family=poisson(),
   offset=offset)
 ```
@@ -131,7 +131,7 @@ data into a suitable format. We then use `mgcv::gam` to fit
 the model:
 
 ```{r}
-mgus.ped <- split_data(Surv(futime, death)~sex + age, data = mgus, id = "id")
+mgus.ped <- mgus %>% as_ped(Surv(futime, death)~sex + age, id = "id")
 head(mgus.ped)
 pamfit <- gam(ped_status ~ s(tend) + sex + s(age, bs = "ps"), data = mgus.ped,
   method = "REML", family = poisson(), offset = offset)
@@ -156,7 +156,7 @@ are very similar if the effect of the covariate is in fact strongly non-linear:
 
 ```{r}
 fit <- coxph(Surv(futime, death) ~ age + pspline(hgb, 4), mgus2)
-mgus2.ped <- split_data(Surv(futime, death)~age + hgb, data = mgus2, id = "id")
+mgus2.ped <- mgus2 %>% as_ped(Surv(futime, death)~age + hgb, id = "id")
 pamfit2 <- gam(ped_status~s(tend) + age + s(hgb), data = mgus2.ped,
 	family = poisson(), offset = offset)
 ```

@@ -235,25 +235,16 @@ tdc_df <- pbcseq %>%
   select(id, day, bili, protime)
 ```
 
-Now we can use the `?split_tdc` function, that needs both data sets,
-`event_df`, that contains time-to-event information and one row per subject and
-`tdc_df` that contains information on timing and value of time-dependent
-covariates.
+Data transformation as usual is performed using the `as_ped` function
+as described in the [data-transformation vignette](data-transformation.html)
 
-The `split_tdc` function performs the following tasks:
-
-  - extract unique event times as well as all measurement times of the TDCs
-  - split the follow-up into intervals according to these times (essentially calling
-  `split_data` with above cut-points on `event_df` after removing all TDCs)
-  - merge the expanded data set with the data set containing information
-  on TDCs by ID and time
-  - fill in the values of TDCs for any time-points that did not occur in `tdc_df` by
-  carrying the respective previous value of the TDC forward.
 
 ```{r}
-pbc_ped <- split_tdc(Surv(time, event) ~., event_df, tdc_df, "day",
-  status_var = "event")
-filter(tdc_df, id==17)
+pbc_ped <- as_ped(
+  data = list(event_df, tdc_df),
+  formula = Surv(time, event)~.|concurrent(bili, protime, te_var="day"),
+  id = "id")
+
 pbc_ped %>%
   filter(id==17) %>%
   semi_join(tdc_df, by=c("id", "tstart"="day")) %>%
@@ -261,7 +252,7 @@ pbc_ped %>%
 ```
 
 
-Now we can fit the model as usual calling `mgcv::gam`:
+Now we can fit the model with `mgcv::gam`:
 
 ```{r}
 pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped,

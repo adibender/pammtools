@@ -75,7 +75,7 @@ we set the `bs` argument in the respective penalized `s()` term to `bs='re'` (se
 in `?smooth.terms`):
 
 ```{r}
-ped <- split_data(Surv(time, status)~., data=lung, id="id")
+ped <- lung %>% as_ped(Surv(time, status)~., data=lung, id="id")
 pam <- gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 	data=ped, family=poisson(), offset=offset)
 ```

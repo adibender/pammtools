@@ -80,7 +80,7 @@ Note that in contrast to the model specification in `coxph` we need to
 include the `celltype` factor variable in the model specification:
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE}
-ped <- split_data(Surv(time, status)~., data=veteran, id="id")
+ped <- veteran %>% as_ped(Surv(time, status)~., id="id")
 pam <- gam(ped_status ~ celltype + s(tend, by=celltype), data=ped,
 	family=poisson(), offset=offset)
 ```
