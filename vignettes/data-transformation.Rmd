@@ -142,7 +142,6 @@ that contains information of time-dependent covariates.
 
 For illustration, we use the `pbc` data from the `survival` package.
 
-
 ## Data with time-dependent covariates (with cumulative effects)
 
 Here we demonstrate data transformation of data with TDCs
@@ -159,14 +158,15 @@ Here
   $t_e$ on the hazard at time $t$ [@Bender2018]. The general partial effect definition
   given above is only one possibility, other common choices are<br>&nbsp;
       - $h(t-t_e)z(t_e)$ (This is the WCE model by @Sylvestre2009) <br>&nbsp;
-      - $h(t-t_e)z(t_e)$ (This is the DLNM model by @Gasparrini2017)<br>&nbsp;
+      - $h(t-t_e, z(t_e))$ (This is the DLNM model by @Gasparrini2017)<br>&nbsp;
 
   - the cumulative effect $g(\mathbf{z}, t)$ at follow-up time $t$ is the
   integral (or sum) of the partial effects over exposure times $t_e$ contained
   within $\mathcal{T}(t)$<br>&nbsp;
 
   - the so called lag-lead window (or window of effectiveness) is denoted by
-  $\mathcal{T}(t)$. The most common definition is
+  $\mathcal{T}(t)$. This represents the set of exposure times at which exposures 
+  can affect the hazard rate at time $t$. The most common definition is
   $\mathcal{T}(t) = \{t_{e,q}: t \geq t_{e,q}, q=1,\ldots, Q\}$,
   which means that all exposures that were observed prior to $t$ or at $t$ are
   eligible.
@@ -203,7 +203,7 @@ Note that
   wrapped within `latency()` to tell `as_ped` to calculate $t-t_e$
 
   - by default, $\mathcal{T}(t)$ is defined as `function(t,te) {t >= te}`,
-  thus for $\mathcal{T}_1$ the lag-lead window must not be explicitly specified.
+  thus for $\mathcal{T}_1$ it is not necessary to explicitly specify the lag-lead window.
   In case you want to use a custom lag-lead window, provide the respective
   function to the `ll_fun` argument in `func` (see `ll2` in the examples above)
 
@@ -211,8 +211,8 @@ Note that
   and $h(t-t_e)z(t_e)$ as the necessary data transformation is the same in both
   cases. Later, however, when fitting the model, a distinction must be made
 
-  - more than one $z$ variable can be provided to `func`, which can be convenient,
-  when multiple covariates should have the same time components and the
+  - more than one $z$ variable can be provided to `func`, which can be convenient
+  if multiple covariates should have the same time components and the
   same lag-lead window
 
   - multiple `func` terms can be specified, having different exposure times
@@ -226,6 +226,7 @@ Note that
 
 
 ### One time-dependent covariate
+
 For illustration we use the ICU patients
 data sets `patient` and `daily` provided in the **`pammtools`** package, with
 follow-up time `survhosp` ($t$), exposure time `Study_Day` ($t_e$) and TDCs
@@ -240,9 +241,9 @@ Below we illustrate the usage of `as_ped` and `func` to obtain covariate
 matrices for the latency matrix of follow up time and exposure time and
 a matrix of the TDC (`caloriesPercentage`). The follow up will be split
 in 30 intervals with interval breaks points `0:30`. By default,
-the exposure time provided to `te_var` will be used as a suffix to the new
-matrix columns to indicate with respect to what exposure the columns had been
-constructed, however, you can override the suffix by specifying the
+the exposure time provided to `te_var` will be used as a suffix for the names of the new
+matrix columns to indicate the exposure they refer to,
+however, you can override the suffix by specifying the
 `suffix` argument to `func`.
 
 ```{r}
