@@ -203,7 +203,7 @@ We first replicate the analysis from `vignette("timedep", package="survival")`:
 
 ```{r}
 # below code copied from survival vignette "timedep"
-temp <- subset(pbc, id <= 312, select=c(id:sex, stage)) # baseline
+temp <- subset(pbc, id <= 312, select=c(id:sex)) # baseline
 pbc2 <- tmerge(temp, temp, id=id, death = event(time, status)) #set range
 pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites),
     bili = tdc(day, bili), albumin = tdc(day, albumin),
@@ -220,35 +220,18 @@ baseline values of TDCs are used for the analysis instead of their complete traj
 
 ### PAM analysis of the `pbc` data
 
-First we need to transform the data to PED format. In order to do so we
-perform some minor preprocessing:
-
-```{r}
-## data set that only contains baseline (t=0) information
-event_df <- pbc %>%
-  filter(id <= 312) %>%
-  mutate(event = 1*(status==2)) %>%
-  select(id, time, event, trt, age, sex, bili, protime)
-
-## select a subset of variables
-tdc_df <- pbcseq %>%
-  select(id, day, bili, protime)
-```
-
 Data transformation as usual is performed using the `as_ped` function
 as described in the [data-transformation vignette](data-transformation.html)
 
 
 ```{r}
+pbc <- pbc %>% filter(id <= 312) %>%
+  select(id:sex, bili, protime) %>%
+  mutate(status = 1L*(status == 2))
 pbc_ped <- as_ped(
-  data = list(event_df, tdc_df),
-  formula = Surv(time, event)~.|concurrent(bili, protime, te_var="day"),
+  data = list(pbc, pbcseq),
+  formula = Surv(time, status)~.|concurrent(bili, protime, te_var="day"),
   id = "id")
-
-pbc_ped %>%
-  filter(id==17) %>%
-  semi_join(tdc_df, by=c("id", "tstart"="day")) %>%
-  select(id, interval, age, bili, protime)
 ```
 
 

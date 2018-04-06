@@ -2,7 +2,7 @@ context("Test formula special.")
 
 test_that("Formula special 'func' works as expected", {
   ## time + latency + covar (DLNM approach)
-  cumu1 <- eval_special(~.|func(t, latency(te), x, te_var="te"))[[1]]
+  cumu1 <- eval_special(~.|cumulative(t, latency(te), x, te_var="te"))[[1]]
   expect_list(cumu1, any.missing = FALSE, len = 5)
   expect_identical(cumu1$latency_var, "te")
   expect_identical(cumu1$te_var, "te")
@@ -46,8 +46,9 @@ test_that("Covariate to matrix Transformation works", {
   ## check nesting
   nested_df <- nest_tdc(
     data    = list(event_df, tdc_df),
-    formula = Surv(survhosp, status)~.|func(Study_Day, caloriesPercentage, te_var="Study_Day") +
-      func(proteinGproKG, te_var="Study_Day"),
+    formula = Surv(survhosp, status)~.|
+      cumulative(Study_Day, caloriesPercentage, te_var="Study_Day") +
+        cumulative(proteinGproKG, te_var="Study_Day"),
     cut     = 0:30,
     id  = "CombinedID")
   expect_tibble(nested_df, any.missing=FALSE, nrows=1, ncols=15)
@@ -58,14 +59,14 @@ test_that("Covariate to matrix Transformation works", {
     c("id_var", "time_var", "status_var", "tdc_vars",
       "breaks", "func_list", "id_n", "id_tseq", "id_teseq"))
   ## check data trafo
-  expect_error(get_func(nested_df, ~func(t)))
-  f1 <- get_func(nested_df, ~ .|
-      func(survhosp, latency(Study_Day), caloriesPercentage, te_var = "Study_Day"))
+  expect_error(get_cumulative(nested_df, ~cumulative(t)))
+  f1 <- get_cumulative(nested_df, ~ .|
+      cumulative(survhosp, latency(Study_Day), caloriesPercentage, te_var = "Study_Day"))
   expect_list(f1$func_mats, types=c("numeric", "numeric", "numeric", "integer"),
     any.missing=FALSE, len=4, names="named")
-  f2 <- get_func(nested_df,
-      ~.|func(survhosp,latency(Study_Day), caloriesPercentage, te_var = "Study_Day") +
-      func(proteinGproKG, te_var = "Study_Day"))
+  f2 <- get_cumulative(nested_df,
+      ~.|cumulative(survhosp,latency(Study_Day), caloriesPercentage, te_var = "Study_Day") +
+      cumulative(proteinGproKG, te_var = "Study_Day"))
   expect_list(f2$func_mats, types=c(rep("numeric", 3), "integer", "numeric"),
     any.missing = FALSE, len=5, names="named")
 })

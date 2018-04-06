@@ -27,7 +27,7 @@ get_rhs_vars <- function(formula) {
 
 #' @inherit get_lhs_vars
 #' @keywords internal
-get_tdc_vars <- function(formula, specials = "func") {
+get_tdc_vars <- function(formula, specials = "cumulative") {
 
   f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
   terms_f <- terms(f2, specials = specials)

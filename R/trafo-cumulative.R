@@ -1,10 +1,11 @@
 #' @keywords internal
-make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL) {
+make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL,
+  nfunc = 1) {
 
   if (!is.null(suffix)) {
     return(paste(col_vars, suffix, sep="_"))
   } else {
-    if (!is.null(te_var))  {
+    if (!is.null(te_var) & nfunc > 1)  {
       te_ind <- col_vars == te_var
       col_vars[!te_ind] <- paste(col_vars[!te_ind], te_var,  sep="_")
     }
@@ -20,7 +21,7 @@ make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL)
 
 #' Create matrix components for cumulative effects
 #'
-#' These functions are called internally by \code{\link{get_func}} and
+#' These functions are called internally by \code{\link{get_cumulative}} and
 #' should usually not be called directly.
 #' @rdname elra_matrix
 #' @param data A data set (or similar) from which meta information on cut-points,

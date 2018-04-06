@@ -36,7 +36,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
   }
 
-  if(has_special(formula, "func")) {
+  if(has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data=data, formula=formula)
   }
 

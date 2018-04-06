@@ -1,14 +1,14 @@
 #' Formula specials for defining  time-dependent covariates
 #'
 #' So far, two specials are implemented. \code{concurrent} is used when
-#' the goal is to estimate a concurrent effect of the TDC. \code{func}
+#' the goal is to estimate a concurrent effect of the TDC. \code{cumulative}
 #' is used when the goal is to estimate a cumulative effect of the TDC.
 #'
 #' @rdname specials
 #' @importFrom purrr map
 #' @export
 #' @keywords internal
-func <- function(...,
+cumulative <- function(...,
   te_var,
   ll_fun = function(t, te) {t >= te},
   suffix = NULL) {
@@ -36,7 +36,7 @@ func <- function(...,
 
 
 #' @rdname specials
-#' @inherit func
+#' @inherit cumulative
 #' @keywords internal
 concurrent <- function(...,
   te_var,
@@ -65,21 +65,13 @@ concurrent <- function(...,
 #'
 #' @param data Data frame (or similar) in which variables specified in ...
 #' will be looked for
-#' @param ... One sided formula of the form \code{~func(t,te,x) + func(t-te, z)}
-#' that specifies the type of cumulative effect desired (see examples).
-#' Currently it is assumed that observations of covariates \code{x}, \code{z}
-#' happened on the same time scale \code{te}.
-#' Possible specifications are
-#' \itemize{
-#' \item \code{func(t,te,x)}: The most general specification.
-#' \item \code{func(t, t-te,x)}: A time-varying DLNM.
-#' \item \code{func(t-te,x}: A DLNM.
-#' \item \code{func(t-te,by=x) A WCE}}
+#' @param formula  A formula containing \code{cumulative} specials,
+#' that specify the type of cumulative effect one wants to estimate. For details
+#' see the vignettes on data transformation and time-dependent covariates.
 #' @importFrom purrr flatten map
 #' @importFrom stats terms
-#' @export
 #' @keywords internal
-get_func <- function(data, formula) {
+get_cumulative <- function(data, formula) {
 
   stopifnot(has_tdc_form(formula))
 
@@ -93,7 +85,8 @@ get_func <- function(data, formula) {
   names(te) <- names(te_vars) <- names(ll_funs) <- te_vars
 
   ## create matrices
-  func_mats <- map(func_list, ~expand_func(data=data, ., n_func=n_func)) %>% flatten()
+  func_mats <- map(func_list, ~expand_cumulative(data=data, ., n_func=n_func)) %>%
+    flatten()
 
   list(
     func_mats = func_mats,
@@ -104,7 +97,7 @@ get_func <- function(data, formula) {
 }
 
 #' @keywords internal
-eval_special <- function(formula, special="func") {
+eval_special <- function(formula, special="cumulative") {
 
   tf  <- terms(get_tdc_form(formula), specials = special)
   ind_special <- attr(tf, "specials")[[special]]
@@ -126,7 +119,7 @@ eval_special <- function(formula, special="func") {
 #' @param special The name of the special whose existence in the
 #' \code{formula} should be checked
 #' @keywords internal
-has_special <- function(formula, special = "func") {
+has_special <- function(formula, special = "cumulative") {
   if(!has_tdc_form(formula)) {
     return(FALSE)
   } else {
@@ -147,12 +140,12 @@ get_te_from_concurrent <- function(concurrent) {
 
 }
 
-#' @rdname get_func
-#' @inheritParams get_func
-#' @param func Single evaluated \code{\link{func}} term.
+#' @rdname get_cumulative
+#' @inheritParams get_cumulative
+#' @param func Single evaluated \code{\link{cumulative}} term.
 #' @importFrom purrr map invoke_map
 #' @keywords internal
-expand_func <- function(data, func, n_func) {
+expand_cumulative <- function(data, func, n_func) {
 
   col_vars <- func$col_vars
   te_var   <- func$te_var
@@ -183,16 +176,14 @@ expand_func <- function(data, func, n_func) {
       make_z_mat(data, col_vars[i], nz)
     }
   }
-  if (is.null(func$suffix) & n_func == 1) {
-    suffix <- ""
-  } else {
-    suffix <- func$suffix
-  }
+
   if(any(c(time_var, te_var) %in% col_vars)) {
       hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
-      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var, te_var, suffix)
+      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
+        te_var, func$suffix, n_func)
   } else {
-       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var, suffix)
+       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
+        func$suffix, n_func)
   }
 
   hist_mats

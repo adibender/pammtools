@@ -181,7 +181,7 @@ add_concurrent <- function(ped, data, id_var) {
 
 add_cumulative <- function(ped, data, formula) {
 
-	func_components <- get_func(data, formula)
+	func_components <- get_cumulative(data, formula)
 	func_matrices <- func_components$func_mats
   for(i in seq_along(func_matrices)) {
   	ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
