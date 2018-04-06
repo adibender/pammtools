@@ -37,6 +37,18 @@
 <![endif]-->
 
 
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
 
 
   </head>
@@ -54,7 +66,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.7.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
       </span>
     </div>
 
@@ -126,202 +138,181 @@
       
       </header>
 
-      <div class="row">
-  <div class="col-md-9">
+<div class="row">
+  <div class="contents col-md-9">
     <div class="page-header">
       <h1>Reference</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    <table class="ref-index">
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <colgroup>
+      <col class="alias" />
+      <col class="title" />
+    </colgroup>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-transform-data-to-piece-wise-exponential-data-ped-format" class="hasAnchor"><a href="#section-transform-data-to-piece-wise-exponential-data-ped-format" class="anchor"></a>Transform data to Piece-wise Exponential Data (PED) format</h2>
-            <p class="section-desc"><p>Functions to transform data sets in different formats to PED format, suitable to be fit by PAMMs.</p></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="split_data.html">split_data()</a></code> </p>
-          </td>
-          <td><p>Function to transform data without time-dependent covariates into piece-wise
-exponential data format</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="split_tdc.html">split_tdc()</a></code> </p>
-          </td>
-          <td><p>Create piece-wise exponential data in case of time-dependent covariates</p></td>
-        </tr>
-      </tbody><tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-ped-helper-functions" class="hasAnchor"><a href="#section-ped-helper-functions" class="anchor"></a>PED helper functions</h2>
-            <p class="section-desc"><p>Functions that help extract (interval-specific) summary information from PED and create newdata, e.g., for prediction and plotting.</p></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="int_info.html">int_info()</a></code> </p>
-          </td>
-          <td><p>Create start/end times and interval information</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="get_intervals.html">get_intervals()</a></code> </p>
-          </td>
-          <td><p>Information on intervals in which times fall</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="sample_info.html">sample_info()</a></code> </p>
-          </td>
-          <td><p>Extract information of the sample contained in a data set</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="riskset_info.html">riskset_info()</a></code> </p>
-          </td>
-          <td><p>Extract risk set information for each interval.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="ped_info.html">ped_info()</a></code> </p>
-          </td>
-          <td><p>Extract interval information and median/modus values for covariates</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="combine_df.html">combine_df()</a></code> </p>
-          </td>
-          <td><p>Combines multiple data frames</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="newdata.html">make_newdata()</a></code> </p>
-          </td>
-          <td><p>Construct a data frame suitable for prediction</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="plot_df.html">plot_df()</a></code> </p>
-          </td>
-          <td><p>Extract information for plotting step functions</p></td>
-        </tr>
-      </tbody><tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-extract-information-from-pamms" class="hasAnchor"><a href="#section-extract-information-from-pamms" class="anchor"></a>Extract information from PAMMs</h2>
-            <p class="section-desc"><p>Functions that help extract information from fitted model objects, e.g., smooth effects for plotting</p></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tidy_fixed.html">tidy_fixed()</a></code> </p>
-          </td>
-          <td><p>Extract fixed coefficient table from model object</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tidiers.html">tidy_smooth()</a></code> </p>
-          </td>
-          <td><p>Extract 1d smooth objects in tidy data format.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tidy_smooth2d.html">tidy_smooth2d()</a></code> </p>
-          </td>
-          <td><p>Extract 2d smooth objects in tidy format.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="tidy_smooth.html">tidy_re()</a></code> </p>
-          </td>
-          <td><p>Extract random effects objects in tidy data format.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="get_terms.html">get_terms()</a></code> </p>
-          </td>
-          <td><p>Extract the partial effects of non-linear model terms</p></td>
-        </tr>
-      </tbody><tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-augment-functions" class="hasAnchor"><a href="#section-augment-functions" class="anchor"></a>Augment functions</h2>
-            <p class="section-desc"><p>Functions that augment a data set by different quantaties like the hazard rate.</p></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="add_term.html">add_term()</a></code> </p>
-          </td>
-          <td><p>Add info about term effects to data set</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="add_hazard.html">add_hazard()</a></code> <code><a href="add_hazard.html">add_cumu_hazard()</a></code> </p>
-          </td>
-          <td><p>Add predicted hazard to data set</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="add_surv_prob.html">add_surv_prob()</a></code> </p>
-          </td>
-          <td><p>Add survival probability estimates to data set</p></td>
-        </tr>
-      </tbody><tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-plot-helpers" class="hasAnchor"><a href="#section-plot-helpers" class="anchor"></a>Plot helpers</h2>
-            <p class="section-desc"><p>Functions that facilitate effect plots (smooth effects, etc.)</p></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="gg_fixed.html">gg_fixed()</a></code> </p>
-          </td>
-          <td><p>Forrest plot of fixed coefficients</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="gg_smooth.html">gg_smooth()</a></code> </p>
-          </td>
-          <td><p>Plot smooth 1d terms of gam objects</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="gg_tensor.html">gg_tensor()</a></code> </p>
-          </td>
-          <td><p>Plot tensor product effects</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="gg_re.html">gg_re()</a></code> </p>
-          </td>
-          <td><p>Plot Normal QQ plots for random effects</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="geom_stepribbon.html">geom_stepribbon()</a></code> </p>
-          </td>
-          <td><p>Step ribbon plots.</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-transform-data-to-piece-wise-exponential-data-ped-format" class="hasAnchor"><a href="#section-transform-data-to-piece-wise-exponential-data-ped-format" class="anchor"></a>Transform data to Piece-wise Exponential Data (PED) format</h2>
+          <p class="section-desc"><p>Functions to transform data sets in different formats to PED format, suitable to be fit as PAMMs.</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="as_ped.html">as_ped()</a></code> <code><a href="as_ped.html">is.ped()</a></code> </p>
+        </td>
+        <td><p>Transform data to Piece-wise Exponential Data (PED)</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-ped-helper-functions" class="hasAnchor"><a href="#section-ped-helper-functions" class="anchor"></a>PED helper functions</h2>
+          <p class="section-desc"><p>Functions that help extract (interval-specific) summary information from PED and create newdata, e.g., for prediction and plotting.</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="int_info.html">int_info()</a></code> </p>
+        </td>
+        <td><p>Create start/end times and interval information</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="sample_info.html">sample_info()</a></code> </p>
+        </td>
+        <td><p>Extract information of the sample contained in a data set</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="riskset_info.html">riskset_info()</a></code> </p>
+        </td>
+        <td><p>Extract risk set information for each interval.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="ped_info.html">ped_info()</a></code> </p>
+        </td>
+        <td><p>Extract interval information and median/modus values for covariates</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="combine_df.html">combine_df()</a></code> </p>
+        </td>
+        <td><p>Combines multiple data frames</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="newdata.html">make_newdata()</a></code> </p>
+        </td>
+        <td><p>Construct a data frame suitable for prediction</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-extract-information-from-pamms" class="hasAnchor"><a href="#section-extract-information-from-pamms" class="anchor"></a>Extract information from PAMMs</h2>
+          <p class="section-desc"><p>Functions that help extract information from fitted model objects, e.g., smooth effects for plotting</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="tidy_fixed.html">tidy_fixed()</a></code> </p>
+        </td>
+        <td><p>Extract fixed coefficient table from model object</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="tidiers.html">tidy_smooth()</a></code> </p>
+        </td>
+        <td><p>Extract 1d smooth objects in tidy data format.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="tidy_smooth2d.html">tidy_smooth2d()</a></code> </p>
+        </td>
+        <td><p>Extract 2d smooth objects in tidy format.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="tidy_smooth.html">tidy_re()</a></code> </p>
+        </td>
+        <td><p>Extract random effects objects in tidy data format.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="get_terms.html">get_terms()</a></code> </p>
+        </td>
+        <td><p>Extract the partial effects of non-linear model terms</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-augment-functions" class="hasAnchor"><a href="#section-augment-functions" class="anchor"></a>Augment functions</h2>
+          <p class="section-desc"><p>Functions that augment a data set by different quantaties like the hazard rate.</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="add_term.html">add_term()</a></code> </p>
+        </td>
+        <td><p>Add info about term effects to data set</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="add_hazard.html">add_hazard()</a></code> <code><a href="add_hazard.html">add_cumu_hazard()</a></code> </p>
+        </td>
+        <td><p>Add predicted hazard to data set</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="add_surv_prob.html">add_surv_prob()</a></code> </p>
+        </td>
+        <td><p>Add survival probability estimates to data set</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-convenience-functions-for-visualization-of-model-outputs-" class="hasAnchor"><a href="#section-convenience-functions-for-visualization-of-model-outputs-" class="anchor"></a>Convenience functions for visualization of model outputs.</h2>
+          <p class="section-desc"><p>Functions that facilitate effect plots (smooth effects, etc.)</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_fixed.html">gg_fixed()</a></code> </p>
+        </td>
+        <td><p>Forrest plot of fixed coefficients</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_smooth.html">gg_smooth()</a></code> </p>
+        </td>
+        <td><p>Plot smooth 1d terms of gam objects</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_tensor.html">gg_tensor()</a></code> </p>
+        </td>
+        <td><p>Plot tensor product effects</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_re.html">gg_re()</a></code> </p>
+        </td>
+        <td><p>Plot Normal QQ plots for random effects</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="geom_stepribbon.html">geom_stepribbon()</a></code> </p>
+        </td>
+        <td><p>Step ribbon plots.</p></td>
+      </tr>
+    </tbody>
+    </table>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -331,7 +322,7 @@ exponential data format</p></td>
       <li><a href="#section-ped-helper-functions">PED helper functions</a></li>
       <li><a href="#section-extract-information-from-pamms">Extract information from PAMMs</a></li>
       <li><a href="#section-augment-functions">Augment functions</a></li>
-      <li><a href="#section-plot-helpers">Plot helpers</a></li>
+      <li><a href="#section-convenience-functions-for-visualization-of-model-outputs-">Convenience functions for visualization of model outputs.</a></li>
     </ul>
   </div>
 </div>
