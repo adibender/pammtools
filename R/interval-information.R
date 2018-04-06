@@ -67,10 +67,10 @@ int_info.default <- function(
 #' @examples
 #' ## extract interval information used to create ped object
 #' tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
-#' ped <- split_data(Surv(time, status)~., data=tdf, id="id")
+#' ped <- tdf %>% as_ped(Surv(time, status)~., id="id")
 #' int_info(ped)
 #'
-#' @seealso split_data ped_info
+#' @seealso as_ped ped_info
 #' @export
 int_info.ped <- function(x, ...) {
 
@@ -82,7 +82,7 @@ int_info.ped <- function(x, ...) {
 #' @examples
 #' ## extract interval information of ped that was used to fit the model
 #' data("veteran", package="survival")
-#' vet_ped <- split_data(Surv(time, status)~age, data=veteran, cut=seq(0, 500, by=100))
+#' vet_ped <- veteran %>% as_ped(Surv(time, status)~age, cut=seq(0, 500, by=100))
 #' vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
 #' int_info(vet_pam)
 #'
@@ -158,11 +158,11 @@ get_intervals.default <- function(
 #' variables and modi for non-numeric variables in the data set.
 #'
 #' @param ped An object of class \code{ped} as returned by
-#' \code{\link[pammtools]{split_data}}.
+#' \code{\link[pammtools]{as_ped}}.
 #' @import checkmate dplyr
 #' @examples
 #' data("veteran", package="survival")
-#' ped <- split_data(Surv(time, status)~ trt + age, data=veteran, id="id")
+#' ped <- veteran %>% as_ped(Surv(time, status)~ trt + age, id="id")
 #' ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
 #' @export
 #' @return A data frame with one row for each interval in \code{ped}.
@@ -190,12 +190,11 @@ ped_info <- function(ped) {
 #' size of the riskset at the beginning of each interval as well as the number
 #' of events and censorings that occured in the interval, respectively.
 #'
-#' @param ped An object of class \code{ped} as returned by
-#' \code{\link[pammtools]{split_data}}.
+#' @inheritParams ped_info
 #' @import checkmate dplyr
 #' @examples
 #' data("veteran", package="survival")
-#' ped <- split_data(Surv(time, status)~ ., data = veteran, id = "id",
+#' ped <- veteran %>% as_ped(Surv(time, status)~ ., id = "id",
 #'   cut = seq(0,400, by = 100))
 #' riskset_info(ped)
 #' (riskset_celltype <- riskset_info(group_by(ped, celltype)))
@@ -223,29 +222,4 @@ riskset_info <- function(ped) {
     left_join(censored, by = join_vars) %>%
     mutate(ped_censored = ifelse(is.na(.data$ped_censored),
         0, .data$ped_censored))
-}
-
-#' Extract information for plotting step functions
-#'
-#'
-#' @param pinfo A data frame as returned by \code{\link[pammtools]{ped_info}}
-#' and potentially additional information from predictions, etc.
-#' @examples
-#' data("veteran", package="survival")
-#' leuk.ped <- split_data(Surv(time, status)~., data=veteran, id="id")
-#' pem <- glm(ped_status ~ interval, data = leuk.ped, family=poisson(), offset=offset)
-#' pinfo <- ped_info(leuk.ped)
-#' pinfo$basehaz <- predict(pem, newdata=pinfo, type="response")
-#' plot.inf <- plot_df(pinfo)
-#' @import dplyr
-#' @export
-plot_df <- function(pinfo) {
-
-  bind_rows(pinfo, pinfo[nrow(pinfo), ]) %>%
-    mutate(
-      tend   = lag(.data$tend, default   = min(.data$tstart)),
-      intlen = lag(.data$intlen, default = .data$intlen[1])) %>%
-    select(-one_of("interval", "tstart")) %>%
-    rename("time"="tend")
-
 }

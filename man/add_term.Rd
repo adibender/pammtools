@@ -57,7 +57,7 @@ Thus most arguments and their documentation below is from \code{predict.gam}.
 \examples{
 library(mgcv)
 data("veteran", package="survival")
-ped <- split_data(Surv(time, status)~ age, data=veteran, id="id")
+ped <- veteran \%>\% as_ped(Surv(time, status)~ age, id="id")
 pam <- gam(ped_status ~ s(tend),
 	data = ped, family=poisson(), offset=offset)
 pinf <- ped_info(ped)

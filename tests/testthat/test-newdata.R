@@ -30,8 +30,8 @@ test_that("creating newdata fails on ungrouped data", {
 })
 
 test_that("make_newdata.ped warns about intervals", {
-  int_df <- split_data(Surv(time, status)~.,
-    data.frame(time = 1:2, status = c(1,1)), id = "id")
+  int_df <-  data.frame(time = 1:2, status = c(1,1)) %>%
+    as_ped(Surv(time, status)~., id = "id")
   expect_warning(
     make_newdata(int_df, tstart = 1.5),
     "Setting interval borders")
