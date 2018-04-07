@@ -92,14 +92,19 @@ gg_laglead.LL_df <- function(
   grid_col   = "lightgrey",
   ...) {
 
-  gg_ll <- ggplot(x, aes_string(x = "t", y = "te")) +
+  x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
+  x <- x %>% filter(!is.na(interval)) %>%
+    mutate(te = as.factor(te))
+  gg_ll <- ggplot(x, aes_string(x = "interval", y = "te")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
+    scale_x_discrete(expand=c(0,0)) +
+    scale_y_discrete(expand=c(0,0)) +
     xlab(expression(t)) + ylab(expression(t[e])) +
     theme(legend.position = "none")
 
   if(!is.null(x$te_var)) {
-    gg_ll <- gg_ll + facet_wrap(~te_var)
+    gg_ll <- gg_ll + facet_wrap(~te_var, ncol=1, scales="free_y")
   }
 
   gg_ll
