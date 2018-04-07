@@ -88,7 +88,7 @@ gg_laglead.default <- function(x, te, ll_fun, ...) {
 gg_laglead.LL_df <- function(
   x,
   high_col   = "grey20",
-  low_col    = "smokewhite",
+  low_col    = "whitesmoke",
   grid_col   = "lightgrey",
   ...) {
 
@@ -101,7 +101,7 @@ gg_laglead.LL_df <- function(
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand=c(0,0)) +
-    scale_y_discrete(expand=c(0,0), position = c("left"))
+    scale_y_discrete(expand=c(0,0)) +
     xlab(expression(t[e])) + ylab(expression(t)) +
     theme(legend.position = "none")
 
