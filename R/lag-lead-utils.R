@@ -88,23 +88,25 @@ gg_laglead.default <- function(x, te, ll_fun, ...) {
 gg_laglead.LL_df <- function(
   x,
   high_col   = "grey20",
-  low_col    = "white",
+  low_col    = "smokewhite",
   grid_col   = "lightgrey",
   ...) {
 
   x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
   x <- x %>% filter(!is.na(interval)) %>%
-    mutate(te = as.factor(te))
-  gg_ll <- ggplot(x, aes_string(x = "interval", y = "te")) +
+    mutate(
+      te = as.factor(te),
+      interval = factor(interval, levels = rev(levels(interval))) )
+  gg_ll <- ggplot(x, aes_string(y = "interval", x = "te")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand=c(0,0)) +
-    scale_y_discrete(expand=c(0,0)) +
-    xlab(expression(t)) + ylab(expression(t[e])) +
+    scale_y_discrete(expand=c(0,0), position = c("left"))
+    xlab(expression(t[e])) + ylab(expression(t)) +
     theme(legend.position = "none")
 
   if(!is.null(x$te_var)) {
-    gg_ll <- gg_ll + facet_wrap(~te_var, ncol=1, scales="free_y")
+    gg_ll <- gg_ll + facet_wrap(~te_var, scales="free_x")
   }
 
   gg_ll
