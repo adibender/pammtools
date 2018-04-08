@@ -29,8 +29,11 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   ped <- data %>%
     select_if(is.atomic) %>%
-    as_ped.data.frame(formula = formula, id = dots$id, cut = cut, max_time = dots$max_time)
-
+    as_ped.data.frame(
+      formula  = formula,
+      id       = dots$id,
+      cut      = cut,
+      max_time = dots$max_time)
 
   if(has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
@@ -38,6 +41,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   if(has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data=data, formula=formula)
+    class(ped) <- c("fped", class(ped))
   }
 
   ped
