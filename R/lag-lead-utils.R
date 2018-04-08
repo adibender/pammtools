@@ -21,7 +21,8 @@ get_laglead <- function(x, ...) {
 #' @export
 get_laglead.default <- function(x, te, ll_fun, ...) {
 
-  LL_df <- crossing(t=x, te=te) %>% mutate(LL = ll_fun(t, te)*1L)
+  LL_df <- crossing(t=x, te=te) %>%
+    mutate(LL = ll_fun(t, te)*1L)
   class(LL_df) <- c("LL_df", class(LL_df))
 
   LL_df
@@ -93,10 +94,10 @@ gg_laglead.LL_df <- function(
   ...) {
 
   x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
-  x <- x %>% filter(!is.na(interval)) %>%
+  x <- x %>% filter(!is.na(.data$interval)) %>%
     mutate(
       te = as.factor(te),
-      interval = factor(interval, levels = rev(levels(interval))) )
+      interval = factor(.data$interval, levels = rev(levels(.data$interval))) )
   gg_ll <- ggplot(x, aes_string(y = "interval", x = "te")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
