@@ -1,6 +1,7 @@
 
+#' @importFrom purrr discard
 unped <- function(ped) {
-  class(ped) <- class(ped)[-1]
+  class(ped) <- class(ped) %>% discard(~.=="ped")
   ped
 }
 reped <- function(.data) {
