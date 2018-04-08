@@ -42,12 +42,11 @@ sample_info.data.frame <- function(x, ...) {
 
 }
 
-
+#' @rdname sample_info
 #' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom rlang sym
 #' @export
-#' @rdname sample_info
 sample_info.ped <- function(x, ...) {
   # is.grouped_df
   # remove "noise" information on interval variables
@@ -65,6 +64,18 @@ sample_info.ped <- function(x, ...) {
   } else {
     NULL
   }
+
+}
+
+#' @rdname sample_info
+#' @inherit sample_info
+#' @export
+sample_info.fped <- function(x, ...) {
+  grps   <- group_vars(x)
+  iv     <- attr(x, "intvars")
+  id_var <- attr(x, "id_var")
+
+  x %>% select_if(~!is.matrix(.x)) %>% sample_info.ped()
 
 }
 
@@ -222,4 +233,5 @@ make_newdata.ped <- function(
     grouped_df(g_vars)
 
   make_newdata(x, ..., expand = expand, n = n)
+
 }
