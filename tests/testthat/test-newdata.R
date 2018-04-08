@@ -42,3 +42,29 @@ test_that("make_newdata.ped warns about intervals", {
     make_newdata(int_df, tstart = 1.5, expand = "tend", n = 3),
     "Setting interval borders")
 })
+
+
+test_that("make_newdata works for PED with matrix columns", {
+  library(mgcv)
+  ped_simdf <- simdf_elra %>% as_ped(
+    Surv(time, status)~ x1 + x2|
+      cumulative(time, latency(te1), z.te1, te_var="te1") +
+      cumulative(latency(te2), z.te2, te_var="te2"),
+    cut = 0:10)
+  # mod_simdf <- gam(
+  #   formula = ped_status ~ ti(tend, mc=1) + s(x1) + s(x2) +
+  #     ti(time_te1, te1_latency, z.te1_te1, by = LL_te1, mc=c(1,1,1)) +
+  #     ti(te2_latency, z.te2_te2, by = LL_te2, mc=c(1,1)),
+  #   data = ped_simdf,
+  #   family = poisson(),
+  #   offset = offset)
+
+  expect_data_frame(sdf <- sample_info(ped_simdf), nrows=1, ncols=2)
+  expect_equal(sdf$x1, 0.208, tolerance = 1e-3)
+  expect_equal(sdf$x2, 3.02, tolerance = 1e-3)
+
+  ndf <- mk_ndf(ped_simdf, x1=seq_range(x1, n=2), z.te1_te1 = c(0, 3, 5))
+  # lp_mat <- predict(mod_simdf, newdata = ndf, type = "lpmatrix")
+
+
+})
