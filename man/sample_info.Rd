@@ -4,6 +4,7 @@
 \alias{sample_info}
 \alias{sample_info.data.frame}
 \alias{sample_info.ped}
+\alias{sample_info.fped}
 \title{Extract information of the sample contained in a data set}
 \usage{
 sample_info(x, ...)
@@ -11,6 +12,8 @@ sample_info(x, ...)
 \method{sample_info}{data.frame}(x, ...)
 
 \method{sample_info}{ped}(x, ...)
+
+\method{sample_info}{fped}(x, ...)
 }
 \arguments{
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}
