@@ -121,12 +121,12 @@ sim_pexp <- function(formula, data, cut) {
 
   # construct eta for time-dependent part
   if(!is.null(f2)) {
-    terms_f2 <- terms(f2, specials = "fcumu")
-    f2_ev    <- map(attr(terms_f2, "term.labels"), ~eval(expr = parse(text = .x)))
-    ll_funs  <- map(f2_ev, ~.x[["ll_fun"]])
-    te_vars  <- map_chr(f2_ev, ~.x[["vars"]][1])
-    names(ll_funs) <- te_vars
-    names(te_vars) <- te_vars# useful for imap use later
+    terms_f2  <- terms(f2, specials = "fcumu")
+    f2_ev     <- map(attr(terms_f2, "term.labels"), ~eval(expr = parse(text = .x)))
+    ll_funs   <- map(f2_ev, ~.x[["ll_fun"]])
+    te_vars   <- map_chr(f2_ev, ~.x[["vars"]][1])
+    cumu_funs <- map(f2_ev, ~.x[["f_xyz"]])
+    names(te_vars) <- names(ll_funs) <- names(cumu_funs) <- te_vars
     z_form <- list("eta_", map_chr(f2_ev, ~.x[["vars"]][2])) %>%
       reduce(paste0, collapse="+") %>% paste0("~", .) %>% as.formula()
     df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
@@ -148,15 +148,16 @@ sim_pexp <- function(formula, data, cut) {
       time   = pmin(.data$time, max(cut))) %>%
     left_join(select(data, -.data$time, -.data$status))
 
-  attr(sim_df, "id_var") <- "id"
-  attr(sim_df, "time_var") <- "time"
+  attr(sim_df, "id_var")     <- "id"
+  attr(sim_df, "time_var")   <- "time"
   attr(sim_df, "status_var") <- "status"
-  attr(sim_df, "te_var") <- te_vars
+  attr(sim_df, "te_var")     <- te_vars
   attr(sim_df, "cens_value") <- 0
-  attr(sim_df, "breaks") <- cut
-  attr(sim_df, "te") <- imap(te_vars, ~select(sim_df, .x) %>% pull(.x) %>%
+  attr(sim_df, "breaks")     <- cut
+  attr(sim_df, "te")         <- imap(te_vars, ~select(sim_df, .x) %>% pull(.x) %>%
     unique()) %>% flatten()
   if(exists("ll_funs")) attr(sim_df, "ll_funs") <- ll_funs
+  if(exists("cumu_funs")) attr(sim_df, "cumu_funs") <- cumu_funs
   attr(sim_df, "id_n") <- sim_df %>% pull("time") %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
@@ -167,7 +168,7 @@ sim_pexp <- function(formula, data, cut) {
   attr(sim_df, "sim_formula") <- formula
 
   if(any(!map_lgl(sim_df, is_atomic))) {
-    class(sim_df) <- c("nested_fdf", class(sim_df))
+    class(sim_df) <- c("sim_sdf", class(sim_df))
   }
 
   sim_df
