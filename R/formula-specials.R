@@ -262,9 +262,10 @@ add_cumulative <- function(ped, data, formula) {
   for(i in seq_along(func_matrices)) {
     ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
   }
-  attr(ped, "ll_funs") <- func_components$ll_funs
-  attr(ped, "te")      <- func_components$te
-  attr(ped, "te_vars") <- func_components$te_vars
+  attr(ped, "func_mat_names") <- names(func_matrices)
+  attr(ped, "ll_funs")        <- func_components$ll_funs
+  attr(ped, "te")             <- func_components$te
+  attr(ped, "te_vars")        <- func_components$te_vars
 
   ped
 
