@@ -23,7 +23,10 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   dots <- list(...)
   # update interval break points (if neccessary)
-  cut <- attr(data, "breaks")
+  cut <- dots$cut
+  if(is.null(cut)) {
+    cut <- attr(data, "breaks")
+  }
   ccr_breaks <- attr(data, "ccr_breaks")
   cut <- union(cut, ccr_breaks) %>% sort()
 
@@ -34,6 +37,14 @@ as_ped.nested_fdf <- function(data, formula, ...) {
       id       = dots$id,
       cut      = cut,
       max_time = dots$max_time)
+
+  # replace updated attributes
+  attr(data, "breaks") <- attr(ped, "breaks")
+  attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+    summarize(id_n = n()) %>% pull(id_n) %>% as_vector()
+  attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+    transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+  attr(data, "id_teseq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
 
   if(has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data=data, id_var=dots$id)

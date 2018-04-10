@@ -45,7 +45,7 @@ test_that("make_newdata.ped warns about intervals", {
 
 
 test_that("make_newdata works for PED with matrix columns", {
-  library(mgcv)
+  # library(mgcv)
   ped_simdf <- simdf_elra %>% as_ped(
     Surv(time, status)~ x1 + x2|
       cumulative(time, latency(te1), z.te1, te_var="te1") +
@@ -60,8 +60,8 @@ test_that("make_newdata works for PED with matrix columns", {
   #   offset = offset)
 
   expect_data_frame(sdf <- sample_info(ped_simdf), nrows=1, ncols=2)
-  expect_equal(sdf$x1, 0.208, tolerance = 1e-3)
-  expect_equal(sdf$x2, 3.02, tolerance = 1e-3)
+  expect_equal(sdf$x1, 0.0718, tolerance = 1e-3)
+  expect_equal(sdf$x2, 3.043, tolerance = 1e-3)
 
   ndf <- mk_ndf(ped_simdf, x1=seq_range(x1, n=2), z.te1_te1 = c(0, 3, 5))
   # lp_mat <- predict(mod_simdf, newdata = ndf, type = "lpmatrix")
