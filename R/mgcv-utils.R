@@ -8,10 +8,11 @@
 #' @param d2 See \code{d1}
 #' @param model A model object for which a predict method is implemented which
 #' returns the design matrix (e.g., \code{mgcv::gam}).
+#' @importFrom mgcv predict.gam
 #' @keywords internal
 compute_cum_diff <-  function(d1, d2, model) {
-  X1 <- predict(model, newdata = d1, type = "lpmatrix")
-  X2 <- predict(model, newdata = d2, type = "lpmatrix")
+  X1 <- predict.gam(model, newdata = d1, type = "lpmatrix")
+  X2 <- predict.gam(model, newdata = d2, type = "lpmatrix")
   haz1 <- exp(drop(X1 %*% model$coefficients))
   haz2 <- exp(drop(X2 %*% model$coefficients))
   cumu_diff <- cumsum(haz2*d2$intlen) - cumsum(haz1*d1$intlen)
