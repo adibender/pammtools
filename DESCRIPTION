@@ -10,7 +10,7 @@ Description: This package provides functions that facilitate fitting
     This includes restructuring the data to the needed format and various
     convenience functions, e.g., for ploting the results.
 Depends:
-    R (>= 3.1.2)
+    R (>= 3.3.0)
 Imports:
     mgcv,
     survival (>= 2.39-5),
