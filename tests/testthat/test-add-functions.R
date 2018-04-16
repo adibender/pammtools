@@ -74,7 +74,7 @@ expect_data_frame(term <- add_term(ped_info(ped), pem, term = "trt"),
 })
 
 test_that("warns about / aborts for unknown intervals", {
-  weird <- make_newdata(ped_info(ped), tend = 150, interval = "(1.4, 4]")
+  weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
   expect_warning(add_hazard(weird, pam), "not used in original fit")
   expect_error(add_hazard(weird, pem), "not used in original fit")
 })

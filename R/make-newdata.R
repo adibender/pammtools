@@ -5,7 +5,6 @@
 #'
 #' @rdname sample_info
 #' @param x A data frame (or object that inherits from \code{data.frame}).
-#' @param ... Further arguments passed to specialized methods.
 #' @importFrom stats median
 #' @return A data frame containing sample information (for each group).
 #' If applied to an object of class \code{ped}, the sample means of the
@@ -47,7 +46,7 @@ sample_info.data.frame <- function(x, ...) {
 #' @import checkmate dplyr
 #' @importFrom rlang sym
 #' @export
-sample_info.ped <- function(x, ...) {
+sample_info.ped <- function(x) {
   # is.grouped_df
   # remove "noise" information on interval variables
   grps <- group_vars(x)
@@ -60,7 +59,7 @@ sample_info.ped <- function(x, ...) {
     grouped_df(grps) %>%
     select(-one_of(iv))
   if (test_data_frame(x, min.rows = 1, min.cols = 1)) {
-    sample_info.data.frame(x, ...)
+    sample_info.data.frame(x)
   } else {
     NULL
   }
@@ -70,7 +69,7 @@ sample_info.ped <- function(x, ...) {
 #' @rdname sample_info
 #' @inherit sample_info
 #' @export
-sample_info.fped <- function(x, ...) {
+sample_info.fped <- function(x) {
   grps   <- group_vars(x)
   iv     <- attr(x, "intvars")
   id_var <- attr(x, "id_var")
@@ -118,27 +117,38 @@ combine_df <- function(...) {
 #' @rdname newdata
 #' @aliases make_newdata
 #' @inheritParams sample_info
-#' @param ... Further specifications of variables that should be set
-#' to a specific values.
+#' @param ... Covariate specifications (expressions) that will be evaulated
+#' by looking for variables in \code{x}. Must be of form \code{z = f(z)}
+#' where \code{z} is a variable in the data set \code{x} and \code{f} a known
+#' function that can be usefully applied to $\code{age}$. See examples below.
 #' @import dplyr
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df
-#' @details Extracts information from \code{ped}, using
-#'   \code{\link{sample_info}}. If variables are specified with specific values
-#'   in \code{...}, the values in from \code{sample_info} will be overwritten.
-#'   If variables are provided in \code{expand}, these will be expanded from \code{min} to
-#'   \code{max} using in \code{n} equidistant steps.
+#' @details Depening on the class of \code{x}, mean or modus values will be
+#' used for variables not specified in ellipsis. If x an object inherits class
+#' \code{ped}, useful data set completion will be performed depending on variables
+#' specified in ellipsis.
 #' @examples
-#' \dontrun{
 #' library(dplyr)
-#' iris %>% make_newdata()
-#' iris %>% make_newdata(Sepal.Length=5)
-#' iris %>% make_newdata(Sepal.Length=c(5, 10), Sepal.Width=c(5, 5.1, 5.2))
-#' iris %>% make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", n=5)
-#' iris %>% group_by(Species) %>%
-#'   make_newdata(Sepal.Length=c(5, 10), expand="Sepal.Width", n=5) %>%
-#'   print(n=30)
-#' }
+#' tumor %>% make_newdata()
+#' tumor %>% make_newdata(age=c(50))
+#' tumor %>% make_newdata(days=seq_range(days, 3), age=c(50, 55))
+#' tumor %>% make_newdata(days=seq_range(days, 3), status=unique(status), age=c(50, 55))
+#' # mean/modus values of unspecified variables are calculated over whole data
+#' tumor %>% make_newdata(sex=unique(sex))
+#' tumor %>% group_by(sex) %>% make_newdata()
+#' # You can also pass complete data sets to make_newdata
+#' purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) %>%
+#'   make_newdata(x=tumor)
+#'
+#' # Examples for PED data
+#' ped <- tumor %>% slice(1:3) %>% as_ped(Surv(days, status)~., cut = c(0, 500, 1000))
+#' ped %>% make_newdata(age=c(50, 55))
+#' # if time information is specified, other time variables will be specified
+#' # accordingly and offset calculated correctly
+#' ped %>% make_newdata(tend = c(1000), age = c(50, 55))
+#' ped %>% make_newdata(tend = unique(tend))
+#' ped %>% group_by(sex) %>% make_newdata(tend = unique(tend))
 #' @export
 make_newdata <- function(x, ...) {
   UseMethod("make_newdata", x)
@@ -151,87 +161,56 @@ make_newdata <- function(x, ...) {
 #' @param n If \code{expand} specified, respective variables will be expanded
 #' in \code{n} values from minimum to maximum.
 #' @export
-make_newdata.default <- function(
-  x,
-  ...,
-  expand = NULL,
-  n      = 50L) {
+make_newdata.default <- function(x, ...) {
 
-  assert_data_frame(x, all.missing   = FALSE, min.rows = 2, min.cols = 1)
-  assert_character(expand, min.chars = 1, any.missing  = FALSE, null.ok = TRUE)
-  assert_subset(expand, colnames(x))
+  assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
 
   orig_names <- names(x)
 
-  si      <- sample_info(x) %>% ungroup()
-  dots_df <- cross_df(list(...))
-  assert_subset(names(dots_df), orig_names)
-  # return(dots_df)
-  if (!is.null(expand)) {
-    if (!all(expand %in% names(x))) {
-      stop("All arguments provided in 'expand' must be quoted variable names
-      that are  equal to column names of x object")
-    } else {
-      expanded_df <- x %>%
-        ungroup() %>% # ungroup here to obtain sequence from min to max for all data
-        select(one_of(expand)) %>%
-        as.list() %>%
-        map(seq_range, n = n) %>%
-        cross_df()
-    }
-  } else {
-    expanded_df <- data.frame()
-  }
+  expressions    <- quos(...)
+  expr_evaluated <- map(expressions, lazyeval::f_eval, data=x)
 
-  si_names    <- intersect(names(si), c(names(dots_df), names(expanded_df)))
-  si <- si %>% select(-one_of(si_names))
+  # construct data parts depending on input type
+  lgl_atomic     <- map_lgl(expr_evaluated, is_atomic)
+  partI  <- expr_evaluated[lgl_atomic] %>% cross_df()
+  partII <- do.call(combine_df, expr_evaluated[!lgl_atomic])
 
-  combine_df(si, dots_df, expanded_df) %>%
-    select(one_of(orig_names))
+  ndf    <- combine_df(partI, partII)
+  rest   <- x %>% select(-one_of(c(colnames(ndf))))
+  si     <- sample_info(rest) %>% ungroup()
+  out_df <- combine_df(si, ndf)
+
+  out_df %>% select(one_of(orig_names))
 
 }
 
 #' @rdname newdata
 #' @inherit make_newdata.default
 #' @export
-make_newdata.ped <- function(
-  x,
-  ...,
-  expand = NULL,
-  n      = 50L) {
+make_newdata.ped <- function(x, ...) {
 
   assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
-  assert_character(expand, min.chars = 1, any.missing = FALSE, null.ok = TRUE)
 
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
-  which_override <- c("tstart", "tend") %in% unique(c(names(list(...)), expand))
-  for (var in c("tstart", "tend")[which_override]) {
-    new_vals <- if (var %in% names(list(...))) {
-      list(...)[[var]]
-    } else {
-      seq_range(x[[var]], n = n)
-    }
-    old_vals <- x[[var]]
-    not_seen <- !(new_vals %in% old_vals)
-    if (any(not_seen)) {
-      warning("Setting interval borders <",var,"> to values [",
-        new_vals[not_seen],
-        "] not used for original 'ped'-data can invalidate PEM assumption and ",
-        "yield incorrect predictions. Proceed with caution!")
-    }
+
+  orig_vars <- names(x)
+  int_df <- int_info(x)
+
+  expressions <- quos(...)
+  dot_names   <- names(expressions)
+  int_names   <- names(int_df)
+  x <- select(x, -one_of(setdiff(int_names, c(dot_names, "intlen", "intmid"))))
+
+  ndf <- make_newdata(unped(x), ...)
+
+  if (any(names(int_df) %in% names(ndf))) {
+    ndf <- right_join(int_df, ndf)
+  } else {
+    ndf <- combine_df(int_df[1,], ndf)
   }
 
-  id_var <- attr(x, "id_var")
-  g_vars <- group_vars(x)
-  x <- x %>%
-    ungroup()         %>%
-    group_by(!!sym(id_var)) %>%
-    slice(1)          %>%
-    ungroup(!!sym(id_var))   %>%
-    unped()           %>%
-    grouped_df(g_vars)
-
-  make_newdata(x, ..., expand = expand, n = n)
+  ndf %>% select(one_of(orig_vars)) %>%
+    mutate(offset = log(tend - tstart))
 
 }
