@@ -17,6 +17,7 @@
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
+#' @importFrom purrr map
 #' @examples
 #' library(mgcv)
 #' data("veteran", package="survival")
@@ -41,10 +42,8 @@ add_term <- function(
 	assert_data_frame(newdata, all.missing=FALSE)
 	assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
 
-	col_ind <- lapply(term, grep, x=names(object$coefficients)) %>%
-		unlist() %>%
-		unique() %>%
-		sort()
+	col_ind <- map(term, grep, x=names(object$coefficients)) %>%
+    unlist() %>% unique() %>% sort()
   is_pam <- inherits(object, "gam")
 
   X <- if (is_pam) {

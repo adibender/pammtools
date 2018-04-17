@@ -10,6 +10,8 @@ as_ped <- function(data, formula, ...) {
 #' @export
 as_ped.data.frame <- function(data, formula, ...) {
 
+  status_error(data, formula)
+
   dots         <- list(...)
   dots$data    <- data
   dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
@@ -20,6 +22,8 @@ as_ped.data.frame <- function(data, formula, ...) {
 #' @inherit as_ped
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
+
+  status_error(data, formula)
 
   dots <- list(...)
   # update interval break points (if neccessary)
@@ -65,6 +69,8 @@ as_ped.list <- function(data, formula, ...) {
 
   assert_class(data, "list")
   assert_class(formula, "formula")
+
+  status_error(data[[1]], formula)
 
   nl    <- length(data)
   form  <- Formula(formula)

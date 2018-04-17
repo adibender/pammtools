@@ -11,3 +11,13 @@ warn_partial_overlap <- function(event_id, tdc_id) {
   invisible(common_id)
 
 }
+
+
+status_error <- function(data, formula) {
+
+  outcome_vars <- get_lhs_vars(formula)
+  if (!any(1L*(unique(data[[outcome_vars[2]]]))) == 1) {
+    stop(paste0("No events in data! Check your ", outcome_vars[2], " variable."))
+  }
+
+}

@@ -1,5 +1,30 @@
 context("Transformation with TDC")
 
+
+test_that("Concurrent TDC are transformed correctly") {
+	data("pbc", package="survival")
+	event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status==1)
+	tdc_df <- filter(pbcseq, id %in% 1:3) %>% select(id, day, bili, protime)
+	expect_error(as_ped(
+		data    = list(event_df, tdc_df),
+		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		id      = "id"), "No events in data")
+	event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status==2)
+	ped <- as_ped(
+		data    = list(event_df, tdc_df),
+		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		id      = "id")
+	expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 400, 743))
+	ped <- as_ped(
+		data    = list(event_df, tdc_df),
+		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		id      = "id",
+		cut = c(0, 3000))
+	expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 743, 768))
+
+
+}
+
 test_that("Covariate matrices are created correctly", {
 	data <- simdf_elra %>% filter(id %in% c(1:2))
 	time <- 0:2
