@@ -52,7 +52,8 @@ test_that("make_newdata works for PED with matrix columns", {
   # library(mgcv)
   ped_simdf <- simdf_elra %>% as_ped(
     Surv(time, status)~ x1 + x2|
-      cumulative(time, latency(te1), z.te1, te_var="te1") +
+      cumulative(time, latency(te1), z.te1, te_var="te1",
+        ll_fun=function(t, te) {t >= te + 2}) +
       cumulative(latency(te2), z.te2, te_var="te2"),
     cut = 0:10)
 
@@ -91,9 +92,10 @@ test_that("make_newdata works for PED with matrix columns", {
   expect_data_frame(nd4, nrows = 6L, ncols = 15L)
   expect_equal(nd4$te1_latency, 0:5)
 
-  nd5 <- ped_simdf %>% make_newdata(tend=c(1:5), te1_latency=c(1:2))
+  nd5 <- ped_simdf %>% make_newdata(tend=c(1:5), te1_latency=c(0, 10))
   expect_data_frame(nd5, nrows = 10L, ncols = 15L)
   expect_equal(nd5$tend, rep(1:5, 2))
-  expect_equal(nd5$te1_latency, rep(1:2, each=5))
+  expect_equal(nd5$te1_latency, rep(c(0,10), each=5))
+  expect_equal(nd5$LL_te1, rep(c(0,1), each =  5))
 
 })
