@@ -259,7 +259,7 @@ smry_cumu_vars <- function(data, time_var) {
 
   cumu_vars <- attr(data, "func_mat_names")
   func_list <- attr(data, "func")
-  z_vars <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
+  z_vars    <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
     unlist()
   smry_z <- select(data, one_of(z_vars)) %>%
     map(~.x[1,]) %>% map(~mean(unlist(.x))) %>% bind_cols()
@@ -269,6 +269,7 @@ smry_cumu_vars <- function(data, time_var) {
 }
 
 get_zvars <- function(func, time_var, n_func) {
+
   col_vars <- func$col_vars
   all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$te_var,
     func$suffix, n_func)
@@ -287,7 +288,13 @@ adjust_ll <- function(out_df, data) {
   LL_names <- grep("LL", attr(data, "func_mat_names"), value=TRUE)
 
   for(i in LL_names) {
-    ind_ll <- which(map_lgl(names(attr(data, "ll_funs")), ~grepl(.x, i)))
+    ind_ll <- map_lgl(names(attr(data, "ll_funs")), ~grepl(.x, i))
+    if (any(ind_ll)) {
+      ind_ll <- which(ind_ll)
+    } else {
+      ind_ll <- 1
+    }
+
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
     te_var <- attr(data, "te_vars")[[ind_ll]]
