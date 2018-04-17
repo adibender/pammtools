@@ -55,6 +55,9 @@ for numeric variables and modus for characters and factors." />
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -135,6 +138,12 @@ for numeric variables and modus for characters and factors." />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -146,7 +155,7 @@ for numeric variables and modus for characters and factors." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Extract information of the sample contained in a data set</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/construct-newdata.R'><code>R/construct-newdata.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/make-newdata.R'><code>R/make-newdata.R</code></a></small>
     <div class="hidden name"><code>sample_info.Rd</code></div>
     </div>
 
@@ -155,13 +164,16 @@ for numeric variables and modus for characters and factors." />
 for numeric variables and modus for characters and factors.</p>
     
 
-    <pre class="usage"><span class='fu'>sample_info</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>sample_info</span>(<span class='no'>x</span>)
 
 <span class='co'># S3 method for data.frame</span>
-<span class='fu'>sample_info</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>sample_info</span>(<span class='no'>x</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>sample_info</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>sample_info</span>(<span class='no'>x</span>)
+
+<span class='co'># S3 method for fped</span>
+<span class='fu'>sample_info</span>(<span class='no'>x</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,10 +181,6 @@ for numeric variables and modus for characters and factors.</p>
     <tr>
       <th>x</th>
       <td><p>A data frame (or object that inherits from <code>data.frame</code>).</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Further arguments passed to specialized methods.</p></td>
     </tr>
     </table>
     
@@ -210,6 +218,17 @@ Note: When applied to a <code>ped</code> object, that doesn't contain covariates
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

@@ -51,6 +51,9 @@
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -131,6 +134,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -150,16 +159,17 @@
 <a href="#pammtools-0-0-8" class="anchor"></a>pammtools 0.0.8</h1>
 <ul>
 <li><p>All data transformation is now hadled using <code>as_ped</code> (see <a href="../articles/data-transformation.html">data transformation vignette</a>)</p></li>
-<li>Data transformation includes
+<li>Data transformation now handles
 <ul>
 <li>standard time-to-event data</li>
 <li>time-to-event data with concurrent effects of time-dependent covariates</li>
 <li>time-to-event data with cumulative effects of time-dependent covariates</li>
 </ul>
 </li>
+<li><p><code>make_newdata</code> handles creation of new data sets for all of the above cases</p></li>
 <li><p>Added functionality to flexibly simulate data from PEXP including cumulative effects, see <code><a href="../reference/sim_pexp.html">?sim_pexp</a></code></p></li>
 <li><p>Added functionality to calculate Aaalen-model style cumulative coefficients, see <code>?cumulative_coefficient</code></p></li>
-<li>Breaking change in <code>split_data</code>:
+<li>Breaking change in <code>split_data</code> (<code>as_ped</code> now main data trafo function):
 <ul>
 <li>removed <code>max.end</code> argument</li>
 <li>added <code>max_time</code> argument to introduce administrative censoring at <code>max_time</code> when no custom interval split points are provided</li>
@@ -224,6 +234,17 @@
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

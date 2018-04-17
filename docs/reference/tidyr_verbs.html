@@ -55,6 +55,9 @@
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -135,6 +138,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -146,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1><code>tidyr</code> Verbs for <code>ped</code>-Objects</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-ped-methods.R'><code>R/tidyverse-ped-methods.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-methods.R'><code>R/tidyverse-methods.R</code></a></small>
     <div class="hidden name"><code>tidyr_verbs.Rd</code></div>
     </div>
 
@@ -156,6 +165,10 @@
     
 
     <pre class="usage"><span class='co'># S3 method for ped</span>
+<span class='fu'>fill</span>(<span class='no'>data</span>, <span class='no'>...</span>, <span class='kw'>.direction</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"down"</span>, <span class='st'>"up"</span>),
+  <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>fill</span>(<span class='no'>data</span>, <span class='no'>...</span>, <span class='kw'>.direction</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"down"</span>, <span class='st'>"up"</span>),
   <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
@@ -223,6 +236,17 @@ either "down" (the default) or "up".</p></td>
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

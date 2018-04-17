@@ -24,7 +24,7 @@
   ga('create', 'UA-44545040-3', 'auto');
   ga('send', 'pageview');
 
-</script>
+</script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 </head>
 <body>
     <div class="container template-article">
@@ -101,7 +101,13 @@
   </a>
 </li>
       </ul>
+<form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
+      </form>
+      
+    </div>
 <!--/.nav-collapse -->
   </div>
 <!--/.container -->
@@ -115,7 +121,7 @@
       <h1>Splines</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-04-06</h4>
+            <h4 class="date">2018-04-17</h4>
       
       <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/splines.Rmd"><code>vignettes/splines.Rmd</code></a></small>
       <div class="hidden name"><code>splines.Rmd</code></div>
@@ -164,7 +170,7 @@
 <a class="sourceLine" id="cb4-5" data-line-number="5">pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(karno, <span class="dt">bs=</span><span class="st">"ps"</span>), <span class="dt">data=</span>ped, <span class="dt">family=</span><span class="kw">poisson</span>(),</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">  <span class="dt">offset=</span>offset)</a></code></pre></div>
 <p>The Figure below visualizes the smooth estimates from both models:</p>
-<details><p><summary>Expand here to see R-Code</summary></p>
+<details><p><summary><em>Expand here to see R-Code</em></summary></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># crate data set with varying karno values (from min to max in 100 steps)</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co"># and add term contribution of karno from PAM and Cox-PH models</span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3">karno_df &lt;-<span class="st"> </span>ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/newdata.html">make_newdata</a></span>(<span class="dt">expand =</span> <span class="st">"karno"</span>, <span class="dt">n =</span> <span class="dv">100</span>) <span class="op">%&gt;%</span></a>
@@ -322,6 +328,14 @@
 </div>
 
   
-
-  </body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+</body>
 </html>

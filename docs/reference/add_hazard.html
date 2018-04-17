@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add predicted hazard to data set — add_hazard • pammtools</title>
+<title>Add predicted (cumulative) hazard to data set — add_hazard • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Add predicted hazard to data set — add_hazard" />
+<meta property="og:title" content="Add predicted (cumulative) hazard to data set — add_hazard" />
 
-<meta property="og:description" content="Add predicted hazard to data set
+<meta property="og:description" content="Add predicted (cumulative) hazard to data set
 Add cumulative hazard estimate to data set" />
 <meta name="twitter:card" content="summary" />
 
@@ -54,6 +54,9 @@ Add cumulative hazard estimate to data set" />
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -135,6 +138,12 @@ Add cumulative hazard estimate to data set" />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -145,13 +154,13 @@ Add cumulative hazard estimate to data set" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add predicted hazard to data set</h1>
+    <h1>Add predicted (cumulative) hazard to data set</h1>
     <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/add_functions.R'><code>R/add_functions.R</code></a></small>
     <div class="hidden name"><code>add_hazard.Rd</code></div>
     </div>
 
     
-    <p>Add predicted hazard to data set</p>
+    <p>Add predicted (cumulative) hazard to data set</p>
 <p>Add cumulative hazard estimate to data set</p>
     
 
@@ -275,6 +284,17 @@ add_hazard(pinfo, pam)
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

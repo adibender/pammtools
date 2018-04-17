@@ -27,7 +27,10 @@
 <script src="../pkgdown.js"></script>
 <meta property="og:title" content="Simulated data with cumulative effects — simdf_elra" />
 
-<meta property="og:description" content="Simulated data with cumulative effects" />
+<meta property="og:description" content="This is data simulated using the sim_pexp function.
+It contains two time-constant and two time-dependent covariates (observed
+on different exposure time grids). The code used for simulation is
+contained in the exmaples of ?sim_pexp." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -53,6 +56,9 @@
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -134,6 +140,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -150,14 +162,17 @@
     </div>
 
     
-    <p>Simulated data with cumulative effects</p>
+    <p>This is data simulated using the <code><a href='sim_pexp.html'>sim_pexp</a></code> function.
+It contains two time-constant and two time-dependent covariates (observed
+on different exposure time grids). The code used for simulation is
+contained in the exmaples of <code><a href='sim_pexp.html'>?sim_pexp</a></code>.</p>
     
 
     <pre class="usage"><span class='no'>simdf_elra</span></pre>
         
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>An object of class <code>nested_fdf</code> (inherits from <code>ped</code>, <code>tbl_df</code>, <code>tbl</code>, <code>data.frame</code>) with 250 rows and 9 columns.</p>
+    <p>An object of class <code>nested_fdf</code> (inherits from <code>sim_sdf</code>, <code>ped</code>, <code>tbl_df</code>, <code>tbl</code>, <code>data.frame</code>) with 250 rows and 9 columns.</p>
     
 
   </div>
@@ -184,6 +199,17 @@
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

@@ -51,6 +51,9 @@
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -131,6 +134,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -199,12 +208,6 @@
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="combine_df.html">combine_df()</a></code> </p>
-        </td>
-        <td><p>Combines multiple data frames</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
           <p><code><a href="newdata.html">make_newdata()</a></code> </p>
         </td>
         <td><p>Construct a data frame suitable for prediction</p></td>
@@ -265,7 +268,7 @@
         <td>
           <p><code><a href="add_hazard.html">add_hazard()</a></code> <code><a href="add_hazard.html">add_cumu_hazard()</a></code> </p>
         </td>
-        <td><p>Add predicted hazard to data set</p></td>
+        <td><p>Add predicted (cumulative) hazard to data set</p></td>
       </tr><tr>
         <!--  -->
         <td>
@@ -340,6 +343,17 @@
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

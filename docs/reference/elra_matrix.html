@@ -55,6 +55,9 @@ should usually not be called directly." />
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -135,6 +138,12 @@ should usually not be called directly." />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -146,7 +155,7 @@ should usually not be called directly." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create matrix components for cumulative effects</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/trafo-cumulative.R'><code>R/trafo-cumulative.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/formula-specials.R'><code>R/formula-specials.R</code></a></small>
     <div class="hidden name"><code>elra_matrix.Rd</code></div>
     </div>
 
@@ -202,6 +211,17 @@ suitable to fit cumulative effects in <code><a href='http://www.rdocumentation.o
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

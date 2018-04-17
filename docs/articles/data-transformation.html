@@ -24,7 +24,7 @@
   ga('create', 'UA-44545040-3', 'auto');
   ga('send', 'pageview');
 
-</script>
+</script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 </head>
 <body>
     <div class="container template-article">
@@ -101,7 +101,13 @@
   </a>
 </li>
       </ul>
+<form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
+      </form>
+      
+    </div>
 <!--/.nav-collapse -->
   </div>
 <!--/.container -->
@@ -115,7 +121,7 @@
       <h1>Data Transformation</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-04-06</h4>
+            <h4 class="date">2018-04-17</h4>
       
       <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/data-transformation.Rmd"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -368,7 +374,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 <pre><code>## Joining, by = "CombinedID"
 ## Joining, by = "CombinedID"</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Classes 'ped' and 'data.frame':  37258 obs. of  18 variables:
+<pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  18 variables:
 ##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
 ##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
 ##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...
@@ -391,6 +397,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "CombinedID"
 ##  - attr(*, "intvars")= chr  "CombinedID" "tstart" "tend" "interval" ...
+##  - attr(*, "func_mat_names")= chr  "Study_Day_latency" "caloriesPercentage" "LL"
 ##  - attr(*, "ll_funs")=List of 1
 ##  - attr(*, "te")=List of 1
 ##  - attr(*, "te_vars")=List of 1</code></pre>
@@ -411,7 +418,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 ## Joining, by = "CombinedID"
 ## Joining, by = "CombinedID"</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Classes 'ped' and 'data.frame':  37258 obs. of  20 variables:
+<pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  20 variables:
 ##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
 ##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
 ##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...
@@ -437,6 +444,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "CombinedID"
 ##  - attr(*, "intvars")= chr  "CombinedID" "tstart" "tend" "interval" ...
+##  - attr(*, "func_mat_names")= chr  "survhosp" "Study_Day_latency" "caloriesPercentage" "proteinGproKG" ...
 ##  - attr(*, "ll_funs")=List of 1
 ##  - attr(*, "te")=List of 1
 ##  - attr(*, "te_vars")=List of 1</code></pre>
@@ -447,18 +455,18 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 <p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_e\)</span> and <span class="math inline">\(s_e\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">simdf_elra</a></code></pre></div>
 <pre><code>## # A tibble: 250 x 9
-##       id  time status     x1    x2 te1        z.te1      te2        z.te2 
-##  * &lt;int&gt; &lt;dbl&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;list&gt;     &lt;list&gt;
-##  1     1 1.33       1 -0.879 1.86  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  2     2 1.69       1 -0.496 2.11  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  3     3 1.22       1  1.54  3.06  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  4     4 0.311      1  1.92  3.72  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  5     5 0.806      1  1.21  3.97  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  6     6 3.79       1  1.53  0.823 &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  7     7 0.884      1  0.451 3.47  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  8     8 2.14       1 -1.04  2.96  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-##  9     9 0.143      1 -0.103 5.44  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
-## 10    10 2.86       1  1.64  3.94  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl …
+##       id   time status      x1    x2 te1        z.te1      te2     z.te2  
+##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;list&gt;  &lt;list&gt; 
+##  1     1  3.22       1  1.59   4.61  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  2     2 10.0        0 -0.530  0.178 &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  3     3  0.808      1 -2.43   3.25  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  4     4  3.04       1  0.696  1.26  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  5     5  3.36       1  2.54   3.71  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  6     6  4.07       1 -0.0231 0.607 &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  7     7  0.534      1  1.68   1.74  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  8     8  1.57       1 -1.89   2.51  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##  9     9  2.39       1  0.126  3.38  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+## 10    10  6.61       1  1.79   1.06  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
 ## # ... with 240 more rows</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, te1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/unnest">unnest</a></span>()</a></code></pre></div>
 <pre><code>## # A tibble: 10 x 2
@@ -504,25 +512,26 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 <a class="sourceLine" id="cb31-5" data-line-number="5">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">10</span>,</a>
 <a class="sourceLine" id="cb31-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"id"</span>)</a>
 <a class="sourceLine" id="cb31-7" data-line-number="7"><span class="kw">str</span>(ped_sim,<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Classes 'ped' and 'data.frame':  981 obs. of  15 variables:
-##  $ id         : int  1 1 2 2 3 3 4 5 6 6 ...
-##  $ tstart     : num  0 1 0 1 0 1 0 0 0 1 ...
-##  $ tend       : int  1 2 1 2 1 2 1 1 1 2 ...
-##  $ interval   : Factor w/ 10 levels "(0,1]","(1,2]",..: 1 2 1 2 1 2 1 1 1 2 ...
-##  $ offset     : num  0 -1.105 0 -0.374 0 ...
-##  $ ped_status : num  0 1 0 1 0 1 1 1 0 0 ...
-##  $ x1         : num  -0.879 -0.879 -0.496 -0.496 1.541 ...
-##  $ x2         : num  1.86 1.86 2.11 2.11 3.06 ...
-##  $ time_te1   : int [1:981, 1:10] 0 1 0 1 0 1 0 0 0 1 ...
-##  $ te1_latency: num [1:981, 1:10] 0 1 0 1 0 1 0 0 0 1 ...
-##  $ z.te1_te1  : num [1:981, 1:10] -1.168 -1.168 -0.29 -0.29 -0.382 ...
-##  $ LL_te1     : int [1:981, 1:10] 0 1 0 1 0 1 0 0 0 1 ...
-##  $ te2_latency: num [1:981, 1:11] 6 7 6 7 6 7 6 6 6 7 ...
-##  $ z.te2_te2  : num [1:981, 1:11] -0.891 -0.891 2.004 2.004 0.828 ...
-##  $ LL_te2     : int [1:981, 1:11] 1 1 1 1 1 1 1 1 1 1 ...
+<pre><code>## Classes 'fped', 'ped' and 'data.frame':  1004 obs. of  15 variables:
+##  $ id         : int  1 1 1 1 2 2 2 2 2 2 ...
+##  $ tstart     : num  0 1 2 3 0 1 2 3 4 5 ...
+##  $ tend       : int  1 2 3 4 1 2 3 4 5 6 ...
+##  $ interval   : Factor w/ 10 levels "(0,1]","(1,2]",..: 1 2 3 4 1 2 3 4 5 6 ...
+##  $ offset     : num  0 0 0 -1.53 0 ...
+##  $ ped_status : num  0 0 0 1 0 0 0 0 0 0 ...
+##  $ x1         : num  1.59 1.59 1.59 1.59 -0.53 ...
+##  $ x2         : num  4.612 4.612 4.612 4.612 0.178 ...
+##  $ time_te1   : int [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...
+##  $ te1_latency: num [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...
+##  $ z.te1_te1  : num [1:1004, 1:10] -2.014 -2.014 -2.014 -2.014 -0.978 ...
+##  $ LL_te1     : int [1:1004, 1:10] 0 1 1 1 0 1 1 1 1 1 ...
+##  $ te2_latency: num [1:1004, 1:11] 6 7 8 9 6 7 8 9 10 11 ...
+##  $ z.te2_te2  : num [1:1004, 1:11] -0.689 -0.689 -0.689 -0.689 0.693 ...
+##  $ LL_te2     : int [1:1004, 1:11] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "id"
 ##  - attr(*, "intvars")= chr  "id" "tstart" "tend" "interval" ...
+##  - attr(*, "func_mat_names")= chr  "time_te1" "te1_latency" "z.te1_te1" "LL_te1" ...
 ##  - attr(*, "ll_funs")=List of 2
 ##  - attr(*, "te")=List of 2
 ##  - attr(*, "te_vars")=List of 2</code></pre>
@@ -531,20 +540,20 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 <pre><code>##    id LL_te1.1 LL_te1.2 LL_te1.3 LL_te1.4 LL_te1.5 LL_te1.6 LL_te1.7
 ## 1   1        0        0        0        0        0        0        0
 ## 2   1        1        0        0        0        0        0        0
-## 3   2        0        0        0        0        0        0        0
-## 4   2        1        0        0        0        0        0        0
-## 5   3        0        0        0        0        0        0        0
-## 6   3        1        0        0        0        0        0        0
-## 7   4        0        0        0        0        0        0        0
-## 8   5        0        0        0        0        0        0        0
-## 9   6        0        0        0        0        0        0        0
-## 10  6        1        0        0        0        0        0        0
-## 11  6        1        1        0        0        0        0        0
-## 12  6        1        1        1        0        0        0        0
-## 13  7        0        0        0        0        0        0        0
-## 14  8        0        0        0        0        0        0        0
-## 15  8        1        0        0        0        0        0        0
-## 16  8        1        1        0        0        0        0        0
+## 3   1        1        1        0        0        0        0        0
+## 4   1        1        1        1        0        0        0        0
+## 5   2        0        0        0        0        0        0        0
+## 6   2        1        0        0        0        0        0        0
+## 7   2        1        1        0        0        0        0        0
+## 8   2        1        1        1        0        0        0        0
+## 9   2        1        1        1        1        0        0        0
+## 10  2        1        1        1        1        1        0        0
+## 11  2        1        1        1        1        1        1        0
+## 12  2        1        1        1        1        1        1        1
+## 13  2        1        1        1        1        1        1        1
+## 14  2        1        1        1        1        1        1        1
+## 15  3        0        0        0        0        0        0        0
+## 16  4        0        0        0        0        0        0        0
 ##    LL_te1.8 LL_te1.9 LL_te1.10
 ## 1         0        0         0
 ## 2         0        0         0
@@ -558,45 +567,45 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 ## 10        0        0         0
 ## 11        0        0         0
 ## 12        0        0         0
-## 13        0        0         0
-## 14        0        0         0
+## 13        1        0         0
+## 14        1        1         0
 ## 15        0        0         0
 ## 16        0        0         0</code></pre>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">ped_sim <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, LL_te2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>(<span class="dv">16</span>)</a></code></pre></div>
 <pre><code>##    id LL_te2.1 LL_te2.2 LL_te2.3 LL_te2.4 LL_te2.5 LL_te2.6 LL_te2.7
 ## 1   1        1        1        1        1        1        1        0
 ## 2   1        1        1        1        1        1        1        1
-## 3   2        1        1        1        1        1        1        0
-## 4   2        1        1        1        1        1        1        1
-## 5   3        1        1        1        1        1        1        0
-## 6   3        1        1        1        1        1        1        1
-## 7   4        1        1        1        1        1        1        0
-## 8   5        1        1        1        1        1        1        0
-## 9   6        1        1        1        1        1        1        0
-## 10  6        1        1        1        1        1        1        1
-## 11  6        1        1        1        1        1        1        1
-## 12  6        1        1        1        1        1        1        1
-## 13  7        1        1        1        1        1        1        0
-## 14  8        1        1        1        1        1        1        0
-## 15  8        1        1        1        1        1        1        1
-## 16  8        1        1        1        1        1        1        1
+## 3   1        1        1        1        1        1        1        1
+## 4   1        1        1        1        1        1        1        1
+## 5   2        1        1        1        1        1        1        0
+## 6   2        1        1        1        1        1        1        1
+## 7   2        1        1        1        1        1        1        1
+## 8   2        1        1        1        1        1        1        1
+## 9   2        1        1        1        1        1        1        1
+## 10  2        1        1        1        1        1        1        1
+## 11  2        1        1        1        1        1        1        1
+## 12  2        1        1        1        1        1        1        1
+## 13  2        1        1        1        1        1        1        1
+## 14  2        1        1        1        1        1        1        1
+## 15  3        1        1        1        1        1        1        0
+## 16  4        1        1        1        1        1        1        0
 ##    LL_te2.8 LL_te2.9 LL_te2.10 LL_te2.11
 ## 1         0        0         0         0
 ## 2         0        0         0         0
-## 3         0        0         0         0
-## 4         0        0         0         0
+## 3         1        0         0         0
+## 4         1        1         0         0
 ## 5         0        0         0         0
 ## 6         0        0         0         0
-## 7         0        0         0         0
-## 8         0        0         0         0
-## 9         0        0         0         0
-## 10        0        0         0         0
-## 11        1        0         0         0
-## 12        1        1         0         0
-## 13        0        0         0         0
-## 14        0        0         0         0
+## 7         1        0         0         0
+## 8         1        1         0         0
+## 9         1        1         1         0
+## 10        1        1         1         1
+## 11        1        1         1         1
+## 12        1        1         1         1
+## 13        1        1         1         1
+## 14        1        1         1         1
 ## 15        0        0         0         0
-## 16        1        0         0         0</code></pre>
+## 16        0        0         0         0</code></pre>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
@@ -647,6 +656,14 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_e, z(t_e))\mathrm{d}t_e
 </div>
 
   
-
-  </body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+</body>
 </html>

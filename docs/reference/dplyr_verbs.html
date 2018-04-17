@@ -55,6 +55,9 @@
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -135,6 +138,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -146,7 +155,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1><code>dplyr</code> Verbs for <code>ped</code>-Objects</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-ped-methods.R'><code>R/tidyverse-ped-methods.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-methods.R'><code>R/tidyverse-methods.R</code></a></small>
     <div class="hidden name"><code>dplyr_verbs.Rd</code></div>
     </div>
 
@@ -226,7 +235,80 @@
 
 <span class='co'># S3 method for ped</span>
 <span class='fu'>right_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>,
-  <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>arrange</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>group_by</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>group_by_</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>.dots</span> <span class='kw'>=</span> <span class='fu'>list</span>(), <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>ungroup</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>distinct_</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>.dots</span> <span class='kw'>=</span> <span class='fu'>list</span>())
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>filter</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>sample_n</span>(<span class='no'>tbl</span>, <span class='no'>size</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>sample_frac</span>(<span class='no'>tbl</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>slice</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>select</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>select_</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>.dots</span> <span class='kw'>=</span> <span class='fu'>list</span>())
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>mutate</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='fu'>mutate_each.nested_fdf</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>rename</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>rename_</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>.dots</span> <span class='kw'>=</span> <span class='fu'>list</span>())
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>summarise</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>summarize</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='fu'>summarise_each.nested_fdf</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>transmute</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>inner_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>full_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>left_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># S3 method for nested_fdf</span>
+<span class='fu'>right_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -289,7 +371,7 @@ now unquote a <a href='http://www.rdocumentation.org/packages/rlang/topics/quosu
     </tr>
     <tr>
       <th>funs</th>
-      <td><p>see <code><a href='http://www.rdocumentation.org/packages/dplyr/topics/summarise_all'>summarize_all</a></code></p></td>
+      <td><p>see <code><a href='http://dplyr.tidyverse.org/reference/summarise_all.html'>summarize_all</a></code></p></td>
     </tr>
     <tr>
       <th>y</th>
@@ -318,6 +400,10 @@ it is a potentially expensive operation so you must opt into it.</p></td>
       <td><p>If there are non-joined duplicate variables in <code>x</code> and
 <code>y</code>, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.</p></td>
+    </tr>
+    <tr>
+      <th>keep_attributes</th>
+      <td><p>conserve attributes? defaults to <code>TRUE</code></p></td>
     </tr>
     </table>
     
@@ -351,6 +437,17 @@ Should be a character vector of length 2.</p></td>
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

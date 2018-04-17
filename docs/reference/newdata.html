@@ -55,6 +55,9 @@ as newdata argument in a call to predict and similar functions." />
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -135,6 +138,12 @@ as newdata argument in a call to predict and similar functions." />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -146,7 +155,7 @@ as newdata argument in a call to predict and similar functions." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Construct a data frame suitable for prediction</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/construct-newdata.R'><code>R/construct-newdata.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/make-newdata.R'><code>R/make-newdata.R</code></a></small>
     <div class="hidden name"><code>newdata.Rd</code></div>
     </div>
 
@@ -158,10 +167,10 @@ as <code>newdata</code> argument in a call to <code>predict</code> and similar f
     <pre class="usage"><span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>, <span class='kw'>expand</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>50L</span>)
+<span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>, <span class='kw'>expand</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>50L</span>)</pre>
+<span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,40 +181,108 @@ as <code>newdata</code> argument in a call to <code>predict</code> and similar f
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Further specifications of variables that should be set
-to a specific values.</p></td>
-    </tr>
-    <tr>
-      <th>expand</th>
-      <td><p>A character vector of column names in <code>ped</code>.</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>If <code>expand</code> specified, respective variables will be expanded
-in <code>n</code> values from minimum to maximum.</p></td>
+      <td><p>Covariate specifications (expressions) that will be evaulated
+by looking for variables in <code>x</code>. Must be of form <code>z = f(z)</code>
+where <code>z</code> is a variable in the data set <code>x</code> and <code>f</code> a known
+function that can be usefully applied to $<code>age</code>$. See examples below.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Extracts information from <code>ped</code>, using
-  <code><a href='sample_info.html'>sample_info</a></code>. If variables are specified with specific values
-  in <code>...</code>, the values in from <code>sample_info</code> will be overwritten.
-  If variables are provided in <code>expand</code>, these will be expanded from <code>min</code> to
-  <code>max</code> using in <code>n</code> equidistant steps.</p>
+    <p>Depening on the class of <code>x</code>, mean or modus values will be
+used for variables not specified in ellipsis. If x an object inherits class
+<code>ped</code>, useful data set completion will be performed depending on variables
+specified in ellipsis.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>library</span>(<span class='no'>dplyr</span>)
-<span class='no'>iris</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>()
-<span class='no'>iris</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>Sepal.Length</span><span class='kw'>=</span><span class='fl'>5</span>)
-<span class='no'>iris</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>Sepal.Length</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>10</span>), <span class='kw'>Sepal.Width</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>5.1</span>, <span class='fl'>5.2</span>))
-<span class='no'>iris</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>Sepal.Length</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>10</span>), <span class='kw'>expand</span><span class='kw'>=</span><span class='st'>"Sepal.Width"</span>, <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>5</span>)
-<span class='no'>iris</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>Species</span>) <span class='kw'>%&gt;%</span>
-  <span class='fu'>make_newdata</span>(<span class='kw'>Sepal.Length</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>10</span>), <span class='kw'>expand</span><span class='kw'>=</span><span class='st'>"Sepal.Width"</span>, <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>5</span>) <span class='kw'>%&gt;%</span>
-  <span class='fu'>print</span>(<span class='kw'>n</span><span class='kw'>=</span><span class='fl'>30</span>)
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>dplyr</span>)
+<span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>()</div><div class='output co'>#&gt; # A tibble: 1 x 9
+#&gt;    days status charlson_score   age sex   transfusion complications metastases
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1 1017.  0.483           2.78  62.0 male  no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>))</div><div class='output co'>#&gt; # A tibble: 1 x 9
+#&gt;    days status charlson_score   age sex   transfusion complications metastases
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1 1017.  0.483           2.78   50. male  no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>days</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>days</span>, <span class='fl'>3</span>), <span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; # A tibble: 6 x 9
+#&gt;     days status charlson_score   age sex   transfusion complications metastases
+#&gt;    &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1 1.00e0  0.483           2.78   50. male  no          no            yes       
+#&gt; 2 1.90e3  0.483           2.78   50. male  no          no            yes       
+#&gt; 3 3.81e3  0.483           2.78   50. male  no          no            yes       
+#&gt; 4 1.00e0  0.483           2.78   55. male  no          no            yes       
+#&gt; 5 1.90e3  0.483           2.78   55. male  no          no            yes       
+#&gt; 6 3.81e3  0.483           2.78   55. male  no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>days</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>days</span>, <span class='fl'>3</span>), <span class='kw'>status</span><span class='kw'>=</span><span class='fu'>unique</span>(<span class='no'>status</span>), <span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; # A tibble: 12 x 9
+#&gt;       days status charlson_score   age sex   transfusion complications
+#&gt;      &lt;dbl&gt;  &lt;int&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;        
+#&gt;  1    1.00      0           2.78   50. male  no          no           
+#&gt;  2 1904.        0           2.78   50. male  no          no           
+#&gt;  3 3806.        0           2.78   50. male  no          no           
+#&gt;  4    1.00      1           2.78   50. male  no          no           
+#&gt;  5 1904.        1           2.78   50. male  no          no           
+#&gt;  6 3806.        1           2.78   50. male  no          no           
+#&gt;  7    1.00      0           2.78   55. male  no          no           
+#&gt;  8 1904.        0           2.78   55. male  no          no           
+#&gt;  9 3806.        0           2.78   55. male  no          no           
+#&gt; 10    1.00      1           2.78   55. male  no          no           
+#&gt; 11 1904.        1           2.78   55. male  no          no           
+#&gt; 12 3806.        1           2.78   55. male  no          no           
+#&gt; # ... with 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='co'># mean/modus values of unspecified variables are calculated over whole data</span>
+<span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>sex</span><span class='kw'>=</span><span class='fu'>unique</span>(<span class='no'>sex</span>))</div><div class='output co'>#&gt; # A tibble: 2 x 9
+#&gt;    days status charlson_score   age sex    transfusion complications metastases
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1 1017.  0.483           2.78  62.0 female no          no            yes       
+#&gt; 2 1017.  0.483           2.78  62.0 male   no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>()</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sex"</span></div><div class='output co'>#&gt; # A tibble: 2 x 9
+#&gt;    days status charlson_score   age sex    transfusion complications metastases
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1 1060.  0.483           2.96  63.3 male   no          no            yes       
+#&gt; 2  954.  0.484           2.52  60.1 female no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='co'># You can also pass complete data sets to make_newdata</span>
+<span class='kw pkg'>purrr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/purrr/topics/cross'>cross_df</a></span>(<span class='fu'>list</span>(<span class='kw'>days</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>), <span class='kw'>sex</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))) <span class='kw'>%&gt;%</span>
+  <span class='fu'>make_newdata</span>(<span class='kw'>x</span><span class='kw'>=</span><span class='no'>tumor</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 9
+#&gt;    days status charlson_score   age sex    transfusion complications metastases
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1    0.  0.483           2.78  62.0 male   no          no            yes       
+#&gt; 2  500.  0.483           2.78  62.0 male   no          no            yes       
+#&gt; 3 1000.  0.483           2.78  62.0 male   no          no            yes       
+#&gt; 4    0.  0.483           2.78  62.0 female no          no            yes       
+#&gt; 5  500.  0.483           2.78  62.0 female no          no            yes       
+#&gt; 6 1000.  0.483           2.78  62.0 female no          no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'>
+<span class='co'># Examples for PED data</span>
+<span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>slice</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>) <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>))
+<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; # A tibble: 2 x 13
+#&gt;      id tstart  tend interval offset ped_status charlson_score   age sex   
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; 
+#&gt; 1  1.80     0.  500. (0,500]    6.21         1.             2.   50. female
+#&gt; 2  1.80     0.  500. (0,500]    6.21         1.             2.   55. female
+#&gt; # ... with 4 more variables: transfusion &lt;fct&gt;, complications &lt;fct&gt;,
+#&gt; #   metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='co'># if time information is specified, other time variables will be specified</span>
+<span class='co'># accordingly and offset calculated correctly</span>
+<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1000</span>), <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score age    sex
+#&gt; 1 1.8    500 1000 (500,1000] 6.214608          1              2  50 female
+#&gt; 2 1.8    500 1000 (500,1000] 6.214608          1              2  55 female
+#&gt;   transfusion complications metastases resection
+#&gt; 1         yes            no        yes        no
+#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score  age    sex
+#&gt; 1 1.8      0  500    (0,500] 6.214608          1              2 58.8 female
+#&gt; 2 1.8    500 1000 (500,1000] 6.214608          1              2 58.8 female
+#&gt;   transfusion complications metastases resection
+#&gt; 1         yes            no        yes        no
+#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sex"</span></div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;         id tstart tend   interval   offset ped_status charlson_score      age
+#&gt; 1 2.000000      0  500    (0,500] 6.214608          1              2 52.00000
+#&gt; 2 1.666667      0  500    (0,500] 6.214608          1              2 63.33333
+#&gt; 3 2.000000    500 1000 (500,1000] 6.214608          1              2 52.00000
+#&gt; 4 1.666667    500 1000 (500,1000] 6.214608          1              2 63.33333
+#&gt;      sex transfusion complications metastases resection
+#&gt; 1   male          no           yes        yes        no
+#&gt; 2 female         yes            no        yes        no
+#&gt; 3   male          no           yes        yes        no
+#&gt; 4 female         yes            no        yes        no</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -233,6 +310,17 @@ in <code>n</code> values from minimum to maximum.</p></td>
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>

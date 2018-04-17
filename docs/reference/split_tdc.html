@@ -57,6 +57,9 @@ which a TDC changes its value)." />
 
 
 
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
   </head>
 
   <body>
@@ -136,6 +139,12 @@ which a TDC changes its value)." />
   </a>
 </li>
       </ul>
+      
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
       
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -221,7 +230,8 @@ entry time could be supported through this argument).</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='st'>"pbc"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"survival"</span>)<span class='co'># loads both, pbc and pbcseq</span>
 <span class='no'>pbc</span>$<span class='no'>status</span> <span class='kw'>=</span> <span class='fl'>1</span>*(<span class='no'>pbc</span>$<span class='no'>status</span> <span class='kw'>==</span> <span class='fl'>2</span>)
-<span class='no'>pbc_ped</span> <span class='kw'>&lt;-</span> <span class='fu'>split_tdc</span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='no'>pbc</span>, <span class='no'>pbcseq</span>, <span class='kw'>te_var</span><span class='kw'>=</span><span class='st'>"day"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Not all IDs are present in both data sets.</span>
+<span class='no'>pbc_ped</span> <span class='kw'>&lt;-</span> <span class='fu'>split_tdc</span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='no'>pbc</span>, <span class='no'>pbcseq</span>, <span class='kw'>te_var</span><span class='kw'>=</span><span class='st'>"day"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: 'split_tdc' is deprecated and will be removed in the near future.</span>
+#&gt; <span class='warning'>		See 'as_ped' and 'concurrent' for the same functionality.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Not all IDs are present in both data sets.</span>
 #&gt; <span class='warning'>      IDs that do not appear in both data sets will be removed.</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -248,6 +258,17 @@ entry time could be supported through this argument).</p></td>
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control',
+    debug: false // Set debug to true if you want to inspect the dropdown
+  });
+</script>
+
 
   </body>
 </html>
