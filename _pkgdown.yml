@@ -2,6 +2,9 @@ url: https://adibender.github.io/pammtools/
 template:
   params:
     ganalytics: UA-44545040-3
+    docsearch:
+      api_key: c3726dcbf089f0b26f496305ed030c22
+      index_name: pammtools
 reference:
   - title: "Transform data to Piece-wise Exponential Data (PED) format"
     desc: "Functions to transform data sets in different formats to PED format,
@@ -16,7 +19,6 @@ reference:
       - sample_info
       - riskset_info
       - ped_info
-      - combine_df
       - make_newdata
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
