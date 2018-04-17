@@ -32,6 +32,7 @@ specified in ellipsis.
 }
 \examples{
 library(dplyr)
+\dontrun{
 tumor \%>\% make_newdata()
 tumor \%>\% make_newdata(age=c(50))
 tumor \%>\% make_newdata(days=seq_range(days, 3), age=c(50, 55))
@@ -51,4 +52,5 @@ ped \%>\% make_newdata(age=c(50, 55))
 ped \%>\% make_newdata(tend = c(1000), age = c(50, 55))
 ped \%>\% make_newdata(tend = unique(tend))
 ped \%>\% group_by(sex) \%>\% make_newdata(tend = unique(tend))
+}
 }
