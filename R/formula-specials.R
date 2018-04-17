@@ -315,7 +315,7 @@ make_time_mat <- function(data, nz) {
 #' @keywords internal
 make_latency_mat <- function(data, te) {
 
-  time        <- attr(data, "breaks")[-1]
+  time        <- attr(data, "breaks")
   id_tseq     <- attr(data, "id_tseq")
   Latency_mat <- outer(time, te, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
@@ -331,7 +331,7 @@ make_lag_lead_mat <- function(
   te,
   ll_fun = function(t, te) {(t >= te)}) {
 
-  LL <- outer(attr(data, "breaks"), te, ll_fun)*1L
+  LL <- outer(attr(data, "breaks"), te, FUN=ll_fun)*1L
   LL[attr(data, "id_tseq"), , drop=FALSE]
 
 }
