@@ -38,7 +38,7 @@ fped_attr <- function(fped) {
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
 #' @import dplyr
-#' @aliases arrange distinct_ filter full_join group_by group_by_ inner_join left_join mutate mutate_each rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
+#' @aliases arrange filter distinct_ full_join group_by group_by_ inner_join left_join mutate mutate_each rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
 # FIXME: replace deprecated "underscore" verbs, [summarise|mutate]_each
 #' @keywords internal
 NULL
@@ -310,3 +310,262 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
 #   return(tbl)
 
 # }
+
+
+#' @importFrom purrr discard
+un_nested_df <- function(nested_fdf) {
+  class(nested_fdf) <- class(nested_fdf) %>% discard(~.=="nested_fdf")
+  nested_fdf
+}
+re_nested_df <- function(.data) {
+  class(.data) <- c("nested_fdf", class(.data))
+  .data
+}
+
+nested_fdf_attr <- function(nested_fdf) {
+  attributes(nested_fdf)[c("breaks", "id_var", "intvars")]
+}
+
+
+
+#' @export
+#' @export arrange
+#' @rdname dplyr_verbs
+#' @keywords internal
+arrange.nested_fdf <- function(.data, ...) {
+  re_nested_df(arrange(un_nested_df(.data), ...))
+}
+
+#' @inheritParams dplyr::group_by
+#' @export
+#' @export group_by
+#' @rdname dplyr_verbs
+group_by.nested_fdf <- function(.data, ..., add = FALSE) {
+  re_nested_df(group_by(un_nested_df(.data), ..., add = add))
+}
+
+#' @inheritParams dplyr::group_by_
+#' @export
+#' @export group_by_
+#' @rdname dplyr_verbs
+group_by_.nested_fdf <- function(.data, ..., .dots = list(), add = FALSE) {
+  re_nested_df(group_by_(un_nested_df(.data), ..., .dots = .dots, add = add))
+}
+
+#' @export
+#' @export ungroup
+#' @rdname dplyr_verbs
+ungroup.nested_fdf <- function(x, ...) {
+  re_nested_df(ungroup(un_nested_df(x), ...))
+}
+
+#-------------------------------------------------------------------------------
+# single table: row ops
+
+#' @export
+#' @export distinct_
+#' @rdname dplyr_verbs
+distinct_.nested_fdf <- function(.data, ..., .dots = list()) {
+  re_nested_df(distinct_(un_nested_df(.data), ..., .dots = .dots))
+}
+
+#' @export
+#' @export filter
+#' @rdname dplyr_verbs
+filter.nested_fdf <- function(.data, ...) {
+  re_nested_df(filter(un_nested_df(.data), ...))
+}
+
+#' @export
+#' @export sample_n
+#' @inheritParams dplyr::sample_n
+#' @rdname dplyr_verbs
+sample_n.nested_fdf <- function(tbl, size, replace = FALSE, weight = NULL,
+  .env = NULL) {
+  re_nested_df(sample_n(un_nested_df(tbl), size, replace, weight, .env))
+}
+
+#' @export
+#' @export sample_frac
+#' @inheritParams dplyr::sample_frac
+#' @rdname dplyr_verbs
+sample_frac.nested_fdf <- function(tbl, size = 1, replace = FALSE, weight = NULL,
+  .env = NULL) {
+  re_nested_df(sample_frac(un_nested_df(tbl), size, replace, weight, .env))
+}
+
+#' @export
+#' @export slice
+#' @rdname dplyr_verbs
+slice.nested_fdf <- function(.data, ...) {
+  re_nested_df(slice(un_nested_df(.data), ...))
+}
+
+#-------------------------------------------------------------------------------
+# single table: column ops
+
+#' @export
+#' @export select
+#' @rdname dplyr_verbs
+select.nested_fdf <- function(.data, ...) {
+  re_nested_df(select(un_nested_df(.data), ...))
+}
+
+#' @export
+#' @export select_
+#' @rdname dplyr_verbs
+select_.nested_fdf <- function(.data, ..., .dots = list()) {
+  re_nested_df(select_(un_nested_df(.data), ..., .dots = .dots))
+}
+
+#' @param keep_attributes conserve attributes? defaults to \code{TRUE}
+#' @export
+#' @export mutate
+#' @rdname dplyr_verbs
+mutate.nested_fdf <- function(.data, ..., keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- nested_fdf_attr(.data)
+  }
+  .data <- re_nested_df(mutate(un_nested_df(.data), ...))
+  if (keep_attributes) {
+    attributes(.data) <- c(attributes(.data), data_attr)
+  }
+  return(.data)
+}
+
+#' @inheritParams dplyr::mutate_all
+#' @export
+#' @export mutate_each
+#' @rdname dplyr_verbs
+mutate_each.nested_fdf <- function(tbl, funs, ..., keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- nested_fdf_attr(tbl)
+  }
+  tbl <- re_nested_df(mutate_each(un_nested_df(tbl), funs, ...))
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+  return(tbl)
+}
+
+#' @export
+#' @export rename
+#' @rdname dplyr_verbs
+rename.nested_fdf <- function(.data, ...) {
+  re_nested_df(rename(un_nested_df(.data), ...))
+}
+
+#' @export
+#' @export rename_
+#' @rdname dplyr_verbs
+rename_.nested_fdf <- function(.data, ..., .dots = list()) {
+  re_nested_df(rename_(un_nested_df(.data), ..., .dots = .dots))
+}
+
+#' @export
+#' @export summarise
+#' @rdname dplyr_verbs
+summarise.nested_fdf <- function(.data, ...) {
+  re_nested_df(summarise(un_nested_df(.data), ...))
+}
+#' @export
+#' @rdname dplyr_verbs
+summarize.nested_fdf <- summarise.nested_fdf
+
+#' @export
+#' @export summarise_each
+#' @rdname dplyr_verbs
+summarise_each.nested_fdf <- function(tbl, funs, ...) {
+  re_nested_df(summarise_each(un_nested_df(tbl), funs,...))
+}
+
+#' @export
+#' @export transmute
+#' @rdname dplyr_verbs
+transmute.nested_fdf <- function(.data, ...) {
+  re_nested_df(transmute(un_nested_df(.data), ...))
+}
+
+#-------------------------------------------------------------------------------
+# joins
+
+#' @inheritParams dplyr::inner_join
+#' @export
+#' @export inner_join
+#' @rdname dplyr_verbs
+inner_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ...) {
+  #FIXME?
+  re_nested_df(inner_join(un_nested_df(x), y, by, copy, suffix, ...))
+}
+
+#' @inheritParams dplyr::full_join
+#' @export
+#' @export full_join
+#' @rdname dplyr_verbs
+full_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ...) {
+  #FIXME?
+  re_nested_df(full_join(un_nested_df(x), y, by, copy, suffix, ...))
+}
+
+#' @inheritParams dplyr::left_join
+#' @export
+#' @export left_join
+#' @rdname dplyr_verbs
+left_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep_attributes=TRUE) {
+
+  if (keep_attributes) {
+    data_attr   <- nested_fdf_attr(x)
+  }
+  #FIXME?
+  tbl <- re_nested_df(left_join(un_nested_df(x), y, by, copy, suffix, ...))
+
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
+
+}
+
+#' @inheritParams dplyr::right_join
+#' @export
+#' @export right_join
+#' @rdname dplyr_verbs
+right_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep_attributes=TRUE) {
+
+  if (keep_attributes) {
+    data_attr   <- nested_fdf_attr(y)
+  }
+  #FIXME?
+  tbl <- re_nested_df(right_join(un_nested_df(x), y, by, copy, suffix, ...))
+
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
+}
+
+
+#' @inheritParams tidyr::fill
+#' @inheritParams dplyr::filter
+#' @export
+#' @export fill
+#' @rdname tidyr_verbs
+#' @keywords internal
+fill.nested_fdf <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE) {
+  if (keep_attributes) {
+    data_attr   <- nested_fdf_attr(data)
+  }
+  tbl <- re_nested_df(fill(un_nested_df(data), ..., .direction=.direction))
+  if (keep_attributes) {
+    attributes(tbl) <- c(attributes(tbl), data_attr)
+  }
+
+  return(tbl)
+
+}
