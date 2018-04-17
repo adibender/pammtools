@@ -7,9 +7,9 @@
 \alias{sample_info.fped}
 \title{Extract information of the sample contained in a data set}
 \usage{
-sample_info(x, ...)
+sample_info(x)
 
-\method{sample_info}{data.frame}(x, ...)
+\method{sample_info}{data.frame}(x)
 
 \method{sample_info}{ped}(x)
 

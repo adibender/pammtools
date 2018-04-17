@@ -19,11 +19,6 @@ make_newdata(x, ...)
 by looking for variables in \code{x}. Must be of form \code{z = f(z)}
 where \code{z} is a variable in the data set \code{x} and \code{f} a known
 function that can be usefully applied to $\code{age}$. See examples below.}
-
-\item{expand}{A character vector of column names in \code{ped}.}
-
-\item{n}{If \code{expand} specified, respective variables will be expanded
-in \code{n} values from minimum to maximum.}
 }
 \description{
 Given a data set, returns a data frame type object that can be used

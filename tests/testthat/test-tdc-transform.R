@@ -1,7 +1,7 @@
 context("Transformation with TDC")
 
 
-test_that("Concurrent TDC are transformed correctly") {
+test_that("Concurrent TDC are transformed correctly", {
 	data("pbc", package="survival")
 	event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status==1)
 	tdc_df <- filter(pbcseq, id %in% 1:3) %>% select(id, day, bili, protime)
@@ -23,7 +23,7 @@ test_that("Concurrent TDC are transformed correctly") {
 	expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 743, 768))
 
 
-}
+})
 
 test_that("Covariate matrices are created correctly", {
 	data <- simdf_elra %>% filter(id %in% c(1:2))

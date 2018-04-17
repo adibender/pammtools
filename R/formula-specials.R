@@ -89,7 +89,7 @@ get_cumulative <- function(data, formula) {
     flatten()
 
   list(
-    func_list <- func_list,
+    func_list = func_list,
     func_mats = func_mats,
     ll_funs   = ll_funs,
     te_vars   = te_vars,
@@ -179,12 +179,12 @@ expand_cumulative <- function(data, func, n_func) {
   }
 
   if(any(c(time_var, te_var) %in% col_vars)) {
-      hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
-      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
-        te_var, func$suffix, n_func)
+    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
+    names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
+      te_var, func$suffix, n_func)
   } else {
-       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
-        func$suffix, n_func)
+    names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
+      func$suffix, n_func)
   }
 
   hist_mats
@@ -203,14 +203,15 @@ prep_concurrent <- function(x, formula, ...) {
 
 #' @rdname prep_concurrent
 #' @inherit prep_concurrent
+#' @keywords internal
 prep_concurrent.list <- function(x, formula, ...) {
 
   lgl_concurrent <- has_special(formula, "concurrent")
 
   if(lgl_concurrent) {
-    ccr_list <- eval_special(formula, special="concurrent")
+    ccr_list    <- eval_special(formula, special="concurrent")
     ccr_te_vars <- map_chr(ccr_list, ~.x[["te_var"]]) %>% unique()
-    ccr_time <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
+    ccr_time    <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
       reduce(union) %>% sort()
   }
 
@@ -221,6 +222,7 @@ prep_concurrent.list <- function(x, formula, ...) {
 }
 
 
+#' @keywords internal
 get_te <- function(data, te_var) {
   if (te_var %in% colnames(data)) {
     te <- pull(data, te_var) %>% unique()
@@ -230,7 +232,7 @@ get_te <- function(data, te_var) {
   te
 }
 
-
+#' @keywords internal
 add_concurrent <- function(ped, data, id_var) {
 
   ccr <- attr(data, "ccr")
@@ -255,6 +257,7 @@ add_concurrent <- function(ped, data, id_var) {
 
 }
 
+#' @keywords internal
 add_cumulative <- function(ped, data, formula) {
 
   func_components <- get_cumulative(data, formula)
@@ -262,6 +265,7 @@ add_cumulative <- function(ped, data, formula) {
   for(i in seq_along(func_matrices)) {
     ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
   }
+  attr(ped, "func")           <- func_components$func_list
   attr(ped, "func_mat_names") <- names(func_matrices)
   attr(ped, "ll_funs")        <- func_components$ll_funs
   attr(ped, "te")             <- func_components$te

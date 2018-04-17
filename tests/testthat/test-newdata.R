@@ -56,8 +56,44 @@ test_that("make_newdata works for PED with matrix columns", {
       cumulative(latency(te2), z.te2, te_var="te2"),
     cut = 0:10)
 
+  ## sample info
   expect_data_frame(sdf <- sample_info(ped_simdf), nrows=1, ncols=2)
   expect_equal(sdf$x1, 0.0718, tolerance = 1e-3)
   expect_equal(sdf$x2, 3.043, tolerance = 1e-3)
+  # expect_equal(sdf$z.te1_te1, -0.370, tolerance = 1e-3)
+  # expect_equal(sdf$z.te2_te2, -0.370, tolerance = )
+
+  ## ped info
+  pinf <- ped_info(ped_simdf)
+  expect_data_frame(pinf, nrows = 10L, ncols = 7L)
+  expect_equal(pinf$x1[1], 0.0718, tolerance=1e-3)
+  expect_equal(pinf$x2[2], 3.043, tolerance = 1e-3)
+
+  # make newdata
+  nd1 <- ped_simdf %>% make_newdata(x1 = c(0.05))
+  expect_data_frame(nd1, nrows = 1L, ncols = 15L)
+  expect_equal(nd1$tstart, 0)
+  expect_equal(nd1$tend, 1)
+  expect_equal(nd1$x1, 0.05)
+  expect_equal(nd1$x2, 2.65, tolerance=1e-3)
+  expect_equal(nd1$z.te1_te1, -0.370, 1e-3)
+
+  nd2 <- ped_simdf %>% make_newdata(x1 = seq_range(x1, 2))
+  expect_data_frame(nd2, nrows = 2L, ncols = 15L)
+  expect_equal(nd2$x1[1], min(unlist(simdf_elra$x1)))
+  expect_equal(nd2$x1[2], max(unlist(simdf_elra$x1)))
+
+  nd3 <- ped_simdf %>% make_newdata(tend = unique(tend))
+  expect_data_frame(nd3, nrows = 10L, ncols = 15L)
+  expect_equal(nd3$tend, 1:10)
+
+  nd4 <- ped_simdf %>% make_newdata(te1_latency = c(0:5))
+  expect_data_frame(nd4, nrows = 6L, ncols = 15L)
+  expect_equal(nd4$te1_latency, 0:5)
+
+  nd5 <- ped_simdf %>% make_newdata(tend=c(1:5), te1_latency=c(1:2))
+  expect_data_frame(nd5, nrows = 10L, ncols = 15L)
+  expect_equal(nd5$tend, rep(1:5, 2))
+  expect_equal(nd5$te1_latency, rep(1:2, each=5))
 
 })

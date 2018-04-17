@@ -12,7 +12,7 @@
 #' Note: When applied to a \code{ped} object, that doesn't contain covariates
 #' (only interval information), returns data frame with 0 columns.
 #' @export
-sample_info <- function(x, ...) {
+sample_info <- function(x) {
   UseMethod("sample_info", x)
 }
 
@@ -21,9 +21,7 @@ sample_info <- function(x, ...) {
 #' @importFrom purrr compose
 #' @export
 #' @rdname sample_info
-sample_info.data.frame <- function(x, ...) {
-
-  assert_data_frame(x, all.missing = FALSE, min.rows = 1, min.cols = 1)
+sample_info.data.frame <- function(x) {
 
   cn  <- colnames(x)
   num <- summarize_if(x, .predicate = is.numeric, ~mean(., na.rm = TRUE))
@@ -70,10 +68,8 @@ sample_info.ped <- function(x) {
 #' @inherit sample_info
 #' @export
 sample_info.fped <- function(x) {
-  grps   <- group_vars(x)
-  iv     <- attr(x, "intvars")
-  id_var <- attr(x, "id_var")
 
+  lgl_matrix <- map_lgl(x, is.matrix)
   x %>% select_if(~!is.matrix(.x)) %>% sample_info.ped()
 
 }
@@ -157,9 +153,6 @@ make_newdata <- function(x, ...) {
 
 #' @inherit make_newdata
 #' @rdname newdata
-#' @param expand A character vector of column names in \code{ped}.
-#' @param n If \code{expand} specified, respective variables will be expanded
-#' in \code{n} values from minimum to maximum.
 #' @export
 make_newdata.default <- function(x, ...) {
 
@@ -177,10 +170,13 @@ make_newdata.default <- function(x, ...) {
 
   ndf    <- combine_df(partI, partII)
   rest   <- x %>% select(-one_of(c(colnames(ndf))))
-  si     <- sample_info(rest) %>% ungroup()
-  out_df <- combine_df(si, ndf)
+  if (ncol(rest) > 0) {
+    si     <- sample_info(rest) %>% ungroup()
+    ndf <- combine_df(si, ndf)
 
-  out_df %>% select(one_of(orig_names))
+  }
+
+  ndf %>% select(one_of(orig_names))
 
 }
 
@@ -211,6 +207,76 @@ make_newdata.ped <- function(x, ...) {
   }
 
   ndf %>% select(one_of(orig_vars)) %>%
-    mutate(offset = log(tend - tstart))
+    mutate(
+      offset = log(.data$tend - .data$tstart),
+      ped_status = 1)
+
+}
+
+
+make_newdata.fped <- function(x, ...) {
+
+  assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
+
+  # prediction time points have to be interval end points so that piece-wise
+  # constancy of predicted hazards is respected. If user overrides this, warn.
+  expressions <- quos(...)
+  dot_names   <- names(expressions)
+  orig_vars   <- names(x)
+  cumu_vars   <- setdiff(attr(x, "func_mat_names") ,dot_names)
+  cumu_smry <- smry_cumu_vars(x, attr(x, "time_var")) %>% select(one_of(cumu_vars))
+
+  int_names   <- attr(x, "intvars")
+  ndf <- x %>%
+    select(one_of(setdiff(names(x),cumu_vars))) %>%
+    unfped() %>% make_newdata(...)
+
+  rest   <- x %>% select(-one_of(c(colnames(ndf), attr(x, "func_mat_names"), int_names)))
+  if (ncol(rest)>0) {
+    si     <- sample_info.data.frame(rest)
+  } else {
+    si <- NULL
+  }
+
+  out_df <- do.call(combine_df, compact(list(si, cumu_smry, ndf)))
+  int_df <- int_info(attr(x, "breaks"))
+  out_df <- right_join(int_df, out_df) %>%
+    select(intersect(colnames(x), names(.))) %>% as_tibble()
+
+  ## adjust lag-lead indicator
+  # LL_names <- grep("^LL", names(out_df), value=TRUE)
+  # if(length(LL_names) > 1)
+  # for(i in LL_names) {
+  #   ind_ll <- which(map_lgl(names(attr(x, "ll_funs")), ~grepl(.x, i)))
+  #   ll_i <- attr(data, "ll_funs")[[ind_ll]]
+  #   out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[]])
+  # }
+
+  out_df
+
+}
+
+
+smry_cumu_vars <- function(data, time_var) {
+
+  cumu_vars <- attr(data, "func_mat_names")
+  func_list <- attr(data, "func")
+  z_vars <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
+    unlist()
+  smry_z <- select(data, one_of(z_vars)) %>%
+    map(~.x[1,]) %>% map(~mean(unlist(.x))) %>% bind_cols()
+  smry_time <- select(data, setdiff(cumu_vars, z_vars)) %>% map(~.x[1,1])
+  bind_cols(smry_z, smry_time)
+
+}
+
+get_zvars <- function(func, time_var, n_func) {
+  col_vars <- func$col_vars
+  all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$te_var,
+    func$suffix, n_func)
+  time_vars <- make_mat_names(c(time_var, func$te_var, "LL"),
+    func$latency_var, func$te_var, func$suffix, n_func)
+
+  setdiff(all_vars, time_vars)
 
 }
