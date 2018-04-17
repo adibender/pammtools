@@ -1,237 +1,237 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/add_hazard.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/add_hazard.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/add_surv_prob.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/add_surv_prob.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/add_tdc.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/add_tdc.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/add_term.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/add_term.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/as_ped.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/as_ped.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/as_ped.data.frame.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/as_ped.data.frame.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/as_ped.list.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/as_ped.list.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/as_ped.nested_fdf.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/as_ped.nested_fdf.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/calc_ci.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/calc_ci.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/combine_cut.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/combine_cut.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/combine_df.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/combine_df.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/compute_cum_diff.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/compute_cum_diff.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/cumulative_coefficient.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/cumulative_coefficient.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/daily.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/daily.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/dplyr_verbs.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/dplyr_verbs.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/elra_matrix.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/elra_matrix.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/fcumu.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/fcumu.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/formula_helpers.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/formula_helpers.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/geom_hazard.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/geom_hazard.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/geom_stepribbon.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/geom_stepribbon.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cumu_coef.aalen.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef.aalen.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cumu_coef.gam.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef.gam.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cumu_coef_baseline.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef_baseline.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cumu_hazard.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumu_hazard.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cumulative.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumulative.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_cut.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_cut.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_hazard.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_hazard.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_intervals.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_intervals.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_laglead.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_laglead.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_ped_form.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_ped_form.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_plotinfo.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_plotinfo.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_surv_prob.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_surv_prob.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_tdc.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_tdc.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_tdc_form.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_tdc_form.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_tdc_vars.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_tdc_vars.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_term.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_term.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/get_terms.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/get_terms.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/gg_fixed.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/gg_fixed.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/gg_laglead.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/gg_laglead.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/gg_re.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/gg_re.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/gg_smooth.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/gg_smooth.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/gg_tensor.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/gg_tensor.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/has_tdc.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/has_tdc.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/has_tdc_form.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/has_tdc_form.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/int_info.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/int_info.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/modus.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/modus.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/nest_tdc.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/nest_tdc.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/newdata.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/newdata.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/pamm.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/pamm.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/pammtools.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/pammtools.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/patient.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/patient.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/ped_info.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/ped_info.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/pipe.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/prep_concurrent.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/prep_concurrent.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/riskset_info.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/riskset_info.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/rm_grpvars.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/rm_grpvars.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/sample_info.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/sample_info.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/seq_range.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/seq_range.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/sim_pexp.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/sim_pexp.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/simdf_elra.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/simdf_elra.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/specials.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/specials.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/split_data.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/split_data.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/split_tdc.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/split_tdc.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tidiers.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tidiers.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tidy_fixed.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tidy_fixed.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tidy_smooth.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tidy_smooth.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tidy_smooth2d.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tidy_smooth2d.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tidyr_verbs.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tidyr_verbs.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//reference/tumor.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/tumor.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/baseline.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/baseline.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/basics.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/basics.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/convenience.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/convenience.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/data-transformation.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/data-transformation.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/frailty.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/frailty.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/splines.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/splines.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/strata.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/strata.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/tdcovar.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/tdcovar.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools//articles/tveffects.html</loc>
+    <loc>https://adibender.github.io/pammtools/articles/tveffects.html</loc>
   </url>
 </urlset>
