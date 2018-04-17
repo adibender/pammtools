@@ -42,4 +42,29 @@
 
 #' Simulated data with cumulative effects
 #'
+#' This is data simulated using the \code{\link[pammtools]{sim_pexp}} function.
+#' It contains two time-constant and two time-dependent covariates (observed
+#' on different exposure time grids). The code used for simulation is
+#' contained in the exmaples of \code{?sim_pexp}.
+#'
 "simdf_elra"
+
+
+#' Stomach area tumor data
+#'
+#' Information on patients treated for a cancer desease
+#' located in the stomach area.
+#' The data set includes:
+#' \describe{
+#'  \item{days}{Time from operation until death in days.}
+#'  \item{status}{Event indicator (0 = censored, 1 = death).}
+#'  \item{age}{The subject's age.}
+#'  \item{sex}{The subject's sex (male/female).}
+#'  \item{charlson_score}{Charlson comorbidity score, 1-6.}
+#'  \item{transfusion}{Has subject received transfusions (no/yes).}
+#'  \item{complications}{Did major complications occur during operation (no/yes).}
+#'  \item{metastases}{Did the tumor develop metastases? (no/yes).}
+#'  \item{resection}{Was the operation accompanied by a major resection (no/yes).}
+#' }
+#'
+"tumor"

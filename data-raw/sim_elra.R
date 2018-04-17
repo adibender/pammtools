@@ -1,6 +1,7 @@
 library(dplyr)
 # set number of observations/subjects
 n <- 250
+set.seed(8042018)
 # create data set with variables which will affect the hazard rate.
 df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6)) %>%
  as_tibble()

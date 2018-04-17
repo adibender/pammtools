@@ -4,11 +4,14 @@
 \name{simdf_elra}
 \alias{simdf_elra}
 \title{Simulated data with cumulative effects}
-\format{An object of class \code{nested_fdf} (inherits from \code{ped}, \code{tbl_df}, \code{tbl}, \code{data.frame}) with 250 rows and 9 columns.}
+\format{An object of class \code{nested_fdf} (inherits from \code{sim_sdf}, \code{ped}, \code{tbl_df}, \code{tbl}, \code{data.frame}) with 250 rows and 9 columns.}
 \usage{
 simdf_elra
 }
 \description{
-Simulated data with cumulative effects
+This is data simulated using the \code{\link[pammtools]{sim_pexp}} function.
+It contains two time-constant and two time-dependent covariates (observed
+on different exposure time grids). The code used for simulation is
+contained in the exmaples of \code{?sim_pexp}.
 }
 \keyword{datasets}

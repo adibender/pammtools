@@ -203,9 +203,11 @@ add_tdc <- function(data, te, rng_fun, ...) {
   name_te <- quo_name(te)
   z_var   <- paste0("z.", name_te)
 
-  data %>% mutate(
-    !!name_te := map(seq_len(n()), ~ !!te),
-    !!z_var   := map(seq_len(n()), ~ rng_fun(nz)))
+  data %>%
+    mutate(
+      !!name_te := map(seq_len(n()), ~ !!te),
+      !!z_var   := map(seq_len(n()), ~ rng_fun(nz=nz))) %>%
+    as_tibble()
 
 }
 
