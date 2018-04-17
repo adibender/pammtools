@@ -15,7 +15,9 @@ as_ped.data.frame <- function(data, formula, ...) {
   dots         <- list(...)
   dots$data    <- data
   dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
-  do.call(split_data, dots)
+  ped <- do.call(split_data, dots)
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  ped
 
 }
 
@@ -45,7 +47,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   # replace updated attributes
   attr(data, "breaks") <- attr(ped, "breaks")
   attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
-    summarize(id_n = n()) %>% pull(id_n) %>% as_vector()
+    summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
   attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
     transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
   attr(data, "id_teseq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
@@ -58,7 +60,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     ped <- add_cumulative(ped, data=data, formula=formula)
     class(ped) <- c("fped", class(ped))
   }
-
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
 
 }
@@ -88,7 +90,7 @@ as_ped.list <- function(data, formula, ...) {
       ped <- as_ped(nested_fdf, formula, ...)
     }
   }
-
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
 
 }
