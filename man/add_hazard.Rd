@@ -3,7 +3,7 @@
 \name{add_hazard}
 \alias{add_hazard}
 \alias{add_cumu_hazard}
-\title{Add predicted hazard to data set}
+\title{Add predicted (cumulative) hazard to data set}
 \usage{
 add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
   se.mult = 2, overwrite = FALSE, time_variable = NULL, ...)
@@ -61,7 +61,7 @@ numeric.}
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 }
 \description{
-Add predicted hazard to data set
+Add predicted (cumulative) hazard to data set
 
 Add cumulative hazard estimate to data set
 }

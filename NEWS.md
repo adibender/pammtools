@@ -3,10 +3,12 @@
 * All data transformation is now hadled using `as_ped` (see
 [data transformation vignette](../articles/data-transformation.html))
 
-* Data transformation includes
+* Data transformation now handles
     - standard time-to-event data
     - time-to-event data with concurrent effects of time-dependent covariates
     - time-to-event data with cumulative effects of time-dependent covariates
+
+* `make_newdata` handles creation of new data sets for all of the above cases
 
 * Added functionality to flexibly simulate data from PEXP including cumulative effects, see `?sim_pexp`
 
@@ -14,7 +16,7 @@
 see `?cumulative_coefficient`
 
 
-* Breaking change in `split_data`:
+* Breaking change in `split_data` (`as_ped` now main data trafo function):
     - removed `max.end` argument
     - added `max_time` argument to introduce administrative censoring at
     `max_time` when no custom interval split points are provided

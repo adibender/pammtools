@@ -1,4 +1,4 @@
-#' Add predicted hazard to data set
+#' Add predicted (cumulative) hazard to data set
 #'
 #' @inheritParams mgcv::predict.gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}} and
