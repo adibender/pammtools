@@ -1,4 +1,3 @@
-
 #' @importFrom purrr discard
 unped <- function(ped) {
   class(ped) <- class(ped) %>% discard(~.=="ped")
@@ -11,6 +10,19 @@ reped <- function(.data) {
 
 ped_attr <- function(ped) {
   attributes(ped)[c("breaks", "id_var", "intvars")]
+}
+
+unfped <- function(fped) {
+  class(fped) <- class(fped) %>% discard(~.=="fped")
+  fped
+}
+refped <- function(.data) {
+  class(.data) <- c("fped", class(.data))
+  .data
+}
+
+fped_attr <- function(fped) {
+  attributes(fped)[c("breaks", "id_var", "intvars")]
 }
 
 
