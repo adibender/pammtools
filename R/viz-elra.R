@@ -1,18 +1,21 @@
 #' Visualize effect estimates for specific covariate combinations
 #'
 #' Depending on the plot type and input, creates either a bivariate effect
-#' surface or slices through 1 dimension.
+#' surface or 1-dimensional slices.
 #'
 #' @import ggplot2
 #' @importFrom rlang quos
 #' @export
 #' @keywords internaldo
-gg_partial <- function(data, mod, term, ...) {
+gg_partial <- function(data, mod, term, ..., reference = NULL) {
 
   expressions <- quos(...)
   vars <- names(expressions)
   n_vars <- length(expressions)
-  ndf <- make_newdata(data, ...) %>% add_term(mod_dlnm, term)
+
+  ndf <- make_newdata(data, ...) %>%
+    add_term2(mod_dlnm, term, reference=reference)
+
 
   gg_base <- ggplot(ndf, aes_string(x = vars[1])) +
     xlab(vars[1])
@@ -25,12 +28,13 @@ gg_partial <- function(data, mod, term, ...) {
       gg_out <- gg_base + aes_string(y = vars[2], z = "fit") +
         geom_tile(aes_string(fill = "fit")) +
         geom_contour(col = "grey30") +
-        scale_y_reverse() +
-        scale_fill_gradient2(low = "firebrick2", high = "steelblue")
+        scale_y_reverse(expand = c(0,0)) +
+        scale_x_continuous(expand = c(0,0)) +
+        scale_fill_gradient2(high = "firebrick2", low = "steelblue")
     }
   }
 
-  gg_out
+  gg_out + theme(legend.position = "bottom")
 }
 
 #' @rdname gg_partial
@@ -38,17 +42,18 @@ gg_partial <- function(data, mod, term, ...) {
 #' @importFrom rlang quos
 #' @export
 #' @keywords internal
-gg_slice <- function(data, mod, term, ...) {
+gg_slice <- function(data, mod, term, ..., reference=NULL) {
 
   expressions <- quos(...)
-  vars <- names(expressions)
-  n_vars <- length(expressions)
-  ndf <- make_newdata(data, ...) %>% add_term(mod_dlnm, term)
+  vars        <- names(expressions)
+  ndf         <- make_newdata(data, ...) %>%
+    add_term2(mod, term, reference = reference)
 
   n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
   vars<- vars[rev(order(n_unique))]
-  vars <- vars[rev(order(n_unique)) > 1]
+  vars <- vars[n_unique[rev(order(n_unique))] > 1]
   ndf <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
+  n_vars <- length(vars)
 
   gg_out <- ggplot(ndf, aes_string(x = vars[1], y = "fit")) +
     geom_ribbon(aes_string(ymin = "low", ymax = "high"), alpha = 0.3) +
@@ -62,6 +67,6 @@ gg_slice <- function(data, mod, term, ...) {
     }
   }
 
-  gg_out
+  gg_out + theme(legend.position = "bottom")
 
 }

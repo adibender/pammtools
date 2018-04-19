@@ -5,13 +5,13 @@
 \alias{gg_slice}
 \title{Visualize effect estimates for specific covariate combinations}
 \usage{
-gg_partial(data, mod, term, ...)
+gg_partial(data, mod, term, ..., reference = NULL)
 
-gg_slice(data, mod, term, ...)
+gg_slice(data, mod, term, ..., reference = NULL)
 }
 \description{
 Depending on the plot type and input, creates either a bivariate effect
-surface or slices through 1 dimension.
+surface or 1-dimensional slices.
 }
 \keyword{internal}
 \keyword{internaldo}

@@ -114,3 +114,57 @@ get_plotinfo <- function(x, ...) {
 	return(po)
 
 }
+
+
+add_term2 <- function(
+  newdata,
+  object,
+  term,
+  se.fit   = TRUE,
+  type     = "terms",
+  se.mult  = 2,
+  reference = NULL,
+  ...) {
+
+  assert_data_frame(newdata, all.missing=FALSE)
+  assert_character(term, min.chars=1, any.missing=FALSE, min.len=1)
+
+  col_ind <- map(term, grep, x=names(object$coefficients)) %>%
+    unlist() %>% unique() %>% sort()
+  is_pam <- inherits(object, "gam")
+
+  X <- if (is_pam) {
+    predict(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
+  } else  {
+    model.matrix(object$formula[-2], data = newdata)[,col_ind, drop=FALSE]
+  }
+  if (!is.null(reference)) {
+    reference <- newdata %>% mutate(!!!reference)
+    X_ref <- if (is_pam) {
+      predict(
+        object,
+        newdata = reference,
+        type    = "lpmatrix")[, col_ind, drop = FALSE]
+    } else {
+      model.matrix(object$formula[-2], data = reference)[, col_ind, drop = FALSE]
+    }
+    X <- X - X_ref
+  }
+
+  newdata[["fit"]] <- drop(X %*% object$coefficients[col_ind])
+  if (se.fit) {
+    cov.coefs <- if(is_pam) {
+      object$Vp[col_ind, col_ind]
+    } else {
+      vcov(object)[col_ind, col_ind]
+    }
+    se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
+    newdata <- newdata %>%
+      mutate(
+        low  = .data$fit - se.mult * se,
+        high = .data$fit + se.mult * se)
+  }
+
+  return(newdata)
+
+}
