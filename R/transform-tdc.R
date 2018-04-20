@@ -24,12 +24,13 @@ get_tdc <- function(data, id_var) {
 #' @inherit get_tdc
 has_tdc <- function(data, id_var) {
 
-	data %>% group_by(!!sym(id_var)) %>%
-		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
-		select(-one_of(id_var)) %>%
-		summarize_all(any) %>% unlist() %>% any()
+  data %>% group_by(!!sym(id_var)) %>%
+    summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
+    select(-one_of(id_var)) %>%
+    summarize_all(any) %>% unlist() %>% any()
 
 }
+
 
 #' Extract unique cut points when time-dependent covariates present
 #'
@@ -106,6 +107,9 @@ split_tdc <- function(
 	entry_time = 0,
 	...) {
 
+	warning("'split_tdc' is deprecated and will be removed in the near future.
+		See 'as_ped' and 'concurrent' for the same functionality.")
+
 	assert_data_frame(event_df)
   assert_data_frame(tdc_df)
   assert_subset(c(id_var, time_var, status_var), colnames(event_df))
@@ -151,45 +155,5 @@ split_tdc <- function(
   class(ped) <- c("ped", class(ped))
 
   return(ped)
-
-}
-
-
-add_concurrent <- function(ped, data, id_var) {
-
-	ccr <- attr(data, "ccr")
-
-	for(ccr_i in ccr[["ccr_list"]]) {
-		tdc_vars_i <- ccr_i[["col_vars"]]
-		te_var_i   <- ccr_i[["te_var"]]
-		ccr_vars_i <- c(te_var_i, tdc_vars_i)
-		ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
-			unnest()
-		ped <- ped %>%
-			left_join(ccr_i_df, by = c(id_var, "tstart"=te_var_i)) %>%
-			group_by(!!sym(id_var)) %>%
-			fill(tdc_vars_i)
-
-		attr(ped, "ccr") <- ccr
-
-	}
-
-	ped
-
-
-}
-
-add_cumulative <- function(ped, data, formula) {
-
-	func_components <- get_cumulative(data, formula)
-	func_matrices <- func_components$func_mats
-  for(i in seq_along(func_matrices)) {
-  	ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
-  }
-  attr(ped, "ll_funs") <- func_components$ll_funs
-  attr(ped, "te")      <- func_components$te
-  attr(ped, "te_vars") <- func_components$te_vars
-
-  ped
 
 }

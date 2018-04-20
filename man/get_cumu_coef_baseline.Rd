@@ -2,7 +2,7 @@
 % Please edit documentation in R/cumulative-coefficient.R
 \name{get_cumu_coef_baseline}
 \alias{get_cumu_coef_baseline}
-\title{Cumulative coefficients}
+\title{Extract cumulative coefficients (cumulative hazard differences)}
 \usage{
 get_cumu_coef_baseline(data, model, ...)
 }
@@ -14,12 +14,12 @@ get_cumu_coef_baseline(data, model, ...)
 \item{...}{Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.}
 }
 \description{
-These functions are designed to mimick the cumulative coefficients
+These functions are designed to extract (or mimick) the cumulative coefficients
 usually used in additive hazards models (Aalen model) to depict (time-varying)
-covariate effects. For PAMMs, these can be interpreted as the differences
+covariate effects. For PAMMs, these are the differences
 between the cumulative hazard rates where all covariates except one have the
-same values. For the a numeric covariate of interest we calculate
-Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
+identical values. For a numeric covariate of interest, we calculate
+\eqn{Lambda(t|x+1) - Lambda(t|x)}.  For non-numeric covariates
 the cumulative hazard of the reference level is substracted from
 the cumulative hazards eveluated at all non reference levels. Standard
 errors are calculated using the delta method.

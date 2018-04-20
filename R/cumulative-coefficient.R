@@ -1,3 +1,63 @@
+#' Extract cumulative coefficients (cumulative hazard differences)
+#'
+#' These functions are designed to extract (or mimick) the cumulative coefficients
+#' usually used in additive hazards models (Aalen model) to depict (time-varying)
+#' covariate effects. For PAMMs, these are the differences
+#' between the cumulative hazard rates where all covariates except one have the
+#' identical values. For a numeric covariate of interest, we calculate
+#' \eqn{Lambda(t|x+1) - Lambda(t|x)}.  For non-numeric covariates
+#' the cumulative hazard of the reference level is substracted from
+#' the cumulative hazards eveluated at all non reference levels. Standard
+#' errors are calculated using the delta method.
+#'
+#' @rdname cumulative_coefficient
+#' @param model Object from which to extract cumulative coefficients.
+#' @param data Additional data if necessary.
+#' @param terms A character vector of variables for which the cumulative
+#' coefficient should be calculated.
+#' @param ... Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.
+#' @export
+get_cumu_coef <- function(model, data=NULL, terms, ...) {
+  UseMethod("get_cumu_coef", model)
+}
+
+
+#' @rdname cumulative_coefficient
+#' @inherit get_cumu_coef
+#' @export
+get_cumu_coef.gam <- function(model, data, terms, ...) {
+
+  data    <- ped_info(data)
+  map(terms, ~cumu_coef(data, model, quo_name(sym(.)), ...)) %>%
+    bind_rows()
+
+}
+
+#' @rdname cumulative_coefficient
+#' @inherit get_cumu_coef
+#' @param ci Logical. Indicates if confidence intervals should be returned as
+#' well.
+#' @export
+get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
+
+    cumu_coef <- model$cum %>% as_tibble() %>%
+      select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
+      gather("variable", "cumu_hazard", -.data$time)
+    cumu_var <- model$var %>% as_tibble() %>%
+     select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
+      gather("variable", "cumu_var", -.data$time)
+
+    suppressMessages(
+      left_join(cumu_coef, cumu_var) %>%
+      mutate(
+        method     = class(model)[1],
+        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var^0.5,
+        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var^0.5) %>%
+      select(one_of(c("method", "variable", "time")), everything(), -one_of("cumu_var"))
+      )
+
+}
+
 get_cumu_diff <- function(d1, d2, model) {
   lp <- compute_cum_diff(d1, d2, model)
   d2 %>%
@@ -59,61 +119,4 @@ get_cumu_coef_baseline <- function(data, model, ...) {
       variable    = "(Intercept)") %>%
     rename("time" = "tstart") %>%
     select(one_of(c("method", "variable", "time")), everything())
-}
-
-
-#' Cumulative coefficients
-#'
-#' These functions are designed to mimick the cumulative coefficients
-#' usually used in additive hazards models (Aalen model) to depict (time-varying)
-#' covariate effects. For PAMMs, these can be interpreted as the differences
-#' between the cumulative hazard rates where all covariates except one have the
-#' same values. For the a numeric covariate of interest we calculate
-#' Lambda(t|x+1) - Lambda(t|x).  For non-numeric covariates of interest
-#' the cumulative hazard of the reference level is substracted from
-#' the cumulative hazards eveluated at all non reference levels. Standard
-#' errors are calculated using the delta method.
-#'
-#' @rdname cumulative_coefficient
-#' @param model Object from which to extract cumulative coefficients.
-#' @param data Additional data if necessary.
-#' @param terms A character vector of variables for which the cumulative
-#' coefficient should be calculated.
-#' @param ... Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.
-#'
-#' @export
-get_cumu_coef <- function(model, data=NULL, terms, ...) {
-  UseMethod("get_cumu_coef", model)
-}
-
-
-#' @inherit get_cumu_coef
-#' @export
-get_cumu_coef.gam <- function(model, data, terms, ...) {
-  data <- ped_info(data)
-  chaz_df <- map(terms, ~cumu_coef(data, model, quo_name(sym(.)), ...)) %>%
-    bind_rows()
-
-}
-
-#' @inherit get_cumu_coef
-#' @param ci Logical. Indicates if confidence intervals should be returned as
-#' well.
-#' @export
-get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
-
-    cumu_coef <- model$cum %>% as_tibble() %>%
-      select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
-      gather("variable", "cumu_hazard", -.data$time)
-    cumu_var <- model$var %>% as_tibble() %>%
-     select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
-      gather("variable", "cumu_var", -.data$time)
-
-    left_join(cumu_coef, cumu_var) %>%
-      mutate(
-        method     = class(model)[1],
-        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var^0.5,
-        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var^0.5) %>%
-      select(one_of(c("method", "variable", "time")), everything(), -one_of("cumu_var"))
-
 }

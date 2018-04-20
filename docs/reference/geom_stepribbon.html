@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -42,19 +48,20 @@ or a confidence band." />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -71,7 +78,7 @@ or a confidence band." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -136,6 +143,12 @@ or a confidence band." />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -147,15 +160,17 @@ or a confidence band." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Step ribbon plots.</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/ggplot-extensions.R'><code>R/ggplot-extensions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/ggplot-extensions.R'><code>R/ggplot-extensions.R</code></a></small>
     <div class="hidden name"><code>geom_stepribbon.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p><code>geom_stepribbon</code> is an extension of the <code>geom_ribbon</code>, and
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
 or a confidence band.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>geom_stepribbon</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
@@ -166,23 +181,23 @@ or a confidence band.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>mapping</th>
-      <td><p>Set of aesthetic mappings created by <code>aes</code> or
-<code>aes_</code>. If specified and <code>inherit.aes = TRUE</code> (the
+      <td><p>Set of aesthetic mappings created by <code>aes()</code> or
+<code>aes_()</code>. If specified and <code>inherit.aes = TRUE</code> (the
 default), it is combined with the default mapping at the top level of the
 plot. You must supply <code>mapping</code> if there is no plot mapping.</p></td>
     </tr>
     <tr>
       <th>data</th>
       <td><p>The data to be displayed in this layer. There are three
-   options:</p>
+options:</p>
 <p>If <code>NULL</code>, the default, the data is inherited from the plot
-   data as specified in the call to <code>ggplot</code>.</p>
+data as specified in the call to <code>ggplot()</code>.</p>
 <p>A <code>data.frame</code>, or other object, will override the plot
-   data. All objects will be fortified to produce a data frame. See
-   <code>fortify</code> for which variables will be created.</p>
+data. All objects will be fortified to produce a data frame. See
+<code>fortify()</code> for which variables will be created.</p>
 <p>A <code>function</code> will be called with a single argument,
-   the plot data. The return value must be a <code>data.frame.</code>, and
-   will be used as the layer data.</p></td>
+the plot data. The return value must be a <code>data.frame.</code>, and
+will be used as the layer data.</p></td>
     </tr>
     <tr>
       <th>stat</th>
@@ -203,18 +218,20 @@ a warning. If <code>TRUE</code>, missing values are silently removed.</p></td>
       <th>show.legend</th>
       <td><p>logical. Should this layer be included in the legends?
 <code>NA</code>, the default, includes if any aesthetics are mapped.
-<code>FALSE</code> never includes, and <code>TRUE</code> always includes.</p></td>
+<code>FALSE</code> never includes, and <code>TRUE</code> always includes.
+It can also be a named logical vector to finely select the aesthetics to
+display.</p></td>
     </tr>
     <tr>
       <th>inherit.aes</th>
       <td><p>If <code>FALSE</code>, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
-the default plot specification, e.g. <code>borders</code>.</p></td>
+the default plot specification, e.g. <code>borders()</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>other arguments passed on to <code>layer</code>. These are
+      <td><p>other arguments passed on to <code>layer()</code>. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 <code>color = "red"</code> or <code>size = 3</code>. They may also be parameters
 to the paired geom/stat.</p></td>
@@ -224,18 +241,20 @@ to the paired geom/stat.</p></td>
     <h2 class="hasAnchor" id="aesthetics"><a class="anchor" href="#aesthetics"></a>Aesthetics</h2>
 
     
-    <p><code>geom_ribbon</code> understands the following aesthetics (required aesthetics are in bold):
-    <ul>
-<li><p><code><strong>x</strong></code></p></li>
-<li><p><code><strong>ymin</strong></code></p></li>
-<li><p><code><strong>ymax</strong></code></p></li>
+    <p>@section Aesthetics:
+<code>geom_ribbon</code> understands the following aesthetics (required aesthetics are in bold):
+<ul>
+<li><p><strong><code>x</code></strong></p></li>
+<li><p><strong><code>ymin</code></strong></p></li>
+<li><p><strong><code>ymax</code></strong></p></li>
 <li><p><code>alpha</code></p></li>
 <li><p><code>colour</code></p></li>
 <li><p><code>fill</code></p></li>
 <li><p><code>group</code></p></li>
 <li><p><code>linetype</code></p></li>
 <li><p><code>size</code></p></li>
-</ul></p>
+</ul>
+Learn more about setting these aesthetics in <code>vignette("ggplot2-specs")</code></p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -283,6 +302,17 @@ Triad Sou &lt;triadsou@gmail.com&gt;
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control'
+  });
+</script>
+
 
   </body>
 </html>

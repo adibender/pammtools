@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
-Version: 0.0.8
-Date: 2018-02-14
+Version: 0.0.9
+Date: 2018-04-20
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
@@ -10,7 +10,7 @@ Description: This package provides functions that facilitate fitting
     This includes restructuring the data to the needed format and various
     convenience functions, e.g., for ploting the results.
 Depends:
-    R (>= 3.1.2)
+    R (>= 3.3.0)
 Imports:
     mgcv,
     survival (>= 2.39-5),
@@ -33,7 +33,8 @@ Suggests:
     knitr,
     rmarkdown,
     grid,
-    gridExtra
+    gridExtra,
+    covr
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/adibender/pammtools

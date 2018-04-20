@@ -11,6 +11,8 @@ pam.Rproj
 *cache/
 docs/articles/aalen*
 docs/articles/model-eval*
+vignettes/*.html
+vignettes/*_files
 
 ## dropbox
 *.dropbox.attr

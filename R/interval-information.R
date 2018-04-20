@@ -79,14 +79,8 @@ int_info.ped <- function(x, ...) {
 }
 
 #' @rdname int_info
-#' @examples
-#' ## extract interval information of ped that was used to fit the model
-#' data("veteran", package="survival")
-#' vet_ped <- veteran %>% as_ped(Surv(time, status)~age, cut=seq(0, 500, by=100))
-#' vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
-#' int_info(vet_pam)
-#'
 #' @export
+#' @keywords internal
 int_info.pamm <- function(x, ...) {
 
   int_info(x$breaks)
@@ -154,16 +148,15 @@ get_intervals.default <- function(
 #' Extract interval information and median/modus values for covariates
 #'
 #' Given an object of class \code{ped}, returns data frame with one row for each
-#' interval containing interval information, median values for numerical
-#' variables and modi for non-numeric variables in the data set.
+#' interval containing interval information, mean values for numerical
+#' variables and modus for non-numeric variables in the data set.
 #'
 #' @param ped An object of class \code{ped} as returned by
 #' \code{\link[pammtools]{as_ped}}.
 #' @import checkmate dplyr
 #' @examples
-#' data("veteran", package="survival")
-#' ped <- veteran %>% as_ped(Surv(time, status)~ trt + age, id="id")
-#' ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
+#' ped <- tumor[1:4,] %>% as_ped(Surv(days, status)~ sex + age)
+#' ped_info(ped)
 #' @export
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
@@ -193,17 +186,11 @@ ped_info <- function(ped) {
 #' @inheritParams ped_info
 #' @import checkmate dplyr
 #' @examples
-#' data("veteran", package="survival")
-#' ped <- veteran %>% as_ped(Surv(time, status)~ ., id = "id",
-#'   cut = seq(0,400, by = 100))
+#' ped <- tumor[1:4,] %>% as_ped(Surv(days, status)~ .)
 #' riskset_info(ped)
-#' (riskset_celltype <- riskset_info(group_by(ped, celltype)))
-#' ## add descriptive statistics for riskset at beginning of each interval:
-#' # left_join(riskset_celltype,
-#' #           group_by(ped, celltype, interval) %>% sample_info())
+#' @export
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
-#' @export
 riskset_info <- function(ped) {
   assert_class(ped, classes="ped")
 

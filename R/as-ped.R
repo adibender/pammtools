@@ -1,36 +1,85 @@
 #' Transform data to Piece-wise Exponential Data (PED)
 #'
-#' @inherit split_data
+#' This is the general data transformation function provided by the
+#' \code{pammtools} package. Two main applications must be differentiated:
+#' (1) Transformation of standard time-to-event data.
+#' (2) Transformation of time-to-event data with time-dependent covariates (TDC).
+#' For the latter, the type of effect of the TDC one wants to estimate is also
+#' important for the data transformation step, i.e. concurrent or cumulative.
+#' In any case, the data transformation is specified by a two sided formula.
+#' In case of TDCs, the right-hand-side of the formula can contain specials
+#' \code{concurrent} and \code{cumulative}.
+#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
+#' for details.
+#'
+#'
+#' @rdname as_ped
+#' @param data Either an object inheriting from data frame or in case of
+#' time-dependent covariates a list of data frames, where the first data frame
+#' contains the time-to-event information and static covariates while the second
+#' (and potentially further data frames) contain information on time-dependent
+#' covariates and the times at which they have been observed.
+#' @param formula A two sided formula with a \code{\link[survival]{Surv}} object
+#' on the left-hand-side and covariate specification on the right-hand-side (RHS).
+#' The RHS can be an extended formula, which specifies how TDCs should be transformed
+#' using specials \code{concurrent} and \code{cumulative}.
+#' @param ... Further arguments passed to \code{split_data}.
+#' @examples
+#' tumor[1:3, ]
+#' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
+#' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex)
 #' @export
 as_ped <- function(data, formula, ...) {
   UseMethod("as_ped", data)
 }
 
+#' @rdname as_ped
 #' @inherit as_ped
 #' @export
 as_ped.data.frame <- function(data, formula, ...) {
 
+  status_error(data, formula)
+
   dots         <- list(...)
   dots$data    <- data
   dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
-  do.call(split_data, dots)
+  ped <- do.call(split_data, dots)
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  ped
 
 }
 
+#' @rdname as_ped
 #' @inherit as_ped
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
 
+  status_error(data, formula)
+
   dots <- list(...)
   # update interval break points (if neccessary)
-  cut <- attr(data, "breaks")
+  cut <- dots$cut
+  if(is.null(cut)) {
+    cut <- attr(data, "breaks")
+  }
   ccr_breaks <- attr(data, "ccr_breaks")
   cut <- union(cut, ccr_breaks) %>% sort()
 
   ped <- data %>%
     select_if(is.atomic) %>%
-    as_ped.data.frame(formula = formula, id = dots$id, cut = cut, max_time = dots$max_time)
+    as_ped.data.frame(
+      formula  = formula,
+      id       = dots$id,
+      cut      = cut,
+      max_time = dots$max_time)
 
+  # replace updated attributes
+  attr(data, "breaks") <- attr(ped, "breaks")
+  attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+    summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
+  attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+    transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+  attr(data, "id_teseq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
 
   if(has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
@@ -38,18 +87,22 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   if(has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data=data, formula=formula)
+    class(ped) <- c("fped", class(ped))
   }
-
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
 
 }
 
+#' @rdname as_ped
 #' @inherit as_ped
 #' @export
 as_ped.list <- function(data, formula, ...) {
 
   assert_class(data, "list")
   assert_class(formula, "formula")
+
+  status_error(data[[1]], formula)
 
   nl    <- length(data)
   form  <- Formula(formula)
@@ -67,10 +120,11 @@ as_ped.list <- function(data, formula, ...) {
       ped <- as_ped(nested_fdf, formula, ...)
     }
   }
-
+  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
 
 }
+
 #' @rdname as_ped
 #' @param x any R object.
 #' @export

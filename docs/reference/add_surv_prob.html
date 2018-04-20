@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add survival probability estimates to data set — add_surv_prob • pammtools</title>
+<title>Add survival probability estimates — add_surv_prob • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -21,13 +21,22 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Add survival probability estimates to data set — add_surv_prob" />
+<meta property="og:title" content="Add survival probability estimates — add_surv_prob" />
 
-<meta property="og:description" content="Add survival probability estimates to data set" />
+<meta property="og:description" content="Given suitable data (i.e. data with all columns used for estimation of the model),
+this functions adds a column surv_prob containing survival probabilities
+for the specified covariate and follow-up information (and CIs
+surv_lower, surv_upper if ci=TRUE)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -40,19 +49,20 @@
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -69,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -134,6 +144,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -144,14 +160,19 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add survival probability estimates to data set</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/add_functions.R'><code>R/add_functions.R</code></a></small>
+    <h1>Add survival probability estimates</h1>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/add_functions.R'><code>R/add_functions.R</code></a></small>
     <div class="hidden name"><code>add_surv_prob.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
-    <p>Add survival probability estimates to data set</p>
+    <p>Given suitable data (i.e. data with all columns used for estimation of the model),
+this functions adds a column <code>surv_prob</code> containing survival probabilities
+for the specified covariate and follow-up information (and CIs
+<code>surv_lower</code>, <code>surv_upper</code> if <code>ci=TRUE</code>).</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>add_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se.mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>, <span class='no'>...</span>)</pre>
@@ -208,11 +229,26 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code><a href='add_hazard.html'>add_cumu_hazard</a></code></p>
-<p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code><a href='add_hazard.html'>add_hazard</a></code></p>
-<p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code><a href='add_hazard.html'>add_hazard</a></code></p></div>
+    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code><a href='add_hazard.html'>add_hazard</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>50</span>,] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>age</span>)
+<span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>)+<span class='no'>age</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
+<span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_surv_prob</span>(<span class='no'>pam</span>, <span class='kw'>ci</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
+#&gt;    tstart  tend intlen intmid interval    age surv_prob surv_lower surv_upper
+#&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7     0.977      0.989      0.950
+#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7     0.972      0.987      0.939
+#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7     0.954      0.978      0.904
+#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7     0.949      0.976      0.893
+#&gt;  5    62.  139.    77.  100.  (62,139]   59.7     0.896      0.946      0.803
+#&gt;  6   139.  209.    70.  174.  (139,209]  59.7     0.854      0.920      0.739
+#&gt;  7   209.  214.     5.  212.  (209,214]  59.7     0.851      0.919      0.734
+#&gt;  8   214.  257.    43.  236.  (214,257]  59.7     0.828      0.904      0.700
+#&gt;  9   257.  304.    47.  280.  (257,304]  59.7     0.805      0.889      0.667
+#&gt; 10   304.  308.     4.  306.  (304,308]  59.7     0.803      0.888      0.665
+#&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -220,7 +256,9 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
@@ -238,6 +276,17 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control'
+  });
+</script>
+
 
   </body>
 </html>

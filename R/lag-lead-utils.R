@@ -5,6 +5,9 @@
 #'
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.
+#' @examples
+#' get_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+#' gg_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 #' @export
 get_laglead <- function(x, ...) {
   UseMethod("get_laglead", x)
@@ -13,15 +16,16 @@ get_laglead <- function(x, ...) {
 #' @rdname get_laglead
 #' @inherit get_laglead
 #' @param te A vector of exposure times
-#' @param ll_fun Function with that indicates how the lag-lead matrix
+#' @param ll_fun Function that specifies how the lag-lead matrix
 #' should be contructed. First argument is the follow up time
-#' second argument is the time of exposure.s
+#' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing
 #' @export
 get_laglead.default <- function(x, te, ll_fun, ...) {
 
-  LL_df <- crossing(t=x, te=te) %>% mutate(LL = ll_fun(t, te)*1L)
+  LL_df <- crossing(t=x, te=te) %>%
+    mutate(LL = ll_fun(t, te)*1L)
   class(LL_df) <- c("LL_df", class(LL_df))
 
   LL_df
@@ -48,11 +52,9 @@ get_laglead.data.frame <- function(x, ...) {
 
 }
 
-#' Plot lag lead window from appropriate DF
-#'
 #' Plot Lag-Lead windows
 #'
-#' Given a matrix defining a lag lead window, returns respective plot as a
+#' Given data defining a Lag-lead window, returns respective plot as a
 #' \code{ggplot2} object.
 #'
 #' @inheritParams get_laglead
@@ -62,12 +64,14 @@ get_laglead.data.frame <- function(x, ...) {
 #' @import checkmate ggplot2
 #' @examples
 #' ## Example 1: supply t, te, ll_fun directly
-#' gg_laglead(1:10, 1:5, ll_fun = function(t,te) {t >= te})
+#'  gg_laglead(1:10, te=-5:5,
+#'   ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 #'
 #' ## Example 2: extract information on t, te, ll_from data with respective attributes
 #' data("simdf_elra", package = "pammtools")
 #' gg_laglead(simdf_elra)
 #' @export
+#' @seealso get_laglead
 gg_laglead <- function(x, ...) {
   UseMethod("gg_laglead", x)
 }
@@ -88,18 +92,25 @@ gg_laglead.default <- function(x, te, ll_fun, ...) {
 gg_laglead.LL_df <- function(
   x,
   high_col   = "grey20",
-  low_col    = "white",
+  low_col    = "whitesmoke",
   grid_col   = "lightgrey",
   ...) {
 
-  gg_ll <- ggplot(x, aes_string(x = "t", y = "te")) +
+  x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
+  x <- x %>% filter(!is.na(.data$interval)) %>%
+    mutate(
+      te = as.factor(te),
+      interval = factor(.data$interval, levels = rev(levels(.data$interval))) )
+  gg_ll <- ggplot(x, aes_string(y = "interval", x = "te")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
-    xlab(expression(t)) + ylab(expression(t[e])) +
+    scale_x_discrete(expand=c(0,0)) +
+    scale_y_discrete(expand=c(0,0)) +
+    xlab(expression(t[e])) + ylab(expression(t)) +
     theme(legend.position = "none")
 
   if(!is.null(x$te_var)) {
-    gg_ll <- gg_ll + facet_wrap(~te_var)
+    gg_ll <- gg_ll + facet_wrap(~te_var, scales="free_x")
   }
 
   gg_ll

@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -37,19 +43,20 @@
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -66,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -131,6 +138,12 @@
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -181,27 +194,9 @@
       </tr><tr>
         <!--  -->
         <td>
-          <p><code><a href="sample_info.html">sample_info()</a></code> </p>
-        </td>
-        <td><p>Extract information of the sample contained in a data set</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="riskset_info.html">riskset_info()</a></code> </p>
-        </td>
-        <td><p>Extract risk set information for each interval.</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
           <p><code><a href="ped_info.html">ped_info()</a></code> </p>
         </td>
         <td><p>Extract interval information and median/modus values for covariates</p></td>
-      </tr><tr>
-        <!--  -->
-        <td>
-          <p><code><a href="combine_df.html">combine_df()</a></code> </p>
-        </td>
-        <td><p>Combines multiple data frames</p></td>
       </tr><tr>
         <!--  -->
         <td>
@@ -246,6 +241,12 @@
           <p><code><a href="get_terms.html">get_terms()</a></code> </p>
         </td>
         <td><p>Extract the partial effects of non-linear model terms</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="cumulative_coefficient.html">get_cumu_coef()</a></code> </p>
+        </td>
+        <td><p>Extract cumulative coefficients (cumulative hazard differences)</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -265,13 +266,13 @@
         <td>
           <p><code><a href="add_hazard.html">add_hazard()</a></code> <code><a href="add_hazard.html">add_cumu_hazard()</a></code> </p>
         </td>
-        <td><p>Add predicted hazard to data set</p></td>
+        <td><p>Add predicted (cumulative) hazard to data set</p></td>
       </tr><tr>
         <!--  -->
         <td>
           <p><code><a href="add_surv_prob.html">add_surv_prob()</a></code> </p>
         </td>
-        <td><p>Add survival probability estimates to data set</p></td>
+        <td><p>Add survival probability estimates</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -310,6 +311,64 @@
           <p><code><a href="geom_stepribbon.html">geom_stepribbon()</a></code> </p>
         </td>
         <td><p>Step ribbon plots.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_partial.html">gg_partial()</a></code> <code><a href="gg_partial.html">gg_slice()</a></code> </p>
+        </td>
+        <td><p>Visualize effect estimates for specific covariate combinations</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="gg_laglead.html">gg_laglead()</a></code> </p>
+        </td>
+        <td><p>Plot Lag-Lead windows</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data-sets" class="hasAnchor"><a href="#section-data-sets" class="anchor"></a>Data sets</h2>
+          <p class="section-desc"><p>Data sets contained in <strong><code>pammtools</code></strong></p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="tumor.html">tumor</a></code> </p>
+        </td>
+        <td><p>Stomach area tumor data</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="simdf_elra.html">simdf_elra</a></code> </p>
+        </td>
+        <td><p>Simulated data with cumulative effects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-utilities" class="hasAnchor"><a href="#section-utilities" class="anchor"></a>Utilities</h2>
+          <p class="section-desc"><p>Utility functions</p></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="seq_range.html">seq_range()</a></code> </p>
+        </td>
+        <td><p>Generate a sequence over the range of a vector</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="sim_pexp.html">sim_pexp()</a></code> </p>
+        </td>
+        <td><p>Simulate survival times from the piece-wise exponential distribution</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="get_laglead.html">get_laglead()</a></code> </p>
+        </td>
+        <td><p>Construct data that represents a lag-lead window</p></td>
       </tr>
     </tbody>
     </table>
@@ -323,6 +382,8 @@
       <li><a href="#section-extract-information-from-pamms">Extract information from PAMMs</a></li>
       <li><a href="#section-augment-functions">Augment functions</a></li>
       <li><a href="#section-convenience-functions-for-visualization-of-model-outputs-">Convenience functions for visualization of model outputs.</a></li>
+      <li><a href="#section-data-sets">Data sets</a></li>
+      <li><a href="#section-utilities">Utilities</a></li>
     </ul>
   </div>
 </div>
@@ -340,6 +401,17 @@
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control'
+  });
+</script>
+
 
   </body>
 </html>

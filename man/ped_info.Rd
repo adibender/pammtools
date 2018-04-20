@@ -15,13 +15,12 @@ A data frame with one row for each interval in \code{ped}.
 }
 \description{
 Given an object of class \code{ped}, returns data frame with one row for each
-interval containing interval information, median values for numerical
-variables and modi for non-numeric variables in the data set.
+interval containing interval information, mean values for numerical
+variables and modus for non-numeric variables in the data set.
 }
 \examples{
-data("veteran", package="survival")
-ped <- veteran \%>\% as_ped(Surv(time, status)~ trt + age, id="id")
-ped_info(ped) # note that trt is coded 1/2, should be fixed beforehand
+ped <- tumor[1:4,] \%>\% as_ped(Surv(days, status)~ sex + age)
+ped_info(ped)
 }
 \seealso{
 \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}

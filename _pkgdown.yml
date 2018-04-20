@@ -1,7 +1,10 @@
-url: https://adibender.github.io/pammtools/
+url: https://adibender.github.io/pammtools
 template:
   params:
     ganalytics: UA-44545040-3
+    docsearch:
+      api_key: c3726dcbf089f0b26f496305ed030c22
+      index_name: pammtools
 reference:
   - title: "Transform data to Piece-wise Exponential Data (PED) format"
     desc: "Functions to transform data sets in different formats to PED format,
@@ -13,10 +16,7 @@ reference:
     from PED and create newdata, e.g., for prediction and plotting."
     contents:
       - int_info
-      - sample_info
-      - riskset_info
       - ped_info
-      - combine_df
       - make_newdata
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
@@ -27,6 +27,7 @@ reference:
       - tidy_smooth2d
       - tidy_re
       - get_terms
+      - get_cumu_coef
   - title: "Augment functions"
     desc: "Functions that augment a data set by different quantaties like the
     hazard rate."
@@ -42,6 +43,19 @@ reference:
       - gg_tensor
       - gg_re
       - geom_stepribbon
+      - gg_partial
+      - gg_laglead
+  - title: "Data sets"
+    desc: "Data sets contained in **`pammtools`**"
+    contents:
+      - tumor
+      - simdf_elra
+  - title: "Utilities"
+    desc: "Utility functions"
+    contents:
+      - seq_range
+      - sim_pexp
+      - get_laglead
 articles:
   - title: "Articles"
     desc: "Several articles/vignettes that describe the usage of PAMMs"

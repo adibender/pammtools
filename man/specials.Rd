@@ -14,9 +14,25 @@ concurrent(..., te_var, ll_fun = function(t) {     t == t }, suffix = NULL)
 has_special(formula, special = "cumulative")
 }
 \arguments{
-\item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
+\item{...}{For \code{concurrent} variables that will be transformed to
+covariate matrices. The number of columns of each covariate depends on \code{te}.
+Usually, elements that will be specified here are \code{time} (which should be
+the name of the time-variable used on the LHS of the formula argument to
+\code{as_ped}), \code{te} which is the variable containing information on
+the times at which the TDC was observed (can be wrapped in \code{latency}) and
+the TDCs that share the same \code{te} and Lag-lead window (\code{ll_fun}).}
 
-\item{formula}{a model formula}
+\item{te_var}{The name of the variable that stores information on the
+times at which the TDCs specified in this term where observed.}
+
+\item{ll_fun}{Function that specifies how the lag-lead matrix
+should be contructed. First argument is the follow up time
+second argument is the time of exposure.}
+
+\item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
+on the left-hand-side and covariate specification on the right-hand-side (RHS).
+The RHS can be an extended formula, which specifies how TDCs should be transformed
+using specials \code{concurrent} and \code{cumulative}.}
 
 \item{special}{The name of the special whose existence in the
 \code{formula} should be checked}
@@ -24,8 +40,10 @@ has_special(formula, special = "cumulative")
 \description{
 So far, two specials are implemented. \code{concurrent} is used when
 the goal is to estimate a concurrent effect of the TDC. \code{cumulative}
-is used when the goal is to estimate a cumulative effect of the TDC.
-
-Querries on formula objects
+is used when the goal is to estimate a cumulative effect of the TDC. These
+should usually not be called directly but rather as part of the \code{formula}
+argument to \code{as_ped}.
+See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
+for details.
 }
 \keyword{internal}

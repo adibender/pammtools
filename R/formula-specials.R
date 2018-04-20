@@ -2,10 +2,27 @@
 #'
 #' So far, two specials are implemented. \code{concurrent} is used when
 #' the goal is to estimate a concurrent effect of the TDC. \code{cumulative}
-#' is used when the goal is to estimate a cumulative effect of the TDC.
+#' is used when the goal is to estimate a cumulative effect of the TDC. These
+#' should usually not be called directly but rather as part of the \code{formula}
+#' argument to \code{as_ped}.
+#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
+#' for details.
+#'
 #'
 #' @rdname specials
 #' @importFrom purrr map
+#'
+#' @param ... For \code{concurrent} variables that will be transformed to
+#' covariate matrices. The number of columns of each covariate depends on \code{te}.
+#' Usually, elements that will be specified here are \code{time} (which should be
+#' the name of the time-variable used on the LHS of the formula argument to
+#' \code{as_ped}), \code{te} which is the variable containing information on
+#' the times at which the TDC was observed (can be wrapped in \code{latency}) and
+#' the TDCs that share the same \code{te} and Lag-lead window (\code{ll_fun}).
+#' @param te_var The name of the variable that stores information on the
+#' times at which the TDCs specified in this term where observed.
+#' @inheritParams get_laglead
+#'
 #' @export
 #' @keywords internal
 cumulative <- function(...,
@@ -89,6 +106,7 @@ get_cumulative <- function(data, formula) {
     flatten()
 
   list(
+    func_list = func_list,
     func_mats = func_mats,
     ll_funs   = ll_funs,
     te_vars   = te_vars,
@@ -112,8 +130,6 @@ eval_special <- function(formula, special="cumulative") {
 }
 
 
-#' Querries on formula objects
-#'
 #' @rdname specials
 #' @inheritParams as_ped
 #' @param special The name of the special whose existence in the
@@ -178,12 +194,12 @@ expand_cumulative <- function(data, func, n_func) {
   }
 
   if(any(c(time_var, te_var) %in% col_vars)) {
-      hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
-      names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
-        te_var, func$suffix, n_func)
+    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
+    names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
+      te_var, func$suffix, n_func)
   } else {
-       names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
-        func$suffix, n_func)
+    names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
+      func$suffix, n_func)
   }
 
   hist_mats
@@ -202,14 +218,15 @@ prep_concurrent <- function(x, formula, ...) {
 
 #' @rdname prep_concurrent
 #' @inherit prep_concurrent
+#' @keywords internal
 prep_concurrent.list <- function(x, formula, ...) {
 
   lgl_concurrent <- has_special(formula, "concurrent")
 
   if(lgl_concurrent) {
-    ccr_list <- eval_special(formula, special="concurrent")
+    ccr_list    <- eval_special(formula, special="concurrent")
     ccr_te_vars <- map_chr(ccr_list, ~.x[["te_var"]]) %>% unique()
-    ccr_time <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
+    ccr_time    <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
       reduce(union) %>% sort()
   }
 
@@ -220,6 +237,7 @@ prep_concurrent.list <- function(x, formula, ...) {
 }
 
 
+#' @keywords internal
 get_te <- function(data, te_var) {
   if (te_var %in% colnames(data)) {
     te <- pull(data, te_var) %>% unique()
@@ -227,4 +245,134 @@ get_te <- function(data, te_var) {
     te <- NULL
   }
   te
+}
+
+#' @keywords internal
+add_concurrent <- function(ped, data, id_var) {
+
+  ccr <- attr(data, "ccr")
+
+  for(ccr_i in ccr[["ccr_list"]]) {
+    tdc_vars_i <- ccr_i[["col_vars"]]
+    te_var_i   <- ccr_i[["te_var"]]
+    ccr_vars_i <- c(te_var_i, tdc_vars_i)
+    ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
+      unnest()
+    ped <- ped %>%
+      left_join(ccr_i_df, by = c(id_var, "tstart"=te_var_i)) %>%
+      group_by(!!sym(id_var)) %>%
+      fill(tdc_vars_i)
+
+    attr(ped, "ccr") <- ccr
+
+  }
+
+  ped
+
+
+}
+
+#' @keywords internal
+add_cumulative <- function(ped, data, formula) {
+
+  func_components <- get_cumulative(data, formula)
+  func_matrices <- func_components$func_mats
+  for(i in seq_along(func_matrices)) {
+    ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
+  }
+  attr(ped, "func")           <- func_components$func_list
+  attr(ped, "func_mat_names") <- names(func_matrices)
+  attr(ped, "ll_funs")        <- func_components$ll_funs
+  attr(ped, "te")             <- func_components$te
+  attr(ped, "te_vars")        <- func_components$te_vars
+
+  ped
+
+}
+
+#' @keywords internal
+make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL,
+  nfunc = 1) {
+
+  if (!is.null(suffix)) {
+    return(paste(col_vars, suffix, sep="_"))
+  } else {
+    if (!is.null(te_var) & nfunc > 1)  {
+      te_ind <- col_vars == te_var
+      col_vars[!te_ind] <- paste(col_vars[!te_ind], te_var,  sep="_")
+    }
+    if (!is.null(latency_var)) {
+      latency_ind <- col_vars == latency_var
+      col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency", sep="_")
+    }
+  }
+
+  return(col_vars)
+
+}
+
+#' Create matrix components for cumulative effects
+#'
+#' These functions are called internally by \code{\link{get_cumulative}} and
+#' should usually not be called directly.
+#' @rdname elra_matrix
+#' @param data A data set (or similar) from which meta information on cut-points,
+#' interval-specific time, covariates etc. can be obtained.
+#'
+#' @keywords internal
+make_time_mat <- function(data, nz) {
+
+  brks    <- attr(data, "breaks")
+  id_tseq <- attr(data, "id_tseq")
+  Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol=nz)
+  Tmat
+
+}
+
+#' @rdname elra_matrix
+#' @inherit make_time_mat
+#' @keywords internal
+make_latency_mat <- function(data, te) {
+
+  time        <- attr(data, "breaks")
+  id_tseq     <- attr(data, "id_tseq")
+  Latency_mat <- outer(time, te, FUN = "-")
+  Latency_mat[Latency_mat < 0] <- 0
+  Latency_mat[id_tseq, , drop=FALSE]
+
+}
+
+#' @rdname elra_matrix
+#' @inherit make_time_mat
+#' @keywords internal
+make_lag_lead_mat <- function(
+  data,
+  te,
+  ll_fun = function(t, te) {(t >= te)}) {
+
+  LL <- outer(attr(data, "breaks"), te, FUN=ll_fun)*1L
+  LL[attr(data, "id_tseq"), , drop=FALSE]
+
+}
+
+#' @rdname elra_matrix
+#' @inherit make_time_mat
+#' @param z_var Which should be transformed into functional covariate format
+#' suitable to fit cumulative effects in \code{mgcv::gam}.
+#' @importFrom purrr map
+#' @importFrom dplyr pull
+#' @keywords internal
+make_z_mat <- function(data, z_var, nz, ...) {
+
+  te_ind <- seq_len(nz)
+  Z <- map(data[[z_var]], .f=~unlist(.x)[te_ind])
+  Z <- do.call(rbind, Z)
+  Z[attr(data, "id_teseq"), , drop=FALSE]
+
+ }
+
+get_ncols <- function(data, col_vars) {
+  map(col_vars, function(var) pull(data, var)) %>%
+    map_int(function(z) max(map_int(z, ~ifelse(is_atomic(.), length(.), nrow(.)))))
+
 }

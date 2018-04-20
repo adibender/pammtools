@@ -184,3 +184,32 @@ tidy_re <- function(x, keep=c("fit", "main", "xlab", "ylab"), ...) {
 	return(bind_rows(po))
 
 }
+
+
+#' Extract plot information for all special model terms
+#'
+#' Given a \code{mgcv} \code{\link[mgcv]{gamObject}}, returns the information
+#' used for the default plots produced by \code{\link[mgcv]{plot.gam}}.
+#'
+#' @inheritParams mgcv::plot.gam
+#' @param ... Further arguments passed to \code{\link[mgcv]{plot.gam}}
+#' @import mgcv
+#' @importFrom checkmate assert_class
+#' @importFrom grDevices png dev.off
+#' @importFrom graphics plot
+#' @export
+get_plotinfo <- function(x, ...) {
+
+  assert_class(x, c("gam", "glm", "lm"))
+
+  tmp <- paste0(tempfile(), ".png")
+  png(tmp)
+  po <- plot(x, page=1, ...)
+  dev.off()
+  if(file.exists(tmp)) file.remove(tmp)
+
+  class(po) <- c("mgcv.plotlist", class(po))
+
+  return(po)
+
+}

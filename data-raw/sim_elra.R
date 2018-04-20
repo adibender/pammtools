@@ -1,6 +1,7 @@
 library(dplyr)
 # set number of observations/subjects
 n <- 250
+set.seed(8042018)
 # create data set with variables which will affect the hazard rate.
 df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6)) %>%
  as_tibble()
@@ -24,18 +25,18 @@ f0 <- function(t) {
 ft <- function(t, tmax) {
   -1*cos(t/tmax*pi)
 }
-fdnorm <- function(x) (dnorm(x,1.5,2)+1.5*dnorm(x,7.5,1))
-wpeak2 <- function(lag) 15*dnorm(lag,8,10)
-wdnorm <- function(lag) 5*(dnorm(lag,4,6)+dnorm(lag,25,4))
+# fdnorm <- function(x) (dnorm(x,1.5,2)+1.5*dnorm(x,7.5,1))
+# wpeak2 <- function(lag)
+# wdnorm <- function(lag) 5*(dnorm(lag,4,6)+dnorm(lag,25,4))
 f_ttez1 <- function(t, te, z) {
-  ft(t, tmax=10) * 0.8*fdnorm(z)* wpeak2(t-te)
+  ft(t, tmax=10) * 0.8*(dnorm(z,1.5,2)+1.5*dnorm(z,7.5,1))* 15*dnorm(t-te,8,10)
 }
 f_ttez2 <- function(t, te, z) {
-  wdnorm(t-te)*z
+  5*(dnorm(t-te,4,6)+dnorm(t-te,25,4))*z
 }
 # define lag-lead window function
 ll_fun <- function(t, te) {t >= te}
-ll_fun2 <- function(t, te) {t -2 >= te}
+ll_fun2 <- function(t, te) {t >= te + 2}
 # simulate data with cumulative effect
 simdf_elra <- sim_pexp(
   formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|

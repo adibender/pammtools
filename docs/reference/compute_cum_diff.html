@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -42,19 +48,20 @@ differences based on coefficients and standard errors of log hazard
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -71,7 +78,7 @@ differences based on coefficients and standard errors of log hazard
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -136,6 +143,12 @@ differences based on coefficients and standard errors of log hazard
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -147,15 +160,17 @@ differences based on coefficients and standard errors of log hazard
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Calculate difference in cumulative hazards and respective standard errors</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/mgcv-utils.R'><code>R/mgcv-utils.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/mgcv-utils.R'><code>R/mgcv-utils.R</code></a></small>
     <div class="hidden name"><code>compute_cum_diff.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Uses Delta method to calculate standard errors for cumulative hazard
 differences based on coefficients and standard errors of log hazard
 (code adapted from fabian-s used in consulting project).</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>compute_cum_diff</span>(<span class='no'>d1</span>, <span class='no'>d2</span>, <span class='no'>model</span>)</pre>
     
@@ -201,6 +216,17 @@ returns the design matrix (e.g., <code><a href='http://www.rdocumentation.org/pa
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control'
+  });
+</script>
+
 
   </body>
 </html>

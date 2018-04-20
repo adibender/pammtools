@@ -19,14 +19,8 @@ size of the riskset at the beginning of each interval as well as the number
 of events and censorings that occured in the interval, respectively.
 }
 \examples{
-data("veteran", package="survival")
-ped <- veteran \%>\% as_ped(Surv(time, status)~ ., id = "id",
-  cut = seq(0,400, by = 100))
+ped <- tumor[1:4,] \%>\% as_ped(Surv(days, status)~ .)
 riskset_info(ped)
-(riskset_celltype <- riskset_info(group_by(ped, celltype)))
-## add descriptive statistics for riskset at beginning of each interval:
-# left_join(riskset_celltype,
-#           group_by(ped, celltype, interval) \%>\% sample_info())
 }
 \seealso{
 \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}

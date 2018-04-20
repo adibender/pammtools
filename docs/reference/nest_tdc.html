@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -42,19 +48,20 @@ the structure of the TDCs" />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -71,7 +78,7 @@ the structure of the TDCs" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -136,6 +143,12 @@ the structure of the TDCs" />
 </li>
       </ul>
       
+      <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+        </div>
+      </form>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -147,15 +160,17 @@ the structure of the TDCs" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create nested data frame from data with time-dependent covariates</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/nest-utils.R'><code>R/nest-utils.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/nest-utils.R'><code>R/nest-utils.R</code></a></small>
     <div class="hidden name"><code>nest_tdc.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Provides methods to nest data with time-dependent covariates (TDCs).
 A <code>formula</code> must be provided where the right hand side (RHS) contains
 the structure of the TDCs</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>nest_tdc</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
 
@@ -218,6 +233,17 @@ part indicates the structure of the TDC structure.</p></td>
    </div>
 
   
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script>
+  docsearch({
+    
+    
+    apiKey: 'c3726dcbf089f0b26f496305ed030c22',
+    indexName: 'pammtools',
+    inputSelector: 'input#search-input.form-control'
+  });
+</script>
+
 
   </body>
 </html>
