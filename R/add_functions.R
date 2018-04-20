@@ -229,10 +229,11 @@ get_hazard <- function(
     unique(newdata[[time_variable]])
   } else levels(factor(newdata[[time_variable]]))
   new_ints <- which(!(prediction_intervals %in% original_intervals))
+  n_out <- pmin(10, length(new_ints))
   if (length(new_ints)) {
    message <- paste0("Intervals in <newdata> contain values (",
-     paste(prediction_intervals[new_ints], collapse = ","),
-     ") not used in original fit.",
+     paste(prediction_intervals[new_ints[1:n_out]], collapse = ","),
+     " ...) not used in original fit.",
      " Setting intervals to values not used for original fit in <object>",
      "can invalidate the PEM assumption and yield incorrect predictions.")
    if (is_pam) warning(message) else stop(message)
