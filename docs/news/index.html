@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -37,16 +43,14 @@
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
@@ -69,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -154,11 +158,32 @@
       <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="pammtools-0-0-9" class="section level2">
+<h2 class="hasAnchor">
+<a href="#pammtools-0-0-9" class="anchor"></a>pammtools 0.0.9</h2>
+<ul>
+<li><p>Overall better support for cumulative effects</p></li>
+<li><p><strong>Breaking change</strong> <code>make_newdata</code> loses arguments <code>expand</code> and <code>n</code> and gains <code>...</code> where arbitrary covariate specifications can be placed, i.e. e.g. <code>age=seq_range(age, n=20)</code>. Multiple such expression can be provided and a data frame with one row for each combination of the evaluated expressions will be returned. All variables not specified in \code{…} will be set to respective mean or modus values. For data of class <code>ped</code> or <code>fped</code> <code>make_newdata</code> will try to specify time-dependent variables intelligently.</p></li>
+<li>Added convenience functions for work with cumulative effects, namely
+<ul>
+<li>
+<code>gg_partial</code> and</li>
+<li><code>gg_slice</code></li>
+</ul>
+</li>
+<li>Added helper functions to calculate and visualize Lag-lead windows
+<ul>
+<li><code>get_laglead</code></li>
+<li><code>gg_laglead</code></li>
+</ul>
+</li>
+</ul>
+</div>
     <div id="pammtools-0-0-8" class="section level1">
 <h1 class="page-header">
 <a href="#pammtools-0-0-8" class="anchor"></a>pammtools 0.0.8</h1>
 <ul>
-<li><p>All data transformation is now hadled using <code>as_ped</code> (see <a href="../articles/data-transformation.html">data transformation vignette</a>)</p></li>
+<li><p>All data transformation is now handled using <code>as_ped</code> (see <a href="../articles/data-transformation.html">data transformation vignette</a>)</p></li>
 <li>Data transformation now handles
 <ul>
 <li>standard time-to-event data</li>
@@ -166,7 +191,6 @@
 <li>time-to-event data with cumulative effects of time-dependent covariates</li>
 </ul>
 </li>
-<li><p><code>make_newdata</code> handles creation of new data sets for all of the above cases</p></li>
 <li><p>Added functionality to flexibly simulate data from PEXP including cumulative effects, see <code><a href="../reference/sim_pexp.html">?sim_pexp</a></code></p></li>
 <li><p>Added functionality to calculate Aaalen-model style cumulative coefficients, see <code>?cumulative_coefficient</code></p></li>
 <li>Breaking change in <code>split_data</code> (<code>as_ped</code> now main data trafo function):
@@ -212,6 +236,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#pammtools-0-0-9">0.0.9</a></li>
         <li><a href="#pammtools-0-0-8">0.0.8</a></li>
         <li><a href="#pammtools-0-0-3">0.0.3</a></li>
         <li><a href="#pammtools-0-0-2">0.0.2</a></li>
@@ -238,10 +263,10 @@
 <script>
   docsearch({
     
+    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control',
-    debug: false // Set debug to true if you want to inspect the dropdown
+    inputSelector: 'input#search-input.form-control'
   });
 </script>
 

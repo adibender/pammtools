@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://adibender.github.io/pammtools/index.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/add_hazard.html</loc>
   </url>
   <url>
@@ -14,15 +17,6 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/as_ped.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/as_ped.data.frame.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/as_ped.list.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/as_ped.nested_fdf.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/calc_ci.html</loc>
@@ -59,12 +53,6 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/geom_stepribbon.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef.aalen.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef.gam.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef_baseline.html</loc>
@@ -118,6 +106,9 @@
     <loc>https://adibender.github.io/pammtools/reference/gg_laglead.html</loc>
   </url>
   <url>
+    <loc>https://adibender.github.io/pammtools/reference/gg_partial.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/gg_re.html</loc>
   </url>
   <url>
@@ -128,9 +119,6 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/has_tdc.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/has_tdc_form.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/int_info.html</loc>

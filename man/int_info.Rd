@@ -44,13 +44,8 @@ tdf <- data.frame(time=c(1, 2.3, 5), status=c(0, 1, 0))
 ped <- tdf \%>\% as_ped(Surv(time, status)~., id="id")
 int_info(ped)
 
-## extract interval information of ped that was used to fit the model
-data("veteran", package="survival")
-vet_ped <- veteran \%>\% as_ped(Surv(time, status)~age, cut=seq(0, 500, by=100))
-vet_pam <- pamm(ped_status ~ s(tend, k=3), data=vet_ped)
-int_info(vet_pam)
-
 }
 \seealso{
 as_ped ped_info
 }
+\keyword{internal}

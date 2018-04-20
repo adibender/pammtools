@@ -5,7 +5,7 @@
 \alias{gg_laglead.default}
 \alias{gg_laglead.LL_df}
 \alias{gg_laglead.nested_fdf}
-\title{Plot lag lead window from appropriate DF}
+\title{Plot Lag-Lead windows}
 \usage{
 gg_laglead(x, ...)
 
@@ -34,10 +34,7 @@ second argument is the time of exposure.}
 \item{grid_col}{Color of grid lines.}
 }
 \description{
-Plot Lag-Lead windows
-}
-\details{
-Given a matrix defining a lag lead window, returns respective plot as a
+Given data defining a Lag-lead window, returns respective plot as a
 \code{ggplot2} object.
 }
 \examples{

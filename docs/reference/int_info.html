@@ -21,6 +21,12 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
@@ -43,16 +49,14 @@ unique interval information from object." />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
 
 
@@ -75,7 +79,7 @@ unique interval information from object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.8</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
       </span>
     </div>
 
@@ -157,16 +161,18 @@ unique interval information from object." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create start/end times and interval information</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/interval-information.R'><code>R/interval-information.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/interval-information.R'><code>R/interval-information.R</code></a></small>
     <div class="hidden name"><code>int_info.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Given interval breaks points, returns data frame with information on
 interval start time, interval end time, interval length and a interval factor
 variable (left open intervals). If object of class ped is provided, extracts
 unique interval information from object.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>int_info</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
@@ -220,16 +226,6 @@ length, interval mid-point and a factor variable of the intervals themselves.</p
 <span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tdf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
 <span class='fu'>int_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt;   tstart tend intlen intmid interval
 #&gt; 1      0  2.3    2.3   1.15  (0,2.3]</div><div class='input'>
-<span class='co'>## extract interval information of ped that was used to fit the model</span>
-<span class='fu'>data</span>(<span class='st'>"veteran"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"survival"</span>)
-<span class='no'>vet_ped</span> <span class='kw'>&lt;-</span> <span class='no'>veteran</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>age</span>, <span class='kw'>cut</span><span class='kw'>=</span><span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='kw'>by</span><span class='kw'>=</span><span class='fl'>100</span>))
-<span class='no'>vet_pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pamm.html'>pamm</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>, <span class='kw'>k</span><span class='kw'>=</span><span class='fl'>3</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>vet_ped</span>)
-<span class='fu'>int_info</span>(<span class='no'>vet_pam</span>)</div><div class='output co'>#&gt;   tstart tend intlen intmid  interval
-#&gt; 1      0  100    100     50   (0,100]
-#&gt; 2    100  200    100    150 (100,200]
-#&gt; 3    200  300    100    250 (200,300]
-#&gt; 4    300  400    100    350 (300,400]
-#&gt; 5    400  500    100    450 (400,500]</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -264,10 +260,10 @@ length, interval mid-point and a factor variable of the intervals themselves.</p
 <script>
   docsearch({
     
+    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control',
-    debug: false // Set debug to true if you want to inspect the dropdown
+    inputSelector: 'input#search-input.form-control'
   });
 </script>
 
