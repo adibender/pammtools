@@ -30,7 +30,9 @@ sample_info.data.frame <- function(x) {
   nnames <- intersect(names(num), names(fac))
 
   if(length(nnames) != 0) {
-    x <- left_join(num, fac) %>% grouped_df(vars = lapply(nnames, as.name))
+    suppressMessages(
+      x <- left_join(num, fac) %>% grouped_df(vars = lapply(nnames, as.name))
+    )
   } else {
     x <- bind_cols(num, fac)
   }
@@ -200,7 +202,9 @@ make_newdata.ped <- function(x, ...) {
   ndf <- make_newdata(unped(x), ...)
 
   if (any(names(int_df) %in% names(ndf))) {
-    ndf <- right_join(int_df, ndf)
+    suppressMessages(
+      ndf <- right_join(int_df, ndf)
+      )
   } else {
     ndf <- combine_df(int_df[1,], ndf)
   }
@@ -212,8 +216,8 @@ make_newdata.ped <- function(x, ...) {
 
 }
 
-#' @rdname make_newdata
-#' @import make_newdata.ped
+#' @rdname newdata
+#' @inherit make_newdata.ped
 #' @importFrom rlang quos
 #' @export
 make_newdata.fped <- function(x, ...) {
@@ -242,8 +246,10 @@ make_newdata.fped <- function(x, ...) {
 
   out_df <- do.call(combine_df, compact(list(si, cumu_smry, ndf)))
   int_df <- int_info(attr(x, "breaks"))
-  out_df <- right_join(int_df, out_df) %>%
-    select(intersect(colnames(x), names(.))) %>% as_tibble()
+  suppressMessages(
+    out_df <- right_join(int_df, out_df) %>%
+      select(intersect(colnames(x), names(.))) %>% as_tibble()
+      )
 
   out_df <- adjust_time_vars(out_df, x, dot_names)
 

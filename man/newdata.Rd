@@ -4,6 +4,7 @@
 \alias{make_newdata}
 \alias{make_newdata.default}
 \alias{make_newdata.ped}
+\alias{make_newdata.fped}
 \title{Construct a data frame suitable for prediction}
 \usage{
 make_newdata(x, ...)
@@ -11,6 +12,8 @@ make_newdata(x, ...)
 \method{make_newdata}{default}(x, ...)
 
 \method{make_newdata}{ped}(x, ...)
+
+\method{make_newdata}{fped}(x, ...)
 }
 \arguments{
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}

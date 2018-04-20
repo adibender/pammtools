@@ -170,6 +170,9 @@ as <code>newdata</code> argument in a call to <code>predict</code> and similar f
 <span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for ped</span>
+<span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for fped</span>
 <span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -235,7 +238,7 @@ on variables specified in ellipsis.</p>
 #&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
 #&gt; 1 1017.  0.483           2.78  62.0 female no          no            yes       
 #&gt; 2 1017.  0.483           2.78  62.0 male   no          no            yes       
-#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>()</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sex"</span></div><div class='output co'>#&gt; # A tibble: 2 x 9
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>()</div><div class='output co'>#&gt; # A tibble: 2 x 9
 #&gt;    days status charlson_score   age sex    transfusion complications metastases
 #&gt;   &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
 #&gt; 1 1060.  0.483           2.96  63.3 male   no          no            yes       
@@ -262,17 +265,17 @@ on variables specified in ellipsis.</p>
 #&gt; # ... with 4 more variables: transfusion &lt;fct&gt;, complications &lt;fct&gt;,
 #&gt; #   metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='co'># if time information is specified, other time variables will be specified</span>
 <span class='co'># accordingly and offset calculated correctly</span>
-<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1000</span>), <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score age    sex
+<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1000</span>), <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score age    sex
 #&gt; 1 1.8    500 1000 (500,1000] 6.214608          1              2  50 female
 #&gt; 2 1.8    500 1000 (500,1000] 6.214608          1              2  55 female
 #&gt;   transfusion complications metastases resection
 #&gt; 1         yes            no        yes        no
-#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score  age    sex
+#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt;    id tstart tend   interval   offset ped_status charlson_score  age    sex
 #&gt; 1 1.8      0  500    (0,500] 6.214608          1              2 58.8 female
 #&gt; 2 1.8    500 1000 (500,1000] 6.214608          1              2 58.8 female
 #&gt;   transfusion complications metastases resection
 #&gt; 1         yes            no        yes        no
-#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt; <span class='message'>Joining, by = "sex"</span></div><div class='output co'>#&gt; <span class='message'>Joining, by = "tend"</span></div><div class='output co'>#&gt;         id tstart tend   interval   offset ped_status charlson_score      age
+#&gt; 2         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt;         id tstart tend   interval   offset ped_status charlson_score      age
 #&gt; 1 2.000000      0  500    (0,500] 6.214608          1              2 52.00000
 #&gt; 2 1.666667      0  500    (0,500] 6.214608          1              2 63.33333
 #&gt; 3 2.000000    500 1000 (500,1000] 6.214608          1              2 52.00000
