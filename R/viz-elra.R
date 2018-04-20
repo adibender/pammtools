@@ -14,7 +14,7 @@ gg_partial <- function(data, mod, term, ..., reference = NULL) {
   n_vars <- length(expressions)
 
   ndf <- make_newdata(data, ...) %>%
-    add_term2(mod_dlnm, term, reference=reference)
+    add_term2(mod, term, reference=reference)
 
 
   gg_base <- ggplot(ndf, aes_string(x = vars[1])) +
