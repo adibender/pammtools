@@ -121,12 +121,10 @@ combine_df <- function(...) {
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df
 #' @details Depening on the class of \code{x}, mean or modus values will be
-#' used for variables not specified in ellipsis. If x an object inherits class
-#' \code{ped}, useful data set completion will be performed depending on variables
-#' specified in ellipsis.
+#' used for variables not specified in ellipsis. If x is an object that inherits
+#' from class \code{ped}, useful data set completion will be performed depending
+#' on variables specified in ellipsis.
 #' @examples
-#' library(dplyr)
-#' \dontrun{
 #' tumor %>% make_newdata()
 #' tumor %>% make_newdata(age=c(50))
 #' tumor %>% make_newdata(days=seq_range(days, 3), age=c(50, 55))
@@ -134,7 +132,7 @@ combine_df <- function(...) {
 #' # mean/modus values of unspecified variables are calculated over whole data
 #' tumor %>% make_newdata(sex=unique(sex))
 #' tumor %>% group_by(sex) %>% make_newdata()
-#' # You can also pass complete data sets to make_newdata
+#' # You can also pass a part of the data sets as data frame to make_newdata
 #' purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) %>%
 #'   make_newdata(x=tumor)
 #'
@@ -146,7 +144,6 @@ combine_df <- function(...) {
 #' ped %>% make_newdata(tend = c(1000), age = c(50, 55))
 #' ped %>% make_newdata(tend = unique(tend))
 #' ped %>% group_by(sex) %>% make_newdata(tend = unique(tend))
-#' }
 #' @export
 make_newdata <- function(x, ...) {
   UseMethod("make_newdata", x)
@@ -215,7 +212,10 @@ make_newdata.ped <- function(x, ...) {
 
 }
 
-
+#' @rdname make_newdata
+#' @import make_newdata.ped
+#' @importFrom rlang quos
+#' @export
 make_newdata.fped <- function(x, ...) {
 
   assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
@@ -281,6 +281,7 @@ get_zvars <- function(func, time_var, n_func) {
 }
 
 
+## apply ll_fun to newly created data
 adjust_ll <- function(out_df, data) {
 
   func_list <- attr(data, "func")
@@ -311,7 +312,7 @@ adjust_ll <- function(out_df, data) {
 
 }
 
-
+# All variables that represent follow-up time should have the same values
 adjust_time_vars <- function(out_df, data, dot_names) {
 
   time_vars <- c("tend",

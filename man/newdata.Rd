@@ -26,13 +26,11 @@ as \code{newdata} argument in a call to \code{predict} and similar functions.
 }
 \details{
 Depening on the class of \code{x}, mean or modus values will be
-used for variables not specified in ellipsis. If x an object inherits class
-\code{ped}, useful data set completion will be performed depending on variables
-specified in ellipsis.
+used for variables not specified in ellipsis. If x is an object that inherits
+from class \code{ped}, useful data set completion will be performed depending
+on variables specified in ellipsis.
 }
 \examples{
-library(dplyr)
-\dontrun{
 tumor \%>\% make_newdata()
 tumor \%>\% make_newdata(age=c(50))
 tumor \%>\% make_newdata(days=seq_range(days, 3), age=c(50, 55))
@@ -40,7 +38,7 @@ tumor \%>\% make_newdata(days=seq_range(days, 3), status=unique(status), age=c(5
 # mean/modus values of unspecified variables are calculated over whole data
 tumor \%>\% make_newdata(sex=unique(sex))
 tumor \%>\% group_by(sex) \%>\% make_newdata()
-# You can also pass complete data sets to make_newdata
+# You can also pass a part of the data sets as data frame to make_newdata
 purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) \%>\%
   make_newdata(x=tumor)
 
@@ -52,5 +50,4 @@ ped \%>\% make_newdata(age=c(50, 55))
 ped \%>\% make_newdata(tend = c(1000), age = c(50, 55))
 ped \%>\% make_newdata(tend = unique(tend))
 ped \%>\% group_by(sex) \%>\% make_newdata(tend = unique(tend))
-}
 }
