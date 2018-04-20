@@ -27,5 +27,8 @@ Note: When applied to a \code{ped} object, that doesn't contain covariates
 }
 \description{
 Given a data set and grouping variables, this function returns mean values
-for numeric variables and modus for characters and factors.
+for numeric variables and modus for characters and factors. Usually
+this function should not be called directly but will rather be called
+as part of a call to \code{make_newdata}.
 }
+\keyword{internal}

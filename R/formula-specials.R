@@ -2,10 +2,27 @@
 #'
 #' So far, two specials are implemented. \code{concurrent} is used when
 #' the goal is to estimate a concurrent effect of the TDC. \code{cumulative}
-#' is used when the goal is to estimate a cumulative effect of the TDC.
+#' is used when the goal is to estimate a cumulative effect of the TDC. These
+#' should usually not be called directly but rather as part of the \code{formula}
+#' argument to \code{as_ped}.
+#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
+#' for details.
+#'
 #'
 #' @rdname specials
 #' @importFrom purrr map
+#'
+#' @param ... For \code{concurrent} variables that will be transformed to
+#' covariate matrices. The number of columns of each covariate depends on \code{te}.
+#' Usually, elements that will be specified here are \code{time} (which should be
+#' the name of the time-variable used on the LHS of the formula argument to
+#' \code{as_ped}), \code{te} which is the variable containing information on
+#' the times at which the TDC was observed (can be wrapped in \code{latency}) and
+#' the TDCs that share the same \code{te} and Lag-lead window (\code{ll_fun}).
+#' @param te_var The name of the variable that stores information on the
+#' times at which the TDCs specified in this term where observed.
+#' @inheritParams get_laglead
+#'
 #' @export
 #' @keywords internal
 cumulative <- function(...,
@@ -113,8 +130,6 @@ eval_special <- function(formula, special="cumulative") {
 }
 
 
-#' Querries on formula objects
-#'
 #' @rdname specials
 #' @inheritParams as_ped
 #' @param special The name of the special whose existence in the

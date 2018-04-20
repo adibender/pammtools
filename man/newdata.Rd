@@ -21,11 +21,14 @@ make_newdata(x, ...)
 \item{...}{Covariate specifications (expressions) that will be evaulated
 by looking for variables in \code{x}. Must be of form \code{z = f(z)}
 where \code{z} is a variable in the data set \code{x} and \code{f} a known
-function that can be usefully applied to $\code{age}$. See examples below.}
+function that can be usefully applied to \code{age}. See examples below.}
 }
 \description{
 Given a data set, returns a data frame type object that can be used
 as \code{newdata} argument in a call to \code{predict} and similar functions.
+The function is particularly usefull in combination with one of the
+\code{add_*} functions, e.g., \code{\link{add_term}}, \code{\link{add_hazard}},
+etc.
 }
 \details{
 Depening on the class of \code{x}, mean or modus values will be

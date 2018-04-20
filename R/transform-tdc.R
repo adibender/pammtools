@@ -24,12 +24,13 @@ get_tdc <- function(data, id_var) {
 #' @inherit get_tdc
 has_tdc <- function(data, id_var) {
 
-	data %>% group_by(!!sym(id_var)) %>%
-		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
-		select(-one_of(id_var)) %>%
-		summarize_all(any) %>% unlist() %>% any()
+  data %>% group_by(!!sym(id_var)) %>%
+    summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
+    select(-one_of(id_var)) %>%
+    summarize_all(any) %>% unlist() %>% any()
 
 }
+
 
 #' Extract unique cut points when time-dependent covariates present
 #'

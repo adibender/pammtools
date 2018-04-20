@@ -5,7 +5,22 @@
 #'
 #' @import ggplot2
 #' @importFrom rlang quos
+#'
+#' @inheritParams make_newdata
+#' @param mod A suitable model object which will be used to estimate the
+#' partial effect of \code{term}.
+#' @param reference If specified, should be a list with covariate value pairs,
+#' e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
+#' to an observation specified in \code{reference}.
 #' @export
+#' @examples
+#' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status)~.)
+#' mod <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
+#'   family = poisson(), offset=offset)
+#' make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
+#' gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications))
+#' gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications),
+#'   reference=list(age = 50))
 #' @keywords internaldo
 gg_partial <- function(data, mod, term, ..., reference = NULL) {
 

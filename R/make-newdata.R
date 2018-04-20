@@ -1,7 +1,9 @@
 #' Extract information of the sample contained in a data set
 #'
 #' Given a data set and grouping variables, this function returns mean values
-#' for numeric variables and modus for characters and factors.
+#' for numeric variables and modus for characters and factors. Usually
+#' this function should not be called directly but will rather be called
+#' as part of a call to \code{make_newdata}.
 #'
 #' @rdname sample_info
 #' @param x A data frame (or object that inherits from \code{data.frame}).
@@ -11,7 +13,9 @@
 #' original data is returned.
 #' Note: When applied to a \code{ped} object, that doesn't contain covariates
 #' (only interval information), returns data frame with 0 columns.
+#'
 #' @export
+#' @keywords internal
 sample_info <- function(x) {
   UseMethod("sample_info", x)
 }
@@ -111,6 +115,9 @@ combine_df <- function(...) {
 #'
 #' Given a data set, returns a data frame type object that can be used
 #' as \code{newdata} argument in a call to \code{predict} and similar functions.
+#' The function is particularly usefull in combination with one of the
+#' \code{add_*} functions, e.g., \code{\link{add_term}}, \code{\link{add_hazard}},
+#' etc.
 #'
 #' @rdname newdata
 #' @aliases make_newdata
@@ -118,7 +125,7 @@ combine_df <- function(...) {
 #' @param ... Covariate specifications (expressions) that will be evaulated
 #' by looking for variables in \code{x}. Must be of form \code{z = f(z)}
 #' where \code{z} is a variable in the data set \code{x} and \code{f} a known
-#' function that can be usefully applied to $\code{age}$. See examples below.
+#' function that can be usefully applied to \code{age}. See examples below.
 #' @import dplyr
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df

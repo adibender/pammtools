@@ -2,28 +2,53 @@
 % Please edit documentation in R/as-ped.R
 \name{as_ped}
 \alias{as_ped}
+\alias{as_ped.data.frame}
+\alias{as_ped.nested_fdf}
+\alias{as_ped.list}
 \alias{is.ped}
 \title{Transform data to Piece-wise Exponential Data (PED)}
 \usage{
 as_ped(data, formula, ...)
 
+\method{as_ped}{data.frame}(data, formula, ...)
+
+\method{as_ped}{nested_fdf}(data, formula, ...)
+
+\method{as_ped}{list}(data, formula, ...)
+
 is.ped(x)
 }
 \arguments{
-\item{data}{a data frame}
+\item{data}{Either an object inheriting from data frame or in case of
+time-dependent covariates a list of data frames, where the first data frame
+contains the time-to-event information and static covariates while the second
+(and potentially further data frames) contain information on time-dependent
+covariates and the times at which they have been observed.}
 
-\item{formula}{a model formula}
+\item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
+on the left-hand-side and covariate specification on the right-hand-side (RHS).
+The RHS can be an extended formula, which specifies how TDCs should be transformed
+using specials \code{concurrent} and \code{cumulative}.}
 
-\item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
+\item{...}{Further arguments passed to \code{split_data}.}
 
 \item{x}{any R object.}
 }
-\value{
-A data frame class \code{ped} in piece-wise exponential data format.
-}
 \description{
-Transform data to Piece-wise Exponential Data (PED)
+This is the general data transformation function provided by the
+\code{pammtools} package. Two main applications must be differentiated:
+(1) Transformation of standard time-to-event data.
+(2) Transformation of time-to-event data with time-dependent covariates (TDC).
+For the latter, the type of effect of the TDC one wants to estimate is also
+important for the data transformation step, i.e. concurrent or cumulative.
+In any case, the data transformation is specified by a two sided formula.
+In case of TDCs, the right-hand-side of the formula can contain specials
+\code{concurrent} and \code{cumulative}.
+See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
+for details.
 }
-\seealso{
-\code{\link[survival]{survSplit}}
+\examples{
+tumor[1:3, ]
+tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
+tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex)
 }

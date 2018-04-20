@@ -41,7 +41,6 @@ modus <- function(var) {
 #'   \code{trim / 2 * length(x)} values are removed from each tail.
 #' @param expand Optionally, expand the range by \code{expand * (1 + range(x)}
 #'   (computed after trimming).
-#' @export
 #' @examples
 #' x <- rcauchy(100)
 #' seq_range(x, n = 10)
@@ -56,6 +55,7 @@ modus <- function(var) {
 #'
 #' seq_range(y, by = 0.1)
 #' seq_range(y, by = 0.1, pretty = TRUE)
+#' @export
 seq_range <- function(x, n, by, trim = NULL, expand = NULL, pretty = FALSE) {
   if (!missing(n) && !missing(by)) {
     stop("May only specify one of `n` and `by`", call. = FALSE)

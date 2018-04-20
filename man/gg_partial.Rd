@@ -9,9 +9,31 @@ gg_partial(data, mod, term, ..., reference = NULL)
 
 gg_slice(data, mod, term, ..., reference = NULL)
 }
+\arguments{
+\item{mod}{A suitable model object which will be used to estimate the
+partial effect of \code{term}.}
+
+\item{...}{Covariate specifications (expressions) that will be evaulated
+by looking for variables in \code{x}. Must be of form \code{z = f(z)}
+where \code{z} is a variable in the data set \code{x} and \code{f} a known
+function that can be usefully applied to \code{age}. See examples below.}
+
+\item{reference}{If specified, should be a list with covariate value pairs,
+e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
+to an observation specified in \code{reference}.}
+}
 \description{
 Depending on the plot type and input, creates either a bivariate effect
 surface or 1-dimensional slices.
+}
+\examples{
+ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status)~.)
+mod <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
+  family = poisson(), offset=offset)
+make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
+gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications))
+gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications),
+  reference=list(age = 50))
 }
 \keyword{internal}
 \keyword{internaldo}

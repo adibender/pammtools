@@ -19,11 +19,15 @@ get_laglead(x, ...)
 
 \item{te}{A vector of exposure times}
 
-\item{ll_fun}{Function with that indicates how the lag-lead matrix
+\item{ll_fun}{Function that specifies how the lag-lead matrix
 should be contructed. First argument is the follow up time
-second argument is the time of exposure.s}
+second argument is the time of exposure.}
 }
 \description{
 Constructs lag-lead window data set from raw inputs or from data objects
 with suitable information stored in attributes.
+}
+\examples{
+get_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+gg_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 }

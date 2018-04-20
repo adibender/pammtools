@@ -5,6 +5,9 @@
 #'
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.
+#' @examples
+#' get_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+#' gg_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 #' @export
 get_laglead <- function(x, ...) {
   UseMethod("get_laglead", x)
@@ -13,9 +16,9 @@ get_laglead <- function(x, ...) {
 #' @rdname get_laglead
 #' @inherit get_laglead
 #' @param te A vector of exposure times
-#' @param ll_fun Function with that indicates how the lag-lead matrix
+#' @param ll_fun Function that specifies how the lag-lead matrix
 #' should be contructed. First argument is the follow up time
-#' second argument is the time of exposure.s
+#' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing
 #' @export
@@ -49,11 +52,9 @@ get_laglead.data.frame <- function(x, ...) {
 
 }
 
-#' Plot lag lead window from appropriate DF
-#'
 #' Plot Lag-Lead windows
 #'
-#' Given a matrix defining a lag lead window, returns respective plot as a
+#' Given data defining a Lag-lead window, returns respective plot as a
 #' \code{ggplot2} object.
 #'
 #' @inheritParams get_laglead
@@ -63,12 +64,14 @@ get_laglead.data.frame <- function(x, ...) {
 #' @import checkmate ggplot2
 #' @examples
 #' ## Example 1: supply t, te, ll_fun directly
-#' gg_laglead(1:10, 1:5, ll_fun = function(t,te) {t >= te})
+#'  gg_laglead(1:10, te=-5:5,
+#'   ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 #'
 #' ## Example 2: extract information on t, te, ll_from data with respective attributes
 #' data("simdf_elra", package = "pammtools")
 #' gg_laglead(simdf_elra)
 #' @export
+#' @seealso get_laglead
 gg_laglead <- function(x, ...) {
   UseMethod("gg_laglead", x)
 }

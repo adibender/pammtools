@@ -23,9 +23,9 @@ gg_laglead(x, ...)
 
 \item{te}{A vector of exposure times}
 
-\item{ll_fun}{Function with that indicates how the lag-lead matrix
+\item{ll_fun}{Function that specifies how the lag-lead matrix
 should be contructed. First argument is the follow up time
-second argument is the time of exposure.s}
+second argument is the time of exposure.}
 
 \item{high_col}{Color used to highlight exposure times within the lag-lead window.}
 
@@ -42,9 +42,13 @@ Given a matrix defining a lag lead window, returns respective plot as a
 }
 \examples{
 ## Example 1: supply t, te, ll_fun directly
-gg_laglead(1:10, 1:5, ll_fun = function(t,te) {t >= te})
+ gg_laglead(1:10, te=-5:5,
+  ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
 
 ## Example 2: extract information on t, te, ll_from data with respective attributes
 data("simdf_elra", package = "pammtools")
 gg_laglead(simdf_elra)
+}
+\seealso{
+get_laglead
 }

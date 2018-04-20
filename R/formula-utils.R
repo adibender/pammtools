@@ -48,8 +48,7 @@ get_ped_form <- function(formula) {
 }
 
 
-#' Logical queries regarding formulas
-#'
+
 #' @keywords internal
 has_tdc_form <- function(formula) {
 

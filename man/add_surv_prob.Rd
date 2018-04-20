@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_functions.R
 \name{add_surv_prob}
 \alias{add_surv_prob}
-\title{Add survival probability estimates to data set}
+\title{Add survival probability estimates}
 \usage{
 add_surv_prob(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
   time_variable = NULL, interval_length = "intlen", ...)
@@ -39,12 +39,16 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 \code{\link{get_hazard}}}
 }
 \description{
-Add survival probability estimates to data set
+Given suitable data (i.e. data with all columns used for estimation of the model),
+this functions adds a column \code{surv_prob} containing survival probabilities
+for the specified covariate and follow-up information (and CIs
+\code{surv_lower}, \code{surv_upper} if \code{ci=TRUE}).
+}
+\examples{
+ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
+pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
+ped_info(ped) \%>\% add_surv_prob(pam, ci=TRUE)
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_cumu_hazard}}
-
-\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
-
 \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 }

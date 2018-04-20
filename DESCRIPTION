@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
-Version: 0.0.8
-Date: 2018-02-14
+Version: 0.0.9
+Date: 2018-04-20
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
@@ -25,7 +25,7 @@ Imports:
     msm,
     lazyeval,
     Formula
-Suggests: 
+Suggests:
     RColorBrewer,
     scam,
     coxme,
