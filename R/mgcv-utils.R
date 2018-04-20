@@ -10,7 +10,7 @@
 #' returns the design matrix (e.g., \code{mgcv::gam}).
 #' @importFrom mgcv predict.gam
 #' @keywords internal
-compute_cum_diff <-  function(d1, d2, model) {
+compute_cumu_diff <-  function(d1, d2, model) {
   X1 <- predict.gam(model, newdata = d1, type = "lpmatrix")
   X2 <- predict.gam(model, newdata = d2, type = "lpmatrix")
   haz1 <- exp(drop(X1 %*% model$coefficients))

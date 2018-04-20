@@ -20,7 +20,7 @@ gg_smooth(x, ...)
 \item{fit}{A model object.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot2}} object.
+A \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
 Given a gam model this convenience function returns a plot of all

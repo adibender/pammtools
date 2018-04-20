@@ -8,7 +8,7 @@
 #' @param x A data frame or object of class \code{pamm}.
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
-#' @return A \code{\link[ggplot2]{ggplot2}} object.
+#' @return A \code{\link[ggplot2]{ggplot}} object.
 #' @examples
 #' g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 #' gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
@@ -43,11 +43,11 @@ gg_smooth.pamm <- function(x, ...) {
 
 	smooths1d <- tidy_smooth(unpam(x)) %>%
 	mutate(
-		lower = .data$fit - .data$se,
-		upper = .data$fit + .data$se)
+		ci_lower = .data$fit - .data$se,
+		ci_upper = .data$fit + .data$se)
 
 	ggplot(smooths1d, aes_string(x="x", y="fit")) +
-	geom_ribbon(aes_string(ymin="lower", ymax = "upper"), alpha=0.3) +
+	geom_ribbon(aes_string(ymin="ci_lower", ymax = "ci_upper"), alpha=0.3) +
 	geom_line() +
 	facet_wrap(~ylab)
 
@@ -73,12 +73,8 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 	df2d <- tidy_smooth2d(x, ci=ci, se=ci, ...)
 	if (ci) {
 		df2d <- df2d %>%
-			gather("type", "fit", .data$fit, .data$low, .data$high) %>%
-			mutate(
-				type = factor(
-					.data$type,
-					levels = c("low", "fit", "high"),
-					labels = c("lower", "fit", "upper")))
+			gather("type", "fit", .data$fit, .data$ci_lower, .data$ci_upper) %>%
+			mutate(type = as.factor(.data$type))
 	}
 
 	gg2d <- ggplot(df2d, aes_string(x="x", y="y", z="fit")) +
@@ -140,7 +136,7 @@ gg_fixed <- function(x, intercept=FALSE, ...) {
 
 	fixed_df <- tidy_fixed(x, intercept=intercept, ...)
 
-	ggplot(fixed_df, aes_string(x="variable", y="coef", ymin="lower", ymax="upper")) +
+	ggplot(fixed_df, aes_string(x="variable", y="coef", ymin="ci_lower", ymax="ci_upper")) +
 		geom_hline(yintercept = 0, lty=3) +
 		geom_pointrange() +
 		coord_flip() +

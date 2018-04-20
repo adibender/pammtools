@@ -59,7 +59,7 @@ get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
 }
 
 get_cumu_diff <- function(d1, d2, model) {
-  lp <- compute_cum_diff(d1, d2, model)
+  lp <- compute_cumu_diff(d1, d2, model)
   d2 %>%
     mutate(
       cumu_hazard = lp[["cumu_diff"]],

@@ -72,8 +72,8 @@ add_term <- function(
     se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
     newdata <- newdata %>%
       mutate(
-        low  = .data$fit - se.mult * se,
-        high = .data$fit + se.mult * se)
+        ci_lower = .data$fit - se.mult * se,
+        ci_upper = .data$fit + se.mult * se)
   }
 
   return(newdata)
@@ -125,8 +125,8 @@ add_term2 <- function(
     se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
     newdata <- newdata %>%
       mutate(
-        low  = .data$fit - se.mult * se,
-        high = .data$fit + se.mult * se)
+        ci_lower = .data$fit - se.mult * se,
+        ci_upper = .data$fit + se.mult * se)
   }
 
   return(newdata)
@@ -263,8 +263,7 @@ get_hazard <- function(
   }
 
   if (type == "response") {
-    pred <- pred %>%
-      mutate_at(mutate_vars, exp)
+    pred <- pred %>% mutate_at(mutate_vars, exp)
   }
 
   # it is necessary to include the grouping variables here, otherwise
