@@ -69,7 +69,7 @@ add_term <- function(
     } else {
       vcov(object)[col_ind, col_ind]
     }
-    se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
+    se <- sqrt(rowSums((X %*% cov.coefs)* X))
     newdata <- newdata %>%
       mutate(
         ci_lower = .data$fit - se.mult * se,
@@ -122,7 +122,7 @@ add_term2 <- function(
     } else {
       vcov(object)[col_ind, col_ind]
     }
-    se <- sqrt(drop(diag(X %*% cov.coefs %*% t(X))))
+    se <- sqrt(rowSums((X %*% cov.coefs)* X))
     newdata <- newdata %>%
       mutate(
         ci_lower = .data$fit - se.mult * se,
