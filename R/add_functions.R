@@ -212,7 +212,7 @@ get_hazard <- function(
 
   assert_data_frame(newdata, all.missing = FALSE)
   assert_class(object, classes = "glm")
-  type <- match.arg(type)
+  type    <- match.arg(type)
 
   is_pam <- inherits(object, "gam")
   if (is.null(time_variable)) {
@@ -222,22 +222,7 @@ get_hazard <- function(
     assert_choice(time_variable, colnames(newdata))
   }
 
-  original_intervals <- if (is_pam) {
-    unique(model.frame(object)[[time_variable]])
-  } else levels(model.frame(object)[[time_variable]])
-  prediction_intervals <- if (is_pam) {
-    unique(newdata[[time_variable]])
-  } else levels(factor(newdata[[time_variable]]))
-  new_ints <- which(!(prediction_intervals %in% original_intervals))
-  n_out <- pmin(10, length(new_ints))
-  if (length(new_ints)) {
-   message <- paste0("Intervals in <newdata> contain values (",
-     paste(prediction_intervals[new_ints[1:n_out]], collapse = ","),
-     " ...) not used in original fit.",
-     " Setting intervals to values not used for original fit in <object>",
-     "can invalidate the PEM assumption and yield incorrect predictions.")
-   if (is_pam) warning(message) else stop(message)
-  }
+  warn_about_new_evaluation_time_points(newdata, object, time_variable)
 
   pred <- predict(
     object  = object,
