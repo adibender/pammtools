@@ -47,11 +47,6 @@ that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals
 if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
-
-\item{ci_type}{The method by which confidence intervals for hazards,
-cumulative hazards and survival probabilities are calculated.
-The default uses respective transformations of the intervals
-on the level of the linear predictor (i.e., log-hazard).}
 }
 \description{
 Adds the contribution (plus confidence intervals) of a specific term to the

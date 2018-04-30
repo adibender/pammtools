@@ -11,10 +11,6 @@
 #' which term(s) information should be extracted and added to data set.
 #' @param se_mult The factor by which standard errors are multiplied to form
 #' confidence intervals.
-#' @param ci_type The method by which confidence intervals for hazards,
-#' cumulative hazards and survival probabilities are calculated.
-#' The default uses respective transformations of the intervals
-#' on the level of the linear predictor (i.e., log-hazard).
 #' @param relative If \code{TRUE}, calculates relative risk contribution,
 #' that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals
 #' if \code{se.fit = TRUE}. Defaults to \code{FALSE}.
@@ -153,7 +149,7 @@ add_term2 <- function(
 #' @param ci_type The method by which standard errors/confidence intervals
 #' will be calculated. Default transforms the linear predictor at
 #' respective intervals. \code{"delta"} calculates CIs based on the standard
-#' error calculated by the Delta method. \¢ode{"sim"} draws the
+#' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
 #' the estimated coeffiicents. CIs are given by respective quantiles.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
@@ -246,7 +242,7 @@ get_hazard <- function(
       se_mult=se_mult, ...)
   }
   if(type == "response") {
-    newdata <- newdata %>% mutate(hazard = exp(hazard))
+    newdata <- newdata %>% mutate(hazard = exp(.data$hazard))
   }
 
   newdata
@@ -482,16 +478,16 @@ add_ci <- function(
   if(type == "link") {
     newdata <-newdata %>%
       mutate(
-        ci_lower = hazard - se_mult * se,
-        ci_upper = hazard + se_mult * se)
+        ci_lower = .data$hazard - se_mult * .data$se,
+        ci_upper = .data$hazard + se_mult * .data$se)
   }
 
   if(type != "link") {
     if(ci_type == "default") {
       newdata <- newdata %>%
         mutate(
-          ci_lower = exp(hazard - se_mult * se),
-          ci_upper = exp(hazard + se_mult * se))
+          ci_lower = exp(.data$hazard - se_mult * .data$se),
+          ci_upper = exp(.data$hazard + se_mult * .data$se))
     } else {
       if(ci_type == "delta") {
         newdata <- split(newdata, group_indices(newdata)) %>%

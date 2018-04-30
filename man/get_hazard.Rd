@@ -41,7 +41,7 @@ outside \code{R} (see example code, below). }
 \item{ci_type}{The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
-error calculated by the Delta method. \¢ode{"sim"} draws the
+error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
 the estimated coeffiicents. CIs are given by respective quantiles.}
 
