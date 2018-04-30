@@ -5,7 +5,7 @@
 \title{Add info about term effects to data set}
 \usage{
 add_term(newdata, object, term, se.fit = TRUE, type = "terms",
-  se.mult = 2, relative = FALSE, ...)
+  se_mult = 2, relative = FALSE, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -39,7 +39,7 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{se.mult}{The factor by which standard errors are multiplied to form
+\item{se_mult}{The factor by which standard errors are multiplied to form
 confidence intervals.}
 
 \item{relative}{If \code{TRUE}, calculates relative risk contribution,
@@ -47,6 +47,11 @@ that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals
 if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
+
+\item{ci_type}{The method by which confidence intervals for hazards,
+cumulative hazards and survival probabilities are calculated.
+The default uses respective transformations of the intervals
+on the level of the linear predictor (i.e., log-hazard).}
 }
 \description{
 Adds the contribution (plus confidence intervals) of a specific term to the
