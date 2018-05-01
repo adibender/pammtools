@@ -27,7 +27,7 @@ test_that("Trafo works and attributes are appended", {
 })
 
 test_that("Trafo works for list objects (with TDCs)", {
-
+  data("patient")
   event_df  <- filter(patient, CombinedID == 1116)
   ped <- as_ped(data=list(event_df), formula=Surv(survhosp, PatientDied)~ .,
     cut = 0:30, id = "CombinedID")

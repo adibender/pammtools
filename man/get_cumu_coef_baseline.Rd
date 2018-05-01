@@ -11,7 +11,7 @@ get_cumu_coef_baseline(data, model, ...)
 
 \item{model}{Object from which to extract cumulative coefficients.}
 
-\item{...}{Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.}
+\item{...}{Further arguments passed to methods.}
 }
 \description{
 These functions are designed to extract (or mimick) the cumulative coefficients

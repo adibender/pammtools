@@ -20,7 +20,7 @@ get_cumu_coef(model, data = NULL, terms, ...)
 \item{terms}{A character vector of variables for which the cumulative
 coefficient should be calculated.}
 
-\item{...}{Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.}
+\item{...}{Further arguments passed to methods.}
 
 \item{ci}{Logical. Indicates if confidence intervals should be returned as
 well.}
