@@ -284,10 +284,10 @@ smry_cumu_vars <- function(data, time_var) {
 get_zvars <- function(func, time_var, n_func) {
 
   col_vars <- func$col_vars
-  all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$te_var,
+  all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$tz_var,
     func$suffix, n_func)
-  time_vars <- make_mat_names(c(time_var, func$te_var, "LL"),
-    func$latency_var, func$te_var, func$suffix, n_func)
+  time_vars <- make_mat_names(c(time_var, func$tz_var, "LL"),
+    func$latency_var, func$tz_var, func$suffix, n_func)
 
   setdiff(all_vars, time_vars)
 
@@ -311,13 +311,13 @@ adjust_ll <- function(out_df, data) {
 
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
-    te_var <- attr(data, "te_vars")[[ind_ll]]
-    te_var <- make_mat_names(te_var, func$latency_var, func$te_var, func$suffix,
+    tz_var <- attr(data, "tz_vars")[[ind_ll]]
+    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
       n_func)
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[te_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
     } else {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[te_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[tz_var]])*1L
     }
   }
 

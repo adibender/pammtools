@@ -9,12 +9,12 @@ rng_z = function(nz) {
   as.numeric(arima.sim(n = nz, list(ar = c(.8, -.6))))
 }
 # two different exposure times  for two different exposures
-te1 <- 1:10
-te2 <- -5:5
+tz1 <- 1:10
+tz2 <- -5:5
 # generate exposures and add to data set
 df <- df %>%
-  add_tdc(te1, rng_z) %>%
-  add_tdc(te2, rng_z)
+  add_tdc(tz1, rng_z) %>%
+  add_tdc(tz2, rng_z)
 df
 
 # baseline hazard
@@ -28,20 +28,20 @@ ft <- function(t, tmax) {
 # fdnorm <- function(x) (dnorm(x,1.5,2)+1.5*dnorm(x,7.5,1))
 # wpeak2 <- function(lag)
 # wdnorm <- function(lag) 5*(dnorm(lag,4,6)+dnorm(lag,25,4))
-f_ttez1 <- function(t, te, z) {
-  ft(t, tmax=10) * 0.8*(dnorm(z,1.5,2)+1.5*dnorm(z,7.5,1))* 15*dnorm(t-te,8,10)
+f_xyz1 <- function(t, tz, z) {
+  ft(t, tmax=10) * 0.8*(dnorm(z,1.5,2)+1.5*dnorm(z,7.5,1))* 15*dnorm(t-tz,8,10)
 }
-f_ttez2 <- function(t, te, z) {
-  5*(dnorm(t-te,4,6)+dnorm(t-te,25,4))*z
+f_xyz2 <- function(t, tz, z) {
+  5*(dnorm(t-tz,4,6)+dnorm(t-tz,25,4))*z
 }
 # define lag-lead window function
-ll_fun <- function(t, te) {t >= te}
-ll_fun2 <- function(t, te) {t >= te + 2}
+ll_fun <- function(t, tz) {t >= tz}
+ll_fun2 <- function(t, tz) {t >= tz + 2}
 # simulate data with cumulative effect
 simdf_elra <- sim_pexp(
   formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|
-     fcumu(t, te1, z.te1, f_xyz=f_ttez1, ll_fun=ll_fun) +
-     fcumu(t, te2, z.te2, f_xyz=f_ttez2, ll_fun=ll_fun2),
+     fcumu(t, tz1, z.tz1, f_xyz=f_xyz1, ll_fun=ll_fun) +
+     fcumu(t, tz2, z.tz2, f_xyz=f_xyz2, ll_fun=ll_fun2),
   data = df,
   cut = 0:10)
 

@@ -4,7 +4,7 @@
 \alias{split_tdc}
 \title{Create piece-wise exponential data in case of time-dependent covariates}
 \usage{
-split_tdc(formula, event_df, tdc_df, te_var, id_var = "id",
+split_tdc(formula, event_df, tdc_df, tz_var, id_var = "id",
   time_var = "time", status_var = "status", cens_value = 0,
   entry_time = 0, ...)
 }
@@ -16,7 +16,7 @@ split_tdc(formula, event_df, tdc_df, te_var, id_var = "id",
 \item{tdc_df}{Data frame (or similar) containing information on time-dependent
 covariates}
 
-\item{te_var}{The time variable in \code{tdc_df} indicating time points at
+\item{tz_var}{The time variable in \code{tdc_df} indicating time points at
 which time-dependent covariate (tdc) was observed.
 Needs to be the same name in both data sets.}
 
@@ -47,5 +47,5 @@ which a TDC changes its value).
 \examples{
 data("pbc", package="survival")# loads both, pbc and pbcseq
 pbc$status = 1*(pbc$status == 2)
-pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, te_var="day")
+pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, tz_var="day")
 }

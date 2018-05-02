@@ -13,7 +13,7 @@
 #'   \code{\link[ggplot2]{geom_line}}.
 #' @inheritParams ggplot2::geom_line
 #' @rdname geom_hazard
-#' @importFrom ggplot2 layer GeomStep
+#' @importFrom ggplot2 layer GeomLine
 #' @export
 geom_hazard <- function(
   mapping     = NULL,
@@ -37,6 +37,7 @@ geom_hazard <- function(
     )
   )
 }
+
 
 #' @rdname geom_hazard
 #' @format NULL
@@ -123,3 +124,46 @@ stairstep <- function(data, direction="hv") {
     data[xs, setdiff(names(data), c("x", "y"))]
   )
 }
+
+
+#' @inheritParams ggplot2::geom_line
+#' @rdname geom_hazard
+#' @importFrom ggplot2 layer GeomLine
+#' @export
+geom_surv <- function(
+  mapping     = NULL,
+  data        = NULL,
+  stat        = "identity",
+  position    = "identity",
+  na.rm       = FALSE,
+  show.legend = NA,
+  inherit.aes = TRUE, ...) {
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = stat,
+    geom = GeomSurv,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      na.rm = na.rm,
+      ...
+    )
+  )
+}
+
+#' @rdname geom_hazard
+#' @format NULL
+#' @usage NULL
+#' @export
+GeomSurv <- ggproto(
+  "GeomSurv", GeomLine,
+  setup_data = function(data, params) {
+    row1   <- data %>% group_by(group) %>% slice(1)
+    row1$x <- 0
+    row1$y <- 1
+    data   <- bind_rows(row1, data)
+    data[order(data$group, data$x), ]
+  }
+)
