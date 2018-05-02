@@ -20,7 +20,6 @@ opts_chunk$set(
 ```{r, message = FALSE}
 library(ggplot2)
 theme_set(theme_bw())
-library(gridExtra)
 library(tidyr)
 library(dplyr)
 library(pammtools)
@@ -307,7 +306,7 @@ time_gg <- ggplot(time_df, aes(x=karno)) +
 </details>
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE, echo=FALSE}
-grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
+gridExtra::grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
 
 

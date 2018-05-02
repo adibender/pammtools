@@ -21,16 +21,18 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Add time-dependent covariate to a data set — add_tdc" />
 
 <meta property="og:description" content="Given a data set in standard format (with one row per subject/observation),
@@ -38,6 +40,8 @@ this function adds a column with the specified exposure time points
 and a column with respective exposures, created from rng.fun.
 This function should usually only be used to create data sets passed
 to sim_pexp." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -60,11 +64,6 @@ to sim_pexp." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -80,7 +79,7 @@ to sim_pexp." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -147,7 +146,7 @@ to sim_pexp." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -176,7 +175,7 @@ to <code><a href='sim_pexp.html'>sim_pexp</a></code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>add_tdc</span>(<span class='no'>data</span>, <span class='no'>te</span>, <span class='no'>rng_fun</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>add_tdc</span>(<span class='no'>data</span>, <span class='no'>tz</span>, <span class='no'>rng_fun</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -186,17 +185,17 @@ to <code><a href='sim_pexp.html'>sim_pexp</a></code>.</p>
       <td><p>Data in which to look for variables in formula.</p></td>
     </tr>
     <tr>
-      <th>te</th>
+      <th>tz</th>
       <td><p>A numeric vector of exposure times (relative to the
 beginning of the follow-up time <code>t</code>)</p></td>
     </tr>
     <tr>
       <th>rng_fun</th>
       <td><p>A random number generating function that creates
-the time-dependent covariates at time points <code>te</code>.
+the time-dependent covariates at time points <code>tz</code>.
 First argument of the function should be <code>n</code>, the number of
 random numbers to generate. Within <code>add_tdc</code>, <code>n</code> will be set
-to <code>length(te)</code>.</p></td>
+to <code>length(tz)</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -235,7 +234,13 @@ to <code>length(te)</code>.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

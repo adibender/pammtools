@@ -21,19 +21,23 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Calculate survival probabilities — get_surv_prob" />
 
 <meta property="og:description" content="Calculate survival probabilities" />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -56,11 +60,6 @@
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -76,7 +75,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -143,7 +142,7 @@
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -168,8 +167,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>get_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"default"</span>, <span class='st'>"delta"</span>,
+  <span class='st'>"sim"</span>), <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2L</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>,
+  <span class='kw'>nsim</span> <span class='kw'>=</span> <span class='fl'>100L</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,6 +190,11 @@
       <th>ci</th>
       <td><p>Logical indicating whether to iclude confidence intervals. Defaults
 to <code>TRUE</code></p></td>
+    </tr>
+    <tr>
+      <th>se_mult</th>
+      <td><p>Factor by which standard errors are multiplied for calculating
+the confidence intervals.</p></td>
     </tr>
     <tr>
       <th>time_variable</th>
@@ -241,7 +246,13 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

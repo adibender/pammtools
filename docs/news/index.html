@@ -21,17 +21,22 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Changelog" />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
+<meta name="twitter:card" content="summary" />
 
 
 <!-- mathjax -->
@@ -53,11 +58,6 @@
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -161,9 +161,20 @@
     <div id="pammtools-0-0-9" class="section level2">
 <h2 class="hasAnchor">
 <a href="#pammtools-0-0-9" class="anchor"></a>pammtools 0.0.9</h2>
+<div id="breaking-changes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#breaking-changes" class="anchor"></a>Breaking changes</h3>
+<ul>
+<li><p><code>make_newdata</code> loses arguments <code>expand</code> and <code>n</code> and gains <code>...</code> where arbitrary covariate specifications can be placed, i.e. e.g. <code>age=seq_range(age, n=20)</code>. Multiple such expression can be provided and a data frame with one row for each combination of the evaluated expressions will be returned. All variables not specified in \code{…} will be set to respective mean or modus values. For data of class <code>ped</code> or <code>fped</code> <code>make_newdata</code> will try to specify time-dependent variables intelligently.</p></li>
+<li><p><code>te_var</code> argument in <code>concurrent</code> and <code>cumulative</code> was renamed to <code>tz_var</code></p></li>
+<li><p><code>te</code> arguments have been replaced by <code>tz</code> (time points at which <code>z</code> was observed) in all functions to avoid confusion with <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/te">mgcv::te</a></code> (e.g., <code>gg_laglead</code>)</p></li>
+</ul>
+</div>
+<div id="updates-and-new-features" class="section level3">
+<h3 class="hasAnchor">
+<a href="#updates-and-new-features" class="anchor"></a>Updates and new features</h3>
 <ul>
 <li><p>Overall better support for cumulative effects</p></li>
-<li><p><strong>Breaking change</strong> <code>make_newdata</code> loses arguments <code>expand</code> and <code>n</code> and gains <code>...</code> where arbitrary covariate specifications can be placed, i.e. e.g. <code>age=seq_range(age, n=20)</code>. Multiple such expression can be provided and a data frame with one row for each combination of the evaluated expressions will be returned. All variables not specified in \code{…} will be set to respective mean or modus values. For data of class <code>ped</code> or <code>fped</code> <code>make_newdata</code> will try to specify time-dependent variables intelligently.</p></li>
 <li>Added convenience functions for work with cumulative effects, namely
 <ul>
 <li>
@@ -177,7 +188,18 @@
 <li><code>gg_laglead</code></li>
 </ul>
 </li>
+<li>Added convenience <code>geom</code>s for piece-wise constant hazards (see examples in <code><a href="../reference/geom_hazard.html">?geom_hazard</a></code>, cumulative hazards and survival probabilities (usually <code>aes(x=time, y = surv_prob)</code>, but data set doesn’t contain extra row for <code>time = 0</code>), thus
+<ul>
+<li>
+<code>geom_stephazard</code> adds row (x=0, y = y[1]) to the data before plotting</li>
+<li>
+<code>geom_hazard</code> adds row (x = 0, y = 0) before plotting (can also be used for cumulative hazard)</li>
+<li>
+<code>geom_surv</code> add row (x = 0, y = 1) before plotting</li>
 </ul>
+</li>
+</ul>
+</div>
 </div>
     <div id="pammtools-0-0-8" class="section level1">
 <h1 class="page-header">
@@ -266,7 +288,13 @@
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

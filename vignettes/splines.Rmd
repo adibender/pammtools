@@ -77,18 +77,18 @@ The Figure below visualizes the smooth estimates from both models:
 ```{r, gg_karno}
 # crate data set with varying karno values (from min to max in 100 steps)
 # and add term contribution of karno from PAM and Cox-PH models
-karno_df <- ped %>% make_newdata(expand = "karno", n = 100) %>%
+karno_df <- ped %>% make_newdata(karno = seq_range(karno, n = 100)) %>%
   add_term(pam, term="karno") %>%
   mutate(
     cox = predict(cph, newdata=., type="terms")[, "pspline(karno, df = 0)"] -
       predict(cph, newdata=data.frame(karno=mean(veteran$karno))))
-gg_karno <- ggplot(karno_df, aes(x=karno, ymin=low, ymax=high)) +
+gg_karno <- ggplot(karno_df, aes(x=karno, ymin=ci_lower, ymax=ci_upper)) +
   geom_line(aes(y=fit, col="PAM")) +
   geom_ribbon(alpha=0.2) +
   geom_line(aes(y=cox, col="Cox PH"))+
   scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1)) +
   xlab(expression(x[plain(karno)])) + ylab(expression(hat(f)(x[plain(karno)])))
-gg_karno
+# gg_karno
 ```
 </details>
 

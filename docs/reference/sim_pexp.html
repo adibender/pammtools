@@ -21,19 +21,23 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Simulate survival times from the piece-wise exponential distribution — sim_pexp" />
 
 <meta property="og:description" content="Simulate survival times from the piece-wise exponential distribution" />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -56,11 +60,6 @@
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -76,7 +75,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -143,7 +142,7 @@
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -209,7 +208,8 @@ below.</p></td>
 }
 <span class='no'>form</span> <span class='kw'>&lt;-</span> ~ -<span class='fl'>3.5</span> + <span class='fu'>f0</span>(<span class='no'>t</span>) -<span class='fl'>0.5</span>*<span class='no'>x1</span> + <span class='fu'>sqrt</span>(<span class='no'>x2</span>)
 <span class='fu'>set.seed</span>(<span class='fl'>24032018</span>)
-<span class='no'>sim_df</span> <span class='kw'>&lt;-</span> <span class='fu'>sim_pexp</span>(<span class='no'>form</span>, <span class='no'>df</span>, <span class='fl'>1</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='message'>Joining, by = "id"</span></div><div class='input'><span class='fu'>head</span>(<span class='no'>sim_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 5
+<span class='no'>sim_df</span> <span class='kw'>&lt;-</span> <span class='fu'>sim_pexp</span>(<span class='no'>form</span>, <span class='no'>df</span>, <span class='fl'>1</span>:<span class='fl'>10</span>)
+<span class='fu'>head</span>(<span class='no'>sim_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 5
 #&gt;      id  time status     x1    x2
 #&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;
 #&gt; 1     1 1.000      1 -2.87   4.14
@@ -231,19 +231,20 @@ below.</p></td>
 <span class='fu'>coef</span>(<span class='no'>pam</span>)[<span class='fl'>2</span>]</div><div class='output co'>#&gt;         x1 
 #&gt; -0.5534093 </div><div class='input'><span class='fu'>plot</span>(<span class='no'>pam</span>, <span class='kw'>page</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='sim_pexp-3.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Example 2: Functional covariates/cumulative coefficients</span>
-<span class='co'># function to generate one exposure profile, te is a vector of exposure time points</span>
+<span class='co'># function to generate one exposure profile, tz is a vector of time points</span>
+<span class='co'># at which TDC z was observed</span>
 <span class='no'>rng_z</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>nz</span>) {
   <span class='fu'>as.numeric</span>(<span class='fu'>arima.sim</span>(<span class='kw'>n</span> <span class='kw'>=</span> <span class='no'>nz</span>, <span class='fu'>list</span>(<span class='kw'>ar</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>.8</span>, -<span class='fl'>.6</span>))))
 }
 <span class='co'># two different exposure times  for two different exposures</span>
-<span class='no'>te1</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>10</span>
-<span class='no'>te2</span> <span class='kw'>&lt;-</span> -<span class='fl'>5</span>:<span class='fl'>5</span>
+<span class='no'>tz1</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>10</span>
+<span class='no'>tz2</span> <span class='kw'>&lt;-</span> -<span class='fl'>5</span>:<span class='fl'>5</span>
 <span class='co'># generate exposures and add to data set</span>
 <span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='no'>df</span> <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>te1</span>, <span class='no'>rng_z</span>) <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>te2</span>, <span class='no'>rng_z</span>)
+  <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>tz1</span>, <span class='no'>rng_z</span>) <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>tz2</span>, <span class='no'>rng_z</span>)
 <span class='no'>df</span></div><div class='output co'>#&gt; # A tibble: 250 x 6
-#&gt;        x1    x2 te1        z.te1      te2        z.te2     
+#&gt;        x1    x2 tz1        z.tz1      tz2        z.tz2     
 #&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;list&gt;     &lt;list&gt;    
 #&gt;  1 -2.87  4.14  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl [11]&gt;
 #&gt;  2  1.20  5.61  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl [11]&gt;
@@ -263,23 +264,23 @@ below.</p></td>
 <span class='no'>fdnorm</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) (<span class='fu'>dnorm</span>(<span class='no'>x</span>,<span class='fl'>1.5</span>,<span class='fl'>2</span>)+<span class='fl'>1.5</span>*<span class='fu'>dnorm</span>(<span class='no'>x</span>,<span class='fl'>7.5</span>,<span class='fl'>1</span>))
 <span class='no'>wpeak2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>lag</span>) <span class='fl'>15</span>*<span class='fu'>dnorm</span>(<span class='no'>lag</span>,<span class='fl'>8</span>,<span class='fl'>10</span>)
 <span class='no'>wdnorm</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>lag</span>) <span class='fl'>5</span>*(<span class='fu'>dnorm</span>(<span class='no'>lag</span>,<span class='fl'>4</span>,<span class='fl'>6</span>)+<span class='fu'>dnorm</span>(<span class='no'>lag</span>,<span class='fl'>25</span>,<span class='fl'>4</span>))
-<span class='no'>f_ttez1</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>, <span class='no'>z</span>) {
-  <span class='fu'>ft</span>(<span class='no'>t</span>, <span class='kw'>tmax</span><span class='kw'>=</span><span class='fl'>10</span>) * <span class='fl'>0.8</span>*<span class='fu'>fdnorm</span>(<span class='no'>z</span>)* <span class='fu'>wpeak2</span>(<span class='no'>t</span>-<span class='no'>te</span>)
+<span class='no'>f_xyz1</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>, <span class='no'>z</span>) {
+  <span class='fu'>ft</span>(<span class='no'>t</span>, <span class='kw'>tmax</span><span class='kw'>=</span><span class='fl'>10</span>) * <span class='fl'>0.8</span>*<span class='fu'>fdnorm</span>(<span class='no'>z</span>)* <span class='fu'>wpeak2</span>(<span class='no'>t</span> - <span class='no'>tz</span>)
 }
-<span class='no'>f_ttez2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>, <span class='no'>z</span>) {
-  <span class='fu'>wdnorm</span>(<span class='no'>t</span>-<span class='no'>te</span>)*<span class='no'>z</span>
+<span class='no'>f_xyz2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>, <span class='no'>z</span>) {
+  <span class='fu'>wdnorm</span>(<span class='no'>t</span>-<span class='no'>tz</span>) * <span class='no'>z</span>
 }
 
 <span class='co'># define lag-lead window function</span>
-<span class='no'>ll_fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) {<span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>te</span>}
-<span class='no'>ll_fun2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) {<span class='no'>t</span> - <span class='fl'>2</span> <span class='kw'>&gt;=</span> <span class='no'>te</span>}
+<span class='no'>ll_fun</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) {<span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span>}
+<span class='no'>ll_fun2</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) {<span class='no'>t</span> - <span class='fl'>2</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span>}
 <span class='co'># simulate data with cumulative effect</span>
 <span class='no'>sim_df</span> <span class='kw'>&lt;-</span> <span class='fu'>sim_pexp</span>(
   <span class='kw'>formula</span> <span class='kw'>=</span> ~ -<span class='fl'>3.5</span> + <span class='fu'>f0</span>(<span class='no'>t</span>) -<span class='fl'>0.5</span>*<span class='no'>x1</span> + <span class='fu'>sqrt</span>(<span class='no'>x2</span>)<span class='kw'>|</span>
-     <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>te1</span>, <span class='no'>z.te1</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_ttez1</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun</span>) +
-     <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>te2</span>, <span class='no'>z.te2</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_ttez2</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun2</span>),
+     <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz1</span>, <span class='no'>z.tz1</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz1</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun</span>) +
+     <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz2</span>, <span class='no'>z.tz2</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz2</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun2</span>),
   <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>,
-  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fcumu(t, te1, z.te1, f_xyz = f_ttez1, ll_fun = ll_fun): object 'f_ttez1' not found</span></div><div class='input'><span class='fu'>plot</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/survfit'>survfit</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>sim_df</span> ))</div><div class='img'><img src='sim_pexp-4.png' alt='' width='700' height='433' /></div></pre>
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fcumu(t, tz1, z.tz1, f_xyz = f_xyz1, ll_fun = ll_fun): object 'f_xyz1' not found</span></div><div class='input'><span class='fu'>plot</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/survfit'>survfit</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>sim_df</span> ))</div><div class='img'><img src='sim_pexp-4.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -312,7 +313,13 @@ below.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 
