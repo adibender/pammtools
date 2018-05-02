@@ -13,7 +13,7 @@ bibliography: Remote.bib
 library(knitr)
 opts_chunk$set(
   fig.align  = "center",
-  cache      = TRUE,
+  # cache      = TRUE,
   message    = FALSE,
   fig.height = 5,
   fig.width  = 5
@@ -26,8 +26,6 @@ library(mgcv)
 library(pammtools)
 library(ggplot2)
 theme_set(theme_bw())
-library(grid)
-library(gridExtra)
 ```
 
 
@@ -81,6 +79,7 @@ tidy_fixed(pam) # per default intercept is ommitted
 gg_fixed(pam)
 ```
 
+
 We can see that the estimated mortality risk for male subjects is increased by a factor of about $\exp(`r round(coef(pam)[2], 2)`) = `r round(exp(coef(pam)[2]), 2)`$
 compared to female subjects.
 
@@ -114,19 +113,15 @@ shgb <- tidy_smooth(pam) %>% filter(xlab=="hgb")
 ## create plots for hgb effect
 hgb_ggp <- ggplot(shgb, aes(x=x)) +
   geom_line(aes(y=fit)) +
-  geom_ribbon(aes(ymin=low, ymax=high), alpha=0.1) +
+  geom_ribbon(aes(ymin=ci_lower, ymax=ci_upper), alpha=0.1) +
   ylab("f(hgb)") + xlab("hgb")
 hgb_ggp_log <- ggplot(shgb, aes(x=x)) +
   geom_line(aes(y=exp(fit))) +
-  geom_ribbon(aes(ymin=exp(low), ymax=exp(high)), alpha=0.1) +
+  geom_ribbon(aes(ymin=exp(ci_lower), ymax=exp(ci_upper)), alpha=0.1) +
   ylab("exp(f(hgb))") + xlab("hgb")+
   coord_trans(y="log")
 ## combine into one graph
-grid.draw(
-    cbind(
-        ggplotGrob(hgb_ggp),
-        ggplotGrob(hgb_ggp_log),
-        size = "last"))
+ gridExtra::grid.arrange(hgb_ggp, hgb_ggp_log, nrow = 1)
 ```
 
 If you want to customize the figure using other graphics packages you can

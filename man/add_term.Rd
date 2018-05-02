@@ -5,7 +5,7 @@
 \title{Add info about term effects to data set}
 \usage{
 add_term(newdata, object, term, se.fit = TRUE, type = "terms",
-  se.mult = 2, relative = FALSE, ...)
+  se_mult = 2, relative = FALSE, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -39,7 +39,7 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{se.mult}{The factor by which standard errors are multiplied to form
+\item{se_mult}{The factor by which standard errors are multiplied to form
 confidence intervals.}
 
 \item{relative}{If \code{TRUE}, calculates relative risk contribution,

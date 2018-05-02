@@ -8,11 +8,12 @@
 <title>Convenience functions for post-processing PAMs • pammtools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 <link href="../docsearch.css" rel="stylesheet">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Convenience functions for post-processing PAMs">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Convenience functions for post-processing PAMs">
 <meta property="og:description" content="">
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -23,7 +24,7 @@
   gtag('js', new Date());
 
   gtag('config', 'UA-44545040-3');
-</script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
+</script>
 </head>
 <body>
     <div class="container template-article">
@@ -37,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -102,7 +103,7 @@
       </ul>
 <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
       </form>
       
@@ -120,7 +121,7 @@
       <h1>Convenience functions for post-processing PAMs</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-04-20</h4>
+            <h4 class="date">2018-05-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/convenience.Rmd"><code>vignettes/convenience.Rmd</code></a></small>
       <div class="hidden name"><code>convenience.Rmd</code></div>
@@ -133,9 +134,7 @@
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(mgcv)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(pammtools)</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(grid)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(gridExtra)</a></code></pre></div>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</a></code></pre></div>
 <div id="convenience-functions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#convenience-functions" class="anchor"></a>Convenience functions</h1>
@@ -185,10 +184,10 @@
 <p>However, we also provide a convenience function that extracts a fixed coefficient table from <code><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">mgcv::gam</a></code> objects (including confidence intervals) and a convenience function that creates a forrest-type plot:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../reference/tidy_fixed.html">tidy_fixed</a></span>(pam) <span class="co"># per default intercept is ommitted</span></a></code></pre></div>
 <pre><code>## # A tibble: 2 x 4
-##   variable   coef  lower  upper
-##   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 sexM     0.472  0.335  0.609 
-## 2 age      0.0550 0.0482 0.0618</code></pre>
+##   variable   coef ci_lower ci_upper
+##   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 sexM     0.472    0.335    0.609 
+## 2 age      0.0550   0.0482   0.0618</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="../reference/gg_fixed.html">gg_fixed</a></span>(pam)</a></code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-4-1.png" width="288" style="display: block; margin: auto;"></p>
 <p>We can see that the estimated mortality risk for male subjects is increased by a factor of about <span class="math inline">\(\exp(0.47) = 1.6\)</span> compared to female subjects.</p>
@@ -212,19 +211,15 @@ in terms of tree/forest plots:
 <a class="sourceLine" id="cb8-3" data-line-number="3">## create plots for hgb effect</a>
 <a class="sourceLine" id="cb8-4" data-line-number="4">hgb_ggp &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(shgb, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>x)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>fit)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span>low, <span class="dt">ymax=</span>high), <span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="st">"f(hgb)"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"hgb"</span>)</a>
 <a class="sourceLine" id="cb8-8" data-line-number="8">hgb_ggp_log &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(shgb, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>x)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span><span class="kw">exp</span>(fit))) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span><span class="kw">exp</span>(low), <span class="dt">ymax=</span><span class="kw">exp</span>(high)), <span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span><span class="kw">exp</span>(ci_lower), <span class="dt">ymax=</span><span class="kw">exp</span>(ci_upper)), <span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb8-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="st">"exp(f(hgb))"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"hgb"</span>)<span class="op">+</span></a>
 <a class="sourceLine" id="cb8-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/coord_trans">coord_trans</a></span>(<span class="dt">y=</span><span class="st">"log"</span>)</a>
 <a class="sourceLine" id="cb8-13" data-line-number="13">## combine into one graph</a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw"><a href="http://www.rdocumentation.org/packages/grid/topics/grid.draw">grid.draw</a></span>(</a>
-<a class="sourceLine" id="cb8-15" data-line-number="15">    <span class="kw">cbind</span>(</a>
-<a class="sourceLine" id="cb8-16" data-line-number="16">        <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplotGrob">ggplotGrob</a></span>(hgb_ggp),</a>
-<a class="sourceLine" id="cb8-17" data-line-number="17">        <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplotGrob">ggplotGrob</a></span>(hgb_ggp_log),</a>
-<a class="sourceLine" id="cb8-18" data-line-number="18">        <span class="dt">size =</span> <span class="st">"last"</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb8-14" data-line-number="14"> gridExtra<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(hgb_ggp, hgb_ggp_log, <span class="dt">nrow =</span> <span class="dv">1</span>)</a></code></pre></div>
 <p><img src="convenience_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>If you want to customize the figure using other graphics packages you can extract the data used for plotting via:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">hgb.term &lt;-<span class="st"> </span>ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/get_terms.html">get_terms</a></span>(<span class="dt">fit =</span> pam, <span class="dt">terms =</span> <span class="st">"hgb"</span>)</a>
@@ -400,7 +395,13 @@ in terms of tree/forest plots:
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 </body>

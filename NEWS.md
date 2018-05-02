@@ -1,13 +1,25 @@
 ## pammtools 0.0.9
 
-* Overall better support for cumulative effects
+### Breaking changes
 
-* **Breaking change** `make_newdata` loses arguments `expand` and `n` and
+*  `make_newdata` loses arguments `expand` and `n` and
 gains `...` where arbitrary covariate specifications can be placed, i.e.
 e.g. `age=seq_range(age, n=20)`. Multiple such expression can be provided and
 a data frame with one row for each combination of the evaluated expressions
 will be returned. All variables not specified in \code{...} will be set to
 respective mean or modus values. For data of class `ped` or `fped` `make_newdata` will try to specify time-dependent variables intelligently.
+
+
+* `te_var` argument in `concurrent` and `cumulative` was renamed to
+`tz_var`
+
+* `te` arguments have been replaced by `tz` (time points at which `z` was observed) in all functions to avoid confusion with `mgcv::te`
+(e.g., `gg_laglead`)
+
+
+### Updates and new features
+
+* Overall better support for cumulative effects
 
 * Added convenience functions for work with cumulative effects, namely
     - `gg_partial` and
@@ -16,6 +28,15 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 * Added helper functions to calculate and visualize Lag-lead windows
     - `get_laglead`
     - `gg_laglead`
+
+* Added convenience `geom`s for piece-wise constant hazards (see examples in
+`?geom_hazard`, cumulative hazards and survival probabilities (usually
+`aes(x=time, y = surv_prob)`, but data set doesn't contain extra row for
+`time = 0`), thus
+    - `geom_stephazard` adds row (x=0, y = y[1]) to the data before plotting
+    - `geom_hazard` adds row (x = 0, y = 0) before plotting (can also be used
+    for cumulative hazard)
+    - `geom_surv` add row (x = 0, y = 1) before plotting
 
 
 # pammtools 0.0.8

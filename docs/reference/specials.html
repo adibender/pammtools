@@ -21,16 +21,18 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Formula specials for defining  time-dependent covariates — cumulative" />
 
 <meta property="og:description" content="So far, two specials are implemented. concurrent is used when
@@ -40,6 +42,8 @@ should usually not be called directly but rather as part of the formula
 argument to as_ped.
 See the vignette on data transformation
 for details." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -62,11 +66,6 @@ for details." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -82,7 +81,7 @@ for details." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -149,7 +148,7 @@ for details." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -180,10 +179,10 @@ for details.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>cumulative</span>(<span class='no'>...</span>, <span class='no'>te_var</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) {     <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>te</span> },
+    <pre class="usage"><span class='fu'>cumulative</span>(<span class='no'>...</span>, <span class='no'>tz_var</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) {     <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> },
   <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>concurrent</span>(<span class='no'>...</span>, <span class='no'>te_var</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>) {     <span class='no'>t</span> <span class='kw'>==</span> <span class='no'>t</span> }, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>concurrent</span>(<span class='no'>...</span>, <span class='no'>tz_var</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>) {     <span class='no'>t</span> <span class='kw'>==</span> <span class='no'>t</span> }, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='fu'>has_special</span>(<span class='no'>formula</span>, <span class='kw'>special</span> <span class='kw'>=</span> <span class='st'>"cumulative"</span>)</pre>
     
@@ -193,15 +192,15 @@ for details.</p>
     <tr>
       <th>...</th>
       <td><p>For <code>concurrent</code> variables that will be transformed to
-covariate matrices. The number of columns of each covariate depends on <code>te</code>.
+covariate matrices. The number of columns of each covariate depends on <code>tz</code>.
 Usually, elements that will be specified here are <code>time</code> (which should be
 the name of the time-variable used on the LHS of the formula argument to
-<code>as_ped</code>), <code>te</code> which is the variable containing information on
+<code>as_ped</code>), <code>tz</code> which is the variable containing information on
 the times at which the TDC was observed (can be wrapped in <code>latency</code>) and
-the TDCs that share the same <code>te</code> and Lag-lead window (<code>ll_fun</code>).</p></td>
+the TDCs that share the same <code>tz</code> and Lag-lead window (<code>ll_fun</code>).</p></td>
     </tr>
     <tr>
-      <th>te_var</th>
+      <th>tz_var</th>
       <td><p>The name of the variable that stores information on the
 times at which the TDCs specified in this term where observed.</p></td>
     </tr>
@@ -256,7 +255,13 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

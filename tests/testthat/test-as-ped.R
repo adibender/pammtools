@@ -27,7 +27,7 @@ test_that("Trafo works and attributes are appended", {
 })
 
 test_that("Trafo works for list objects (with TDCs)", {
-
+  data("patient")
   event_df  <- filter(patient, CombinedID == 1116)
   ped <- as_ped(data=list(event_df), formula=Surv(survhosp, PatientDied)~ .,
     cut = 0:30, id = "CombinedID")
@@ -37,16 +37,17 @@ test_that("Trafo works for list objects (with TDCs)", {
   ped <- as_ped(
     data    = list(event_df, tdc_df),
     formula = Surv(survhosp, PatientDied)~.|
-      cumulative(Study_Day, caloriesPercentage, te_var="Study_Day") +
-        cumulative(proteinGproKG, te_var="Study_Day"),
+      cumulative(survhosp, Study_Day, caloriesPercentage, tz_var="Study_Day") +
+        cumulative(proteinGproKG, tz_var="Study_Day"),
     cut     = 0:30,
     id  = "CombinedID")
-  expect_data_frame(ped, nrows = 10, ncols = 19)
+  expect_subset("survhosp_Study_Day_mat", colnames(ped))
+  expect_data_frame(ped, nrows = 10, ncols = 20)
   ped <- as_ped(
       data    = list(event_df, tdc_df),
       formula = Surv(survhosp, PatientDied)~.|
-        cumulative(Study_Day, caloriesPercentage, te_var="Study_Day") +
-          cumulative(proteinGproKG, te_var="Study_Day"),
+        cumulative(Study_Day, caloriesPercentage, tz_var="Study_Day") +
+          cumulative(proteinGproKG, tz_var="Study_Day"),
       id  = "CombinedID")
     expect_data_frame(ped, nrows = 1, ncols = 19)
 

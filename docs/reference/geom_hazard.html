@@ -21,21 +21,25 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="PAMM (Cumulative) (Step-)Hazard Plots. — geom_hazard" />
 
 <meta property="og:description" content="geom_hazard is an extension of the geom_line, and
 is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
 row to the data, if not already the case." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -58,11 +62,6 @@ row to the data, if not already the case." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -78,7 +77,7 @@ row to the data, if not already the case." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -145,7 +144,7 @@ row to the data, if not already the case." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -178,7 +177,11 @@ row to the data, if not already the case.</p>
 
 <span class='fu'>geom_stephazard</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>direction</span> <span class='kw'>=</span> <span class='st'>"vh"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+
+<span class='fu'>geom_surv</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
+  <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -265,9 +268,33 @@ Learn more about setting these aesthetics in <code>vignette("ggplot2-specs")</co
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></code>.</p></div>
+    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></code>,
+  <code><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_step</a></code>.</p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>ggplot2</span>)
+<span class='fu'>library</span>(<span class='no'>pammtools</span>)
+<span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>10</span>:<span class='fl'>50</span>,] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~<span class='fl'>1</span>)
+<span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pamm.html'>pamm</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>)
+<span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>)) <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_hazard.html'>add_hazard</a></span>(<span class='no'>pam</span>)
+<span class='co'># piece-wise constant hazards</span>
+<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/ggplot'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>hazard</span>)) +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline'>geom_vline</a></span>(<span class='kw'>xintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='no'>ndf</span>$<span class='no'>tend</span>[<span class='fu'>c</span>(<span class='fl'>1</span>, (<span class='fu'>nrow</span>(<span class='no'>ndf</span>)-<span class='fl'>2</span>):<span class='fu'>nrow</span>(<span class='no'>ndf</span>))]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline'>geom_hline</a></span>(<span class='kw'>yintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fl'>1</span>:<span class='fl'>3</span>], <span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fu'>nrow</span>(<span class='no'>ndf</span>)]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
+ <span class='fu'>geom_stephazard</span>() +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>direction</span><span class='kw'>=</span><span class='st'>"vh"</span>)</div><div class='img'><img src='geom_hazard-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># comulative hazard</span>
+<span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='no'>ndf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_hazard.html'>add_cumu_hazard</a></span>(<span class='no'>pam</span>)
+<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/ggplot'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>cumu_hazard</span>)) +
+ <span class='fu'>geom_hazard</span>() +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at (0, 0)</span></div><div class='img'><img src='geom_hazard-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># survival probability</span>
+<span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='no'>ndf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_surv_prob.html'>add_surv_prob</a></span>(<span class='no'>pam</span>)
+<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/ggplot'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>surv_prob</span>)) +
+ <span class='fu'>geom_surv</span>() +
+ <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at c(0,1)</span></div><div class='img'><img src='geom_hazard-3.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -277,7 +304,9 @@ Learn more about setting these aesthetics in <code>vignette("ggplot2-specs")</co
       <li><a href="#aesthetics">Aesthetics</a></li>
 
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
@@ -302,7 +331,13 @@ Learn more about setting these aesthetics in <code>vignette("ggplot2-specs")</co
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

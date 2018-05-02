@@ -15,7 +15,7 @@
 #' @param data Additional data if necessary.
 #' @param terms A character vector of variables for which the cumulative
 #' coefficient should be calculated.
-#' @param ... Further arguments passed to \code{\link[pammtools]{add_cumu_hazard}}.
+#' @param ... Further arguments passed to methods.
 #' @export
 get_cumu_coef <- function(model, data=NULL, terms, ...) {
   UseMethod("get_cumu_coef", model)
@@ -58,13 +58,14 @@ get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
 
 }
 
-get_cumu_diff <- function(d1, d2, model) {
-  lp <- compute_cum_diff(d1, d2, model)
+get_cumu_diff <- function(d1, d2, model, nsim = 100L) {
+
+  lp <- compute_cumu_diff(d1, d2, model, nsim = nsim)
   d2 %>%
     mutate(
       cumu_hazard = lp[["cumu_diff"]],
-      cumu_lower = lp[["cumu_diff"]] - 2*lp[["se_cumu"]],
-      cumu_upper = lp[["cumu_diff"]] + 2*lp[["se_cumu"]])
+      cumu_lower =  lp[["cumu_lower"]],
+      cumu_upper =  lp[["cumu_upper"]])
 }
 
 #' @inheritParams get_cumu_coef
@@ -119,4 +120,39 @@ get_cumu_coef_baseline <- function(data, model, ...) {
       variable    = "(Intercept)") %>%
     rename("time" = "tstart") %>%
     select(one_of(c("method", "variable", "time")), everything())
+}
+
+
+#' Calculate difference in cumulative hazards and respective standard errors
+#'
+#' Uses Delta method to calculate standard errors for cumulative hazard
+#' differences based on coefficients and standard errors of log hazard
+#' (code adapted from fabian-s used in consulting project).
+#'
+#' @param d1 A data set used as \code{newdata} in \code{predict.gam}
+#' @param d2 See \code{d1}
+#' @param model A model object for which a predict method is implemented which
+#' returns the design matrix (e.g., \code{mgcv::gam}).
+#' @importFrom mgcv predict.gam
+#' @importFrom stats coef
+#' @importFrom mvtnorm rmvnorm
+#' @keywords internal
+compute_cumu_diff <-  function(d1, d2, model, alpha = 0.05, nsim = 100L) {
+
+  X1    <- predict.gam(model, newdata = d1, type = "lpmatrix")
+  X2    <- predict.gam(model, newdata = d2, type = "lpmatrix")
+  V     <- model$Vp
+  coefs <- coef(model)
+  sim_coef_mat <- rmvnorm(nsim, mean=coefs, sigma=V)
+  sim_fit_mat  <- apply(sim_coef_mat, 1, function(z)
+    cumsum(d2$intlen * exp(drop(X2 %*% z))) - cumsum(d1$intlen * exp(drop(X1 %*% z))))
+
+  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha/2)
+  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1-alpha/2)
+  haz1       <- exp(drop(X1 %*% model$coefficients))
+  haz2       <- exp(drop(X2 %*% model$coefficients))
+  cumu_diff  <- cumsum(haz2*d2$intlen) - cumsum(haz1*d1$intlen)
+
+  list(cumu_diff = cumu_diff, cumu_lower = cumu_lower, cumu_upper = cumu_upper)
+
 }

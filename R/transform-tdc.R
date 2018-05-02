@@ -58,10 +58,10 @@ combine_cut <- function(
 	tdc_df,
 	time_var,
 	status_var,
-	te_var,
+	tz_var,
 	cens_value = 0) {
 
-	tdc_time   <- tdc_df %>% pull(te_var) %>% unlist() %>% unique()
+	tdc_time   <- tdc_df %>% pull(tz_var) %>% unlist() %>% unique()
 	event_time <- event_df %>% select(one_of(time_var)) %>% unlist()
 	event_time <- event_time[event_df[[status_var]] != cens_value] %>% unique()
 
@@ -82,7 +82,7 @@ combine_cut <- function(
 #' @param tdc_df Data frame (or similar) containing information on time-dependent
 #' covariates
 #' @param id_var The ID variable name, identifying subjects.
-#' @param te_var The time variable in \code{tdc_df} indicating time points at
+#' @param tz_var The time variable in \code{tdc_df} indicating time points at
 #' which time-dependent covariate (tdc) was observed.
 #' Needs to be the same name in both data sets.
 #' @param entry_time If scalar, the time-point at which the follow up for each
@@ -93,13 +93,13 @@ combine_cut <- function(
 #' @examples
 #' data("pbc", package="survival")# loads both, pbc and pbcseq
 #' pbc$status = 1*(pbc$status == 2)
-#' pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, te_var="day")
+#' pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, tz_var="day")
 #' @export
 split_tdc <- function(
 	formula,
 	event_df,
 	tdc_df,
-	te_var,
+	tz_var,
 	id_var     = "id",
 	time_var   = "time",
 	status_var = "status",
@@ -113,18 +113,18 @@ split_tdc <- function(
 	assert_data_frame(event_df)
   assert_data_frame(tdc_df)
   assert_subset(c(id_var, time_var, status_var), colnames(event_df))
-  assert_subset(c(id_var, te_var), colnames(tdc_df))
+  assert_subset(c(id_var, tz_var), colnames(tdc_df))
 
   common_id <- warn_partial_overlap(event_df[[id_var]], tdc_df[[id_var]])
   event_df  <- filter(event_df, !!sym(id_var) %in% common_id)
   tdc_df    <- filter(tdc_df, !!sym(id_var) %in% common_id)
 	# intervals must be split at each event time and time at which the TDC
 	# changes its value
-	utime <- union(entry_time, combine_cut(event_df, tdc_df, time_var, status_var, te_var,
+	utime <- union(entry_time, combine_cut(event_df, tdc_df, time_var, status_var, tz_var,
 		cens_value = cens_value))
 	# for joining, we remove baseline information of variables that are present
 	# as TDC variables in tdc_df
-	tdc_vars <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, te_var, status_var))
+	tdc_vars <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, tz_var, status_var))
 	tdc_in_event_df <- intersect(tdc_vars, names(event_df))
 	if (!(length(tdc_in_event_df)==0)) {
 		event_df <- event_df %>%  select(-one_of(tdc_vars))
@@ -133,24 +133,24 @@ split_tdc <- function(
 		zero = entry_time, ...)
 
 	#
- 	tdc_df <- tdc_df %>% select(one_of(c(id_var, te_var, tdc_vars)))
+ 	tdc_df <- tdc_df %>% select(one_of(c(id_var, tz_var, tdc_vars)))
 
 
-	ped <- left_join(ped, tdc_df, by = c(id_var, "tstart" = te_var)) %>%
+	ped <- left_join(ped, tdc_df, by = c(id_var, "tstart" = tz_var)) %>%
 		group_by(!!sym(id_var)) %>%
 		fill(setdiff(tdc_vars, c(id_var, time_var, status_var)))
 
 	attr(ped, "id_var")     <- id_var
 	attr(ped, "time_var")   <- time_var
 	attr(ped, "status_var") <- status_var
-	attr(ped, "te_var")     <- te_var
+	attr(ped, "tz_var")     <- tz_var
 	attr(ped, "cens_value") <- cens_value
 	# attr(ped, "breaks")     <- utime
 	attr(ped, "id_n")       <- ped %>% group_by(!!sym(id_var)) %>%
 		summarize(id_n=n()) %>% pull(.data$id_n)
 	attr(ped, "id_tseq")    <- attr(ped, "id_n") %>% map(seq_len) %>% unlist()
-	attr(ped, "id_teseq")   <- rep(seq_along(common_id), times=attr(ped, "id_n"))
-	attr(ped, "te")         <- tdc_df %>% pull(te_var) %>% unique() %>% sort()
+	attr(ped, "id_tz_seq")   <- rep(seq_along(common_id), times=attr(ped, "id_n"))
+	attr(ped, "tz")         <- tdc_df %>% pull(tz_var) %>% unique() %>% sort()
 
   class(ped) <- c("ped", class(ped))
 

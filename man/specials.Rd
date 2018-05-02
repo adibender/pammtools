@@ -6,23 +6,23 @@
 \alias{has_special}
 \title{Formula specials for defining  time-dependent covariates}
 \usage{
-cumulative(..., te_var, ll_fun = function(t, te) {     t >= te },
+cumulative(..., tz_var, ll_fun = function(t, tz) {     t >= tz },
   suffix = NULL)
 
-concurrent(..., te_var, ll_fun = function(t) {     t == t }, suffix = NULL)
+concurrent(..., tz_var, ll_fun = function(t) {     t == t }, suffix = NULL)
 
 has_special(formula, special = "cumulative")
 }
 \arguments{
 \item{...}{For \code{concurrent} variables that will be transformed to
-covariate matrices. The number of columns of each covariate depends on \code{te}.
+covariate matrices. The number of columns of each covariate depends on \code{tz}.
 Usually, elements that will be specified here are \code{time} (which should be
 the name of the time-variable used on the LHS of the formula argument to
-\code{as_ped}), \code{te} which is the variable containing information on
+\code{as_ped}), \code{tz} which is the variable containing information on
 the times at which the TDC was observed (can be wrapped in \code{latency}) and
-the TDCs that share the same \code{te} and Lag-lead window (\code{ll_fun}).}
+the TDCs that share the same \code{tz} and Lag-lead window (\code{ll_fun}).}
 
-\item{te_var}{The name of the variable that stores information on the
+\item{tz_var}{The name of the variable that stores information on the
 times at which the TDCs specified in this term where observed.}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix

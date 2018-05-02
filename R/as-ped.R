@@ -79,7 +79,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
   attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
     transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-  attr(data, "id_teseq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
+  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
 
   if(has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data=data, id_var=dots$id)

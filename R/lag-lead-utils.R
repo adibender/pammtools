@@ -6,8 +6,8 @@
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.
 #' @examples
-#' get_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
-#' gg_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+#' get_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
+#' gg_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
 #' @export
 get_laglead <- function(x, ...) {
   UseMethod("get_laglead", x)
@@ -15,17 +15,17 @@ get_laglead <- function(x, ...) {
 
 #' @rdname get_laglead
 #' @inherit get_laglead
-#' @param te A vector of exposure times
+#' @param tz A vector of exposure times
 #' @param ll_fun Function that specifies how the lag-lead matrix
 #' should be contructed. First argument is the follow up time
 #' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing
 #' @export
-get_laglead.default <- function(x, te, ll_fun, ...) {
+get_laglead.default <- function(x, tz, ll_fun, ...) {
 
-  LL_df <- crossing(t=x, te=te) %>%
-    mutate(LL = ll_fun(t, te)*1L)
+  LL_df <- crossing(t=x, tz=tz) %>%
+    mutate(LL = ll_fun(t, tz)*1L)
   class(LL_df) <- c("LL_df", class(LL_df))
 
   LL_df
@@ -39,11 +39,11 @@ get_laglead.default <- function(x, te, ll_fun, ...) {
 get_laglead.data.frame <- function(x, ...) {
 
   t       <- attr(x, "breaks")
-  te      <- attr(x, "te")
+  tz      <- attr(x, "tz")
   ll_funs <- attr(x, "ll_funs")
 
-  LL_df <- map2_dfr(te, ll_funs,
-      ~get_laglead.default(t, .x, ll_fun=.y), .id="te_var")
+  LL_df <- map2_dfr(tz, ll_funs,
+      ~get_laglead.default(t, .x, ll_fun=.y), .id="tz_var")
   if(!inherits(LL_df, "LL_df")) {
     class(LL_df) <- c("LL_df", class(LL_df))
   }
@@ -63,11 +63,11 @@ get_laglead.data.frame <- function(x, ...) {
 #' @param grid_col Color of grid lines.
 #' @import checkmate ggplot2
 #' @examples
-#' ## Example 1: supply t, te, ll_fun directly
-#'  gg_laglead(1:10, te=-5:5,
-#'   ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+#' ## Example 1: supply t, tz, ll_fun directly
+#'  gg_laglead(1:10, tz=-5:5,
+#'   ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
 #'
-#' ## Example 2: extract information on t, te, ll_from data with respective attributes
+#' ## Example 2: extract information on t, tz, ll_from data with respective attributes
 #' data("simdf_elra", package = "pammtools")
 #' gg_laglead(simdf_elra)
 #' @export
@@ -79,9 +79,9 @@ gg_laglead <- function(x, ...) {
 #' @rdname gg_laglead
 #' @inherit gg_laglead
 #' @export
-gg_laglead.default <- function(x, te, ll_fun, ...) {
+gg_laglead.default <- function(x, tz, ll_fun, ...) {
 
-  LL_df <- get_laglead(x, te, ll_fun = ll_fun)
+  LL_df <- get_laglead(x, tz, ll_fun = ll_fun)
   gg_laglead(LL_df, ...)
 
 }
@@ -99,18 +99,18 @@ gg_laglead.LL_df <- function(
   x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
   x <- x %>% filter(!is.na(.data$interval)) %>%
     mutate(
-      te = as.factor(te),
+      tz = as.factor(.data$tz),
       interval = factor(.data$interval, levels = rev(levels(.data$interval))) )
-  gg_ll <- ggplot(x, aes_string(y = "interval", x = "te")) +
+  gg_ll <- ggplot(x, aes_string(y = "interval", x = "tz")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand=c(0,0)) +
     scale_y_discrete(expand=c(0,0)) +
-    xlab(expression(t[e])) + ylab(expression(t)) +
+    xlab(expression(t[z])) + ylab(expression(t)) +
     theme(legend.position = "none")
 
-  if(!is.null(x$te_var)) {
-    gg_ll <- gg_ll + facet_wrap(~te_var, scales="free_x")
+  if(!is.null(x$tz_var)) {
+    gg_ll <- gg_ll + facet_wrap(~tz_var, scales="free_x")
   }
 
   gg_ll

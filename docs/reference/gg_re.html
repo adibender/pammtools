@@ -21,19 +21,23 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Plot Normal QQ plots for random effects — gg_re" />
 
 <meta property="og:description" content="Plot Normal QQ plots for random effects" />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -56,11 +60,6 @@
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -76,7 +75,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -143,7 +142,7 @@
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -194,7 +193,7 @@
 <span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>lung</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='no'>ph.ecog</span> + <span class='no'>inst</span>, <span class='kw'>id</span><span class='kw'>=</span><span class='st'>"id"</span>)
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>) + <span class='no'>ph.ecog</span> + <span class='fu'>s</span>(<span class='no'>inst</span>, <span class='kw'>bs</span><span class='kw'>=</span><span class='st'>"re"</span>),
         <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
-<span class='fu'>gg_re</span>(<span class='no'>pam</span>)</div><div class='img'><img src='gg_re-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'>gg_re</span>(<span class='no'>pam</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -229,7 +228,13 @@
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

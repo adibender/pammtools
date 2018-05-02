@@ -21,22 +21,26 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Add info about term effects to data set — add_term" />
 
 <meta property="og:description" content="Adds the contribution (plus confidence intervals) of a specific term to the
 linear predictor to the provided data.
 Largely a wrapper to predict.gam, with type="terms".
 Thus most arguments and their documentation below is from predict.gam." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -59,11 +63,6 @@ Thus most arguments and their documentation below is from predict.gam." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -79,7 +78,7 @@ Thus most arguments and their documentation below is from predict.gam." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -146,7 +145,7 @@ Thus most arguments and their documentation below is from predict.gam." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -175,7 +174,7 @@ Thus most arguments and their documentation below is from <code>predict.gam</cod
     </div>
 
     <pre class="usage"><span class='fu'>add_term</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='no'>term</span>, <span class='kw'>se.fit</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"terms"</span>,
-  <span class='kw'>se.mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>relative</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
+  <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>relative</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -221,7 +220,7 @@ linear predictor matrix can also be used to implement approximate prediction
 outside <code>R</code> (see example code, below).</p></td>
     </tr>
     <tr>
-      <th>se.mult</th>
+      <th>se_mult</th>
       <td><p>The factor by which standard errors are multiplied to form
 confidence intervals.</p></td>
     </tr>
@@ -242,18 +241,18 @@ if <code>se.fit = TRUE</code>. Defaults to <code>FALSE</code>.</p></td>
     <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>50</span>,] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>age</span>)
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>)+<span class='no'>age</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
 <span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_term</span>(<span class='no'>pam</span>, <span class='kw'>term</span><span class='kw'>=</span><span class='st'>"tend"</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
-#&gt;    tstart  tend intlen intmid interval    age       fit     low  high
-#&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7  0.367    -0.141  0.874
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7  0.359    -0.135  0.852
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7  0.329    -0.114  0.772
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7  0.319    -0.108  0.747
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7  0.215    -0.0622 0.493
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7  0.123    -0.0694 0.315
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7  0.116    -0.0726 0.305
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7  0.0606   -0.119  0.240
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7  0.000357 -0.202  0.202
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7 -0.00474  -0.210  0.200
+#&gt;    tstart  tend intlen intmid interval    age       fit ci_lower ci_upper
+#&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7  0.367     -0.141     0.874
+#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7  0.359     -0.135     0.852
+#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7  0.329     -0.114     0.772
+#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7  0.319     -0.108     0.747
+#&gt;  5    62.  139.    77.  100.  (62,139]   59.7  0.215     -0.0622    0.493
+#&gt;  6   139.  209.    70.  174.  (139,209]  59.7  0.123     -0.0694    0.315
+#&gt;  7   209.  214.     5.  212.  (209,214]  59.7  0.116     -0.0726    0.305
+#&gt;  8   214.  257.    43.  236.  (214,257]  59.7  0.0606    -0.119     0.240
+#&gt;  9   257.  304.    47.  280.  (257,304]  59.7  0.000357  -0.202     0.202
+#&gt; 10   304.  308.     4.  306.  (304,308]  59.7 -0.00474   -0.210     0.200
 #&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -287,7 +286,13 @@ if <code>se.fit = TRUE</code>. Defaults to <code>FALSE</code>.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

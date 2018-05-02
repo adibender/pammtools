@@ -18,19 +18,19 @@ calc_ci <- function(ftab) {
 	rnames         <- rownames(ftab)
 	ftab           <- as_tibble(ftab)
 	ftab$variable  <- rnames
-	ftab$lower     <- ftab$coef - 2*ftab$se
-	ftab$upper     <- ftab$coef + 2*ftab$se
+	ftab$ci_lower     <- ftab$coef - 2*ftab$se
+	ftab$ci_upper     <- ftab$coef + 2*ftab$se
 	ftab$se        <- NULL
 
-	ftab[, c("variable", "coef", "lower", "upper")]
+	ftab[, c("variable", "coef", "ci_lower", "ci_upper")]
 
 }
 
 #' Extract fixed coefficient table from model object
 #'
 #' Given a model object, returns data frame with columns \code{variable},
-#' \code{coef} (coefficient), \code{lower} (lower 95\% CI) and
-#' \code{upper} (upper 95% CI).
+#' \code{coef} (coefficient), \code{ci_lower} (lower 95\% CI) and
+#' \code{ci_upper} (upper 95% CI).
 #'
 #' @param x A model object.
 #' @param ... Currently not used.
@@ -97,8 +97,8 @@ tidy_smooth <- function(
 		if(ci) {
 			temp <- temp %>%
 				mutate(
-					low  = .data$fit - .data$se,
-					high = .data$fit + .data$se)
+					ci_lower = .data$fit - .data$se,
+					ci_upper = .data$fit + .data$se)
 		}
 		temp
 	})
@@ -140,8 +140,8 @@ tidy_smooth2d <- function(
 		if(ci) {
 			xy <- xy %>%
 				mutate(
-					low  = .data$fit - .data$se,
-					high = .data$fit + .data$se)
+					ci_lower = .data$fit - .data$se,
+					ci_upper = .data$fit + .data$se)
 		}
 		xy
 	})

@@ -28,7 +28,7 @@
     <loc>https://adibender.github.io/pammtools/reference/combine_df.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/compute_cum_diff.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/compute_cumu_diff.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/cumulative_coefficient.html</loc>
@@ -80,6 +80,9 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/get_plotinfo.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/reference/get_sim_ci.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/get_surv_prob.html</loc>
@@ -194,6 +197,9 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/tumor.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/reference/warn_about_new_evaluation_time_points.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/articles/baseline.html</loc>

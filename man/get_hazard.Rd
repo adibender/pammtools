@@ -5,7 +5,8 @@
 \title{Calculate predicted hazard}
 \usage{
 get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
-  se.mult = 2, time_variable = NULL, ...)
+  ci_type = c("default", "delta", "sim"), time_variable = NULL,
+  se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -37,13 +38,20 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{se.mult}{Factor by which standard errors are multiplied for calculating
-the confidence intervals.}
+\item{ci_type}{The method by which standard errors/confidence intervals
+will be calculated. Default transforms the linear predictor at
+respective intervals. \code{"delta"} calculates CIs based on the standard
+error calculated by the Delta method. \code{"sim"} draws the
+property of interest from its posterior based on the normal distribution of
+the estimated coeffiicents. CIs are given by respective quantiles.}
 
 \item{time_variable}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
+
+\item{se_mult}{Factor by which standard errors are multiplied for calculating
+the confidence intervals.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}

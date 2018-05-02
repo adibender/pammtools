@@ -130,9 +130,10 @@ get_intervals.default <- function(
   assert_numeric(times, lower = 0, finite = TRUE, all.missing = FALSE)
 
   int_df <- int_info(x)
+  # times <- times[times <= max(int_info$tend)]
   int    <- findInterval(
     x                = times,
-    vec              = union(int_df$tstart, int_df$tend),
+    vec              = sort(union(int_df$tstart, int_df$tend)),
     left.open        = left.open,
     rightmost.closed = rightmost.closed)
 

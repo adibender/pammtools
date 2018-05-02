@@ -14,7 +14,16 @@ opts_chunk$set(warning=FALSE)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1048832.svg)](https://doi.org/10.5281/zenodo.1048832)
 
-## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
+# `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
+
+
+### Installation
+
+Install from GitHub using
+
+```{r eval = FALSE}
+devtools::install_github("adibender/pammtools")
+```
 
 ### Overview
 `pammtools` offers various utilities and convenience functions that
@@ -31,13 +40,3 @@ A general framework for the representation and estimation of cumulative effects
 (or exposure-lag-response associations) is described in:
 
 - Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff; "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003
-
-
-
-### Installation
-
-Install from GitHub using
-
-```{r eval = FALSE}
-devtools::install_github("adibender/pammtools")
-```

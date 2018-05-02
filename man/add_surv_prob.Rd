@@ -4,7 +4,7 @@
 \alias{add_surv_prob}
 \title{Add survival probability estimates}
 \usage{
-add_surv_prob(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
+add_surv_prob(newdata, object, ci = TRUE, se_mult = 2, overwrite = FALSE,
   time_variable = NULL, interval_length = "intlen", ...)
 }
 \arguments{
@@ -20,7 +20,7 @@ add_surv_prob(newdata, object, ci = TRUE, se.mult = 2, overwrite = FALSE,
 \item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
-\item{se.mult}{Factor by which standard errors are multiplied for calculating
+\item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in

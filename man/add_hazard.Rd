@@ -6,9 +6,10 @@
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
 add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
-  se.mult = 2, overwrite = FALSE, time_variable = NULL, ...)
+  se_mult = 2, ci_type = c("default", "delta", "sim"), overwrite = FALSE,
+  time_variable = NULL, ...)
 
-add_cumu_hazard(newdata, object, ci = TRUE, se.mult = 2,
+add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
   overwrite = FALSE, time_variable = NULL, interval_length = "intlen",
   ...)
 }
@@ -42,8 +43,15 @@ outside \code{R} (see example code, below). }
 \item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
-\item{se.mult}{Factor by which standard errors are multiplied for calculating
+\item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
+
+\item{ci_type}{The method by which standard errors/confidence intervals
+will be calculated. Default transforms the linear predictor at
+respective intervals. \code{"delta"} calculates CIs based on the standard
+error calculated by the Delta method. \code{"sim"} draws the
+property of interest from its posterior based on the normal distribution of
+the estimated coeffiicents. CIs are given by respective quantiles.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
@@ -63,7 +71,7 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 \description{
 Add (cumulative) hazard based on the provided data set and model.
 If \code{ci=TRUE} confidence intervals are also provided. Their width can
-be controlled via the \code{se.mult} argument.
+be controlled via the \code{se_mult} argument.
 
 Add cumulative hazard estimate to data set
 }

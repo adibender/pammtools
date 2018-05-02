@@ -28,7 +28,6 @@ stacked to a tidy data frame.
 }
 \examples{
 library(survival)
-library(pammtools)
 fit <- coxph(Surv(time, status) ~ pspline(karno) + pspline(age), data=veteran)
 terms_df <- veteran \%>\% get_terms(fit, terms = c("karno", "age"))
 head(terms_df)

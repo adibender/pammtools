@@ -7,17 +7,17 @@ test_that("Concurrent TDC are transformed correctly", {
 	tdc_df <- filter(pbcseq, id %in% 1:3) %>% select(id, day, bili, protime)
 	expect_error(as_ped(
 		data    = list(event_df, tdc_df),
-		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		formula = Surv(time, status)~.|concurrent(bili, protime, tz_var = "day"),
 		id      = "id"), "No events in data")
 	event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status==2)
 	ped <- as_ped(
 		data    = list(event_df, tdc_df),
-		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		formula = Surv(time, status)~.|concurrent(bili, protime, tz_var = "day"),
 		id      = "id")
 	expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 400, 743))
 	ped <- as_ped(
 		data    = list(event_df, tdc_df),
-		formula = Surv(time, status)~.|concurrent(bili, protime, te_var = "day"),
+		formula = Surv(time, status)~.|concurrent(bili, protime, tz_var = "day"),
 		id      = "id",
 		cut = c(0, 3000))
 	expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 743, 768))
@@ -28,16 +28,16 @@ test_that("Concurrent TDC are transformed correctly", {
 test_that("Covariate matrices are created correctly", {
 	data <- simdf_elra %>% filter(id %in% c(1:2))
 	time <- 0:2
-	te <- data %>% dplyr::pull("te2") %>% unlist() %>% unique() %>% sort()
-	nz <- length(te)
+	tz <- data %>% dplyr::pull("tz2") %>% unlist() %>% unique() %>% sort()
+	nz <- length(tz)
 	attr(data, "id_tseq") <- rep(1:3, 2)
-	attr(data, "id_teseq") <- rep(1:2, times=c(3,3))
-	my_ll_fun <- function(t, te) ((t-te) >=0 & (t-te) <=5)
+	attr(data, "id_tz_seq") <- rep(1:2, times=c(3,3))
+	my_ll_fun <- function(t, tz) ((t-tz) >=0 & (t-tz) <=5)
 	expect_class(my_ll_fun, "function")
 	Tmat <- make_time_mat(data, nz)
-	TEmat <- make_z_mat(data, "te2", nz)
-	Ltmat <- make_latency_mat(data, te)
-	LLmat <- make_lag_lead_mat(data, te, ll_fun = my_ll_fun)
+	TEmat <- make_z_mat(data, "tz2", nz)
+	Ltmat <- make_latency_mat(data, tz)
+	LLmat <- make_lag_lead_mat(data, tz, ll_fun = my_ll_fun)
 	expect_equal(dim(Tmat), c(6, 11))
 	expect_equal(dim(TEmat), c(6, 11))
 	expect_equal(dim(Ltmat), c(6, 11))
@@ -54,10 +54,10 @@ test_that("Covariate matrices are created correctly", {
 	expect_equal(max(Ltmat*LLmat), 5)
 	ped <- as_ped(data,
 			Surv(time, status)~.|
-			cumulative(z.te2, latency(te2), te_var = "te2",
-				ll_fun =function(t, te) ((t-te) >=0 & (t-te) <=5)),
+			cumulative(z.tz2, latency(tz2), tz_var = "tz2",
+				ll_fun =function(t, tz) ((t-tz) >=0 & (t-tz) <=5)),
 			cut = 0:2)
-	expect_equal(max(ped$te2_latency * ped$LL), 5)
+	expect_equal(max(ped$tz2_latency * ped$LL), 5)
 
 })
 
@@ -72,8 +72,8 @@ test_that("split_tdc works correctly", {
 		filter(id <= 5) %>%
 	  select(id, day, bili)
 
-	pbc_ped <- split_tdc(Surv(time, event)~., event_df, tdc_df, te_var="day",
-		status_var = "event")
+	expect_warning(pbc_ped <- split_tdc(Surv(time, event)~., event_df, tdc_df, tz_var="day",
+		status_var = "event"), "is deprecated")
 
 
 	expect_data_frame(pbc_ped, nrows=93L, ncols=8L)

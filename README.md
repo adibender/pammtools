@@ -11,14 +11,6 @@ license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://openso
 
 ## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
 
-`pammtools` offers various utilities and convenience functions that
-facilitate working with Piece-wise exponential Additive Mixed Models
-(PAMMs). For a tutorial-like introduction to PAMMs see:
-
-  - Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A
-    Generalized Additive Model Approach to Time-to-Event Analysis.”
-    Statistical Modelling. <https://doi.org/10.1177/1471082X17748083>.
-
 ### Installation
 
 Install from GitHub using
@@ -27,8 +19,21 @@ Install from GitHub using
 devtools::install_github("adibender/pammtools")
 ```
 
+
+
 ### Overview
 
-To get started have a look at one of the many vignettes provided with
-the package. An overview of all vignettes can be found in the
-[articles](https://adibender.github.io/pammtools/articles/) section.
+`pammtools` offers various utilities and convenience functions that
+facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).
+
+To get started, see the [Articles](articles/index.html) section.
+
+For a tutorial-like introduction to PAMMs see:
+
+  - Andreas Bender, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
+
+
+A general framework for the representation and estimation of cumulative effects
+(or exposure-lag-response associations) is described in:
+
+- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff; "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003

@@ -21,20 +21,24 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Plot Lag-Lead windows — gg_laglead" />
 
 <meta property="og:description" content="Given data defining a Lag-lead window, returns respective plot as a
 ggplot2 object." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -57,11 +61,6 @@ ggplot2 object." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -77,7 +76,7 @@ ggplot2 object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -144,7 +143,7 @@ ggplot2 object." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -173,7 +172,7 @@ ggplot2 object." />
     <pre class="usage"><span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='no'>te</span>, <span class='no'>ll_fun</span>, <span class='no'>...</span>)
+<span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='no'>tz</span>, <span class='no'>ll_fun</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for LL_df</span>
 <span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='kw'>high_col</span> <span class='kw'>=</span> <span class='st'>"grey20"</span>, <span class='kw'>low_col</span> <span class='kw'>=</span> <span class='st'>"whitesmoke"</span>,
@@ -194,7 +193,7 @@ ggplot2 object." />
       <td><p>Further arguments passed to methods.</p></td>
     </tr>
     <tr>
-      <th>te</th>
+      <th>tz</th>
       <td><p>A vector of exposure times</p></td>
     </tr>
     <tr>
@@ -223,10 +222,10 @@ second argument is the time of exposure.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Example 1: supply t, te, ll_fun directly</span>
- <span class='fu'>gg_laglead</span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>te</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>,
-  <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>te</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>te</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>te</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; <span class='warning'>Warning: Unknown or uninitialised column: 'te_var'.</span></div><div class='img'><img src='gg_laglead-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Example 2: extract information on t, te, ll_from data with respective attributes</span>
+    <pre class="examples"><div class='input'><span class='co'>## Example 1: supply t, tz, ll_fun directly</span>
+ <span class='fu'>gg_laglead</span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>,
+  <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; <span class='warning'>Warning: Unknown or uninitialised column: 'tz_var'.</span></div><div class='img'><img src='gg_laglead-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'>## Example 2: extract information on t, tz, ll_from data with respective attributes</span>
 <span class='fu'>data</span>(<span class='st'>"simdf_elra"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"pammtools"</span>)
 <span class='fu'>gg_laglead</span>(<span class='no'>simdf_elra</span>)</div><div class='img'><img src='gg_laglead-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
@@ -263,7 +262,13 @@ second argument is the time of exposure.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

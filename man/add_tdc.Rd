@@ -4,19 +4,19 @@
 \alias{add_tdc}
 \title{Add time-dependent covariate to a data set}
 \usage{
-add_tdc(data, te, rng_fun, ...)
+add_tdc(data, tz, rng_fun, ...)
 }
 \arguments{
 \item{data}{Data in which to look for variables in formula.}
 
-\item{te}{A numeric vector of exposure times (relative to the
+\item{tz}{A numeric vector of exposure times (relative to the
 beginning of the follow-up time \code{t})}
 
 \item{rng_fun}{A random number generating function that creates
-the time-dependent covariates at time points \code{te}.
+the time-dependent covariates at time points \code{tz}.
 First argument of the function should be \code{n}, the number of
 random numbers to generate. Within \code{add_tdc}, \code{n} will be set
-to \code{length(te)}.}
+to \code{length(tz)}.}
 
 \item{...}{Currently not used.}
 }

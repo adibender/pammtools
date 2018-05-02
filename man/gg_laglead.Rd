@@ -9,7 +9,7 @@
 \usage{
 gg_laglead(x, ...)
 
-\method{gg_laglead}{default}(x, te, ll_fun, ...)
+\method{gg_laglead}{default}(x, tz, ll_fun, ...)
 
 \method{gg_laglead}{LL_df}(x, high_col = "grey20", low_col = "whitesmoke",
   grid_col = "lightgrey", ...)
@@ -21,7 +21,7 @@ gg_laglead(x, ...)
 
 \item{...}{Further arguments passed to methods.}
 
-\item{te}{A vector of exposure times}
+\item{tz}{A vector of exposure times}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix
 should be contructed. First argument is the follow up time
@@ -38,11 +38,11 @@ Given data defining a Lag-lead window, returns respective plot as a
 \code{ggplot2} object.
 }
 \examples{
-## Example 1: supply t, te, ll_fun directly
- gg_laglead(1:10, te=-5:5,
-  ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+## Example 1: supply t, tz, ll_fun directly
+ gg_laglead(1:10, tz=-5:5,
+  ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
 
-## Example 2: extract information on t, te, ll_from data with respective attributes
+## Example 2: extract information on t, tz, ll_from data with respective attributes
 data("simdf_elra", package = "pammtools")
 gg_laglead(simdf_elra)
 }

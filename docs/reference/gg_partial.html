@@ -21,20 +21,24 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-
-
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Visualize effect estimates for specific covariate combinations — gg_partial" />
 
 <meta property="og:description" content="Depending on the plot type and input, creates either a bivariate effect
 surface or 1-dimensional slices." />
+
+<meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -57,11 +61,6 @@ surface or 1-dimensional slices." />
   gtag('config', 'UA-44545040-3');
 </script>
 
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-
   </head>
 
   <body>
@@ -77,7 +76,7 @@ surface or 1-dimensional slices." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
       </span>
     </div>
 
@@ -144,7 +143,7 @@ surface or 1-dimensional slices." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -202,20 +201,20 @@ to an observation specified in <code>reference</code>.</p></td>
     <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>200</span>, ] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~<span class='no'>.</span>)
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span>~<span class='fu'>s</span>(<span class='no'>tend</span>) + <span class='fu'>s</span>(<span class='no'>age</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>complications</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>,
   <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
-<span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span> <span class='kw'>=</span> <span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='output co'>#&gt; # A tibble: 40 x 13
-#&gt;       id tstart  tend interval offset ped_status charlson_score   age sex  
-#&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;
-#&gt;  1  101.     0.    5. (0,5]      1.61         1.           2.71  16.0 male 
-#&gt;  2  101.     0.    5. (0,5]      1.61         1.           2.71  19.9 male 
-#&gt;  3  101.     0.    5. (0,5]      1.61         1.           2.71  23.8 male 
-#&gt;  4  101.     0.    5. (0,5]      1.61         1.           2.71  27.7 male 
-#&gt;  5  101.     0.    5. (0,5]      1.61         1.           2.71  31.6 male 
-#&gt;  6  101.     0.    5. (0,5]      1.61         1.           2.71  35.5 male 
-#&gt;  7  101.     0.    5. (0,5]      1.61         1.           2.71  39.4 male 
-#&gt;  8  101.     0.    5. (0,5]      1.61         1.           2.71  43.3 male 
-#&gt;  9  101.     0.    5. (0,5]      1.61         1.           2.71  47.2 male 
-#&gt; 10  101.     0.    5. (0,5]      1.61         1.           2.71  51.1 male 
-#&gt; # ... with 30 more rows, and 4 more variables: transfusion &lt;fct&gt;,
+<span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span> <span class='kw'>=</span> <span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='output co'>#&gt; # A tibble: 40 x 14
+#&gt;    tstart  tend intlen interval    id offset ped_status charlson_score   age
+#&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1     0.    5.     5. (0,5]     101.   1.61         1.           2.71  16.0
+#&gt;  2     0.    5.     5. (0,5]     101.   1.61         1.           2.71  19.9
+#&gt;  3     0.    5.     5. (0,5]     101.   1.61         1.           2.71  23.8
+#&gt;  4     0.    5.     5. (0,5]     101.   1.61         1.           2.71  27.7
+#&gt;  5     0.    5.     5. (0,5]     101.   1.61         1.           2.71  31.6
+#&gt;  6     0.    5.     5. (0,5]     101.   1.61         1.           2.71  35.5
+#&gt;  7     0.    5.     5. (0,5]     101.   1.61         1.           2.71  39.4
+#&gt;  8     0.    5.     5. (0,5]     101.   1.61         1.           2.71  43.3
+#&gt;  9     0.    5.     5. (0,5]     101.   1.61         1.           2.71  47.2
+#&gt; 10     0.    5.     5. (0,5]     101.   1.61         1.           2.71  51.1
+#&gt; # ... with 30 more rows, and 5 more variables: sex &lt;fct&gt;, transfusion &lt;fct&gt;,
 #&gt; #   complications &lt;chr&gt;, metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='fu'>gg_slice</span>(<span class='no'>ped</span>, <span class='no'>mod</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='img'><img src='gg_partial-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>gg_slice</span>(<span class='no'>ped</span>, <span class='no'>mod</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>),
   <span class='kw'>reference</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='kw'>age</span> <span class='kw'>=</span> <span class='fl'>50</span>))</div><div class='img'><img src='gg_partial-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
@@ -250,7 +249,13 @@ to an observation specified in <code>reference</code>.</p></td>
     
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
-    inputSelector: 'input#search-input.form-control'
+    inputSelector: 'input#search-input.form-control',
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

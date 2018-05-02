@@ -8,7 +8,7 @@
 \usage{
 get_laglead(x, ...)
 
-\method{get_laglead}{default}(x, te, ll_fun, ...)
+\method{get_laglead}{default}(x, tz, ll_fun, ...)
 
 \method{get_laglead}{data.frame}(x, ...)
 }
@@ -17,7 +17,7 @@ get_laglead(x, ...)
 
 \item{...}{Further arguments passed to methods.}
 
-\item{te}{A vector of exposure times}
+\item{tz}{A vector of exposure times}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix
 should be contructed. First argument is the follow up time
@@ -28,6 +28,6 @@ Constructs lag-lead window data set from raw inputs or from data objects
 with suitable information stored in attributes.
 }
 \examples{
-get_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
-gg_laglead(1:10, te=-5:5, ll_fun=function(t, te) { t >= te + 2 & t <= te + 2 + 3})
+get_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
+gg_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
 }

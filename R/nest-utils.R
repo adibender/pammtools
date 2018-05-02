@@ -78,9 +78,9 @@ nest_tdc.list <- function(data, formula, ...) {
     # update cut points
     ccr_time <- ccr[["ccr_time"]]
     # update vector of TDCs
-    ccr_te_vars <- map_chr(ccr[["ccr_list"]], ~.x[["te_var"]]) %>% unique()
+    ccr_tz_vars <- map_chr(ccr[["ccr_list"]], ~.x[["tz_var"]]) %>% unique()
     ccr_vars <- map(ccr[["ccr_list"]], ~.x[["col_vars"]]) %>% unlist()
-    tdc_vars <- c(tdc_vars, ccr_te_vars, ccr_vars)
+    tdc_vars <- c(tdc_vars, ccr_tz_vars, ccr_vars)
 
   } else {
     ccr      <- NULL
@@ -90,8 +90,8 @@ nest_tdc.list <- function(data, formula, ...) {
   if (lgl_cumulative) {
     func_list    <- eval_special(formula)
     func_vars    <- map(func_list, ~.x[["col_vars"]]) %>% unlist()
-    func_te_vars <- map_chr(func_list, ~.x[["te_var"]]) %>% unique()
-    tdc_vars     <- c(tdc_vars, func_vars, func_te_vars) %>% unique()
+    func_tz_vars <- map_chr(func_list, ~.x[["tz_var"]]) %>% unique()
+    tdc_vars     <- c(tdc_vars, func_vars, func_tz_vars) %>% unique()
   } else {
     func_list <- NULL
   }
@@ -123,7 +123,7 @@ nest_tdc.list <- function(data, formula, ...) {
     func_list  = func_list,
     id_n       = id_n,
     id_tseq    = id_n %>% map(seq_len) %>% unlist(),
-    id_teseq   = rep(seq_along(nested_df[[dots$id]]), times = id_n)))
+    id_tz_seq   = rep(seq_along(nested_df[[dots$id]]), times = id_n)))
 
   class(nested_df) <- c("nested_fdf", class(nested_df))
 

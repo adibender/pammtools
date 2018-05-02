@@ -4,8 +4,9 @@
 \alias{get_cumu_hazard}
 \title{Calculate cumulative hazard}
 \usage{
-get_cumu_hazard(newdata, object, ci = TRUE, time_variable = NULL,
-  interval_length = "intlen", ...)
+get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default", "delta",
+  "sim"), time_variable = NULL, se_mult = 2, interval_length = "intlen",
+  nsim = 100L, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -20,10 +21,20 @@ get_cumu_hazard(newdata, object, ci = TRUE, time_variable = NULL,
 \item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
 to \code{TRUE}}
 
+\item{ci_type}{The method by which standard errors/confidence intervals
+will be calculated. Default transforms the linear predictor at
+respective intervals. \code{"delta"} calculates CIs based on the standard
+error calculated by the Delta method. \code{"sim"} draws the
+property of interest from its posterior based on the normal distribution of
+the estimated coeffiicents. CIs are given by respective quantiles.}
+
 \item{time_variable}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
+
+\item{se_mult}{Factor by which standard errors are multiplied for calculating
+the confidence intervals.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}

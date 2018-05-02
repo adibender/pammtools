@@ -36,7 +36,7 @@ gg_partial <- function(data, mod, term, ..., reference = NULL) {
     xlab(vars[1])
   if(n_vars == 1) {
     gg_out <- gg_base +
-      geom_ribbon(aes_string(ymin = "low", ymax = "high"), alpha = 0.3) +
+      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3) +
       geom_line(aes_string(y = "fit"))
   } else {
     if(n_vars == 2) {
@@ -71,7 +71,7 @@ gg_slice <- function(data, mod, term, ..., reference=NULL) {
   n_vars <- length(vars)
 
   gg_out <- ggplot(ndf, aes_string(x = vars[1], y = "fit")) +
-    geom_ribbon(aes_string(ymin = "low", ymax = "high"), alpha = 0.3) +
+    geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3) +
     geom_line()
   if(n_vars > 1) {
     gg_out <- gg_out + aes_string(group=vars[2], fill=vars[2]) +

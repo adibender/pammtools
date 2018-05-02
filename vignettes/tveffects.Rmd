@@ -20,7 +20,6 @@ opts_chunk$set(
 ```{r, message = FALSE}
 library(ggplot2)
 theme_set(theme_bw())
-library(gridExtra)
 library(tidyr)
 library(dplyr)
 library(pammtools)
@@ -159,13 +158,13 @@ for all three models
   <summary>*Expand here to see R-Code*</summary>
 ```{r gg_tv_karno, dependson="pam_tv_karno"}
 term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
-    mutate_at(c("fit", "low", "high"), funs(./.data$karno)) %>%
+    mutate_at(c("fit", "ci_lower", "ci_upper"), funs(./.data$karno)) %>%
     mutate(
         cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20),
         pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20))
 gg_tv_karno <- ggplot(term.df, aes(x = tend, y = fit)) +
     geom_step(aes(col = "PAM with penalized spline")) +
-    geom_stepribbon(aes(ymin = low, ymax = high), alpha = 0.2) +
+    geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) +
     geom_step(aes(y = pam.fit, col = "PAM with log-transform")) +
     scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
@@ -280,7 +279,7 @@ karno_df <- karno_df %>% add_term(pam3, term="karno")
 
 karno_gg <- ggplot(karno_df, aes(x=tend, y=fit)) +
   geom_step(aes(col=factor(karno)), lwd=1.1) +
-  geom_stepribbon(aes(ymin = low, ymax = high, fill=factor(karno)), alpha=.2) +
+  geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper, fill=factor(karno)), alpha=.2) +
   scale_color_manual(
     name   = expression(x[plain(karno)]),
     values = Greens[c(4, 7, 9)]) +
@@ -297,7 +296,7 @@ time_df <-ped %>%
 
 time_gg <- ggplot(time_df, aes(x=karno)) +
   geom_line(aes(y=fit, col=factor(tend)), lwd=1.1) +
-  geom_ribbon(aes(ymin = low, ymax = high, fill=factor(tend)), alpha=.2) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill=factor(tend)), alpha=.2) +
   scale_color_manual(name="t", values=Purples[c(4, 6, 8)]) +
   scale_fill_manual(name="t", values=Purples[c(4, 6, 8)]) +
   ylab(expression(hat(f)(list(x[plain(karno)],t)))) +
@@ -307,7 +306,7 @@ time_gg <- ggplot(time_df, aes(x=karno)) +
 </details>
 
 ```{r, fig.width=7, fig.height=3, warning=FALSE, echo=FALSE}
-grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
+gridExtra::grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
 ```
 
 

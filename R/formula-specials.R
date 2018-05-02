@@ -13,21 +13,21 @@
 #' @importFrom purrr map
 #'
 #' @param ... For \code{concurrent} variables that will be transformed to
-#' covariate matrices. The number of columns of each covariate depends on \code{te}.
+#' covariate matrices. The number of columns of each covariate depends on \code{tz}.
 #' Usually, elements that will be specified here are \code{time} (which should be
 #' the name of the time-variable used on the LHS of the formula argument to
-#' \code{as_ped}), \code{te} which is the variable containing information on
+#' \code{as_ped}), \code{tz} which is the variable containing information on
 #' the times at which the TDC was observed (can be wrapped in \code{latency}) and
-#' the TDCs that share the same \code{te} and Lag-lead window (\code{ll_fun}).
-#' @param te_var The name of the variable that stores information on the
+#' the TDCs that share the same \code{tz} and Lag-lead window (\code{ll_fun}).
+#' @param tz_var The name of the variable that stores information on the
 #' times at which the TDCs specified in this term where observed.
 #' @inheritParams get_laglead
 #'
 #' @export
 #' @keywords internal
 cumulative <- function(...,
-  te_var,
-  ll_fun = function(t, te) {t >= te},
+  tz_var,
+  ll_fun = function(t, tz) {t >= tz},
   suffix = NULL) {
 
   vars        <- as.list(substitute(list(...)))[-1]
@@ -45,7 +45,7 @@ cumulative <- function(...,
   list(
     col_vars    = col_vars,
     latency_var = latency_var,
-    te_var      = te_var,
+    tz_var      = tz_var,
     suffix      = suffix,
     ll_fun      = ll_fun)
 
@@ -56,7 +56,7 @@ cumulative <- function(...,
 #' @inherit cumulative
 #' @keywords internal
 concurrent <- function(...,
-  te_var,
+  tz_var,
   ll_fun = function(t) {t == t},
   suffix = NULL) {
 
@@ -66,7 +66,7 @@ concurrent <- function(...,
 
   list(
     col_vars    = vars_chr,
-    te_var      = te_var,
+    tz_var      = tz_var,
     suffix      = suffix,
     ll_fun      = ll_fun)
 
@@ -96,10 +96,10 @@ get_cumulative <- function(data, formula) {
 
   n_func <- length(func_list)
   ll_funs <- map(func_list, ~.x[["ll_fun"]])
-  te_vars <- map(func_list, ~.x[["te_var"]])
-  te <- map(te_vars, ~pull(data, .x) %>% unlist() %>% unique() %>% sort())
+  tz_vars <- map(func_list, ~.x[["tz_var"]])
+  tz <- map(tz_vars, ~pull(data, .x) %>% unlist() %>% unique() %>% sort())
 
-  names(te) <- names(te_vars) <- names(ll_funs) <- te_vars
+  names(tz) <- names(tz_vars) <- names(ll_funs) <- tz_vars
 
   ## create matrices
   func_mats <- map(func_list, ~expand_cumulative(data=data, ., n_func=n_func)) %>%
@@ -109,8 +109,8 @@ get_cumulative <- function(data, formula) {
     func_list = func_list,
     func_mats = func_mats,
     ll_funs   = ll_funs,
-    te_vars   = te_vars,
-    te        = te)
+    tz_vars   = tz_vars,
+    tz        = tz)
 
 }
 
@@ -149,13 +149,6 @@ has_special <- function(formula, special = "cumulative") {
   }
 }
 
-
-get_te_from_concurrent <- function(concurrent) {
-
-  concurrent$te %>% unlist() %>% unique() %>% sort()
-
-}
-
 #' @rdname get_cumulative
 #' @inheritParams get_cumulative
 #' @param func Single evaluated \code{\link{cumulative}} term.
@@ -164,8 +157,8 @@ get_te_from_concurrent <- function(concurrent) {
 expand_cumulative <- function(data, func, n_func) {
 
   col_vars <- func$col_vars
-  te_var   <- func$te_var
-  te       <- pull(data, te_var) %>% unlist() %>% unique() %>% sort()
+  tz_var   <- func$tz_var
+  tz       <- pull(data, tz_var) %>% unlist() %>% unique() %>% sort()
   time_var <- attr(data, "time_var")
   id_var   <- attr(data, "id_var")
   lgl_var_in_data <- map_lgl(col_vars, ~ . %in% colnames(data))
@@ -187,18 +180,20 @@ expand_cumulative <- function(data, func, n_func) {
     hist_mats[[i]] <- if(col_vars[i] == attr(data, "time_var")) {
       make_time_mat(data, nz)
     } else if (col_vars[i] == func$latency_var) {
-      make_latency_mat(data, te)
+      make_latency_mat(data, tz)
     } else {
       make_z_mat(data, col_vars[i], nz)
     }
   }
 
-  if(any(c(time_var, te_var) %in% col_vars)) {
-    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, te, func$ll_fun)))
+  if(any(c(time_var, tz_var) %in% col_vars)) {
+    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun)))
     names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
-      te_var, func$suffix, n_func)
+      tz_var, func$suffix, n_func)
+    time_mat_ind <- grepl(time_var, names(hist_mats))
+    names(hist_mats)[time_mat_ind] <- paste0(names(hist_mats)[time_mat_ind], "_mat")
   } else {
-    names(hist_mats) <- make_mat_names(col_vars, func$latency_var, te_var,
+    names(hist_mats) <- make_mat_names(col_vars, func$latency_var, tz_var,
       func$suffix, n_func)
   }
 
@@ -225,8 +220,8 @@ prep_concurrent.list <- function(x, formula, ...) {
 
   if(lgl_concurrent) {
     ccr_list    <- eval_special(formula, special="concurrent")
-    ccr_te_vars <- map_chr(ccr_list, ~.x[["te_var"]]) %>% unique()
-    ccr_time    <- map2(ccr_te_vars, x, ~get_te(.y, .x)) %>%
+    ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
+    ccr_time    <- map2(ccr_tz_vars, x, ~get_tz(.y, .x)) %>%
       reduce(union) %>% sort()
   }
 
@@ -238,13 +233,13 @@ prep_concurrent.list <- function(x, formula, ...) {
 
 
 #' @keywords internal
-get_te <- function(data, te_var) {
-  if (te_var %in% colnames(data)) {
-    te <- pull(data, te_var) %>% unique()
+get_tz <- function(data, tz_var) {
+  if (tz_var %in% colnames(data)) {
+    tz <- pull(data, tz_var) %>% unique()
   } else {
-    te <- NULL
+    tz <- NULL
   }
-  te
+  tz
 }
 
 #' @keywords internal
@@ -254,12 +249,12 @@ add_concurrent <- function(ped, data, id_var) {
 
   for(ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
-    te_var_i   <- ccr_i[["te_var"]]
-    ccr_vars_i <- c(te_var_i, tdc_vars_i)
+    tz_var_i   <- ccr_i[["tz_var"]]
+    ccr_vars_i <- c(tz_var_i, tdc_vars_i)
     ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
       unnest()
     ped <- ped %>%
-      left_join(ccr_i_df, by = c(id_var, "tstart"=te_var_i)) %>%
+      left_join(ccr_i_df, by = c(id_var, "tstart"=tz_var_i)) %>%
       group_by(!!sym(id_var)) %>%
       fill(tdc_vars_i)
 
@@ -283,23 +278,23 @@ add_cumulative <- function(ped, data, formula) {
   attr(ped, "func")           <- func_components$func_list
   attr(ped, "func_mat_names") <- names(func_matrices)
   attr(ped, "ll_funs")        <- func_components$ll_funs
-  attr(ped, "te")             <- func_components$te
-  attr(ped, "te_vars")        <- func_components$te_vars
+  attr(ped, "tz")             <- func_components$tz
+  attr(ped, "tz_vars")        <- func_components$tz_vars
 
   ped
 
 }
 
 #' @keywords internal
-make_mat_names <- function(col_vars, latency_var=NULL, te_var=NULL, suffix=NULL,
+make_mat_names <- function(col_vars, latency_var=NULL, tz_var=NULL, suffix=NULL,
   nfunc = 1) {
 
   if (!is.null(suffix)) {
     return(paste(col_vars, suffix, sep="_"))
   } else {
-    if (!is.null(te_var) & nfunc > 1)  {
-      te_ind <- col_vars == te_var
-      col_vars[!te_ind] <- paste(col_vars[!te_ind], te_var,  sep="_")
+    if (!is.null(tz_var) & nfunc > 1)  {
+      tz_ind <- col_vars == tz_var
+      col_vars[!tz_ind] <- paste(col_vars[!tz_ind], tz_var,  sep="_")
     }
     if (!is.null(latency_var)) {
       latency_ind <- col_vars == latency_var
@@ -332,11 +327,11 @@ make_time_mat <- function(data, nz) {
 #' @rdname elra_matrix
 #' @inherit make_time_mat
 #' @keywords internal
-make_latency_mat <- function(data, te) {
+make_latency_mat <- function(data, tz) {
 
   time        <- attr(data, "breaks")
   id_tseq     <- attr(data, "id_tseq")
-  Latency_mat <- outer(time, te, FUN = "-")
+  Latency_mat <- outer(time, tz, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
   Latency_mat[id_tseq, , drop=FALSE]
 
@@ -347,10 +342,14 @@ make_latency_mat <- function(data, te) {
 #' @keywords internal
 make_lag_lead_mat <- function(
   data,
-  te,
-  ll_fun = function(t, te) {(t >= te)}) {
+  tz,
+  ll_fun = function(t, tz) {(t >= tz)}) {
 
-  LL <- outer(attr(data, "breaks"), te, FUN=ll_fun)*1L
+  LL <- outer(attr(data, "breaks"), tz, FUN=ll_fun)*1L
+  delta <- abs(diff(tz))
+  IW <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
+    byrow=TRUE)
+  LL <- LL * IW
   LL[attr(data, "id_tseq"), , drop=FALSE]
 
 }
@@ -364,10 +363,10 @@ make_lag_lead_mat <- function(
 #' @keywords internal
 make_z_mat <- function(data, z_var, nz, ...) {
 
-  te_ind <- seq_len(nz)
-  Z <- map(data[[z_var]], .f=~unlist(.x)[te_ind])
+  tz_ind <- seq_len(nz)
+  Z <- map(data[[z_var]], .f=~unlist(.x)[tz_ind])
   Z <- do.call(rbind, Z)
-  Z[attr(data, "id_teseq"), , drop=FALSE]
+  Z[attr(data, "id_tz_seq"), , drop=FALSE]
 
  }
 

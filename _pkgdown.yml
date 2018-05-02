@@ -42,7 +42,6 @@ reference:
       - gg_smooth
       - gg_tensor
       - gg_re
-      - geom_stepribbon
       - gg_partial
       - gg_laglead
   - title: "Data sets"

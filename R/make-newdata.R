@@ -216,8 +216,10 @@ make_newdata.ped <- function(x, ...) {
     ndf <- combine_df(int_df[1,], ndf)
   }
 
-  ndf %>% select(one_of(orig_vars)) %>%
+  int_names <- intersect(int_names, c("intlen", orig_vars))
+  ndf %>% select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
     mutate(
+      intlen = .data$tend - .data$tstart,
       offset = log(.data$tend - .data$tstart),
       ped_status = 1)
 
@@ -244,7 +246,8 @@ make_newdata.fped <- function(x, ...) {
     select(one_of(setdiff(names(x),cumu_vars))) %>%
     unfped() %>% make_newdata(...)
 
-  rest   <- x %>% select(-one_of(c(colnames(ndf), attr(x, "func_mat_names"), int_names)))
+  rest   <- x %>% select(-one_of(c(setdiff(colnames(ndf), "intlen"),
+    attr(x, "func_mat_names"), int_names)))
   if (ncol(rest) > 0) {
     si <- sample_info.data.frame(rest)
   } else {
@@ -255,7 +258,7 @@ make_newdata.fped <- function(x, ...) {
   int_df <- int_info(attr(x, "breaks"))
   suppressMessages(
     out_df <- right_join(int_df, out_df) %>%
-      select(intersect(colnames(x), names(.))) %>% as_tibble()
+      select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
   out_df <- adjust_time_vars(out_df, x, dot_names)
@@ -284,10 +287,10 @@ smry_cumu_vars <- function(data, time_var) {
 get_zvars <- function(func, time_var, n_func) {
 
   col_vars <- func$col_vars
-  all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$te_var,
+  all_vars <- make_mat_names(c(col_vars, "LL"), func$latency_var, func$tz_var,
     func$suffix, n_func)
-  time_vars <- make_mat_names(c(time_var, func$te_var, "LL"),
-    func$latency_var, func$te_var, func$suffix, n_func)
+  time_vars <- make_mat_names(c(time_var, func$tz_var, "LL"),
+    func$latency_var, func$tz_var, func$suffix, n_func)
 
   setdiff(all_vars, time_vars)
 
@@ -311,13 +314,13 @@ adjust_ll <- function(out_df, data) {
 
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
-    te_var <- attr(data, "te_vars")[[ind_ll]]
-    te_var <- make_mat_names(te_var, func$latency_var, func$te_var, func$suffix,
+    tz_var <- attr(data, "tz_vars")[[ind_ll]]
+    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
       n_func)
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[te_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
     } else {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[te_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[tz_var]])*1L
     }
   }
 
