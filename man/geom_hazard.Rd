@@ -105,9 +105,9 @@ ndf <- ndf \%>\% add_surv_prob(pam)
 ggplot(ndf, aes(x = tend, y = surv_prob)) +
  geom_surv() +
  geom_line(col=2) # doesn't start at c(0,1)
-
 }
 \seealso{
-\code{\link[ggplot2]{geom_line}}.
+\code{\link[ggplot2]{geom_line}},
+  \code{\link[ggplot2]{geom_step}}.
 }
 \keyword{datasets}

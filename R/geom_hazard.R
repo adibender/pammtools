@@ -10,7 +10,8 @@
 #' \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "line")}
 #'
 #' @seealso
-#'   \code{\link[ggplot2]{geom_line}}.
+#'   \code{\link[ggplot2]{geom_line}},
+#'   \code{\link[ggplot2]{geom_step}}.
 #' @inheritParams ggplot2::geom_line
 #' @rdname geom_hazard
 #' @importFrom ggplot2 layer GeomLine
@@ -39,7 +40,6 @@
 #' ggplot(ndf, aes(x = tend, y = surv_prob)) +
 #'  geom_surv() +
 #'  geom_line(col=2) # doesn't start at c(0,1)
-#'
 #' @export
 geom_hazard <- function(
   mapping     = NULL,
@@ -112,8 +112,7 @@ geom_stephazard <- function(
 #' @usage NULL
 #' @export
 GeomStepHazard <- ggproto(
-  "GeomStepHazard",
-  GeomStep,
+  "GeomStepHazard", GeomStep,
   draw_panel = function(data, panel_params, coord, direction = "vh") {
     data <- plyr::ddply(data, "group", stairstep, direction = direction)
     GeomPath$draw_panel(data, panel_params, coord)

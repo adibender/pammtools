@@ -29,6 +29,15 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
     - `get_laglead`
     - `gg_laglead`
 
+* Added convenience `geom`s for piece-wise constant hazards (see examples in
+`?geom_hazard`, cumulative hazards and survival probabilities (usually
+`aes(x=time, y = surv_prob)`, but data set doesn't contain extra row for
+`time = 0`), thus
+    - `geom_stephazard` adds row (x=0, y = y[1]) to the data before plotting
+    - `geom_hazard` adds row (x = 0, y = 0) before plotting (can also be used
+    for cumulative hazard)
+    - `geom_surv` add row (x = 0, y = 1) before plotting
+
 
 # pammtools 0.0.8
 
