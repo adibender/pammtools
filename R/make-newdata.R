@@ -216,8 +216,10 @@ make_newdata.ped <- function(x, ...) {
     ndf <- combine_df(int_df[1,], ndf)
   }
 
-  ndf %>% select(one_of(orig_vars)) %>%
+  int_names <- intersect(int_names, c("intlen", orig_vars))
+  ndf %>% select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
     mutate(
+      intlen = .data$tend - .data$tstart,
       offset = log(.data$tend - .data$tstart),
       ped_status = 1)
 
@@ -244,7 +246,8 @@ make_newdata.fped <- function(x, ...) {
     select(one_of(setdiff(names(x),cumu_vars))) %>%
     unfped() %>% make_newdata(...)
 
-  rest   <- x %>% select(-one_of(c(colnames(ndf), attr(x, "func_mat_names"), int_names)))
+  rest   <- x %>% select(-one_of(c(setdiff(colnames(ndf), "intlen"),
+    attr(x, "func_mat_names"), int_names)))
   if (ncol(rest) > 0) {
     si <- sample_info.data.frame(rest)
   } else {
@@ -255,7 +258,7 @@ make_newdata.fped <- function(x, ...) {
   int_df <- int_info(attr(x, "breaks"))
   suppressMessages(
     out_df <- right_join(int_df, out_df) %>%
-      select(intersect(colnames(x), names(.))) %>% as_tibble()
+      select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
   out_df <- adjust_time_vars(out_df, x, dot_names)
