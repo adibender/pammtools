@@ -343,9 +343,8 @@ make_lag_lead_mat <- function(
   tz,
   ll_fun = function(t, tz) {(t >= tz)}) {
 
-  integration_weights <- c(1, abs(diff(tz)))
   LL <- outer(attr(data, "breaks"), tz, FUN=ll_fun)*1L
-  IW <- matrix(integration_weights, ncol = length(tz), nrow = nrow(LL),
+  IW <- matrix(c(1, abs(diff(tz))), ncol = length(tz), nrow = nrow(LL),
     byrow=TRUE)
   LL <- LL * IW
   LL[attr(data, "id_tseq"), , drop=FALSE]
