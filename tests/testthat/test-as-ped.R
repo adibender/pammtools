@@ -37,11 +37,12 @@ test_that("Trafo works for list objects (with TDCs)", {
   ped <- as_ped(
     data    = list(event_df, tdc_df),
     formula = Surv(survhosp, PatientDied)~.|
-      cumulative(Study_Day, caloriesPercentage, tz_var="Study_Day") +
+      cumulative(survhosp, Study_Day, caloriesPercentage, tz_var="Study_Day") +
         cumulative(proteinGproKG, tz_var="Study_Day"),
     cut     = 0:30,
     id  = "CombinedID")
-  expect_data_frame(ped, nrows = 10, ncols = 19)
+  expect_subset("survhosp_Study_Day_mat", colnames(ped))
+  expect_data_frame(ped, nrows = 10, ncols = 20)
   ped <- as_ped(
       data    = list(event_df, tdc_df),
       formula = Surv(survhosp, PatientDied)~.|
