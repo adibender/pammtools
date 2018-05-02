@@ -190,6 +190,8 @@ expand_cumulative <- function(data, func, n_func) {
     hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun)))
     names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
       tz_var, func$suffix, n_func)
+    time_mat_ind <- grepl(time_var, names(hist_mats))
+    names(hist_mats)[time_mat_ind] <- paste0(names(hist_mats)[time_mat_ind], "_mat")
   } else {
     names(hist_mats) <- make_mat_names(col_vars, func$latency_var, tz_var,
       func$suffix, n_func)
