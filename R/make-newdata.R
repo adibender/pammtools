@@ -315,12 +315,24 @@ adjust_ll <- function(out_df, data) {
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
     tz_var <- attr(data, "tz_vars")[[ind_ll]]
-    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
+    tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
       n_func)
+    q_weights <- attr(data, "ll_weights")[[ind_ll]]
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var_mat]])*1L
+      suppressMessages(out_df <- left_join(out_df,  q_weights))
+      out_df <- out_df %>%
+        mutate(ll_weight = ifelse(is.na(.data$ll_weight), 0, .data$ll_weight))
+      out_df[[i]] <- out_df[[i]]* out_df[["ll_weight"]]
+      out_df[[tz_var]] <- out_df[["ll_weight"]] <- NULL
     } else {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[tz_var]])*1L
+      out_df[[tz_var]] <- out_df[["tend"]] - out_df[[tz_var_mat]]
+      suppressMessages(out_df <- left_join(out_df, q_weights))
+      out_df <- out_df %>%
+        mutate(ll_weight = ifelse(is.na(.data$ll_weight), 0, .data$ll_weight))
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
+      out_df[[i]] <- out_df[[i]]*out_df[["ll_weight"]]
+      out_df[[tz_var]] <- out_df[["ll_weight"]] <- NULL
     }
   }
 

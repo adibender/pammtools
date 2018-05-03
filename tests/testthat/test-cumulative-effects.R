@@ -1,18 +1,6 @@
 context("Cumulative effects (of time-dependent covariates)")
 
 test_that("Cumulative effects are calculated correctly", {
-  data("simdf_elra")
-  ped <- as_ped(simdf_elra, Surv(time, status)~x1 + x2|
-      cumulative(latency(tz2), z.tz2, tz_var="tz2"),
-    cut = 0:10)
-  pam <- mgcv::gam(ped_status ~ s(tend) + x1 + s(x2) + s(tz2_latency, by=z.tz2),
-    data = ped, family=poisson(), offset=offset)
-  # gg_slice(ped, pam, term="z.tz2", tz2_latency=seq(0, 12, by = 1), z.tz2=c(1))
-
-  ndf <- make_newdata(ped, tz2_latency = seq(0, 6, by = 1), z.tz2=c(1))
-  ndf <- ndf %>% add_hazard(pam)
-  expect_equal(ndf$hazard, c(0.15, 0.17, 0.19, 0.20, 0.21, 0.21, 0.20), tolerance=10e-3)
-
   # tz grid with differences different than 1
 
   # generate exposures and add to data set
@@ -39,17 +27,21 @@ test_that("Cumulative effects are calculated correctly", {
       ll_fun=function(t, tz) {t - 2 >= tz}),
   data = df,
   cut = 0:10)
+  # plot(survfit(Surv(time, status)~1, data=sim_df))
 
   ped <- as_ped(sim_df, Surv(time, status)~x1 + x2|
       cumulative(latency(tz3), z.tz3, tz_var="tz3"),
     cut = 0:10)
-  expect_identical(ped$LL[1,], c(2.5, 2, 3, rep(0,2)))
-  expect_identical(ped$LL[9,], c(2.5, 2, 3, 3, 2))
-  expect_identical(ped$LL[10,], c(2.5, 2, 3, 3, 2))
+  # ped$LL[ped$LL!=0] <- 1
+  ped5 <- subset(ped, id == 5)
+  expect_identical(ped5$LL[1,], c(2.5, 2, 3, rep(0,2)))
+  expect_identical(ped5$LL[9,], c(2.5, 2, 3, 3, 2))
+  expect_identical(ped5$LL[10,], c(2.5, 2, 3, 3, 2))
   pam <- mgcv::gam(ped_status ~ s(tend) + x1 + s(x2) + s(tz3_latency, by=z.tz3),
     data = ped, family=poisson, offset=offset)
-  # gg_slice(ped, pam, term="z.tz3", z.tz3=c(1), tz3_latency=seq(0, 12, by=1))
-  ndf <- make_newdata(ped, tz3_latency = seq(0, 6, by = 1), z.tz3=c(1))
-  ndf <- ndf %>% add_hazard(pam)
-  expect_equal(ndf$hazard, c(0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.15), tolerance=10e-3)
+  # gg_slice(ped, pam, term="z.tz3", z.tz3=c(1), tz3_latency=unique(tz3_latency))
+  ndf <- make_newdata(ped, tz3_latency = unique(tz3_latency), z.tz3=c(1))
+  ndf <- ndf %>% add_term(pam, term = "z.tz3") %>% slice(1:7)
+  expect_equal(ndf$fit, c(0.31, 0.30, 0.28, 0.25, 0.21, 0.17, 0.13),
+    tolerance=10e-3)
 })
