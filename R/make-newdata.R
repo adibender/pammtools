@@ -236,10 +236,11 @@ make_newdata.fped <- function(x, ...) {
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
   expressions <- quos(...)
-  dot_names <- names(expressions)
+  dot_names   <- names(expressions)
   orig_vars   <- names(x)
   cumu_vars   <- setdiff(attr(x, "func_mat_names") ,dot_names)
-  cumu_smry <- smry_cumu_vars(x, attr(x, "time_var")) %>% select(one_of(cumu_vars))
+  cumu_smry   <- smry_cumu_vars(x, attr(x, "time_var")) %>%
+    select(one_of(cumu_vars))
 
   int_names   <- attr(x, "intvars")
   ndf <- x %>%
@@ -261,10 +262,10 @@ make_newdata.fped <- function(x, ...) {
       select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
-  out_df <- adjust_time_vars(out_df, x, dot_names)
+  # out_df <- adjust_time_vars(out_df, x, dot_names)
 
   ## adjust lag-lead indicator
-  out_df <- adjust_ll(out_df, x)
+  # out_df <- adjust_ll(out_df, x)s
 
   out_df
 
@@ -315,24 +316,11 @@ adjust_ll <- function(out_df, data) {
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
     tz_var <- attr(data, "tz_vars")[[ind_ll]]
-    tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
-      n_func)
-    q_weights <- attr(data, "ll_weights")[[ind_ll]]
+    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix, n_func)
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var_mat]])*1L
-      suppressMessages(out_df <- left_join(out_df,  q_weights))
-      out_df <- out_df %>%
-        mutate(ll_weight = ifelse(is.na(.data$ll_weight), 0, .data$ll_weight))
-      out_df[[i]] <- out_df[[i]]* out_df[["ll_weight"]]
-      out_df[[tz_var]] <- out_df[["ll_weight"]] <- NULL
-    } else {
-      out_df[[tz_var]] <- out_df[["tend"]] - out_df[[tz_var_mat]]
-      suppressMessages(out_df <- left_join(out_df, q_weights))
-      out_df <- out_df %>%
-        mutate(ll_weight = ifelse(is.na(.data$ll_weight), 0, .data$ll_weight))
       out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
-      out_df[[i]] <- out_df[[i]]*out_df[["ll_weight"]]
-      out_df[[tz_var]] <- out_df[["ll_weight"]] <- NULL
+    } else {
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[tz_var]])*1L
     }
   }
 
@@ -363,3 +351,19 @@ adjust_time_vars <- function(out_df, data, dot_names) {
   out_df
 
 }
+
+# get_cumu_effect <- function(data, model, term, ..., reference) {
+
+#   assert_class(data, "fped")
+
+#   ll_df <- get_laglead(data) %>%
+#     filter(!is.na(LL))
+
+
+#   ndf <- make_newdata(data, ll_df) %>%
+#     mutate(.id = cumsum(.tend)-which(!duplicated(tend))) %>%
+#     arrange(.id, tend) %>%
+#     add_term2(mod_wce, term, reference=reference)
+
+
+# }

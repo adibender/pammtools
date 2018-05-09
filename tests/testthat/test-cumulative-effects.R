@@ -1,5 +1,13 @@
 context("Cumulative effects (of time-dependent covariates)")
 
+
+test_that("Lag-lead is calculated correctly", {
+  LL <- get_laglead(0:2, c(-2, -0.5, 0, 0.5, 2), ll_fun=function(t,tz) {t >= tz})
+  expect_identical(LL$t, rep(0:2, each = 5))
+  expect_identical(LL$tz, rep(c(-2, -0.5, 0, 0.5, 2), times = 3))
+  expect_equal(LL$LL, c(rep(1, 3), rep(0,2), rep(1,4), 0, rep(1,5)))
+})
+
 test_that("Cumulative effects are calculated correctly", {
   # tz grid with differences different than 1
 

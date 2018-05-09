@@ -52,6 +52,41 @@ get_laglead.data.frame <- function(x, ...) {
 
 }
 
+
+# get_laglead.fped <- function(x) {
+
+#   int_df <- int_info(x)
+#   tz_vars <- attr(x, "tz_vars")
+#   seq_tz <- seq_along(tz_vars)
+
+#   LL_df <- map_dfr(seq_tz,
+#     function(z) {
+#       func       <- attr(x, "func")[[z]]
+#       tz         <- attr(x, "tz")[[z]]
+#       tz_var     <- attr(x, "tz_vars")[[z]]
+#       tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var,
+#         func$suffix, length(seq_tz))
+#       ll_var_mat <- make_mat_names("LL", func$latency_var, func$tz_var, func$suffix,
+#         length(seq_tz))
+#       tz_val <- x %>% pull(tz_var_mat) %>% as.numeric() %>% unique() %>% sort()
+#       q_weights  <- attr(x, "ll_weight")[[1]]
+#       nd  <- make_newdata(x, tend = int_df$tend, !!sym(tz_var_mat) := tz_val) %>%
+#         mutate(!!sym(tz_var) := tend - !!sym(tz_var_mat)) %>%
+#         left_join(q_weights, by = tz_var) %>%
+#         mutate(!!sym(ll_var_mat) := .data[[ll_var_mat]]*ll_weight) %>%
+#         arrange(tend, !!sym(tz_var), desc(!!sym(tz_var_mat))) %>%
+#         select(one_of(c("tend", tz_var, tz_var_mat, ll_var_mat)))
+#     })
+
+#   if(!inherits(LL_df, "LL_df")) {
+#     class(LL_df) <- c("LL_df", class(LL_df))
+#   }
+
+#   LL_df
+
+# }
+
+
 #' Plot Lag-Lead windows
 #'
 #' Given data defining a Lag-lead window, returns respective plot as a
@@ -106,14 +141,13 @@ gg_laglead.LL_df <- function(
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand=c(0,0)) +
     scale_y_discrete(expand=c(0,0)) +
-    xlab(expression(t[z])) + ylab(expression(t)) +
-    theme(legend.position = "none")
+    xlab(expression(t[z])) + ylab(expression(t))
 
-  if(!is.null(x$tz_var)) {
+  if(!is.null(x[["tz_var"]])) {
     gg_ll <- gg_ll + facet_wrap(~tz_var, scales="free_x")
   }
 
-  gg_ll
+  gg_ll + theme(legend.position = "none")
 
 }
 

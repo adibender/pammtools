@@ -240,7 +240,6 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
 
 }
 
-
 #' @import dplyr
 #' @importFrom tidyr unnest
 #' @importFrom rlang sym :=

@@ -36,4 +36,3 @@ gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complicat
   reference=list(age = 50))
 }
 \keyword{internal}
-\keyword{internaldo}

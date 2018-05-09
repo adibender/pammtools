@@ -21,7 +21,7 @@
 #' gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications))
 #' gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications),
 #'   reference=list(age = 50))
-#' @keywords internaldo
+#' @keywords internal
 gg_partial <- function(data, mod, term, ..., reference = NULL) {
 
   expressions <- quos(...)
