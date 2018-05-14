@@ -2,15 +2,21 @@
 % Please edit documentation in R/viz-elra.R
 \name{gg_partial}
 \alias{gg_partial}
+\alias{gg_partial_ll}
 \alias{gg_slice}
+\alias{gg_cumu_eff}
 \title{Visualize effect estimates for specific covariate combinations}
 \usage{
-gg_partial(data, mod, term, ..., reference = NULL)
+gg_partial(data, model, term, ..., reference = NULL, ci = TRUE)
 
-gg_slice(data, mod, term, ..., reference = NULL)
+gg_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE)
+
+gg_slice(data, model, term, ..., reference = NULL)
+
+gg_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2)
 }
 \arguments{
-\item{mod}{A suitable model object which will be used to estimate the
+\item{model}{A suitable model object which will be used to estimate the
 partial effect of \code{term}.}
 
 \item{...}{Covariate specifications (expressions) that will be evaulated
@@ -23,16 +29,16 @@ e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
 to an observation specified in \code{reference}.}
 }
 \description{
-Depending on the plot type and input, creates either a bivariate effect
-surface or 1-dimensional slices.
+Depending on the plot function and input, creates either a 1-dimensional slices,
+bivariate surface or  (1D) cumulative effect.
 }
 \examples{
 ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status)~.)
-mod <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
+model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
   family = poisson(), offset=offset)
 make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
-gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications))
-gg_slice(ped, mod, "age", age=seq_range(age, 20), complications=levels(complications),
+gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
+gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
   reference=list(age = 50))
 }
 \keyword{internal}

@@ -238,7 +238,7 @@ make_newdata.fped <- function(x, ...) {
   expressions <- quos(...)
   dot_names   <- names(expressions)
   orig_vars   <- names(x)
-  cumu_vars   <- setdiff(attr(x, "func_mat_names") ,dot_names)
+  cumu_vars   <- setdiff(unlist(attr(x, "func_mat_names")) ,dot_names)
   cumu_smry   <- smry_cumu_vars(x, attr(x, "time_var")) %>%
     select(one_of(cumu_vars))
 
@@ -248,7 +248,7 @@ make_newdata.fped <- function(x, ...) {
     unfped() %>% make_newdata(...)
 
   rest   <- x %>% select(-one_of(c(setdiff(colnames(ndf), "intlen"),
-    attr(x, "func_mat_names"), int_names)))
+    unlist(attr(x, "func_mat_names")), int_names)))
   if (ncol(rest) > 0) {
     si <- sample_info.data.frame(rest)
   } else {
@@ -274,7 +274,7 @@ make_newdata.fped <- function(x, ...) {
 
 smry_cumu_vars <- function(data, time_var) {
 
-  cumu_vars <- attr(data, "func_mat_names")
+  cumu_vars <- unlist(attr(data, "func_mat_names"))
   func_list <- attr(data, "func")
   z_vars    <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
     unlist()
@@ -303,7 +303,7 @@ adjust_ll <- function(out_df, data) {
 
   func_list <- attr(data, "func")
   n_func    <- length(func_list)
-  LL_names <- grep("LL", attr(data, "func_mat_names"), value=TRUE)
+  LL_names <- grep("LL", unlist(attr(data, "func_mat_names")), value=TRUE)
 
   for(i in LL_names) {
     ind_ll <- map_lgl(names(attr(data, "ll_funs")), ~grepl(.x, i))
@@ -332,7 +332,7 @@ adjust_ll <- function(out_df, data) {
 adjust_time_vars <- function(out_df, data, dot_names) {
 
   time_vars <- c("tend",
-    grep(attr(data, "time_var"), attr(data, "func_mat_names"), value=TRUE))
+    grep(attr(data, "time_var"), unlist(attr(data, "func_mat_names")), value=TRUE))
   time_vars_dots <- c(grep("tend", dot_names, value=TRUE),
     grep(attr(data, "time_var"), dot_names, value=TRUE))
   if(length(time_vars_dots) == 0) {
@@ -351,19 +351,3 @@ adjust_time_vars <- function(out_df, data, dot_names) {
   out_df
 
 }
-
-# get_cumu_effect <- function(data, model, term, ..., reference) {
-
-#   assert_class(data, "fped")
-
-#   ll_df <- get_laglead(data) %>%
-#     filter(!is.na(LL))
-
-
-#   ndf <- make_newdata(data, ll_df) %>%
-#     mutate(.id = cumsum(.tend)-which(!duplicated(tend))) %>%
-#     arrange(.id, tend) %>%
-#     add_term2(mod_wce, term, reference=reference)
-
-
-# }
