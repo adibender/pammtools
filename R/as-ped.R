@@ -92,6 +92,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  attr(ped, "func_mat_names") <- make_mat_names(attr(ped, "func"), attr(ped, "time_var"))
   ped
 
 }
