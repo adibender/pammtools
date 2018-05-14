@@ -276,7 +276,6 @@ add_cumulative <- function(ped, data, formula) {
     ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
   }
   attr(ped, "func")           <- func_components$func_list
-  attr(ped, "func_mat_names") <- names(func_matrices)
   attr(ped, "ll_funs")        <- func_components$ll_funs
   attr(ped, "tz")             <- func_components$tz
   attr(ped, "tz_vars")        <- func_components$tz_vars
@@ -285,8 +284,12 @@ add_cumulative <- function(ped, data, formula) {
 
 }
 
+make_mat_names <- function(x, ...) {
+  UseMethod("make_mat_names", x)
+}
+
 #' @keywords internal
-make_mat_names <- function(col_vars, latency_var=NULL, tz_var=NULL, suffix=NULL,
+make_mat_names.default <- function(col_vars, latency_var=NULL, tz_var=NULL, suffix=NULL,
   nfunc = 1) {
 
   if (!is.null(suffix)) {
@@ -303,6 +306,21 @@ make_mat_names <- function(col_vars, latency_var=NULL, tz_var=NULL, suffix=NULL,
   }
 
   return(col_vars)
+
+}
+
+#' @keywords internal
+make_mat_names.list <- function(func_list, time_var) {
+  hist_names <- map(func_list, ~ make_mat_names(c(.x[["col_vars"]], "LL"),
+    .x[["latency_var"]], .x[["tz_var"]], .x[["suffix"]],
+    nfunc = length(func_list)))
+
+  time_mat_ind <- map(hist_names, ~grepl(time_var, .))
+  for(i in seq_along(time_mat_ind)) {
+    hist_names[[i]][time_mat_ind[[i]]] <- paste0(hist_names[[i]][time_mat_ind[[i]]], "_mat")
+  }
+
+  hist_names
 
 }
 
