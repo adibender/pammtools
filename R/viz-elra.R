@@ -76,7 +76,7 @@ gg_partial_ll <- function(data, model, term, ..., reference=NULL, ci=FALSE) {
     ll_df <- ll_df %>%
       mutate(ci_lower = ifelse(is.na(.data$fit), NA, .data$ci_lower)) %>%
       mutate(ci_upper = ifelse(is.na(.data$fit), NA, .data$ci_upper)) %>%
-      gather(type, fit, one_of(c("fit", "ci_lower", "ci_upper"))) %>%
+      gather("type", "fit", one_of(c("fit", "ci_lower", "ci_upper"))) %>%
       mutate(type = factor(.data$type, levels = c("ci_lower", "fit", "ci_upper")))
   }
 
@@ -88,7 +88,7 @@ gg_partial_ll <- function(data, model, term, ..., reference=NULL, ci=FALSE) {
     scale_y_continuous(expand=c(0,0)) +
     xlab("time") + ylab(expression(t[z]))
   if(ci) {
-    gg_base + facet_wrap(~type)
+    gg_base + facet_wrap(~.data$type)
   } else {
     gg_base
   }

@@ -57,7 +57,7 @@ make_ped_dat <- function(x, term, z_vec) {
     z_vec
   }
 
-  ped_df <- make_newdata(x, tend = unique(tend))
+  ped_df <- make_newdata(x, tend = unique(.data$tend))
   ped_df[[LL_name]] <- outer(ped_df$tend, tz, FUN = ll_fun)*1L *
     matrix(q_weights$ll_weight, nrow=nrow(ped_df), ncol=nz, byrow = TRUE)
   if(func$latency_var != "") {
@@ -72,4 +72,9 @@ make_ped_dat <- function(x, term, z_vec) {
 
   ped_df
 
+}
+
+
+get_term_ind <- function(x, term) {
+  which(map_lgl(attr(x, "func_mat_names"), ~any(grepl(term, .x))))
 }
