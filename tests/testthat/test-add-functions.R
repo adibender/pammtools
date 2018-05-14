@@ -84,6 +84,14 @@ test_that("cumulative hazard functions work for PAM", {
   expect_equal(round(haz3$cumu_upper, 2), c(.58, 1.11, 1.95, 2.75, 3.59))
   expect_equal(round(haz3$cumu_lower, 2), c(.38, .76, 1.42, 1.92, 2.28))
 
+  ## check that hazard columns are not deleted
+  newdata <- ped_info(ped) %>% add_hazard(pam) %>%
+    add_cumu_hazard(pam)
+  expect_data_frame(newdata, nrows = 5L, ncols = 14L)
+  newdata <- ped_info(ped) %>% add_hazard(pam, ci = FALSE) %>%
+    add_cumu_hazard(pam)
+  expect_data_frame(newdata, nrows = 5L, ncols = 11L)
+
 })
 
 test_that("cumulative hazard functions work for PEM", {
