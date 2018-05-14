@@ -292,17 +292,17 @@ add_cumu_hazard <- function(
 #' @inheritParams add_cumu_hazard
 #' @import checkmate dplyr
 #' @importFrom rlang UQ sym quo_name .data
+#' @importFrom purrr map_lgl
 #' @keywords internal
 get_cumu_hazard <- function(
   newdata,
   object,
-  ci            = TRUE,
-  ci_type       = c("default", "delta", "sim"),
-  time_variable = NULL,
-  se_mult       = 2,
+  ci              = TRUE,
+  ci_type         = c("default", "delta", "sim"),
+  time_variable   = NULL,
+  se_mult         = 2,
   interval_length = "intlen",
-  nsim = 100L,
-  ...)  {
+  nsim            = 100L, ...)  {
 
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
@@ -314,6 +314,8 @@ get_cumu_hazard <- function(
   interval_length <- sym(interval_length)
 
   mutate_args  <- list(cumu_hazard = quo(cumsum(.data$hazard * (!!interval_length))))
+  haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
+    ~grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
   vars_exclude <- c("hazard")
 
   if (ci) {
@@ -345,9 +347,15 @@ get_cumu_hazard <- function(
       get_hazard(object, type="response", ci=ci,
         ci_type=ci_type, time_variable=time_variable, se_mult = se_mult, ...)
   }
-  newdata %>%
-    mutate(!!!mutate_args) %>%
-    select(-one_of(vars_exclude))
+  newdata <- newdata %>%
+    mutate(!!!mutate_args)
+
+  vars_exclude <- setdiff(vars_exclude, haz_vars_in_data)
+  if (length(vars_exclude) != 0 ) {
+    newdata <- newdata %>% select(-one_of(vars_exclude))
+  }
+
+  newdata
 
 }
 
@@ -420,6 +428,8 @@ get_surv_prob <- function(
   interval_length <- sym(interval_length)
 
   mutate_args  <- list(surv_prob = quo(exp(-cumsum(.data$hazard * (!!interval_length)))))
+  haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
+    ~grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
   vars_exclude <- c("hazard")
 
   if (ci) {
@@ -450,9 +460,16 @@ get_surv_prob <- function(
     newdata <- newdata %>% get_hazard(object=object, type="response", ci=FALSE,
       time_variable = time_variable)
   }
-  newdata %>%
-    mutate(!!!mutate_args) %>%
-    select(-one_of(vars_exclude))
+
+  newdata <- newdata %>%
+    mutate(!!!mutate_args)
+
+  vars_exclude <- setdiff(vars_exclude, haz_vars_in_data)
+  if (length(vars_exclude) != 0 ) {
+    newdata <- newdata %>% select(-one_of(vars_exclude))
+  }
+
+  newdata
 
 }
 
