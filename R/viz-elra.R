@@ -27,13 +27,16 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   expressions <- quos(...)
   vars        <- names(expressions)
   n_vars      <- length(expressions)
-
   ndf <- make_newdata(data, ...) %>%
     add_term2(model, term, reference=reference, ci = ci)
 
+  n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
+  vars     <- vars[rev(order(n_unique))]
+  vars     <- vars[n_unique[rev(order(n_unique))] > 1]
+  # ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
+  n_vars   <- length(vars)
 
-  gg_base <- ggplot(ndf, aes_string(x = vars[1])) +
-    xlab(vars[1])
+  gg_base <- ggplot(ndf, aes_string(x = vars[1])) + xlab(vars[1])
   if(n_vars == 1) {
     gg_out <- gg_base +
       geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3) +
