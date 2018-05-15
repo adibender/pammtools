@@ -87,7 +87,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   if(has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data=data, formula=formula)
-    attr(ped, "ll_weights") <- imap(attr(data, "tz"),
+    attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
       ~bind_cols(!!.y := .x, ll_weight=c(mean(abs(diff(.x))), abs(diff(.x)))))
     class(ped) <- c("fped", class(ped))
   }
