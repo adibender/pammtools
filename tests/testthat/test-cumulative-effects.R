@@ -50,6 +50,7 @@ test_that("Cumulative effects are calculated correctly", {
   # gg_slice(ped, pam, term="z.tz3", z.tz3=c(1), tz3_latency=unique(tz3_latency))
   ndf <- make_newdata(ped, tz3_latency = unique(tz3_latency), z.tz3=c(1))
   ndf <- ndf %>% add_term(pam, term = "z.tz3") %>% slice(1:7)
-  expect_equal(ndf$fit, c(0.31, 0.30, 0.28, 0.25, 0.21, 0.17, 0.13),
+  expect_equal(ndf$fit, c(.72, .88, 0.73, 0.46, 0.38, 0.26, 0.14),
     tolerance=10e-3)
+
 })

@@ -259,7 +259,7 @@ eta_cumu <- function(data, fcumu, cut, ...) {
     LL = ll_fun(t, !!sym(vars[1]))*1,
     delta = c(mean(abs(diff(!!sym(vars[1])))), abs(diff(!!sym(vars[1]))))) %>%
   ungroup() %>%
-  filter(LL != 0) %>%
+  filter(.data$LL != 0) %>%
   group_by(.data$id, .data$t) %>%
   summarize(!!eta_name :=
     sum(.data$delta*f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
