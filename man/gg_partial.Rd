@@ -9,7 +9,8 @@
 \usage{
 gg_partial(data, model, term, ..., reference = NULL, ci = TRUE)
 
-gg_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE)
+gg_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE,
+  time_var = "tend")
 
 gg_slice(data, model, term, ..., reference = NULL)
 

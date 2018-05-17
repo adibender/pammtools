@@ -4,7 +4,8 @@
 \alias{get_partial_ll}
 \title{Visualize effect estimates for specific covariate combinations}
 \usage{
-get_partial_ll(x, model, term, ..., reference = NULL, ci = FALSE)
+get_partial_ll(x, model, term, ..., reference = NULL, ci = FALSE,
+  time_var = "tend")
 }
 \arguments{
 \item{model}{A suitable model object which will be used to estimate the

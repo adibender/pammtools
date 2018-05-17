@@ -31,8 +31,8 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
     add_term2(model, term, reference=reference, ci = ci)
 
   n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
-  vars     <- vars[rev(order(n_unique))]
-  vars     <- vars[n_unique[rev(order(n_unique))] > 1]
+  vars     <- vars[n_unique > 1]
+  # vars     <- vars[n_unique[rev(order(n_unique))] > 1]
   # ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
@@ -46,7 +46,7 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
       gg_out <- gg_base + aes_string(y = vars[2], z = "fit") +
         geom_tile(aes_string(fill = "fit")) +
         geom_contour(col = "grey30") +
-        scale_y_reverse(expand = c(0,0)) +
+        scale_y_continuous(expand = c(0,0)) +
         scale_x_continuous(expand = c(0,0)) +
         scale_fill_gradient2(high = "firebrick2", low = "steelblue")
     }
@@ -59,22 +59,30 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 #' @inherit gg_partial
 #' @importFrom tidyr complete
 #' @export
-gg_partial_ll <- function(data, model, term, ..., reference=NULL, ci=FALSE) {
+gg_partial_ll <- function(
+  data,
+  model,
+  term,
+  ...,
+  reference = NULL,
+  ci        = FALSE,
+  time_var  = "tend") {
 
   ind_term <- which(map_lgl(attr(data, "func_mat_names"), ~any(grepl(term, .x))))
+  tv_sym <- sym(time_var)
   tz_var   <- attr(data, "tz_vars")[[ind_term]]
   tz_val   <- attr(data, "tz")[[ind_term]]
-  ll_fun <- attr(data, "ll_funs")[[ind_term]]
-  ll_var <- grep("LL", attr(data, "func_mat_names")[[ind_term]], value=TRUE)
-  select_vars <- c("tend", tz_var, ll_var, "fit")
+  ll_fun   <- attr(data, "ll_funs")[[ind_term]]
+  ll_var   <- grep("LL", attr(data, "func_mat_names")[[ind_term]], value = TRUE)
+  select_vars <- c(time_var, tz_var, ll_var, "fit")
   if (ci) {
     select_vars <- c(select_vars,  "ci_lower", "ci_upper")
   }
-  ll_df <- get_partial_ll(data, model, term, ..., reference=reference, ci=ci) %>%
+  ll_df <- get_partial_ll(data, model, term, ..., reference=reference, ci=ci, time_var=time_var) %>%
     select(one_of(select_vars)) %>%
     mutate(fit = ifelse(.data[[ll_var]] == 0, NA_real_, .data$fit)) %>%
-    complete(tend=attr(data, "breaks")[-1], !!sym(tz_var):= tz_val) %>%
-    left_join(int_info(attr(data, "breaks")), by = "tend")
+    complete(!!tv_sym:=unique(!!tv_sym), !!sym(tz_var):= tz_val) %>%
+    left_join(int_info(attr(data, "breaks")) %>% rename(!!tv_sym := "tend"), by = time_var)
   if(ci) {
     ll_df <- ll_df %>%
       mutate(ci_lower = ifelse(is.na(.data$fit), NA, .data$ci_lower)) %>%
@@ -153,20 +161,26 @@ gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
 #' @inherit gg_partial
 #' @export
 #' @keywords internal
-get_partial_ll <- function(x, model, term, ..., reference=NULL, ci = FALSE) {
+get_partial_ll <- function(
+  x,
+  model,
+  term, ...,
+  reference = NULL,
+  ci        = FALSE,
+  time_var  = "tend") {
 
   ind_term <- which(map_lgl(attr(x, "func_mat_names"), ~any(grepl(term, .x))))
   tz_var   <- attr(x, "tz_vars")[[ind_term]]
   tz_val   <- attr(x, "tz")[[ind_term]]
 
-  ll_df <- get_ll(x, ind_term, ...)  %>%
+  ll_df <- get_ll(x, ind_term, ..., time_var = time_var)  %>%
     add_term2(object=model, term=term, reference=reference, se.fit = ci)
 
 }
 
 
 #' @keywords internal
-get_ll <- function(x, ind_term, ...) {
+get_ll <- function(x, ind_term, ..., time_var = "tend") {
 
   n_func  <- length(attr(x, "ll_funs"))
   ll_fun  <- attr(x, "ll_funs")[[ind_term]]
@@ -178,11 +192,11 @@ get_ll <- function(x, ind_term, ...) {
   tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix, n_func)
   ll_var_mat <- make_mat_names("LL", func$latency_var, func$tz_var, func$suffix, n_func)
   tz_mat_val <- x %>% pull(tz_var_mat) %>% as.numeric() %>% unique() %>% sort()
-  nd <- make_newdata(x, tend = int_df$tend, !!sym(tz_var_mat) := tz_mat_val,...)
+  nd <- make_newdata(x, ...)
   if(func$latency_var != "") {
-    nd <- nd %>% mutate(!!sym(tz_var) := .data$tend - !!sym(tz_var_mat))
+    nd <- nd %>% mutate(!!sym(tz_var) := .data[[time_var]] - !!sym(tz_var_mat))
   }
   nd <- nd %>% filter(!!sym(tz_var) %in% tz_val) %>%
-    mutate(!!sym(ll_var_mat) := ll_fun(.data$tend, .data[[tz_var]])*1L)
+    mutate(!!sym(ll_var_mat) := ll_fun(.data[[time_var]], .data[[tz_var]])*1L)
 
 }

@@ -69,6 +69,10 @@ make_ped_dat <- function(x, term, z_vec) {
     ped_df[[tz_var]] <- ped_df[[tz_var]]*(ped_df[[LL_name]]!=0)
   }
   ped_df[[term]] <- matrix(z_vec, nrow = nrow(ped_df), ncol=nz, byrow=TRUE)
+  t_mat_var <- grep(attr(x, "time_var"), func_mat_names, value=TRUE)
+  if(length(t_mat_var) != 0) {
+    ped_df[[t_mat_var]] <- matrix(unique(x[[t_mat_var]][,1]), nrow = nrow(ped_df), ncol = nz)
+  }
 
   ped_df
 
