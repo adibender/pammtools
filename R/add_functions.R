@@ -98,14 +98,14 @@ add_term2 <- function(
   is_gam <- inherits(object, "gam")
 
   X <- if (is_gam) {
-    predict(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
+    predict.gam(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
   } else  {
     model.matrix(object$formula[-2], data = newdata)[,col_ind, drop=FALSE]
   }
   if (!is.null(reference)) {
     reference <- newdata %>% mutate(!!!reference)
     X_ref <- if (is_gam) {
-      predict(
+      predict.gam(
         object,
         newdata = reference,
         type    = "lpmatrix")[, col_ind, drop = FALSE]
@@ -202,6 +202,7 @@ add_hazard <- function(
 #'
 #' @inheritParams add_hazard
 #' @importFrom stats model.frame
+#' @importFrom mgcv predict.gam
 #' @keywords internal
 get_hazard <- function(
   newdata,
@@ -231,7 +232,7 @@ get_hazard <- function(
   warn_about_new_evaluation_time_points(newdata, object, time_variable)
 
   if(is_gam) {
-    X <- predict(object, newdata, type = "lpmatrix")
+    X <- predict.gam(object, newdata, type = "lpmatrix")
   } else {
     X <- model.matrix(object$formula[-2], data = newdata)
   }
@@ -522,7 +523,7 @@ add_ci <- function(
 }
 
 add_delta_ci <- function(newdata, object, se_mult = 2) {
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
@@ -535,7 +536,7 @@ add_delta_ci <- function(newdata, object, se_mult = 2) {
 }
 
 add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag=TRUE) %*% diag(newdata$intlen)
@@ -550,7 +551,7 @@ add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
 }
 
 add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag=TRUE) %*% diag(newdata$intlen)
@@ -569,7 +570,7 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
 get_sim_ci <- function(newdata, object, alpha=0.05, nsim=100L) {
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -586,7 +587,7 @@ get_sim_ci <- function(newdata, object, alpha=0.05, nsim=100L) {
 
 get_sim_ci_cumu <- function(newdata, object, alpha=0.05, nsim = 100L) {
 
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -603,7 +604,7 @@ get_sim_ci_cumu <- function(newdata, object, alpha=0.05, nsim = 100L) {
 
 get_sim_ci_surv <- function(newdata, object, alpha=0.05, nsim=100L) {
 
-  X     <- predict(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
