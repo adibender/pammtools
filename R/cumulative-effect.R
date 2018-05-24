@@ -10,15 +10,13 @@
 #' @keywords internal
 get_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
 
-
-
   assert_class(data, "fped")
-  ped <- make_ped_dat(data, term, z1)
-  coefs <- coef(model)
+  ped     <- make_ped_dat(data, term, z1)
+  coefs   <- coef(model)
   col_ind <- grep(term, names(coefs))
-  coefs <- coefs[col_ind]
-  Vp <- model$Vp[col_ind, col_ind]
-  X <- predict(model, ped, type = "lpmatrix")[, col_ind]
+  coefs   <- coefs[col_ind]
+  Vp      <- model$Vp[col_ind, col_ind]
+  X       <- predict(model, ped, type = "lpmatrix")[, col_ind]
   if(!is.null(z2)) {
     X2 <- predict(model, make_ped_dat(data, term, z2), type = "lpmatrix")[,col_ind]
     X <- X - X2
