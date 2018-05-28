@@ -32,7 +32,7 @@ numeric.}
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict}} and
 \code{\link{get_hazard}}}
 }
 \description{

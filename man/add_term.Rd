@@ -51,8 +51,8 @@ if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 \description{
 Adds the contribution (plus confidence intervals) of a specific term to the
 linear predictor to the provided data.
-Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
-Thus most arguments and their documentation below is from \code{predict.gam}.
+Largely a wrapper to \code{\link[mgcv]{predict}}, with \code{type="terms"}.
+Thus most arguments and their documentation below is from \code{predict}.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)

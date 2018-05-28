@@ -53,7 +53,7 @@ numeric.}
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict}} and
 \code{\link{get_hazard}}}
 }
 \description{
