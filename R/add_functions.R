@@ -2,8 +2,8 @@
 #'
 #' Adds the contribution (plus confidence intervals) of a specific term to the
 #' linear predictor to the provided data.
-#' Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
-#' Thus most arguments and their documentation below is from \code{predict.gam}.
+#' Largely a wrapper to \code{\link[mgcv]{predict}}, with \code{type="terms"}.
+#' Thus most arguments and their documentation below is from \code{predict}.
 #'
 #'
 #' @inheritParams mgcv::predict.gam
@@ -98,14 +98,14 @@ add_term2 <- function(
   is_gam <- inherits(object, "gam")
 
   X <- if (is_gam) {
-    predict.gam(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
+    predict(object, newdata = newdata, type = "lpmatrix", ...)[, col_ind, drop=FALSE]
   } else  {
     model.matrix(object$formula[-2], data = newdata)[,col_ind, drop=FALSE]
   }
   if (!is.null(reference)) {
     reference <- newdata %>% mutate(!!!reference)
     X_ref <- if (is_gam) {
-      predict.gam(
+      predict(
         object,
         newdata = reference,
         type    = "lpmatrix")[, col_ind, drop = FALSE]
@@ -142,7 +142,7 @@ add_term2 <- function(
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
-#' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+#' @param ... Further arguments passed to \code{\link[mgcv]{predict}} and
 #'   \code{\link{get_hazard}}
 #' @param ci Logical indicating whether to iclude confidence intervals. Defaults
 #' to \code{TRUE}
@@ -202,7 +202,7 @@ add_hazard <- function(
 #'
 #' @inheritParams add_hazard
 #' @importFrom stats model.frame
-#' @importFrom mgcv predict.gam
+#' @importFrom mgcv predict.gam predict.bam
 #' @keywords internal
 get_hazard <- function(
   newdata,
@@ -232,7 +232,7 @@ get_hazard <- function(
   warn_about_new_evaluation_time_points(newdata, object, time_variable)
 
   if(is_gam) {
-    X <- predict.gam(object, newdata, type = "lpmatrix")
+    X <- predict(object, newdata, type = "lpmatrix")
   } else {
     X <- model.matrix(object$formula[-2], data = newdata)
   }
@@ -257,7 +257,7 @@ get_hazard <- function(
 #' @param interval_length The variable in newdata containing the interval lengths.
 #' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
 #' @importFrom dplyr bind_cols
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
+#' @seealso \code{\link[mgcv]{predict}}, \code{\link[pammtools]{add_hazard}}
 #' @export
 add_cumu_hazard <- function(
   newdata,
@@ -523,7 +523,7 @@ add_ci <- function(
 }
 
 add_delta_ci <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
@@ -536,7 +536,7 @@ add_delta_ci <- function(newdata, object, se_mult = 2) {
 }
 
 add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag=TRUE) %*% diag(newdata$intlen)
@@ -551,7 +551,7 @@ add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
 }
 
 add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag=TRUE) %*% diag(newdata$intlen)
@@ -570,7 +570,7 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
 get_sim_ci <- function(newdata, object, alpha=0.05, nsim=100L) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -587,7 +587,7 @@ get_sim_ci <- function(newdata, object, alpha=0.05, nsim=100L) {
 
 get_sim_ci_cumu <- function(newdata, object, alpha=0.05, nsim = 100L) {
 
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -604,7 +604,7 @@ get_sim_ci_cumu <- function(newdata, object, alpha=0.05, nsim = 100L) {
 
 get_sim_ci_surv <- function(newdata, object, alpha=0.05, nsim=100L) {
 
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict(object, newdata = newdata, type = "lpmatrix")
   V     <- object$Vp
   coefs <- coef(object)
 
