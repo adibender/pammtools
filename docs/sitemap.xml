@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://adibender.github.io/pammtools/index.html</loc>
-  </url>
-  <url>
     <loc>https://adibender.github.io/pammtools/reference/add_hazard.html</loc>
   </url>
   <url>
@@ -58,6 +55,9 @@
     <loc>https://adibender.github.io/pammtools/reference/get_cumu_coef_baseline.html</loc>
   </url>
   <url>
+    <loc>https://adibender.github.io/pammtools/reference/get_cumu_eff.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/get_cumu_hazard.html</loc>
   </url>
   <url>
@@ -74,6 +74,9 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/get_laglead.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/reference/get_partial_ll.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/get_ped_form.html</loc>

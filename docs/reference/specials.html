@@ -25,14 +25,6 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
-
-
 <meta property="og:title" content="Formula specials for defining  time-dependent covariates — cumulative" />
 
 <meta property="og:description" content="So far, two specials are implemented. concurrent is used when
@@ -56,15 +48,22 @@ for details." />
 <![endif]-->
 
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
+<!-- Google analytics -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  gtag('config', 'UA-44545040-3');
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
 </script>
+
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -81,7 +80,7 @@ for details." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
       </span>
     </div>
 
@@ -148,7 +147,7 @@ for details." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -163,11 +162,10 @@ for details." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Formula specials for defining  time-dependent covariates</h1>
-    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/formula-specials.R'><code>R/formula-specials.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/formula-specials.R'><code>R/formula-specials.R</code></a></small>
     <div class="hidden name"><code>specials.Rd</code></div>
     </div>
 
-    <div class="ref-description">
     
     <p>So far, two specials are implemented. <code>concurrent</code> is used when
 the goal is to estimate a concurrent effect of the TDC. <code>cumulative</code>
@@ -177,7 +175,6 @@ argument to <code>as_ped</code>.
 See the <a href='https://adibender.github.io/pammtools//articles/data-transformation.html'>vignette on data transformation</a>
 for details.</p>
     
-    </div>
 
     <pre class="usage"><span class='fu'>cumulative</span>(<span class='no'>...</span>, <span class='no'>tz_var</span>, <span class='kw'>ll_fun</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) {     <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> },
   <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
@@ -252,16 +249,10 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
 <script>
   docsearch({
     
-    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
+    debug: false // Set debug to true if you want to inspect the dropdown
   });
 </script>
 
