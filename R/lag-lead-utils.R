@@ -52,6 +52,7 @@ get_laglead.data.frame <- function(x, ...) {
 
 }
 
+
 #' Plot Lag-Lead windows
 #'
 #' Given data defining a Lag-lead window, returns respective plot as a
@@ -99,21 +100,20 @@ gg_laglead.LL_df <- function(
   x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
   x <- x %>% filter(!is.na(.data$interval)) %>%
     mutate(
-      tz = as.factor(.data$tz),
-      interval = factor(.data$interval, levels = rev(levels(.data$interval))) )
-  gg_ll <- ggplot(x, aes_string(y = "interval", x = "tz")) +
+      tz = factor(.data$tz, levels = sort(unique(.data$tz), decreasing=FALSE)),
+      interval = factor(.data$interval, levels = levels(.data$interval)) )
+  gg_ll <- ggplot(x, aes_string(x = "interval", y = "tz")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand=c(0,0)) +
     scale_y_discrete(expand=c(0,0)) +
-    xlab(expression(t[z])) + ylab(expression(t)) +
-    theme(legend.position = "none")
+    ylab(expression(t[z])) + xlab(expression(t))
 
-  if(!is.null(x$tz_var)) {
-    gg_ll <- gg_ll + facet_wrap(~tz_var, scales="free_x")
+  if(!is.null(x[["tz_var"]])) {
+    gg_ll <- gg_ll + facet_wrap(~tz_var, scales="free_y")
   }
 
-  gg_ll
+  gg_ll + theme(legend.position = "none")
 
 }
 

@@ -236,10 +236,11 @@ make_newdata.fped <- function(x, ...) {
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
   expressions <- quos(...)
-  dot_names <- names(expressions)
+  dot_names   <- names(expressions)
   orig_vars   <- names(x)
-  cumu_vars   <- setdiff(attr(x, "func_mat_names") ,dot_names)
-  cumu_smry <- smry_cumu_vars(x, attr(x, "time_var")) %>% select(one_of(cumu_vars))
+  cumu_vars   <- setdiff(unlist(attr(x, "func_mat_names")) ,dot_names)
+  cumu_smry   <- smry_cumu_vars(x, attr(x, "time_var")) %>%
+    select(one_of(cumu_vars))
 
   int_names   <- attr(x, "intvars")
   ndf <- x %>%
@@ -247,7 +248,7 @@ make_newdata.fped <- function(x, ...) {
     unfped() %>% make_newdata(...)
 
   rest   <- x %>% select(-one_of(c(setdiff(colnames(ndf), "intlen"),
-    attr(x, "func_mat_names"), int_names)))
+    unlist(attr(x, "func_mat_names")), int_names)))
   if (ncol(rest) > 0) {
     si <- sample_info.data.frame(rest)
   } else {
@@ -261,10 +262,10 @@ make_newdata.fped <- function(x, ...) {
       select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
-  out_df <- adjust_time_vars(out_df, x, dot_names)
+  # out_df <- adjust_time_vars(out_df, x, dot_names)
 
   ## adjust lag-lead indicator
-  out_df <- adjust_ll(out_df, x)
+  # out_df <- adjust_ll(out_df, x)s
 
   out_df
 
@@ -273,7 +274,7 @@ make_newdata.fped <- function(x, ...) {
 
 smry_cumu_vars <- function(data, time_var) {
 
-  cumu_vars <- attr(data, "func_mat_names")
+  cumu_vars <- unlist(attr(data, "func_mat_names"))
   func_list <- attr(data, "func")
   z_vars    <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
     unlist()
@@ -302,7 +303,7 @@ adjust_ll <- function(out_df, data) {
 
   func_list <- attr(data, "func")
   n_func    <- length(func_list)
-  LL_names <- grep("LL", attr(data, "func_mat_names"), value=TRUE)
+  LL_names <- grep("LL", unlist(attr(data, "func_mat_names")), value=TRUE)
 
   for(i in LL_names) {
     ind_ll <- map_lgl(names(attr(data, "ll_funs")), ~grepl(.x, i))
@@ -315,8 +316,7 @@ adjust_ll <- function(out_df, data) {
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
     tz_var <- attr(data, "tz_vars")[[ind_ll]]
-    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
-      n_func)
+    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix, n_func)
     if (func$latency_var == "") {
       out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
     } else {
@@ -332,7 +332,7 @@ adjust_ll <- function(out_df, data) {
 adjust_time_vars <- function(out_df, data, dot_names) {
 
   time_vars <- c("tend",
-    grep(attr(data, "time_var"), attr(data, "func_mat_names"), value=TRUE))
+    grep(attr(data, "time_var"), unlist(attr(data, "func_mat_names")), value=TRUE))
   time_vars_dots <- c(grep("tend", dot_names, value=TRUE),
     grep(attr(data, "time_var"), dot_names, value=TRUE))
   if(length(time_vars_dots) == 0) {

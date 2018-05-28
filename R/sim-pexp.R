@@ -240,7 +240,6 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
 
 }
 
-
 #' @import dplyr
 #' @importFrom tidyr unnest
 #' @importFrom rlang sym :=
@@ -252,10 +251,17 @@ eta_cumu <- function(data, fcumu, cut, ...) {
   ll_fun <- fcumu$ll_fun
   eta_name <- paste0("eta_", vars[2])
   combine_df(
-      data.frame(t=cut),
-      select(data, one_of("id", vars))) %>%
-    unnest() %>%
-    filter(ll_fun(t, !!sym(vars[1]))) %>%
-    group_by(.data$id, .data$t) %>%
-    summarize(!!eta_name := sum(f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
+    data.frame(t=cut),
+    select(data, one_of("id", vars))) %>%
+  unnest() %>%
+  group_by(.data$id, .data$t) %>%
+  mutate(
+    LL = ll_fun(t, !!sym(vars[1]))*1,
+    delta = c(mean(abs(diff(!!sym(vars[1])))), abs(diff(!!sym(vars[1]))))) %>%
+  ungroup() %>%
+  filter(.data$LL != 0) %>%
+  group_by(.data$id, .data$t) %>%
+  summarize(!!eta_name :=
+    sum(.data$delta*f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
+
 }

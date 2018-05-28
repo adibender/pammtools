@@ -25,14 +25,6 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
-
-
 <meta property="og:title" content="<code>tidyr</code> Verbs for <code>ped</code>-Objects — tidyr_verbs" />
 
 <meta property="og:description" content="See tidyr documentation of the respective functions for
@@ -51,15 +43,22 @@
 <![endif]-->
 
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
+<!-- Google analytics -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  gtag('config', 'UA-44545040-3');
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
 </script>
+
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -76,7 +75,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
       </span>
     </div>
 
@@ -143,7 +142,7 @@
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -158,16 +157,14 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1><code>tidyr</code> Verbs for <code>ped</code>-Objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-methods.R'><code>R/tidyverse-methods.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/tidyverse-methods.R'><code>R/tidyverse-methods.R</code></a></small>
     <div class="hidden name"><code>tidyr_verbs.Rd</code></div>
     </div>
 
-    <div class="ref-description">
     
     <p>See <code>tidyr</code> documentation of the respective functions for
   description and examples.</p>
     
-    </div>
 
     <pre class="usage"><span class='co'># S3 method for ped</span>
 <span class='fu'>fill</span>(<span class='no'>data</span>, <span class='no'>...</span>, <span class='kw'>.direction</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"down"</span>, <span class='st'>"up"</span>),
@@ -186,19 +183,11 @@
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Specification of columns to expand.</p>
-<p>To find all unique combinations of x, y and z, including those not
-found in the data, supply each variable as a separate argument.
-To find only the combinations that occur in the data, use nest:
-<code>expand(df, nesting(x, y, z))</code>.</p>
-<p>You can combine the two forms. For example,
-<code>expand(df, nesting(school_id, student_id), date)</code> would produce
-a row for every student for each date.</p>
-<p>For factors, the full set of levels (not just those that appear in the
-data) are used. For continuous variables, you may need to fill in values
-that don't appear in the data: to do so use expressions like
-<code>year = 2010:2020</code> or <code>year = full_seq(year,1)</code>.</p>
-<p>Length-zero (empty) elements are automatically dropped.</p></td>
+      <td><p>A selection of columns. If empty, all variables are
+selected. You can supply bare variable names, select all
+variables between x and z with <code>x:z</code>, exclude y with <code>-y</code>. For
+more options, see the <code><a href='http://dplyr.tidyverse.org/reference/select.html'>dplyr::select()</a></code> documentation. See also
+the section on selection rules below.</p></td>
     </tr>
     <tr>
       <th>.direction</th>
@@ -245,16 +234,10 @@ either "down" (the default) or "up".</p></td>
 <script>
   docsearch({
     
-    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
+    debug: false // Set debug to true if you want to inspect the dropdown
   });
 </script>
 

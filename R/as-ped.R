@@ -87,9 +87,12 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 
   if(has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data=data, formula=formula)
+    attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
+      ~bind_cols(!!.y := .x, ll_weight=c(mean(abs(diff(.x))), abs(diff(.x)))))
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  attr(ped, "func_mat_names") <- make_mat_names(attr(ped, "func"), attr(ped, "time_var"))
   ped
 
 }

@@ -9,22 +9,23 @@
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
-<link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Baseline Hazard">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Baseline Hazard">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]--><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script><script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<![endif]--><!-- Google analytics --><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  gtag('config', 'UA-44545040-3');
-</script>
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
+</script><!-- docsearch --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 </head>
 <body>
     <div class="container template-article">
@@ -38,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
       </span>
     </div>
 
@@ -103,7 +104,7 @@
       </ul>
 <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
 </div>
       </form>
       
@@ -121,9 +122,9 @@
       <h1>Baseline Hazard</h1>
                         <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-05-03</h4>
+            <h4 class="date">2018-05-28</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/baseline.Rmd"><code>vignettes/baseline.Rmd</code></a></small>
+      <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/baseline.Rmd"><code>vignettes/baseline.Rmd</code></a></small>
       <div class="hidden name"><code>baseline.Rmd</code></div>
 
     </div>
@@ -135,29 +136,31 @@
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(survival)</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(mgcv)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pammtools)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">Set1 &lt;-<span class="st"> </span>RColorBrewer<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RColorBrewer/topics/ColorBrewer">brewer.pal</a></span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pammtools)</a></code></pre></div>
+<pre><code>## Warning: replacing previous import 'dplyr::vars' by 'ggplot2::vars' when
+## loading 'pammtools'</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">Set1 &lt;-<span class="st"> </span>RColorBrewer<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RColorBrewer/topics/ColorBrewer">brewer.pal</a></span>(<span class="dv">9</span>, <span class="st">"Set1"</span>)</a></code></pre></div>
 <p>Here we briefly demonstrate how to fit and visualize a simple baseline model using the <strong><code>pammtools</code></strong> package. We illustrate the procedure using the <code>veteran</code> data from the <code>survival</code> package:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package=</span><span class="st">"survival"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">veteran &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">    <span class="dt">trt   =</span> <span class="dv">1</span><span class="op">*</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior <span class="op">!=</span><span class="st"> </span><span class="dv">10</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time <span class="op">&lt;</span><span class="st"> </span><span class="dv">400</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">data</span>(<span class="st">"veteran"</span>, <span class="dt">package=</span><span class="st">"survival"</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">veteran &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="dt">trt   =</span> <span class="dv">1</span><span class="op">*</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior <span class="op">!=</span><span class="st"> </span><span class="dv">10</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(time <span class="op">&lt;</span><span class="st"> </span><span class="dv">400</span>)</a></code></pre></div>
 <p>The below graph depicts the estimated cumulative hazard using the Nelson-Aalen estimator:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">base_df &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/basehaz">basehaz</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span><span class="dv">1</span>, <span class="dt">data =</span> veteran))</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(base_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> time, <span class="dt">y =</span> hazard)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"Nelson-Aalen estimate of the cumulative hazard"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">base_df &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/basehaz">basehaz</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">coxph</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span><span class="dv">1</span>, <span class="dt">data =</span> veteran))</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(base_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> time, <span class="dt">y =</span> hazard)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"Nelson-Aalen estimate of the cumulative hazard"</span>)</a></code></pre></div>
 <p><img src="baseline_files/figure-html/unnamed-chunk-4-1.png" width="432" style="display: block; margin: auto;"></p>
 <div id="data-transformation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data-transformation" class="anchor"></a>Data transformation</h2>
 <p>First we need to bring the data in a suitable format (see <a href="data-transformation.html">vignette on data transformation</a>).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Use unique event times as interval break points</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">ped &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span>., <span class="dt">id =</span> <span class="st">"id"</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(ped)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># Use unique event times as interval break points</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">ped &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/survival/topics/Surv">Surv</a></span>(time, status)<span class="op">~</span>., <span class="dt">id =</span> <span class="st">"id"</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">head</span>(ped)</a></code></pre></div>
 <pre><code>##   id tstart tend interval   offset ped_status trt celltype karno diagtime
 ## 1  1      0    1    (0,1] 0.000000          0   0 squamous    60        7
 ## 2  1      1    2    (1,2] 0.000000          0   0 squamous    60        7
@@ -176,10 +179,10 @@
 <div id="fit-the-baseline-piece-wise-exponential-model-pem" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fit-the-baseline-piece-wise-exponential-model-pem" class="anchor"></a>Fit the baseline piece-wise exponential model (PEM)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">pem &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status <span class="op">~</span><span class="st"> </span>interval, <span class="dt">data =</span> ped, <span class="dt">offset =</span> offset, <span class="dt">family =</span> <span class="kw">poisson</span>())</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">pem &lt;-<span class="st"> </span><span class="kw">glm</span>(ped_status <span class="op">~</span><span class="st"> </span>interval, <span class="dt">data =</span> ped, <span class="dt">offset =</span> offset, <span class="dt">family =</span> <span class="kw">poisson</span>())</a></code></pre></div>
 <p>Extract cumulative baseline estimate:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">int_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/int_info.html">int_info</a></span>(ped)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">head</span>(int_df)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">int_df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/int_info.html">int_info</a></span>(ped)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">head</span>(int_df)</a></code></pre></div>
 <pre><code>##   tstart tend intlen intmid interval
 ## 1      0    1      1    0.5    (0,1]
 ## 2      1    2      1    1.5    (1,2]
@@ -187,10 +190,10 @@
 ## 4      3    4      1    3.5    (3,4]
 ## 5      4    7      3    5.5    (4,7]
 ## 6      7    8      1    7.5    (7,8]</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">int_df &lt;-<span class="st"> </span>int_df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pem) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">left_join</a></span>(base_df, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"tend"</span> =<span class="st"> "time"</span>))</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="kw">head</span>(int_df)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">int_df &lt;-<span class="st"> </span>int_df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span>(pem) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">left_join</a></span>(base_df, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"tend"</span> =<span class="st"> "time"</span>))</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="kw">head</span>(int_df)</a></code></pre></div>
 <pre><code>##   tstart tend intlen intmid interval cumu_hazard  cumu_lower cumu_upper
 ## 1      0    1      1    0.5    (0,1]  0.01526718 0.003711706 0.06279772
 ## 2      1    2      1    1.5    (1,2]  0.02301911 0.004760818 0.12007715
@@ -206,15 +209,15 @@
 ## 5 0.06276537
 ## 6 0.09568997</code></pre>
 <p>Visualize the PEM estimate:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(int_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> hazard, <span class="dt">col =</span> <span class="st">"Nelson-Aalen"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> cumu_hazard, <span class="dt">col =</span> <span class="st">"PEM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(<span class="dt">name =</span> <span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(Set1[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>])) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"Comparison of cumulative hazards using </span><span class="ch">\n</span><span class="st"> Cox-PH (Nelson-Aalen) vs. PEM"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(int_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> hazard, <span class="dt">col =</span> <span class="st">"Nelson-Aalen"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> cumu_hazard, <span class="dt">col =</span> <span class="st">"PEM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(<span class="dt">name =</span> <span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(Set1[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>])) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"Comparison of cumulative hazards using </span><span class="ch">\n</span><span class="st"> Cox-PH (Nelson-Aalen) vs. PEM"</span>)</a></code></pre></div>
 <p><img src="baseline_files/figure-html/unnamed-chunk-8-1.png" width="432" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">all.equal</span>(int_df<span class="op">$</span>cumu_hazard, int_df<span class="op">$</span>hazard)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">all.equal</span>(int_df<span class="op">$</span>cumu_hazard, int_df<span class="op">$</span>hazard)</a></code></pre></div>
 <pre><code>## [1] "Mean relative difference: 0.004259304"</code></pre>
 <div id="fit-the-baseline-using-piece-wise-exponential-additive-model-pam" class="section level3">
 <h3 class="hasAnchor">
@@ -222,8 +225,8 @@
 <p>Alternatively, we could use PAMs. This means estimating the baseline log-hazard rate semi-parametrically as a smooth, non-linear function evaluated at the end-points <code>tend</code> of the intervals defined for our model.</p>
 <p>Note that the estimated log-hazard value at time-points <code>tend</code> gives the value of the log-hazard rate for the <strong>entire previous interval</strong> as PAMs use hazard rates that are <strong>constant</strong> in each interval - that’s where the <em>piece-wise</em> in the name of the method comes from.</p>
 <p>Estimating the log hazard rate as a smooth function evaluated at <code>tend</code> - instead of using an unpenalized estimator without such a smoothness assumption - ensures that the hazard rate does not change too rapidly from interval to interval unless there is very strong evidence for such changes in the data.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend), <span class="dt">data =</span> ped, <span class="dt">offset =</span> offset, <span class="dt">family =</span> <span class="kw">poisson</span>())</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">summary</span>(pam)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">pam &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend), <span class="dt">data =</span> ped, <span class="dt">offset =</span> offset, <span class="dt">family =</span> <span class="kw">poisson</span>())</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="kw">summary</span>(pam)</a></code></pre></div>
 <pre><code>## 
 ## Family: poisson 
 ## Link function: log 
@@ -250,23 +253,23 @@
 <p>In the figure below we compare the previous baseline estimates with the PAM estimates. All models are in good agreement.</p>
 <!-- <details>
   <summary>Expand here for R-Code</summary> -->
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">int_df<span class="op">$</span>pamhaz &lt;-<span class="st"> </span><span class="kw">predict</span>(pam, <span class="dt">newdata =</span> int_df, <span class="dt">type =</span> <span class="st">"response"</span>)</a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">int_df &lt;-<span class="st"> </span>int_df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">pamch =</span> <span class="kw">cumsum</span>(pamhaz <span class="op">*</span><span class="st"> </span>intlen))</a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">gg_baseline &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(int_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="st">  </span><span class="co"># geom_ribbon(aes(ymin=cumu_lower, ymax=cumu_upper), alpha=0.2) +</span></a>
-<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> hazard,    <span class="dt">col =</span> <span class="st">"Nelson-Aalen"</span>), <span class="dt">lty =</span> <span class="dv">2</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> cumu_hazard, <span class="dt">col =</span> <span class="st">"PEM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> pamch,     <span class="dt">col =</span> <span class="st">"PAM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(</a>
-<a class="sourceLine" id="cb16-10" data-line-number="10">    <span class="dt">name   =</span> <span class="st">"Method"</span>,</a>
-<a class="sourceLine" id="cb16-11" data-line-number="11">    <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"PEM"</span> =<span class="st"> </span>Set1[<span class="dv">2</span>],<span class="st">"PAM"</span> =<span class="st"> </span><span class="dv">1</span>,<span class="st">"Nelson-Aalen"</span> =<span class="st"> </span>Set1[<span class="dv">1</span>])) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="kw">paste0</span>(<span class="st">"Comparison of cumulative hazards using</span><span class="ch">\n</span><span class="st">"</span>,</a>
-<a class="sourceLine" id="cb16-15" data-line-number="15">    <span class="st">"Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">int_df<span class="op">$</span>pamhaz &lt;-<span class="st"> </span><span class="kw">predict</span>(pam, <span class="dt">newdata =</span> int_df, <span class="dt">type =</span> <span class="st">"response"</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">int_df &lt;-<span class="st"> </span>int_df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">pamch =</span> <span class="kw">cumsum</span>(pamhaz <span class="op">*</span><span class="st"> </span>intlen))</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">gg_baseline &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(int_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> tend)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="st">  </span><span class="co"># geom_ribbon(aes(ymin=cumu_lower, ymax=cumu_upper), alpha=0.2) +</span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_step</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> hazard,    <span class="dt">col =</span> <span class="st">"Nelson-Aalen"</span>), <span class="dt">lty =</span> <span class="dv">2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> cumu_hazard, <span class="dt">col =</span> <span class="st">"PEM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y =</span> pamch,     <span class="dt">col =</span> <span class="st">"PAM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_color_manual</a></span>(</a>
+<a class="sourceLine" id="cb18-10" data-line-number="10">    <span class="dt">name   =</span> <span class="st">"Method"</span>,</a>
+<a class="sourceLine" id="cb18-11" data-line-number="11">    <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"PEM"</span> =<span class="st"> </span>Set1[<span class="dv">2</span>],<span class="st">"PAM"</span> =<span class="st"> </span><span class="dv">1</span>,<span class="st">"Nelson-Aalen"</span> =<span class="st"> </span>Set1[<span class="dv">1</span>])) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(Lambda)(t))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"t"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="kw">paste0</span>(<span class="st">"Comparison of cumulative hazards using</span><span class="ch">\n</span><span class="st">"</span>,</a>
+<a class="sourceLine" id="cb18-15" data-line-number="15">    <span class="st">"Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"</span>))</a></code></pre></div>
 <!-- </details> -->
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">gg_baseline</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">gg_baseline</a></code></pre></div>
 <p><img src="baseline_files/figure-html/unnamed-chunk-11-1.png" width="432" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -301,16 +304,10 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script><script>
   docsearch({
     
-    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
+    debug: false // Set debug to true if you want to inspect the dropdown
   });
 </script>
 </body>

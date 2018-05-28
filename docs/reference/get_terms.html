@@ -25,14 +25,6 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
-<link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
-
-
 <meta property="og:title" content="Extract the partial effects of non-linear model terms — get_terms" />
 
 <meta property="og:description" content="This function basically creates a new df from data for
@@ -53,15 +45,22 @@ stacked to a tidy data frame." />
 <![endif]-->
 
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
+<!-- Google analytics -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  gtag('config', 'UA-44545040-3');
+  ga('create', 'UA-44545040-3', 'auto');
+  ga('send', 'pageview');
+
 </script>
+
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -78,7 +77,7 @@ stacked to a tidy data frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.9.9003</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
       </span>
     </div>
 
@@ -145,7 +144,7 @@ stacked to a tidy data frame." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -160,18 +159,16 @@ stacked to a tidy data frame." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Extract the partial effects of non-linear model terms</h1>
-    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/get-terms.R'><code>R/get-terms.R</code></a></small>
+    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/get-terms.R'><code>R/get-terms.R</code></a></small>
     <div class="hidden name"><code>get_terms.Rd</code></div>
     </div>
 
-    <div class="ref-description">
     
     <p>This function basically creates a new <code>df</code> from <code>data</code> for
 each term in <code>terms</code>, creating a range from minimum and maximum of the
 codepredict(fit, newdata=df, type="terms"). Different terms are then
 stacked to a tidy data frame.</p>
     
-    </div>
 
     <pre class="usage"><span class='fu'>get_terms</span>(<span class='no'>data</span>, <span class='no'>fit</span>, <span class='no'>terms</span>, <span class='no'>...</span>)</pre>
     
@@ -210,20 +207,20 @@ for which partial effects will be returned</p></td>
 <span class='fu'>head</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
 #&gt;   term      x   eff    se ci_lower ci_upper
 #&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt; 1 karno  10.0  1.93 0.887    0.153     3.70
-#&gt; 2 karno  10.9  1.92 0.824    0.267     3.56
-#&gt; 3 karno  11.8  1.90 0.764    0.374     3.43
-#&gt; 4 karno  12.7  1.89 0.707    0.473     3.30
-#&gt; 5 karno  13.6  1.87 0.653    0.564     3.18
-#&gt; 6 karno  14.5  1.85 0.603    0.646     3.06</div><div class='input'><span class='fu'>tail</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
+#&gt; 1 karno  10.0  1.90 0.884    0.127     3.66
+#&gt; 2 karno  10.9  1.89 0.822    0.243     3.53
+#&gt; 3 karno  11.8  1.88 0.763    0.353     3.41
+#&gt; 4 karno  12.7  1.87 0.707    0.455     3.28
+#&gt; 5 karno  13.6  1.86 0.654    0.549     3.16
+#&gt; 6 karno  14.5  1.84 0.604    0.634     3.05</div><div class='input'><span class='fu'>tail</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
 #&gt;   term      x    eff    se ci_lower ci_upper
 #&gt;   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt; 1 age    78.6 -0.291 0.714    -1.72     1.14
-#&gt; 2 age    79.1 -0.317 0.754    -1.82     1.19
-#&gt; 3 age    79.6 -0.344 0.796    -1.94     1.25
-#&gt; 4 age    80.1 -0.372 0.840    -2.05     1.31
-#&gt; 5 age    80.5 -0.401 0.887    -2.17     1.37
-#&gt; 6 age    81.0 -0.429 0.936    -2.30     1.44</div></pre>
+#&gt; 1 age    78.6 -0.166 0.712    -1.59     1.26
+#&gt; 2 age    79.1 -0.192 0.751    -1.69     1.31
+#&gt; 3 age    79.6 -0.219 0.793    -1.80     1.37
+#&gt; 4 age    80.1 -0.247 0.837    -1.92     1.43
+#&gt; 5 age    80.5 -0.275 0.884    -2.04     1.49
+#&gt; 6 age    81.0 -0.303 0.933    -2.17     1.56</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -255,16 +252,10 @@ for which partial effects will be returned</p></td>
 <script>
   docsearch({
     
-    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    transformData: function(hits) {
-      return hits.map(function (hit) {
-        hit.url = updateHitURL(hit);
-        return hit;
-      });
-    }
+    debug: false // Set debug to true if you want to inspect the dropdown
   });
 </script>
 

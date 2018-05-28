@@ -62,13 +62,13 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[=borders]{borders()}}.}
 
-\item{...}{other arguments passed on to \code{\link[=layer]{layer()}}. These are
+\item{...}{Other arguments passed on to \code{\link[=layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{color = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
 \item{direction}{direction of stairs: 'vh' for vertical then horizontal, or
-'hv' for horizontal then vertical}
+'hv' for horizontal then vertical.}
 }
 \description{
 \code{geom_hazard} is an extension of the \code{geom_line}, and
