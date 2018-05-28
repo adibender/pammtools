@@ -62,7 +62,7 @@ not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict}} and
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
@@ -83,5 +83,5 @@ ped_info(ped) \%>\% add_hazard(pam, type="response")
 ped_info(ped) \%>\% add_cumu_hazard(pam)
 }
 \seealso{
-\code{\link[mgcv]{predict}}, \code{\link[pammtools]{add_hazard}}
+\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
 }
