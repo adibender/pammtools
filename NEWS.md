@@ -1,4 +1,10 @@
-## pammtools 0.0.9
+# pammtools 0.1.0
+
+* Better support for cumulative effects
+* Lag-Lead matrix now contains quadrature weights
+* Better support for visualization of cumulative effects
+
+# pammtools 0.0.9
 
 ### Breaking changes
 
