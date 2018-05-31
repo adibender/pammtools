@@ -25,6 +25,14 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Construct data that represents a lag-lead window — get_laglead" />
 
 <meta property="og:description" content="Constructs lag-lead window data set from raw inputs or from data objects
@@ -43,22 +51,15 @@ with suitable information stored in attributes." />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
-
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -142,7 +143,7 @@ with suitable information stored in attributes." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -157,14 +158,16 @@ with suitable information stored in attributes." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Construct data that represents a lag-lead window</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/lag-lead-utils.R'><code>R/lag-lead-utils.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/lag-lead-utils.R'><code>R/lag-lead-utils.R</code></a></small>
     <div class="hidden name"><code>get_laglead.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Constructs lag-lead window data set from raw inputs or from data objects
 with suitable information stored in attributes.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>get_laglead</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
@@ -199,19 +202,19 @@ second argument is the time of exposure.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; # A tibble: 110 x 3
-#&gt;        t    tz    LL
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt;  1     1    -5     0
-#&gt;  2     1    -4     1
-#&gt;  3     1    -3     1
-#&gt;  4     1    -2     1
-#&gt;  5     1    -1     1
-#&gt;  6     1     0     0
-#&gt;  7     1     1     0
-#&gt;  8     1     2     0
-#&gt;  9     1     3     0
-#&gt; 10     1     4     0
+    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; # A tibble: 110 x 4
+#&gt;        t    tz    LL default
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt;  1     1    -5     0      0.
+#&gt;  2     1    -4     1      0.
+#&gt;  3     1    -3     1      0.
+#&gt;  4     1    -2     1      0.
+#&gt;  5     1    -1     1      0.
+#&gt;  6     1     0     0      0.
+#&gt;  7     1     1     0      0.
+#&gt;  8     1     2     0      0.
+#&gt;  9     1     3     0      0.
+#&gt; 10     1     4     0      0.
 #&gt; # ... with 100 more rows</div><div class='input'><span class='fu'><a href='gg_laglead.html'>gg_laglead</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='img'><img src='get_laglead-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -242,10 +245,16 @@ second argument is the time of exposure.</p></td>
 <script>
   docsearch({
     
+    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    debug: false // Set debug to true if you want to inspect the dropdown
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

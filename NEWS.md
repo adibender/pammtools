@@ -1,8 +1,13 @@
-# pammtools 0.1.0
+# pammtools 0.1.1
 
+## Features
 * Better support for cumulative effects
 * Lag-Lead matrix now contains quadrature weights
 * Better support for visualization of cumulative effects
+
+## Bug fixes
+- visualization functions `gg_laglead` and `gg_partial_ll` did not
+calculate the lag-lead-window correctly when applied to `ped` data
 
 # pammtools 0.0.9
 

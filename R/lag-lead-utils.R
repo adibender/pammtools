@@ -25,7 +25,10 @@ get_laglead <- function(x, ...) {
 get_laglead.default <- function(x, tz, ll_fun, ...) {
 
   LL_df <- crossing(t=x, tz=tz) %>%
-    mutate(LL = ll_fun(t, tz)*1L)
+    mutate(LL = ll_fun(t, tz)*1L, default = 0) #%>%
+    # group_by(tz) %>%
+    # mutate(LL = lag(LL, default = 0)) %>%
+    # ungroup()
   class(LL_df) <- c("LL_df", class(LL_df))
 
   LL_df
@@ -43,7 +46,10 @@ get_laglead.data.frame <- function(x, ...) {
   ll_funs <- attr(x, "ll_funs")
 
   LL_df <- map2_dfr(tz, ll_funs,
-      ~get_laglead.default(t, .x, ll_fun=.y), .id="tz_var")
+      ~get_laglead.default(t, .x, ll_fun=.y), .id="tz_var") %>%
+    group_by(.data$tz_var, .data$tz) %>%
+    mutate(LL = lag(.data$LL, default = 0)) %>%
+    ungroup()
   if(!inherits(LL_df, "LL_df")) {
     class(LL_df) <- c("LL_df", class(LL_df))
   }
