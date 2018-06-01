@@ -221,7 +221,7 @@ make_newdata.ped <- function(x, ...) {
     mutate(
       intlen = .data$tend - .data$tstart,
       offset = log(.data$tend - .data$tstart),
-      ped_status = 1)
+      ped_status = 0)
 
 }
 
@@ -257,7 +257,7 @@ make_newdata.fped <- function(x, ...) {
   # out_df <- adjust_time_vars(out_df, x, dot_names)
 
   ## adjust lag-lead indicator
-  # out_df <- adjust_ll(out_df, x)s
+  out_df <- adjust_ll(out_df, x)
 
   out_df
 
@@ -321,25 +321,25 @@ adjust_ll <- function(out_df, data) {
 }
 
 # All variables that represent follow-up time should have the same values
-adjust_time_vars <- function(out_df, data, dot_names) {
+# adjust_time_vars <- function(out_df, data, dot_names) {
 
-  time_vars <- c("tend",
-    grep(attr(data, "time_var"), unlist(attr(data, "func_mat_names")), value=TRUE))
-  time_vars_dots <- c(grep("tend", dot_names, value=TRUE),
-    grep(attr(data, "time_var"), dot_names, value=TRUE))
-  if(length(time_vars_dots) == 0) {
-    time_vars_dots <- "tend"
-  } else {
-    if(length(time_vars_dots) > 1) {
-      warning(paste0("Only one of ", paste0(time_vars_dots, collapse=", "),
-        "must be specified. Only the first one will be used!"))
-      time_vars_dots <- time_vars_dots[1]
-    }
-  }
-  for(i in setdiff(time_vars, time_vars_dots)) {
-    out_df[[i]] <- out_df[[time_vars_dots]]
-  }
+#   time_vars <- c("tend",
+#     grep(attr(data, "time_var"), unlist(attr(data, "func_mat_names")), value=TRUE))
+#   time_vars_dots <- c(grep("tend", dot_names, value=TRUE),
+#     grep(attr(data, "time_var"), dot_names, value=TRUE))
+#   if(length(time_vars_dots) == 0) {
+#     time_vars_dots <- "tend"
+#   } else {
+#     if(length(time_vars_dots) > 1) {
+#       warning(paste0("Only one of ", paste0(time_vars_dots, collapse=", "),
+#         "must be specified. Only the first one will be used!"))
+#       time_vars_dots <- time_vars_dots[1]
+#     }
+#   }
+#   for(i in setdiff(time_vars, time_vars_dots)) {
+#     out_df[[i]] <- out_df[[time_vars_dots]]
+#   }
 
-  out_df
+#   out_df
 
-}
+# }
