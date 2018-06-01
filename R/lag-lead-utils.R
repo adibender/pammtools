@@ -46,7 +46,7 @@ get_laglead.data.frame <- function(x, ...) {
   ll_funs <- attr(x, "ll_funs")
 
   LL_df <- map2_dfr(tz, ll_funs,
-      ~get_laglead.default(t, .x, ll_fun=.y), .id="tz_var")
+      ~get_laglead.default(t, .x, ll_fun = .y), .id = "tz_var")
   if(!inherits(LL_df, "LL_df")) {
     class(LL_df) <- c("LL_df", class(LL_df))
   }
