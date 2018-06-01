@@ -20,20 +20,20 @@ test_that("LL helpers and as_ped produce equivalent LL windows", {
   tz2 <- -5:5
    # generate exposures and add to data set
   df <- df %>% add_tdc(tz1, rng_z) %>% add_tdc(tz2, rng_z)
-  f_xyz1 <- f_xyz2 <- function(t, tz, z) {1 }
 
   # define lag-lead window function
   ll_fun <- function(t, tz) {t >= tz}
   ll_fun2 <- function(t, tz) {t >= tz + 2 & t <= tz + 2 + 5}
   # simulate data with cumulative effect
   sim_df <- sim_pexp(
-   formula = ~ -3.5 -0.5*x1|fcumu(t, tz1, z.tz1, f_xyz=f_xyz1, ll_fun=ll_fun) +
-    fcumu(t, tz2, z.tz2, f_xyz=f_xyz2, ll_fun=ll_fun2),
+   formula = ~ -3.5 -0.5*x1|fcumu(t, tz1, z.tz1, f_xyz=function(t,tz,z){1},
+    ll_fun=function(t, tz) {t >= tz}) +
+    fcumu(t, tz2, z.tz2, f_xyz=function(t,tz,z){1}, ll_fun=function(t, tz) {t >= tz + 2 & t <= tz + 2 + 5}),
    data = df, cut = 0:10)
   sim_df$time <- 10
 
   ped <- as_ped(sim_df, Surv(time, status) ~ .|cumulative(time, z.tz1, tz_var="tz1") +
-    cumulative(time, z.tz2, tz_var="tz2", ll_fun = ll_fun2), id = "id")
+    cumulative(time, z.tz2, tz_var="tz2", ll_fun = function(t, tz) {t >= tz + 2 & t <= tz + 2 + 5}), id = "id")
   LL1 <- ped$LL_tz1[1:10,]
   LL1.1 <- get_laglead(0:10, 1:10, ll_fun) %>% filter(t!=0) %>% tidyr::spread(tz, LL)
   expect_equal(as.matrix(LL1.1[,-1]), LL1, check.attributes=FALSE)
