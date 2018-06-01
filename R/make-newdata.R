@@ -247,15 +247,7 @@ make_newdata.fped <- function(x, ...) {
     select(one_of(setdiff(names(x),cumu_vars))) %>%
     unfped() %>% make_newdata(...)
 
-  rest   <- x %>% select(-one_of(c(setdiff(colnames(ndf), "intlen"),
-    unlist(attr(x, "func_mat_names")), int_names)))
-  if (ncol(rest) > 0) {
-    si <- sample_info.data.frame(rest)
-  } else {
-    si <- NULL
-  }
-
-  out_df <- do.call(combine_df, compact(list(si, cumu_smry, ndf)))
+  out_df <- do.call(combine_df, compact(list(cumu_smry, ndf)))
   int_df <- int_info(attr(x, "breaks"))
   suppressMessages(
     out_df <- right_join(int_df, out_df) %>%
