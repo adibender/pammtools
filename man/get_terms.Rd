@@ -23,7 +23,7 @@ A tibble with 5 columns.
 \description{
 This function basically creates a new \code{df} from \code{data} for
 each term in \code{terms}, creating a range from minimum and maximum of the
-code{predict(fit, newdata=df, type="terms")}. Different terms are then
+\code{predict(fit, newdata=df, type="terms")}. Terms are then
 stacked to a tidy data frame.
 }
 \examples{

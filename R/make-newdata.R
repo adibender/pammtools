@@ -113,25 +113,25 @@ combine_df <- function(...) {
 
 #' Construct a data frame suitable for prediction
 #'
-#' Given a data set, returns a data frame type object that can be used
+#' Given a data set, returns a data set that can be used
 #' as \code{newdata} argument in a call to \code{predict} and similar functions.
-#' The function is particularly usefull in combination with one of the
+#' The function is particularly useful in combination with one of the
 #' \code{add_*} functions, e.g., \code{\link{add_term}}, \code{\link{add_hazard}},
 #' etc.
 #'
 #' @rdname newdata
 #' @aliases make_newdata
 #' @inheritParams sample_info
-#' @param ... Covariate specifications (expressions) that will be evaulated
-#' by looking for variables in \code{x}. Must be of form \code{z = f(z)}
+#' @param ... Covariate specifications (expressions) that will be evaluated
+#' by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
 #' where \code{z} is a variable in the data set \code{x} and \code{f} a known
-#' function that can be usefully applied to \code{age}. See examples below.
+#' function that can be usefully applied to \code{z}. See examples below.
 #' @import dplyr
 #' @importFrom checkmate assert_data_frame assert_character
 #' @importFrom purrr map cross_df
-#' @details Depening on the class of \code{x}, mean or modus values will be
+#' @details Depending on the class of \code{x}, mean or modus values will be
 #' used for variables not specified in ellipsis. If x is an object that inherits
-#' from class \code{ped}, useful data set completion will be performed depending
+#' from class \code{ped}, useful data set completion will be attempted depending
 #' on variables specified in ellipsis.
 #' @examples
 #' tumor %>% make_newdata()

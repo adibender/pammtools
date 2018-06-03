@@ -28,9 +28,9 @@ calc_ci <- function(ftab) {
 
 #' Extract fixed coefficient table from model object
 #'
-#' Given a model object, returns data frame with columns \code{variable},
+#' Given a model object, returns a data frame with columns \code{variable},
 #' \code{coef} (coefficient), \code{ci_lower} (lower 95\% CI) and
-#' \code{ci_upper} (upper 95% CI).
+#' \code{ci_upper} (upper 95\% CI).
 #'
 #' @param x A model object.
 #' @param ... Currently not used.
@@ -41,7 +41,7 @@ tidy_fixed <- function(x, ...) {
 
 #' @rdname tidy_fixed
 #' @inheritParams tidy_fixed
-#' @param intercept Should intercept also be returned?
+#' @param intercept Should intercept also be returned? Defaults to \code{FALSE}.
 #' @export
 tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
@@ -128,7 +128,7 @@ tidy_smooth2d <- function(
 		FUN       = function(z) !is.null(z[["x"]]) & !is.null(z[["y"]]),
 		FUN.VALUE = logical(1))
 
-	# keep only variables of interes
+	# keep only variables of interest
 	po <- lapply(po[ind2d], "[", i=keep, drop=TRUE)
 
 	# transform to data.frame
@@ -151,7 +151,7 @@ tidy_smooth2d <- function(
 }
 
 
-#' Extract random effects objects in tidy data format.
+#' Extract random effects in tidy data format.
 #'
 #' @inheritParams tidy_smooth
 #' @importFrom dplyr bind_rows

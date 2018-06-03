@@ -18,10 +18,10 @@ These functions are designed to extract (or mimick) the cumulative coefficients
 usually used in additive hazards models (Aalen model) to depict (time-varying)
 covariate effects. For PAMMs, these are the differences
 between the cumulative hazard rates where all covariates except one have the
-identical values. For a numeric covariate of interest, we calculate
-\eqn{Lambda(t|x+1) - Lambda(t|x)}.  For non-numeric covariates
-the cumulative hazard of the reference level is substracted from
-the cumulative hazards eveluated at all non reference levels. Standard
+identical values. For a numeric covariate of interest, this calculates
+\eqn{\Lambda(t|x+1) - \Lambda(t|x)}.  For non-numeric covariates
+the cumulative hazard of the reference level is subtracted from
+the cumulative hazards evaluated at all non reference levels. Standard
 errors are calculated using the delta method.
 }
 \keyword{internal}

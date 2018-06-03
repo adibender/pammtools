@@ -18,7 +18,7 @@ get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
+\item{ci}{Logical indicating whether to include confidence intervals. Defaults
 to \code{TRUE}}
 
 \item{type}{ When this has the value \code{"link"} (default) the linear predictor (possibly with
@@ -43,7 +43,7 @@ will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
-the estimated coeffiicents. CIs are given by respective quantiles.}
+the estimated coefficients. CIs are given by respective quantiles.}
 
 \item{time_variable}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else

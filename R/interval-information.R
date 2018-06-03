@@ -1,17 +1,17 @@
 #' Create start/end times and interval information
 #'
 #' Given interval breaks points, returns data frame with information on
-#' interval start time, interval end time, interval length and a interval factor
-#' variable (left open intervals). If object of class ped is provided, extracts
-#' unique interval information from object.
+#' interval start time, interval end time, interval length and a factor
+#' variable indicating the interval (left open intervals). If an object of class
+#' \code{ped} is provided, extracts unique interval information from object.
 #'
 #' @param x A numeric vector of cut points in which the follow-up should be
 #' partitioned in or object of class \code{ped}.
 #' @param ... Currently ignored.
 #' @rdname int_info
 #' @return A data frame containing the start and end times of the
-#' intervals specified by the \code{x} argument. Additionally the interval
-#' length, interval mid-point and a factor variable of the intervals themselves.
+#' intervals specified by the \code{x} argument. Additionally, the interval
+#' length, interval mid-point and a factor variable indicating the intervals.
 #' @export
 int_info <- function(x, ...) {
   UseMethod("int_info",  x)
@@ -19,7 +19,7 @@ int_info <- function(x, ...) {
 
 
 #' @inheritParams int_info
-#' @param min.time Only intervals that have lower borders larger than
+#' @param min_time Only intervals that have lower borders larger than
 #' this value will be included in the resulting data frame.
 #' @import checkmate dplyr
 #' @examples
@@ -30,11 +30,11 @@ int_info <- function(x, ...) {
 #' @export
 int_info.default <- function(
   x,
-  min.time = 0L, ...) {
+  min_time = 0L, ...) {
 
   # check inputs
   assert_numeric(x, lower = 0, any.missing = FALSE)
-  assert_numeric(min.time, lower  = 0L)
+  assert_numeric(min_time, lower  = 0L)
 
   # sort x and add origin if necessary
   if(is.unsorted(x)) {
@@ -57,7 +57,7 @@ int_info.default <- function(
       interval = paste0("(", tstart, ",", tend, "]"),
       interval = factor(.data$interval, levels=.data$interval))
 
-  filter(tdf, tstart >= min.time)
+  filter(tdf, tstart >= min_time)
 
 }
 
@@ -159,7 +159,7 @@ get_intervals.default <- function(
 #' ped <- tumor[1:4,] %>% as_ped(Surv(days, status)~ sex + age)
 #' ped_info(ped)
 #' @export
-#' @return A data frame with one row for each interval in \code{ped}.
+#' @return A data frame with one row for each unique interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 ped_info <- function(ped) {
 

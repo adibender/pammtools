@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidiers.R
 \name{tidy_re}
 \alias{tidy_re}
-\title{Extract random effects objects in tidy data format.}
+\title{Extract random effects in tidy data format.}
 \usage{
 tidy_re(x, keep = c("fit", "main", "xlab", "ylab"), ...)
 }
@@ -14,7 +14,7 @@ tidy_re(x, keep = c("fit", "main", "xlab", "ylab"), ...)
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
 \description{
-Extract random effects objects in tidy data format.
+Extract random effects in tidy data format.
 }
 \seealso{
 \code{\link[stats]{qqline}}

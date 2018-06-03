@@ -7,16 +7,16 @@
 sim_pexp(formula, data, cut)
 }
 \arguments{
-\item{formula}{An extended formula that denotes how the linear predictor
-should be comprised. If you want to include a smooth baseline
+\item{formula}{An extended formula that specifies the linear predictor.
+If you want to include a smooth baseline
 or time-varying effects, use \code{t} within your formula as
 if it was a covariate in the data, although it is not and should not
 be included in the \code{data} provided to \code{sim_pexp}. See examples
 below.}
 
-\item{data}{Data in which to look for variables in formula.}
+\item{data}{A data set with variables specified in \code{formula}.}
 
-\item{cut}{A sequence of time-points starting with 0}
+\item{cut}{A sequence of time-points starting with 0.}
 }
 \description{
 Simulate survival times from the piece-wise exponential distribution

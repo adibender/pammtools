@@ -1,9 +1,9 @@
 #' Add info about term effects to data set
 #'
-#' Adds the contribution (plus confidence intervals) of a specific term to the
-#' linear predictor to the provided data.
-#' Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
-#' Thus most arguments and their documentation below is from \code{predict}.
+#' Adds the contribution of a specific term to the
+#' linear predictor to the data specified by \code{newdata}.
+#' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
+#' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
 #'
 #'
 #' @inheritParams mgcv::predict.gam
@@ -137,21 +137,21 @@ add_term2 <- function(
 #' Add predicted (cumulative) hazard to data set
 #'
 #' Add (cumulative) hazard based on the provided data set and model.
-#' If \code{ci=TRUE} confidence intervals are also provided. Their width can
+#' If \code{ci=TRUE} confidence intervals are also returned. Their width can
 #' be controlled via the \code{se_mult} argument.
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 #'   \code{\link{get_hazard}}
-#' @param ci Logical indicating whether to iclude confidence intervals. Defaults
+#' @param ci Logical indicating whether to include confidence intervals. Defaults
 #' to \code{TRUE}
 #' @param ci_type The method by which standard errors/confidence intervals
 #' will be calculated. Default transforms the linear predictor at
 #' respective intervals. \code{"delta"} calculates CIs based on the standard
 #' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
-#' the estimated coeffiicents. CIs are given by respective quantiles.
+#' the estimated coefficients. CIs are given by respective quantiles.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
 #' the confidence intervals.
 #' @param overwrite Should hazard columns be overwritten if already present in
@@ -250,8 +250,7 @@ get_hazard <- function(
 
 }
 
-#' Add cumulative hazard estimate to data set
-#'
+
 #' @rdname add_hazard
 #' @inheritParams add_hazard
 #' @param interval_length The variable in newdata containing the interval lengths.

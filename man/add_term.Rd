@@ -49,10 +49,10 @@ if \code{se.fit = TRUE}. Defaults to \code{FALSE}.}
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
 \description{
-Adds the contribution (plus confidence intervals) of a specific term to the
-linear predictor to the provided data.
-Largely a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
-Thus most arguments and their documentation below is from \code{predict}.
+Adds the contribution of a specific term to the
+linear predictor to the data specified by \code{newdata}.
+Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
+Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
