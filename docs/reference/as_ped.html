@@ -21,26 +21,38 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Transform data to Piece-wise Exponential Data (PED) — as_ped" />
 
 <meta property="og:description" content="This is the general data transformation function provided by the
 pammtools package. Two main applications must be differentiated:
 (1) Transformation of standard time-to-event data.
 (2) Transformation of time-to-event data with time-dependent covariates (TDC).
-For the latter, the type of effect of the TDC one wants to estimate is also
-important for the data transformation step, i.e. concurrent or cumulative.
+For the latter, the type of effect one wants to estimate is also
+important for the data transformation step.
 In any case, the data transformation is specified by a two sided formula.
-In case of TDCs, the right-hand-side of the formula can contain specials
+In case of TDCs, the right-hand-side of the formula can contain formula specials
 concurrent and cumulative.
-See the vignette on data transformation
-for details." />
+See the data-transformation
+vignette for details." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -52,22 +64,15 @@ for details." />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
-
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -84,7 +89,7 @@ for details." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
       </span>
     </div>
 
@@ -151,7 +156,7 @@ for details." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -166,23 +171,25 @@ for details." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Transform data to Piece-wise Exponential Data (PED)</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/as-ped.R'><code>R/as-ped.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/as-ped.R'><code>R/as-ped.R</code></a></small>
     <div class="hidden name"><code>as_ped.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This is the general data transformation function provided by the
 <code>pammtools</code> package. Two main applications must be differentiated:
 (1) Transformation of standard time-to-event data.
 (2) Transformation of time-to-event data with time-dependent covariates (TDC).
-For the latter, the type of effect of the TDC one wants to estimate is also
-important for the data transformation step, i.e. concurrent or cumulative.
+For the latter, the type of effect one wants to estimate is also
+important for the data transformation step.
 In any case, the data transformation is specified by a two sided formula.
-In case of TDCs, the right-hand-side of the formula can contain specials
+In case of TDCs, the right-hand-side of the formula can contain formula specials
 <code>concurrent</code> and <code>cumulative</code>.
-See the <a href='https://adibender.github.io/pammtools//articles/data-transformation.html'>vignette on data transformation</a>
-for details.</p>
+See the <a href='https://adibender.github.io/pammtools//articles/data-transformation.html'>data-transformation</a>
+vignette for details.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
 
@@ -271,10 +278,16 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
 <script>
   docsearch({
     
+    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    debug: false // Set debug to true if you want to inspect the dropdown
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

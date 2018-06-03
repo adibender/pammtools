@@ -48,7 +48,7 @@ get_term <- function(data, fit, term, n = 100, ...) {
 #' This function basically creates a new \code{df} from \code{data} for
 #' each term in \code{terms}, creating a range from minimum and maximum of the
 # respective terms. For each \code{df} it then calls
-#' code{predict(fit, newdata=df, type="terms")}. Different terms are then
+#' \code{predict(fit, newdata=df, type="terms")}. Terms are then
 #' stacked to a tidy data frame.
 #'
 #' @inheritParams get_term

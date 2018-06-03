@@ -31,7 +31,7 @@ gg_smooth.default <- function(x, fit, ...) {
 		geom_line() +
 		geom_ribbon(aes_string(ymin="ci_lower", ymax="ci_upper"), alpha=0.2) +
 		facet_wrap(~term, scales="free_x") +
-		ylab(expression(f[j](x[j]))) + xlab(expression(x[j]))
+		ylab(expression(f[p](x[p]))) + xlab(expression(x[p]))
 
 	return(ggsmooth)
 

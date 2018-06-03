@@ -1,12 +1,26 @@
+# pamtools 0.1.3
+
+## Minor changes
+
+* Update documentation
+* More tests/improved coverage
+* Lag-lead column is adjusted in `make-newdata.fped`
+
+## Bug fixes
+- visualization functions `gg_laglead` and `gg_partial_ll` did not
+calculate the lag-lead-window correctly when applied to `ped` data
+
 # pammtools 0.1.0
 
+## Features
 * Better support for cumulative effects
 * Lag-Lead matrix now contains quadrature weights
 * Better support for visualization of cumulative effects
 
+
 # pammtools 0.0.9
 
-### Breaking changes
+## Breaking changes
 
 *  `make_newdata` loses arguments `expand` and `n` and
 gains `...` where arbitrary covariate specifications can be placed, i.e.
@@ -23,7 +37,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 (e.g., `gg_laglead`)
 
 
-### Updates and new features
+## Updates and new features
 
 * Overall better support for cumulative effects
 

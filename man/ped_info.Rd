@@ -11,7 +11,7 @@ ped_info(ped)
 \code{\link[pammtools]{as_ped}}.}
 }
 \value{
-A data frame with one row for each interval in \code{ped}.
+A data frame with one row for each unique interval in \code{ped}.
 }
 \description{
 Given an object of class \code{ped}, returns data frame with one row for each

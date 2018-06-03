@@ -5,11 +5,15 @@ ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
   cut = c(0, 50, 100, 200, 300, 400), id = "id")
 pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)
+bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
+  family = poisson(), offset = offset, method="fREML", discrete = TRUE)
+
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
 
+  expect_data_frame(haz <- add_hazard(ped_info(ped), bam), nrows = 5L, ncols = 11L)
   expect_data_frame(haz <- add_hazard(ped_info(ped), pam), nrows = 5L, ncols = 11L)
   expect_equal(all(haz$ci_lower < haz$hazard), TRUE)
   expect_equal(all(haz$ci_upper > haz$hazard), TRUE)
@@ -26,6 +30,7 @@ test_that("hazard functions work for PAM", {
   expect_equal(round(haz2$ci_lower, 2), c(-4.91, -4.94, -5.12, -5.42, -5.74))
 
   ## delta rule
+  expect_data_frame(add_hazard(ped_info(ped), bam, ci_type = "delta"), nrows=5L, ncols=11L)
   haz3 <- add_hazard(ped_info(ped), pam, ci_type = "delta")
   expect_data_frame(haz3, nrows=5L, ncols = 11L)
   expect_equal(round(haz3$hazard*100,2), c(.94, .87, .74, .63, .54))
@@ -51,7 +56,9 @@ test_that("hazard functions work for PEM", {
 
 test_that("cumulative hazard functions work for PAM", {
 
-  expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pam, ci = FALSE),
+  expect_data_frame(add_cumu_hazard(ped_info(ped), bam, ci = FALSE),
+   nrows = 5L, ncols = 8L)
+ expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pam, ci = FALSE),
    nrows = 5L, ncols = 8L)
   expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pam),
     nrows = 5L, ncols = 10L)
@@ -105,6 +112,8 @@ test_that("cumulative hazard functions work for PEM", {
 })
 
 test_that("adding terms works for PAM", {
+  expect_data_frame(term <- add_term(ped_info(ped), bam, term = "trt"),
+    nrows = 5L, ncols = 10L)
   expect_data_frame(term <- add_term(ped_info(ped), pam, term = "trt"),
     nrows = 5L, ncols = 10L)
   expect_data_frame(add_term(ped_info(ped), pam, term = "trt", relative = TRUE),
@@ -162,6 +171,8 @@ test_that("works for nonstandard baseline arguments", {
 ## test surv_prob
 test_that("survival probabilities functions work for PAM", {
 
+  expect_data_frame(add_surv_prob(ped_info(ped), bam, ci = FALSE),
+    nrows = 5L, ncols = 8L)
   expect_data_frame(surv <- add_surv_prob(ped_info(ped), pam, ci = FALSE),
     nrows = 5L, ncols = 8L)
   expect_data_frame(

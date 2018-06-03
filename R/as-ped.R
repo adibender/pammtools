@@ -4,13 +4,13 @@
 #' \code{pammtools} package. Two main applications must be differentiated:
 #' (1) Transformation of standard time-to-event data.
 #' (2) Transformation of time-to-event data with time-dependent covariates (TDC).
-#' For the latter, the type of effect of the TDC one wants to estimate is also
-#' important for the data transformation step, i.e. concurrent or cumulative.
+#' For the latter, the type of effect one wants to estimate is also
+#' important for the data transformation step.
 #' In any case, the data transformation is specified by a two sided formula.
-#' In case of TDCs, the right-hand-side of the formula can contain specials
+#' In case of TDCs, the right-hand-side of the formula can contain formula specials
 #' \code{concurrent} and \code{cumulative}.
-#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{vignette on data transformation}
-#' for details.
+#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{data-transformation}
+#' vignette for details.
 #'
 #'
 #' @rdname as_ped

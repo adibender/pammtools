@@ -26,7 +26,6 @@ reference:
       - tidy_smooth
       - tidy_smooth2d
       - tidy_re
-      - get_terms
       - get_cumu_coef
   - title: "Augment functions"
     desc: "Functions that augment a data set by different quantaties like the

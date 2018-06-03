@@ -4,10 +4,10 @@
 #' usually used in additive hazards models (Aalen model) to depict (time-varying)
 #' covariate effects. For PAMMs, these are the differences
 #' between the cumulative hazard rates where all covariates except one have the
-#' identical values. For a numeric covariate of interest, we calculate
-#' \eqn{Lambda(t|x+1) - Lambda(t|x)}.  For non-numeric covariates
-#' the cumulative hazard of the reference level is substracted from
-#' the cumulative hazards eveluated at all non reference levels. Standard
+#' identical values. For a numeric covariate of interest, this calculates
+#' \eqn{\Lambda(t|x+1) - \Lambda(t|x)}.  For non-numeric covariates
+#' the cumulative hazard of the reference level is subtracted from
+#' the cumulative hazards evaluated at all non reference levels. Standard
 #' errors are calculated using the delta method.
 #'
 #' @rdname cumulative_coefficient
@@ -125,9 +125,9 @@ get_cumu_coef_baseline <- function(data, model, ...) {
 
 #' Calculate difference in cumulative hazards and respective standard errors
 #'
-#' Uses Delta method to calculate standard errors for cumulative hazard
-#' differences based on coefficients and standard errors of log hazard
-#' (code adapted from fabian-s used in consulting project).
+#' CIs are calculated by sampling coefficients from their posterior and
+#' calculating the cumulative hazard difference \code{nsim} times. The CI
+#' are obtained by the 2.5\% and 97.5\% quantiles.
 #'
 #' @param d1 A data set used as \code{newdata} in \code{predict.gam}
 #' @param d2 See \code{d1}

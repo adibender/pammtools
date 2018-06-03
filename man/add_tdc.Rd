@@ -7,7 +7,7 @@
 add_tdc(data, tz, rng_fun, ...)
 }
 \arguments{
-\item{data}{Data in which to look for variables in formula.}
+\item{data}{A data set with variables specified in \code{formula}.}
 
 \item{tz}{A numeric vector of exposure times (relative to the
 beginning of the follow-up time \code{t})}

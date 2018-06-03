@@ -15,8 +15,8 @@ compute_cumu_diff(d1, d2, model, alpha = 0.05, nsim = 100L)
 returns the design matrix (e.g., \code{mgcv::gam}).}
 }
 \description{
-Uses Delta method to calculate standard errors for cumulative hazard
-differences based on coefficients and standard errors of log hazard
-(code adapted from fabian-s used in consulting project).
+CIs are calculated by sampling coefficients from their posterior and
+calculating the cumulative hazard difference \code{nsim} times. The CI
+are obtained by the 2.5\% and 97.5\% quantiles.
 }
 \keyword{internal}

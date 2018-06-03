@@ -21,20 +21,32 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+<!-- docsearch -->
+<script src="../docsearch.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link href="../docsearch.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+
+
 <meta property="og:title" content="Construct a data frame suitable for prediction — make_newdata" />
 
-<meta property="og:description" content="Given a data set, returns a data frame type object that can be used
+<meta property="og:description" content="Given a data set, returns a data set that can be used
 as newdata argument in a call to predict and similar functions.
-The function is particularly usefull in combination with one of the
+The function is particularly useful in combination with one of the
 add_* functions, e.g., add_term, add_hazard,
 etc." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -46,22 +58,15 @@ etc." />
 <![endif]-->
 
 
-<!-- Google analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44545040-3"></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  ga('create', 'UA-44545040-3', 'auto');
-  ga('send', 'pageview');
-
+  gtag('config', 'UA-44545040-3');
 </script>
-
-
-
-<!-- docsearch -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 
   </head>
 
@@ -78,7 +83,7 @@ etc." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
       </span>
     </div>
 
@@ -145,7 +150,7 @@ etc." />
       
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="search" class="form-control" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
+          <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
       </form>
       
@@ -160,17 +165,19 @@ etc." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Construct a data frame suitable for prediction</h1>
-    <small>Source: <a href='https://github.com/adibender/pammtools/blob/master/R/make-newdata.R'><code>R/make-newdata.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/make-newdata.R'><code>R/make-newdata.R</code></a></small>
     <div class="hidden name"><code>newdata.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
-    <p>Given a data set, returns a data frame type object that can be used
+    <p>Given a data set, returns a data set that can be used
 as <code>newdata</code> argument in a call to <code>predict</code> and similar functions.
-The function is particularly usefull in combination with one of the
+The function is particularly useful in combination with one of the
 <code>add_*</code> functions, e.g., <code><a href='add_term.html'>add_term</a></code>, <code><a href='add_hazard.html'>add_hazard</a></code>,
 etc.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>make_newdata</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
@@ -192,18 +199,18 @@ etc.</p>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Covariate specifications (expressions) that will be evaulated
-by looking for variables in <code>x</code>. Must be of form <code>z = f(z)</code>
+      <td><p>Covariate specifications (expressions) that will be evaluated
+by looking for variables in <code>x</code>. Must be of the form <code>z = f(z)</code>
 where <code>z</code> is a variable in the data set <code>x</code> and <code>f</code> a known
-function that can be usefully applied to <code>age</code>. See examples below.</p></td>
+function that can be usefully applied to <code>z</code>. See examples below.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Depening on the class of <code>x</code>, mean or modus values will be
+    <p>Depending on the class of <code>x</code>, mean or modus values will be
 used for variables not specified in ellipsis. If x is an object that inherits
-from class <code>ped</code>, useful data set completion will be performed depending
+from class <code>ped</code>, useful data set completion will be attempted depending
 on variables specified in ellipsis.</p>
     
 
@@ -265,28 +272,29 @@ on variables specified in ellipsis.</p>
 #&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'>
 <span class='co'># Examples for PED data</span>
 <span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>slice</a></span>(<span class='fl'>1</span>:<span class='fl'>3</span>) <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~<span class='no'>.</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>))
-<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt;   tstart tend intlen interval  id   offset ped_status charlson_score age    sex
-#&gt; 1      0  500    500  (0,500] 1.8 6.214608          1              2  50 female
-#&gt; 2      0  500    500  (0,500] 1.8 6.214608          1              2  55 female
-#&gt;   transfusion complications metastases resection
-#&gt; 1         yes            no        yes        no
-#&gt; 2         yes            no        yes        no</div><div class='input'><span class='co'># if time information is specified, other time variables will be specified</span>
+<span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>age</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt; # A tibble: 2 x 14
+#&gt;   tstart  tend intlen interval    id offset ped_status charlson_score   age
+#&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     0.  500.   500. (0,500]   1.80   6.21         0.             2.   50.
+#&gt; 2     0.  500.   500. (0,500]   1.80   6.21         0.             2.   55.
+#&gt; # ... with 5 more variables: sex &lt;fct&gt;, transfusion &lt;fct&gt;, complications &lt;fct&gt;,
+#&gt; #   metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='co'># if time information is specified, other time variables will be specified</span>
 <span class='co'># accordingly and offset calculated correctly</span>
 <span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1000</span>), <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>50</span>, <span class='fl'>55</span>))</div><div class='output co'>#&gt;   tstart tend intlen   interval  id   offset ped_status charlson_score age
-#&gt; 1    500 1000    500 (500,1000] 1.8 6.214608          1              2  50
-#&gt; 2    500 1000    500 (500,1000] 1.8 6.214608          1              2  55
+#&gt; 1    500 1000    500 (500,1000] 1.8 6.214608          0              2  50
+#&gt; 2    500 1000    500 (500,1000] 1.8 6.214608          0              2  55
 #&gt;      sex transfusion complications metastases resection
 #&gt; 1 female         yes            no        yes        no
 #&gt; 2 female         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt;   tstart tend intlen   interval  id   offset ped_status charlson_score  age
-#&gt; 1      0  500    500    (0,500] 1.8 6.214608          1              2 58.8
-#&gt; 2    500 1000    500 (500,1000] 1.8 6.214608          1              2 58.8
+#&gt; 1      0  500    500    (0,500] 1.8 6.214608          0              2 58.8
+#&gt; 2    500 1000    500 (500,1000] 1.8 6.214608          0              2 58.8
 #&gt;      sex transfusion complications metastases resection
 #&gt; 1 female         yes            no        yes        no
 #&gt; 2 female         yes            no        yes        no</div><div class='input'><span class='no'>ped</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='dplyr_verbs.html'>group_by</a></span>(<span class='no'>sex</span>) <span class='kw'>%&gt;%</span> <span class='fu'>make_newdata</span>(<span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>))</div><div class='output co'>#&gt;   tstart tend intlen   interval       id   offset ped_status charlson_score
-#&gt; 1      0  500    500    (0,500] 2.000000 6.214608          1              2
-#&gt; 2      0  500    500    (0,500] 1.666667 6.214608          1              2
-#&gt; 3    500 1000    500 (500,1000] 2.000000 6.214608          1              2
-#&gt; 4    500 1000    500 (500,1000] 1.666667 6.214608          1              2
+#&gt; 1      0  500    500    (0,500] 2.000000 6.214608          0              2
+#&gt; 2      0  500    500    (0,500] 1.666667 6.214608          0              2
+#&gt; 3    500 1000    500 (500,1000] 2.000000 6.214608          0              2
+#&gt; 4    500 1000    500 (500,1000] 1.666667 6.214608          0              2
 #&gt;        age    sex transfusion complications metastases resection
 #&gt; 1 52.00000   male          no           yes        yes        no
 #&gt; 2 63.33333 female         yes            no        yes        no
@@ -323,10 +331,16 @@ on variables specified in ellipsis.</p>
 <script>
   docsearch({
     
+    
     apiKey: 'c3726dcbf089f0b26f496305ed030c22',
     indexName: 'pammtools',
     inputSelector: 'input#search-input.form-control',
-    debug: false // Set debug to true if you want to inspect the dropdown
+    transformData: function(hits) {
+      return hits.map(function (hit) {
+        hit.url = updateHitURL(hit);
+        return hit;
+      });
+    }
   });
 </script>
 

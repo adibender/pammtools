@@ -17,11 +17,11 @@ tidy_fixed(x, ...)
 
 \item{...}{Currently not used.}
 
-\item{intercept}{Should intercept also be returned?}
+\item{intercept}{Should intercept also be returned? Defaults to \code{FALSE}.}
 }
 \description{
-Given a model object, returns data frame with columns \code{variable},
+Given a model object, returns a data frame with columns \code{variable},
 \code{coef} (coefficient), \code{ci_lower} (lower 95\% CI) and
-\code{ci_upper} (upper 95% CI).
+\code{ci_upper} (upper 95\% CI).
 }
 \keyword{internal}

@@ -6,8 +6,8 @@
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.
 #' @examples
-#' get_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
-#' gg_laglead(1:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
+#' get_laglead(0:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
+#' gg_laglead(0:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})
 #' @export
 get_laglead <- function(x, ...) {
   UseMethod("get_laglead", x)
@@ -25,7 +25,10 @@ get_laglead <- function(x, ...) {
 get_laglead.default <- function(x, tz, ll_fun, ...) {
 
   LL_df <- crossing(t=x, tz=tz) %>%
-    mutate(LL = ll_fun(t, tz)*1L)
+    mutate(LL = ll_fun(.data$t, .data$tz)*1L) %>%
+    group_by(tz) %>%
+    mutate(LL = lag(.data$LL, default = 0)) %>%
+    ungroup()
   class(LL_df) <- c("LL_df", class(LL_df))
 
   LL_df
@@ -43,7 +46,7 @@ get_laglead.data.frame <- function(x, ...) {
   ll_funs <- attr(x, "ll_funs")
 
   LL_df <- map2_dfr(tz, ll_funs,
-      ~get_laglead.default(t, .x, ll_fun=.y), .id="tz_var")
+      ~get_laglead.default(t, .x, ll_fun = .y), .id = "tz_var")
   if(!inherits(LL_df, "LL_df")) {
     class(LL_df) <- c("LL_df", class(LL_df))
   }

@@ -9,7 +9,7 @@
 \usage{
 int_info(x, ...)
 
-\method{int_info}{default}(x, min.time = 0L, ...)
+\method{int_info}{default}(x, min_time = 0L, ...)
 
 \method{int_info}{ped}(x, ...)
 
@@ -21,19 +21,19 @@ partitioned in or object of class \code{ped}.}
 
 \item{...}{Currently ignored.}
 
-\item{min.time}{Only intervals that have lower borders larger than
+\item{min_time}{Only intervals that have lower borders larger than
 this value will be included in the resulting data frame.}
 }
 \value{
 A data frame containing the start and end times of the
-intervals specified by the \code{x} argument. Additionally the interval
-length, interval mid-point and a factor variable of the intervals themselves.
+intervals specified by the \code{x} argument. Additionally, the interval
+length, interval mid-point and a factor variable indicating the intervals.
 }
 \description{
 Given interval breaks points, returns data frame with information on
-interval start time, interval end time, interval length and a interval factor
-variable (left open intervals). If object of class ped is provided, extracts
-unique interval information from object.
+interval start time, interval end time, interval length and a factor
+variable indicating the interval (left open intervals). If an object of class
+\code{ped} is provided, extracts unique interval information from object.
 }
 \examples{
 ## create interval information from cut points

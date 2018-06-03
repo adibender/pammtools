@@ -40,7 +40,7 @@ the model: for example integrated quantities, or derivatives of smooths. A
 linear predictor matrix can also be used to implement approximate prediction
 outside \code{R} (see example code, below). }
 
-\item{ci}{Logical indicating whether to iclude confidence intervals. Defaults
+\item{ci}{Logical indicating whether to include confidence intervals. Defaults
 to \code{TRUE}}
 
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
@@ -51,7 +51,7 @@ will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
-the estimated coeffiicents. CIs are given by respective quantiles.}
+the estimated coefficients. CIs are given by respective quantiles.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
@@ -70,10 +70,8 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 }
 \description{
 Add (cumulative) hazard based on the provided data set and model.
-If \code{ci=TRUE} confidence intervals are also provided. Their width can
+If \code{ci=TRUE} confidence intervals are also returned. Their width can
 be controlled via the \code{se_mult} argument.
-
-Add cumulative hazard estimate to data set
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
