@@ -21,13 +21,16 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 <!-- docsearch -->
+<script src="../docsearch.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 <link href="../docsearch.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
@@ -40,6 +43,7 @@ with suitable information stored in attributes." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -76,7 +80,7 @@ with suitable information stored in attributes." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
       </span>
     </div>
 
@@ -202,20 +206,20 @@ second argument is the time of exposure.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; # A tibble: 110 x 4
-#&gt;        t    tz    LL default
-#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
-#&gt;  1     1    -5     0      0.
-#&gt;  2     1    -4     1      0.
-#&gt;  3     1    -3     1      0.
-#&gt;  4     1    -2     1      0.
-#&gt;  5     1    -1     1      0.
-#&gt;  6     1     0     0      0.
-#&gt;  7     1     1     0      0.
-#&gt;  8     1     2     0      0.
-#&gt;  9     1     3     0      0.
-#&gt; 10     1     4     0      0.
-#&gt; # ... with 100 more rows</div><div class='input'><span class='fu'><a href='gg_laglead.html'>gg_laglead</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='img'><img src='get_laglead-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; # A tibble: 121 x 3
+#&gt;        t    tz    LL
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt;  1     0    -5    0.
+#&gt;  2     0    -4    0.
+#&gt;  3     0    -3    0.
+#&gt;  4     0    -2    0.
+#&gt;  5     0    -1    0.
+#&gt;  6     0     0    0.
+#&gt;  7     0     1    0.
+#&gt;  8     0     2    0.
+#&gt;  9     0     3    0.
+#&gt; 10     0     4    0.
+#&gt; # ... with 111 more rows</div><div class='input'><span class='fu'><a href='gg_laglead.html'>gg_laglead</a></span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='img'><img src='get_laglead-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

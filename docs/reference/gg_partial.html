@@ -21,13 +21,16 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 <!-- docsearch -->
+<script src="../docsearch.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
 <link href="../docsearch.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
@@ -40,6 +43,7 @@ bivariate surface or  (1D) cumulative effect." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -76,7 +80,7 @@ bivariate surface or  (1D) cumulative effect." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
       </span>
     </div>
 
@@ -188,10 +192,10 @@ partial effect of <code>term</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Covariate specifications (expressions) that will be evaulated
-by looking for variables in <code>x</code>. Must be of form <code>z = f(z)</code>
+      <td><p>Covariate specifications (expressions) that will be evaluated
+by looking for variables in <code>x</code>. Must be of the form <code>z = f(z)</code>
 where <code>z</code> is a variable in the data set <code>x</code> and <code>f</code> a known
-function that can be usefully applied to <code>age</code>. See examples below.</p></td>
+function that can be usefully applied to <code>z</code>. See examples below.</p></td>
     </tr>
     <tr>
       <th>reference</th>
@@ -209,16 +213,16 @@ to an observation specified in <code>reference</code>.</p></td>
 <span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span> <span class='kw'>=</span> <span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='output co'>#&gt; # A tibble: 40 x 14
 #&gt;    tstart  tend intlen interval    id offset ped_status charlson_score   age
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1     0.    5.     5. (0,5]     101.   1.61         1.           2.71  16.0
-#&gt;  2     0.    5.     5. (0,5]     101.   1.61         1.           2.71  19.9
-#&gt;  3     0.    5.     5. (0,5]     101.   1.61         1.           2.71  23.8
-#&gt;  4     0.    5.     5. (0,5]     101.   1.61         1.           2.71  27.7
-#&gt;  5     0.    5.     5. (0,5]     101.   1.61         1.           2.71  31.6
-#&gt;  6     0.    5.     5. (0,5]     101.   1.61         1.           2.71  35.5
-#&gt;  7     0.    5.     5. (0,5]     101.   1.61         1.           2.71  39.4
-#&gt;  8     0.    5.     5. (0,5]     101.   1.61         1.           2.71  43.3
-#&gt;  9     0.    5.     5. (0,5]     101.   1.61         1.           2.71  47.2
-#&gt; 10     0.    5.     5. (0,5]     101.   1.61         1.           2.71  51.1
+#&gt;  1     0.    5.     5. (0,5]     101.   1.61         0.           2.71  16.0
+#&gt;  2     0.    5.     5. (0,5]     101.   1.61         0.           2.71  19.9
+#&gt;  3     0.    5.     5. (0,5]     101.   1.61         0.           2.71  23.8
+#&gt;  4     0.    5.     5. (0,5]     101.   1.61         0.           2.71  27.7
+#&gt;  5     0.    5.     5. (0,5]     101.   1.61         0.           2.71  31.6
+#&gt;  6     0.    5.     5. (0,5]     101.   1.61         0.           2.71  35.5
+#&gt;  7     0.    5.     5. (0,5]     101.   1.61         0.           2.71  39.4
+#&gt;  8     0.    5.     5. (0,5]     101.   1.61         0.           2.71  43.3
+#&gt;  9     0.    5.     5. (0,5]     101.   1.61         0.           2.71  47.2
+#&gt; 10     0.    5.     5. (0,5]     101.   1.61         0.           2.71  51.1
 #&gt; # ... with 30 more rows, and 5 more variables: sex &lt;fct&gt;, transfusion &lt;fct&gt;,
 #&gt; #   complications &lt;chr&gt;, metastases &lt;fct&gt;, resection &lt;fct&gt;</div><div class='input'><span class='fu'>gg_slice</span>(<span class='no'>ped</span>, <span class='no'>model</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='img'><img src='gg_partial-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>gg_slice</span>(<span class='no'>ped</span>, <span class='no'>model</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>),
   <span class='kw'>reference</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='kw'>age</span> <span class='kw'>=</span> <span class='fl'>50</span>))</div><div class='img'><img src='gg_partial-2.png' alt='' width='700' height='433' /></div></pre>
