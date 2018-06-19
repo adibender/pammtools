@@ -15,7 +15,7 @@ license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://openso
 
 Install from GitHub using
 
-``` r
+```r
 devtools::install_github("adibender/pammtools")
 ```
 
@@ -26,7 +26,12 @@ devtools::install_github("adibender/pammtools")
 `pammtools` offers various utilities and convenience functions that
 facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).
 
-To get started, see the [Articles](articles/index.html) section.
+To get started, see the [Articles](https://adibender.github.io/pammtools/articles/) section.
+
+An overview over the packages functionality is given in
+
+- Andreas Bender and Fabian Scheipl, 2018: "pammtools: Piece-wise exponential
+Additive Mixed Modeling tools", arXiv eprint, 2018, https://arxiv.org/abs/1806.01042
 
 For a tutorial-like introduction to PAMMs see:
 
