@@ -31,12 +31,18 @@ facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).
 
 To get started, see the [Articles](articles/index.html) section.
 
+An overview over the packages functionality is given in
+
+- Andreas Bender and Fabian Scheipl, "pammtools: Piece-wise exponential
+Additive Mixed Modeling tools", arXiv eprint, 2018, https://arxiv.org/abs/1806.01042
+
+
 For a tutorial-like introduction to PAMMs see:
 
-  - Andreas Bender, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
+  - Andreas Bender, Andreas Groll, and Fabian Scheipl, “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
 
 
 A general framework for the representation and estimation of cumulative effects
 (or exposure-lag-response associations) is described in:
 
-- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff; "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003
+- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
