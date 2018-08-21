@@ -38,12 +38,12 @@ get_cumu_coef.gam <- function(model, data, terms, ...) {
 #' @param ci Logical. Indicates if confidence intervals should be returned as
 #' well.
 #' @export
-get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
+get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE,...) {
 
     cumu_coef <- model$cum %>% as_tibble() %>%
       select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
       gather("variable", "cumu_hazard", -.data$time)
-    cumu_var <- model$var %>% as_tibble() %>%
+    cumu_var <- model[["var.cum"]] %>% as_tibble() %>%
      select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
       gather("variable", "cumu_var", -.data$time)
 
@@ -55,6 +55,15 @@ get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
         cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var^0.5) %>%
       select(one_of(c("method", "variable", "time")), everything(), -one_of("cumu_var"))
       )
+
+}
+
+#' @rdname cumulative_coefficient
+#' @inherit get_cumu_coef
+#' @export
+get_cumu_coef.cox.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
+
+  get_cumu_coef.aalen(model=model, data=data, terms=terms, ci = ci, ...)
 
 }
 

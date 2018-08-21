@@ -74,7 +74,7 @@ gg_tensor <- function(x, ci=FALSE, ...) {
 	if (ci) {
 		df2d <- df2d %>%
 			gather("type", "fit", .data$fit, .data$ci_lower, .data$ci_upper) %>%
-			mutate(type = as.factor(.data$type))
+			mutate(type = factor(.data$type, levels=c("ci_lower", "fit", "ci_upper")))
 	}
 
 	gg2d <- ggplot(df2d, aes_string(x="x", y="y", z="fit")) +
