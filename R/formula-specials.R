@@ -366,7 +366,7 @@ make_lag_lead_mat <- function(
   LL <- outer(attr(data, "breaks"), tz, FUN=ll_fun)*1L
   delta <- abs(diff(tz))
   IW <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
-    byrow=TRUE)
+    byrow = TRUE)
   LL <- LL * IW
   LL[attr(data, "id_tseq"), , drop=FALSE]
 
@@ -376,20 +376,24 @@ make_lag_lead_mat <- function(
 #' @inherit make_time_mat
 #' @param z_var Which should be transformed into functional covariate format
 #' suitable to fit cumulative effects in \code{mgcv::gam}.
-#' @importFrom purrr map
+#' @importFrom purrr map map_int
 #' @importFrom dplyr pull
 #' @keywords internal
 make_z_mat <- function(data, z_var, nz, ...) {
 
   tz_ind <- seq_len(nz)
-  Z <- map(data[[z_var]], .f=~unlist(.x)[tz_ind])
+  Z <- map(data[[z_var]], .f = ~ unlist(.x)[tz_ind])
   Z <- do.call(rbind, Z)
-  Z[attr(data, "id_tz_seq"), , drop=FALSE]
+  colnames(Z) <- paste0(z_var, tz_ind)
+  Z[is.na(Z)] <- 0
+  Z[attr(data, "id_tz_seq"), , drop = FALSE]
 
  }
 
 get_ncols <- function(data, col_vars) {
   map(col_vars, function(var) pull(data, var)) %>%
-    map_int(function(z) max(map_int(z, ~ifelse(is_atomic(.), length(.), nrow(.)))))
+    map_int(function(z) {
+      max(map_int(z, ~ifelse(is_atomic(.), length(.), nrow(.))))
+    })
 
 }
