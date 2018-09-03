@@ -11,8 +11,8 @@ gg_laglead(x, ...)
 
 \method{gg_laglead}{default}(x, tz, ll_fun, ...)
 
-\method{gg_laglead}{LL_df}(x, high_col = "grey20", low_col = "whitesmoke",
-  grid_col = "lightgrey", ...)
+\method{gg_laglead}{LL_df}(x, high_col = "grey20",
+  low_col = "whitesmoke", grid_col = "lightgrey", ...)
 
 \method{gg_laglead}{nested_fdf}(x, ...)
 }

@@ -22,7 +22,7 @@
 #' # set number of observations/subjects
 #' n <- 250
 #' # create data set with variables which will affect the hazard rate.
-#' df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6)) %>%
+#' df <- cbind.data.frame(x1 = runif (n, -3, 3), x2 = runif (n, 0, 6)) %>%
 #'  as_tibble()
 #' # the formula which specifies how covariates affet the hazard rate
 #' f0 <- function(t) {
@@ -114,7 +114,7 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-constant part
   ped  <- split_data(
       formula = Surv(time, status)~.,
-      data    = select_if(data, is_atomic),
+      data    = select_if (data, is_atomic),
       cut     = cut,
       id      = "id") %>%
     rename("t" = "tstart") %>%
@@ -131,6 +131,7 @@ sim_pexp <- function(formula, data, cut) {
     names(tz_vars) <- names(ll_funs) <- names(cumu_funs) <- tz_vars
     z_form <- list("eta_", map_chr(f2_ev, ~.x[["vars"]][2])) %>%
       reduce(paste0, collapse = "+") %>% paste0("~", .) %>% as.formula()
+
     df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
     suppressMessages(
       ped <- ped %>%

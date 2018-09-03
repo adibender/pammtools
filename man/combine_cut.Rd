@@ -4,7 +4,8 @@
 \alias{combine_cut}
 \title{Extract unique cut points when time-dependent covariates present}
 \usage{
-combine_cut(event_df, tdc_df, time_var, status_var, tz_var, cens_value = 0)
+combine_cut(event_df, tdc_df, time_var, status_var, tz_var,
+  cens_value = 0)
 }
 \arguments{
 \item{tdc_df}{A data frame containing information on time-dependent variables

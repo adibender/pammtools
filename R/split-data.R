@@ -31,8 +31,8 @@ split_data <- function(
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
   assert_data_frame(data, min.rows = 1, min.cols = 2)
-  assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE, min.len = 1,
-    null.ok = TRUE)
+  assert_numeric(cut, lower = 0, finite = TRUE, any.missing = FALSE,
+    min.len = 1, null.ok = TRUE)
   assert_number(max_time, lower = 0, finite = TRUE, null.ok = TRUE)
 
 
@@ -50,7 +50,7 @@ split_data <- function(
   }
 
 
-  if (length(surv_vars)!= 2) {
+  if (length(surv_vars) != 2) {
     stop(
       "Currently a formula of the form Surv(time, event)~., is required.\n
       See ?Surv for more details.")
@@ -68,7 +68,7 @@ split_data <- function(
       paste0(formula[-2], collapse = "")))
 
   # obtain interval breaks points
-  cut <- get_cut(data, formula, cut=cut, max_time=max_time)
+  cut <- get_cut(data, formula, cut = cut, max_time = max_time)
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)

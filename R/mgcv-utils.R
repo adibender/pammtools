@@ -6,7 +6,7 @@ smooth.construct.fdl.smooth.spec <- function(object, data, knots) {
   object$bs <- "ps"
   object <- smooth.construct.ps.smooth.spec(object, data, knots)
 
-  ind <- if(!is.null(object$xt$upper) && object$xt$upper) {
+  ind <- if (!is.null(object$xt$upper) && object$xt$upper) {
     1:(object$m[1] + 2)
   } else {
     (nrow(object$S[[1]])-(object$m[1])-1):nrow(object$S[[1]])

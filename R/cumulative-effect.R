@@ -8,7 +8,7 @@
 #' between the two exposure profiles (g(z1,t)-g(z2,t)).
 #' @export
 #' @keywords internal
-get_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
+get_cumu_eff <- function(data, model, term, z1, z2 = NULL, se_mult = 2) {
 
   assert_class(data, "fped")
   ped     <- make_ped_dat(data, term, z1)
@@ -17,12 +17,13 @@ get_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
   coefs   <- coefs[col_ind]
   Vp      <- model$Vp[col_ind, col_ind]
   X       <- predict(model, ped, type = "lpmatrix")[, col_ind]
-  if(!is.null(z2)) {
-    X2 <- predict(model, make_ped_dat(data, term, z2), type = "lpmatrix")[,col_ind]
+  if (!is.null(z2)) {
+    X2 <- predict(model, make_ped_dat(data, term, z2),
+      type = "lpmatrix")[, col_ind]
     X <- X - X2
   }
   ped$cumu_eff <- drop(X %*% coefs)
-  ped$se_cumu_eff <- drop(sqrt(rowSums((X %*% Vp)*X)))
+  ped$se_cumu_eff <- drop(sqrt(rowSums( (X %*% Vp) * X) ))
   ped$cumu_eff_lower <- ped$cumu_eff - se_mult * ped$se_cumu_eff
   ped$cumu_eff_upper <- ped$cumu_eff + se_mult * ped$se_cumu_eff
 
@@ -44,32 +45,33 @@ make_ped_dat <- function(x, term, z_vec) {
   func <- attr(x, "func")[[ind_term]]
   ll_fun <- attr(x, "ll_funs")[[ind_term]]
   func_mat_names <- attr(x, "func_mat_names")[[ind_term]]
-  LL_name <- grep("LL", func_mat_names, value=TRUE)
-  tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix, nfunc)
+  LL_name <- grep("LL", func_mat_names, value = TRUE)
+  tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var,
+    func$suffix, nfunc)
   q_weights <- attr(x, "ll_weights")[[ind_term]]
-  stopifnot(length(z_vec)==nz | length(z_vec) == 1)
+  stopifnot(length(z_vec) == nz | length(z_vec) == 1)
 
-  z_vec <- if(length(z_vec) == 1)  {
+  z_vec <- if (length(z_vec) == 1)  {
     rep(z_vec, nz)
   } else {
     z_vec
   }
 
   ped_df <- make_newdata(x, tend = unique(.data$tend))
-  ped_df[[LL_name]] <- outer(ped_df$tend, tz, FUN = ll_fun)*1L *
-    matrix(q_weights$ll_weight, nrow=nrow(ped_df), ncol=nz, byrow = TRUE)
-  if(func$latency_var != "") {
-    ped_df[[tz_var_mat]] <- outer(ped_df$tend, tz, FUN="-")
-    # ped_df[[tz_var_mat]][ped_df[[tz_var_mat]] < 0] <- 0
-    ped_df[[tz_var_mat]]*(ped_df[[LL_name]]!=0)
+  ped_df[[LL_name]] <- outer(ped_df$tend, tz, FUN = ll_fun) * 1L *
+    matrix(q_weights$ll_weight, nrow = nrow(ped_df), ncol = nz, byrow = TRUE)
+  if (func$latency_var != "") {
+    ped_df[[tz_var_mat]] <- outer(ped_df$tend, tz, FUN = "-")
+    ped_df[[tz_var_mat]] * (ped_df[[LL_name]] != 0)
   } else {
-    ped_df[[tz_var]] <- matrix(tz, nrow = nrow(ped_df), ncol = nz, byrow=TRUE)
-    ped_df[[tz_var]] <- ped_df[[tz_var]]*(ped_df[[LL_name]]!=0)
+    ped_df[[tz_var]] <- matrix(tz, nrow = nrow(ped_df), ncol = nz, byrow = TRUE)
+    ped_df[[tz_var]] <- ped_df[[tz_var]] * (ped_df[[LL_name]] != 0)
   }
-  ped_df[[term]] <- matrix(z_vec, nrow = nrow(ped_df), ncol=nz, byrow=TRUE)
-  t_mat_var <- grep(attr(x, "time_var"), func_mat_names, value=TRUE)
-  if(length(t_mat_var) != 0) {
-    ped_df[[t_mat_var]] <- matrix(unique(x[[t_mat_var]][,1]), nrow = nrow(ped_df), ncol = nz)
+  ped_df[[term]] <- matrix(z_vec, nrow = nrow(ped_df), ncol = nz, byrow = TRUE)
+  t_mat_var <- grep(attr(x, "time_var"), func_mat_names, value = TRUE)
+  if (length(t_mat_var) != 0) {
+    ped_df[[t_mat_var]] <- matrix(unique(x[[t_mat_var]][, 1]),
+      nrow = nrow(ped_df), ncol = nz)
   }
 
   ped_df

@@ -39,7 +39,7 @@ Information on intervals in which times fall
 set.seed(111018)
 brks <- c(0, 4.5, 5, 10, 30)
 int_info(brks)
-x <- runif(3, 0, 30)
+x <- runif (3, 0, 30)
 x
 get_intervals(brks, x)
 

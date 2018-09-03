@@ -14,10 +14,10 @@
 #' @keywords internal
 get_tdc <- function(data, id_var) {
 
-	data %>% group_by_(.dots=list(id_var)) %>%
-		summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
-		select_if(any) %>%
-		names()
+  data %>% group_by_(.dots = list(id_var)) %>%
+    summarize_all(.funs = ~any(length(unique(.)) > 1)) %>%
+    select_if (any) %>%
+    names()
 
 }
 
@@ -25,7 +25,7 @@ get_tdc <- function(data, id_var) {
 has_tdc <- function(data, id_var) {
 
   data %>% group_by(!!sym(id_var)) %>%
-    summarize_all(.funs=~any(length(unique(.)) > 1)) %>%
+    summarize_all(.funs = ~any(length(unique(.)) > 1)) %>%
     select(-one_of(id_var)) %>%
     summarize_all(any) %>% unlist() %>% any()
 
@@ -54,18 +54,18 @@ has_tdc <- function(data, id_var) {
 #' @import dplyr
 #' @keywords internal
 combine_cut <- function(
-	event_df,
-	tdc_df,
-	time_var,
-	status_var,
-	tz_var,
-	cens_value = 0) {
+  event_df,
+  tdc_df,
+  time_var,
+  status_var,
+  tz_var,
+  cens_value = 0) {
 
-	tdc_time   <- tdc_df %>% pull(tz_var) %>% unlist() %>% unique()
-	event_time <- event_df %>% select(one_of(time_var)) %>% unlist()
-	event_time <- event_time[event_df[[status_var]] != cens_value] %>% unique()
+  tdc_time   <- tdc_df %>% pull(tz_var) %>% unlist() %>% unique()
+  event_time <- event_df %>% select(one_of(time_var)) %>% unlist()
+  event_time <- event_time[event_df[[status_var]] != cens_value] %>% unique()
 
-	union(tdc_time, event_time) %>% sort()
+  union(tdc_time, event_time) %>% sort()
 
 }
 
@@ -96,21 +96,21 @@ combine_cut <- function(
 #' pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, tz_var="day")
 #' @export
 split_tdc <- function(
-	formula,
-	event_df,
-	tdc_df,
-	tz_var,
-	id_var     = "id",
-	time_var   = "time",
-	status_var = "status",
-	cens_value = 0,
-	entry_time = 0,
-	...) {
+  formula,
+  event_df,
+  tdc_df,
+  tz_var,
+  id_var     = "id",
+  time_var   = "time",
+  status_var = "status",
+  cens_value = 0,
+  entry_time = 0,
+  ...) {
 
-	warning("'split_tdc' is deprecated and will be removed in the near future.
-		See 'as_ped' and 'concurrent' for the same functionality.")
+  warning("'split_tdc' is deprecated and will be removed in the near future.
+    See 'as_ped' and 'concurrent' for the same functionality.")
 
-	assert_data_frame(event_df)
+  assert_data_frame(event_df)
   assert_data_frame(tdc_df)
   assert_subset(c(id_var, time_var, status_var), colnames(event_df))
   assert_subset(c(id_var, tz_var), colnames(tdc_df))
@@ -118,39 +118,39 @@ split_tdc <- function(
   common_id <- warn_partial_overlap(event_df[[id_var]], tdc_df[[id_var]])
   event_df  <- filter(event_df, !!sym(id_var) %in% common_id)
   tdc_df    <- filter(tdc_df, !!sym(id_var) %in% common_id)
-	# intervals must be split at each event time and time at which the TDC
-	# changes its value
-	utime <- union(entry_time, combine_cut(event_df, tdc_df, time_var, status_var, tz_var,
-		cens_value = cens_value))
-	# for joining, we remove baseline information of variables that are present
-	# as TDC variables in tdc_df
-	tdc_vars <- setdiff(get_tdc(tdc_df, id_var), c(id_var, time_var, tz_var, status_var))
-	tdc_in_event_df <- intersect(tdc_vars, names(event_df))
-	if (!(length(tdc_in_event_df)==0)) {
-		event_df <- event_df %>%  select(-one_of(tdc_vars))
-	}
-	ped <- split_data(formula, data = event_df, cut = utime, id = id_var,
-		zero = entry_time, ...)
+  # intervals must be split at each event time and time at which the TDC
+  # changes its value
+  utime <- union(entry_time, combine_cut(event_df, tdc_df, time_var, status_var,
+    tz_var, cens_value = cens_value))
+  # for joining, we remove baseline information of variables that are present
+  # as TDC variables in tdc_df
+  tdc_vars <- setdiff(get_tdc(tdc_df, id_var),
+    c(id_var, time_var, tz_var, status_var))
+  tdc_in_event_df <- intersect(tdc_vars, names(event_df))
+  if (!(length(tdc_in_event_df) == 0)) {
+    event_df <- event_df %>%  select(-one_of(tdc_vars))
+  }
+  ped <- split_data(formula, data = event_df, cut = utime, id = id_var,
+    zero = entry_time, ...)
 
-	#
- 	tdc_df <- tdc_df %>% select(one_of(c(id_var, tz_var, tdc_vars)))
+  #
+  tdc_df <- tdc_df %>% select(one_of(c(id_var, tz_var, tdc_vars)))
 
 
-	ped <- left_join(ped, tdc_df, by = c(id_var, "tstart" = tz_var)) %>%
-		group_by(!!sym(id_var)) %>%
-		fill(setdiff(tdc_vars, c(id_var, time_var, status_var)))
+  ped <- left_join(ped, tdc_df, by = c(id_var, "tstart" = tz_var)) %>%
+    group_by(!!sym(id_var)) %>%
+    fill(setdiff(tdc_vars, c(id_var, time_var, status_var)))
 
-	attr(ped, "id_var")     <- id_var
-	attr(ped, "time_var")   <- time_var
-	attr(ped, "status_var") <- status_var
-	attr(ped, "tz_var")     <- tz_var
-	attr(ped, "cens_value") <- cens_value
-	# attr(ped, "breaks")     <- utime
-	attr(ped, "id_n")       <- ped %>% group_by(!!sym(id_var)) %>%
-		summarize(id_n=n()) %>% pull(.data$id_n)
-	attr(ped, "id_tseq")    <- attr(ped, "id_n") %>% map(seq_len) %>% unlist()
-	attr(ped, "id_tz_seq")   <- rep(seq_along(common_id), times=attr(ped, "id_n"))
-	attr(ped, "tz")         <- tdc_df %>% pull(tz_var) %>% unique() %>% sort()
+  attr(ped, "id_var") <- id_var
+  attr(ped, "time_var") <- time_var
+  attr(ped, "status_var") <- status_var
+  attr(ped, "tz_var") <- tz_var
+  attr(ped, "cens_value") <- cens_value
+  attr(ped, "id_n") <- ped %>% group_by(!!sym(id_var)) %>%
+    summarize(id_n = n()) %>% pull(.data$id_n)
+  attr(ped, "id_tseq")    <- attr(ped, "id_n") %>% map(seq_len) %>% unlist()
+  attr(ped, "id_tz_seq") <- rep(seq_along(common_id), times = attr(ped, "id_n"))
+  attr(ped, "tz") <- tdc_df %>% pull(tz_var) %>% unique() %>% sort()
 
   class(ped) <- c("ped", class(ped))
 

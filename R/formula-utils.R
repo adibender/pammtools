@@ -7,8 +7,8 @@
 get_lhs_vars <- function(formula) {
 
 
-	if (is.character(formula) ) formula <- as.formula(formula)
-	formula(Formula(formula), lhs = TRUE, rhs = FALSE) %>% all.vars()
+  if (is.character(formula) ) formula <- as.formula(formula)
+  formula(Formula(formula), lhs = TRUE, rhs = FALSE) %>% all.vars()
 
 }
 
@@ -19,8 +19,8 @@ get_lhs_vars <- function(formula) {
 #' @keywords internal
 get_rhs_vars <- function(formula) {
 
-	if (is.character(formula) ) formula <- as.formula(formula)
-	formula(Formula(formula), lhs = FALSE, rhs=TRUE) %>% all.vars()
+  if (is.character(formula) ) formula <- as.formula(formula)
+  formula(Formula(formula), lhs = FALSE, rhs = TRUE) %>% all.vars()
 
 }
 
@@ -29,7 +29,7 @@ get_rhs_vars <- function(formula) {
 #' @keywords internal
 get_tdc_vars <- function(formula, specials = "cumulative") {
 
-  f2      <- formula(Formula(formula), lhs=FALSE, rhs = 2)
+  f2      <- formula(Formula(formula), lhs = FALSE, rhs = 2)
   terms_f <- terms(f2, specials = specials)
   all.vars(terms_f)
 
@@ -38,13 +38,13 @@ get_tdc_vars <- function(formula, specials = "cumulative") {
 #' @inherit get_lhs_vars
 #' @keywords internal
 get_tdc_form <- function(formula) {
-  formula(Formula(formula), lhs=FALSE, rhs=2)
+  formula(Formula(formula), lhs = FALSE, rhs = 2)
 }
 
 #' @inherit get_lhs_vars
 #' @keywords internal
 get_ped_form <- function(formula) {
-  formula(Formula(formula), lhs=1, rhs = 1)
+  formula(Formula(formula), lhs = 1, rhs = 1)
 }
 
 

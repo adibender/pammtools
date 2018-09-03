@@ -4,8 +4,9 @@
 \alias{add_surv_prob}
 \title{Add survival probability estimates}
 \usage{
-add_surv_prob(newdata, object, ci = TRUE, se_mult = 2, overwrite = FALSE,
-  time_variable = NULL, interval_length = "intlen", ...)
+add_surv_prob(newdata, object, ci = TRUE, se_mult = 2,
+  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
+  ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -27,7 +28,7 @@ the confidence intervals.}
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
 
-\item{time_variable}{Name of the variable used for the baseline hazard. If
+\item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}

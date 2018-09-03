@@ -15,11 +15,13 @@ Defaults to \code{FALSE}.}
 \item{...}{Currently not used.}
 }
 \description{
-Forrest plot of fixed coefficients
+Given a model object, returns a data frame with columns \code{variable},
+\code{coef} (coefficient), \code{ci_lower} (lower 95\% CI) and
+\code{ci_upper} (upper 95\% CI).
 }
 \examples{
 g <- mgcv::gam(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species,
-	data=iris)
+ data=iris)
 gg_fixed(g, intercept=TRUE)
 gg_fixed(g)
 }

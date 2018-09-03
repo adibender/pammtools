@@ -9,10 +9,10 @@ repam <- function(x) {
 
 append_ped_attr <- function(pamm, ped) {
 
-	attr_ped <- ped_attr(ped)
-	pamm[names(attr_ped)] <- attr_ped
+  attr_ped <- ped_attr(ped)
+  pamm[names(attr_ped)] <- attr_ped
 
-	pamm
+  pamm
 
 }
 
@@ -33,21 +33,21 @@ append_ped_attr <- function(pamm, ped) {
 #' @export
 pamm <- function(formula, data=list(), method="REML", ..., trafo.args=NULL) {
 
-	dots <- list(...)
-	dots$formula = formula
-	dots$family  = poisson()
+  dots <- list(...)
+  dots$formula <- formula
+  dots$family  <- poisson()
   if (!is.null(trafo.args)) {
     trafo.args$data <- data
     data <- do.call(split_data, trafo.args)
   }
-	dots$data    = data
-	dots$offset  = data$offset
+  dots$data   <- data
+  dots$offset <- data$offset
 
-	pamm_fit        <- do.call(gam, dots)
-	class(pamm_fit) <- c("pamm", class(pamm_fit))
-	pamm_fit        <- append_ped_attr(pamm_fit, data)
+  pamm_fit        <- do.call(gam, dots)
+  class(pamm_fit) <- c("pamm", class(pamm_fit))
+  pamm_fit        <- append_ped_attr(pamm_fit, data)
 
-	pamm_fit
+  pamm_fit
 
 }
 
@@ -66,7 +66,7 @@ is.pamm <- function(x) inherits(x, "pamm")
 #' @export
 print.pamm <- function(x, ...) {
 
-	print(unpam(x), ...)
+  print(unpam(x), ...)
 
 }
 
@@ -76,7 +76,7 @@ print.pamm <- function(x, ...) {
 #' @export
 summary.pamm <- function(object, ...) {
 
-	summary(unpam(object), ...)
+  summary(unpam(object), ...)
 
 }
 
@@ -85,6 +85,6 @@ summary.pamm <- function(object, ...) {
 #' @export
 plot.pamm <- function(x, ...) {
 
-	plot(unpam(x), ...)
+  plot(unpam(x), ...)
 
 }

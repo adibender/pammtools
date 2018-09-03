@@ -12,34 +12,35 @@
 #' @keywords internal
 get_term <- function(data, fit, term, n = 100, ...) {
 
-	# values at which term contribution will be evaluated
-	seq_term <- data %>% pull(term) %>% seq_range(n = n)
+  # values at which term contribution will be evaluated
+  seq_term <- data %>% pull(term) %>% seq_range(n = n)
 
-	# use first row as basis (values of other covariates irrelevant anyway)
-	new_df <- data[1, ]
+  # use first row as basis (values of other covariates irrelevant anyway)
+  new_df <- data[1, ]
 
-	# clean up as rest of the data not needed any longer
-	rm(data)
-	gc()
+  # clean up as rest of the data not needed any longer
+  rm(data)
+  gc()
 
-	term_name <- term
-	# extract term contribution information (+ standard errors)
-	new_df              <- new_df[rep(1, length(seq_term)), ]
-	new_df[[term_name]] <- seq_term
-	term_info           <- predict(fit, newdata = new_df, type = "terms", se.fit = TRUE)
-	index_term          <- grep(term, colnames(term_info$fit), value = TRUE)
+  term_name <- term
+  # extract term contribution information (+ standard errors)
+  new_df              <- new_df[rep(1, length(seq_term)), ]
+  new_df[[term_name]] <- seq_term
+  term_info           <- predict(fit, newdata = new_df, type = "terms",
+    se.fit = TRUE)
+  index_term          <- grep(term, colnames(term_info$fit), value = TRUE)
 
-	new_df %>%
-		mutate(
-			term = term_name,
-			eff  = as.numeric(term_info$fit[, index_term]),
-			se   = as.numeric(term_info$se.fit[, index_term])) %>%
-		mutate(
-			ci_lower = .data$eff - 2*.data$se,
-			ci_upper = .data$eff + 2*.data$se) %>%
-	select(one_of(c("term", term_name, "eff", "se", "ci_lower", "ci_upper"))) %>%
-	rename(x = UQ(term_name)) %>%
-	as_tibble()
+  new_df %>%
+    mutate(
+      term = term_name,
+      eff  = as.numeric(term_info$fit[, index_term]),
+      se   = as.numeric(term_info$se.fit[, index_term])) %>%
+    mutate(
+      ci_lower = .data$eff - 2 * .data$se,
+      ci_upper = .data$eff + 2 * .data$se) %>%
+  select(one_of(c("term", term_name, "eff", "se", "ci_lower", "ci_upper"))) %>%
+  rename(x = UQ(term_name)) %>%
+  as_tibble()
 
 }
 
@@ -71,6 +72,6 @@ get_terms <- function(data, fit, terms, ...) {
   assert_character(terms, min.len = 1, unique = TRUE)
 
   # apply get_term to each element of terms
-	map_dfr(terms, function(x) get_term(data = data, fit=fit, term = x), ...)
+  map_dfr(terms, function(x) get_term(data = data, fit = fit, term = x), ...)
 
 }

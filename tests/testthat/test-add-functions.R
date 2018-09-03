@@ -6,15 +6,17 @@ ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
 pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)
 bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
-  family = poisson(), offset = offset, method="fREML", discrete = TRUE)
+  family = poisson(), offset = offset, method = "fREML", discrete = TRUE)
 
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
 
-  expect_data_frame(haz <- add_hazard(ped_info(ped), bam), nrows = 5L, ncols = 11L)
-  expect_data_frame(haz <- add_hazard(ped_info(ped), pam), nrows = 5L, ncols = 11L)
+  expect_data_frame(haz <- add_hazard(ped_info(ped), bam), nrows = 5L,
+    ncols = 11L)
+  expect_data_frame(haz <- add_hazard(ped_info(ped), pam), nrows = 5L,
+    ncols = 11L)
   expect_equal(all(haz$ci_lower < haz$hazard), TRUE)
   expect_equal(all(haz$ci_upper > haz$hazard), TRUE)
   expect_equal(round(haz$hazard, 3), c(0.009, 0.009, 0.007, 0.006, 0.005))
@@ -30,13 +32,14 @@ test_that("hazard functions work for PAM", {
   expect_equal(round(haz2$ci_lower, 2), c(-4.91, -4.94, -5.12, -5.42, -5.74))
 
   ## delta rule
-  expect_data_frame(add_hazard(ped_info(ped), bam, ci_type = "delta"), nrows=5L, ncols=11L)
+  expect_data_frame(add_hazard(ped_info(ped), bam, ci_type = "delta"),
+    nrows = 5L, ncols = 11L)
   haz3 <- add_hazard(ped_info(ped), pam, ci_type = "delta")
-  expect_data_frame(haz3, nrows=5L, ncols = 11L)
-  expect_equal(round(haz3$hazard*100,2), c(.94, .87, .74, .63, .54))
-  expect_equal(round(haz3$se*100,2), c(.11, .08, .08, .11, .14))
-  expect_equal(round(haz3$ci_lower*100,2), c(.72, .70, .58, .41, .26))
-  expect_equal(round(haz3$ci_upper*100,2), c(1.16, 1.03, .9, .85, .82))
+  expect_data_frame(haz3, nrows = 5L, ncols = 11L)
+  expect_equal(round(haz3$hazard * 100, 2), c(.94, .87, .74, .63, .54))
+  expect_equal(round(haz3$se * 100, 2), c(.11, .08, .08, .11, .14))
+  expect_equal(round(haz3$ci_lower * 100, 2), c(.72, .70, .58, .41, .26))
+  expect_equal(round(haz3$ci_upper * 100, 2), c(1.16, 1.03, .9, .85, .82))
 
   ## simulation based ci (0.95)
   haz4 <- add_hazard(ped_info(ped), pam, ci_type = "sim")
@@ -147,22 +150,22 @@ test_that("works for nonstandard baseline arguments", {
   p_pem <- glm(ped_status ~ 0 + int + trt, data = pseudonymous,
     family = poisson(), offset = offset)
   expect_equal(
-    add_hazard(pseudonymous[1:5, ], p_pam, time_variable = "stop")$hazard,
+    add_hazard(pseudonymous[1:5, ], p_pam, time_var = "stop")$hazard,
     add_hazard(ped[1:5, ], pam)$hazard)
   expect_equal(
-    add_hazard(pseudonymous[1:5, ], p_pem, time_variable = "int")$hazard,
+    add_hazard(pseudonymous[1:5, ], p_pem, time_var = "int")$hazard,
     add_hazard(ped[1:5, ], pem)$hazard)
 
   expect_equal(
-    add_cumu_hazard(pseudonymous[1:5, ], p_pam, time_variable = "stop",
+    add_cumu_hazard(pseudonymous[1:5, ], p_pam, time_var = "stop",
       interval_length = length)$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pam)$cumu_hazard)
   expect_equal(
-    add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_variable = "int",
+    add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_var = "int",
       interval_length = length)$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
   expect_equal(
-    add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_variable = "int",
+    add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_var = "int",
       interval_length = "length")$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
 })
@@ -201,14 +204,14 @@ test_that("survival probabilities functions work for PAM", {
 
   ## delta CI
   surv2 <- add_surv_prob(ped_info(ped), pam, ci_type = "delta")
-  expect_equal(round(surv2$surv_lower*10, 2), c(5.56, 3.28, 1.36, .57, .2))
-  expect_equal(round(surv2$surv_upper*10, 2), c(6.95, 4.83, 2.51, 1.49, 1.01))
+  expect_equal(round(surv2$surv_lower * 10, 2), c(5.56, 3.28, 1.36, .57, .2))
+  expect_equal(round(surv2$surv_upper * 10, 2), c(6.95, 4.83, 2.51, 1.49, 1.01))
 
   # sim CI
   set.seed(123)
   surv3 <- add_surv_prob(ped_info(ped), pam, ci_type = "sim")
-  expect_equal(round(surv3$surv_lower*10, 2), c(5.59, 3.28, 1.42, .64, .28))
-  expect_equal(round(surv3$surv_upper*10, 2), c(6.86, 4.70, 2.42, 1.47, 1.02))
+  expect_equal(round(surv3$surv_lower * 10, 2), c(5.59, 3.28, 1.42, .64, .28))
+  expect_equal(round(surv3$surv_upper * 10, 2), c(6.86, 4.70, 2.42, 1.47, 1.02))
 
 })
 

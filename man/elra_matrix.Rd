@@ -11,7 +11,7 @@ make_time_mat(data, nz)
 
 make_latency_mat(data, tz)
 
-make_lag_lead_mat(data, tz, ll_fun = function(t, tz) {     (t >= tz) })
+make_lag_lead_mat(data, tz, ll_fun = function(t, tz) t >= tz)
 
 make_z_mat(data, z_var, nz, ...)
 }

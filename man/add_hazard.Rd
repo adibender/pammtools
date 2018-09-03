@@ -6,11 +6,11 @@
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
 add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
-  se_mult = 2, ci_type = c("default", "delta", "sim"), overwrite = FALSE,
-  time_variable = NULL, ...)
+  se_mult = 2, ci_type = c("default", "delta", "sim"),
+  overwrite = FALSE, time_var = NULL, ...)
 
 add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
-  overwrite = FALSE, time_variable = NULL, interval_length = "intlen",
+  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
   ...)
 }
 \arguments{
@@ -57,7 +57,7 @@ the estimated coefficients. CIs are given by respective quantiles.}
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
 
-\item{time_variable}{Name of the variable used for the baseline hazard. If
+\item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
@@ -77,7 +77,7 @@ be controlled via the \code{se_mult} argument.
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
 pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
 ped_info(ped) \%>\% add_hazard(pam, type="link")
-ped_info(ped) \%>\% add_hazard(pam, type="response")
+ped_info(ped) \%>\% add_hazard(pam, type = "response")
 ped_info(ped) \%>\% add_cumu_hazard(pam)
 }
 \seealso{

@@ -29,7 +29,7 @@ library(pammtools)
 # set number of observations/subjects
 n <- 250
 # create data set with variables which will affect the hazard rate.
-df <- cbind.data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6)) \%>\%
+df <- cbind.data.frame(x1 = runif (n, -3, 3), x2 = runif (n, 0, 6)) \%>\%
  as_tibble()
 # the formula which specifies how covariates affet the hazard rate
 f0 <- function(t) {
@@ -55,7 +55,7 @@ pam <- gam(ped_status ~ s(tend) + x1 + s(x2), data=ped, family=poisson, offset=o
 coef(pam)[2]
 plot(pam, page=1)
 
-## Example 2: Functional covariates/cumulative coefficients
+# Example 2: Functional covariates/cumulative coefficients
 # function to generate one exposure profile, tz is a vector of time points
 # at which TDC z was observed
 rng_z = function(nz) {

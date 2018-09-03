@@ -37,10 +37,10 @@ int_info.default <- function(
   assert_numeric(min_time, lower  = 0L)
 
   # sort x and add origin if necessary
-  if(is.unsorted(x)) {
+  if (is.unsorted(x)) {
     x <- sort(x)
   }
-  if(min(x!=0)) {
+  if (min(x != 0)) {
     x <- c(0, x)
   }
 
@@ -53,9 +53,9 @@ int_info.default <- function(
     tend   = tend,
     intlen = intlen) %>%
     mutate(
-      intmid = tstart + intlen/2,
+      intmid = tstart + intlen / 2,
       interval = paste0("(", tstart, ",", tend, "]"),
-      interval = factor(.data$interval, levels=.data$interval))
+      interval = factor(.data$interval, levels = .data$interval))
 
   filter(tdf, tstart >= min_time)
 
@@ -103,7 +103,7 @@ int_info.pamm <- function(x, ...) {
 #' set.seed(111018)
 #' brks <- c(0, 4.5, 5, 10, 30)
 #' int_info(brks)
-#' x <- runif(3, 0, 30)
+#' x <- runif (3, 0, 30)
 #' x
 #' get_intervals(brks, x)
 #'
@@ -130,7 +130,6 @@ get_intervals.default <- function(
   assert_numeric(times, lower = 0, finite = TRUE, all.missing = FALSE)
 
   int_df <- int_info(x)
-  # times <- times[times <= max(int_info$tend)]
   int    <- findInterval(
     x                = times,
     vec              = sort(union(int_df$tstart, int_df$tend)),
@@ -163,11 +162,11 @@ get_intervals.default <- function(
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 ped_info <- function(ped) {
 
-  assert_class(ped, classes="ped")
+  assert_class(ped, classes = "ped")
 
   int_df <- int_info(ped)
   sdf    <- sample_info(ped)
-  if(is.null(sdf)) {
+  if (is.null(sdf)) {
     return(int_df)
   } else {
     bind_cols(
@@ -193,7 +192,7 @@ ped_info <- function(ped) {
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 riskset_info <- function(ped) {
-  assert_class(ped, classes="ped")
+  assert_class(ped, classes = "ped")
 
   # how often is interval the last row for a given id when status == 0?
   censored <- ped %>% group_by(id, add = TRUE) %>%

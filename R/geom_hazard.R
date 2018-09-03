@@ -139,10 +139,10 @@ stairstep <- function(data, direction="hv") {
   }
 
   if (direction == "vh") {
-    xs <- rep(1:n, each = 2)[-2*n]
+    xs <- rep(1:n, each = 2)[-2 * n]
     ys <- c(1, rep(2:n, each = 2))
   } else {
-    ys <- rep(1:n, each = 2)[-2*n]
+    ys <- rep(1:n, each = 2)[-2 * n]
     xs <- c(1, rep(2:n, each = 2))
   }
 
