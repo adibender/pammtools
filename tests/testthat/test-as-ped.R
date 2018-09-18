@@ -29,11 +29,11 @@ test_that("Trafo works and attributes are appended", {
 
 test_that("Trafo works for list objects (with TDCs)", {
   data("patient")
-  event_df  <- filter(patient, CombinedID %in% c(1101, 1116))
+  event_df  <- filter(patient, CombinedID %in% c(1110, 1116))
   ped <- as_ped(data = list(event_df), formula = Surv(survhosp, PatientDied)~ .,
     cut = 0:30, id = "CombinedID")
-  expect_data_frame(ped, nrows = 17, ncols = 15)
-  tdc_df    <- filter(daily, CombinedID  %in% c(1101, 1116))
+  expect_data_frame(ped, nrows = 40, ncols = 15)
+  tdc_df    <- filter(daily, CombinedID  %in% c(1110, 1116))
   ## check nesting
   ped <- as_ped(
     data    = list(event_df, tdc_df),
@@ -43,9 +43,9 @@ test_that("Trafo works for list objects (with TDCs)", {
     cut     = 0:30,
     id  = "CombinedID")
   expect_subset("survhosp_Study_Day_mat", colnames(ped))
-  expect_data_frame(ped, nrows = 17, ncols = 20)
+  expect_data_frame(ped, nrows = 40, ncols = 20)
   expect_identical(any(is.na(ped$caloriesPercentage_Study_Day)), FALSE)
-  expect_identical(colnames(ped$Study_Day), paste0("Study_Day", 1:11))
+  expect_identical(colnames(ped$Study_Day), paste0("Study_Day", 1:12))
   ped <- as_ped(
       data    = list(event_df, tdc_df),
       formula = Surv(survhosp, PatientDied) ~ . |
