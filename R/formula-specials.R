@@ -400,9 +400,9 @@ make_z_mat <- function(data, z_var, nz, ...) {
  }
 
 get_ncols <- function(data, col_vars) {
-  map(col_vars, function(var) pull(data, var)) %>%
-    map_int(function(z) {
-      max(map_int(z, ~ifelse(is_atomic(.), length(.), nrow(.))))
-    })
+
+  map(col_vars, ~pull(data, .x) %>% map_int(function(z)
+    ifelse(is.atomic(z), length(z), nrow(z)))) %>%
+  map_int(max)
 
 }
