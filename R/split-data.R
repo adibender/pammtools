@@ -93,6 +93,9 @@ split_data <- function(
     }
     if (id_var %in% vars) {
       dots$id <- NULL
+    } else {
+      dots$id <- NULL
+      dots$formula <- update(dots$formula, paste0("~ . + ", id_var))
     }
   }
 
