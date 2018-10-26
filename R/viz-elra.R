@@ -43,17 +43,18 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
         alpha = 0.3) +
       geom_line(aes_string(y = "fit"))
   } else {
-    if (n_vars == 2) {
+    # if (n_vars == 2) {
       gg_out <- gg_base + aes_string(y = vars[2], z = "fit") +
         geom_tile(aes_string(fill = "fit")) +
         geom_contour(col = "grey30") +
         scale_y_continuous(expand = c(0, 0)) +
         scale_x_continuous(expand = c(0, 0)) +
         scale_fill_gradient2(high = "firebrick2", low = "steelblue")
-    }
+    # }
   }
 
   gg_out + theme(legend.position = "bottom")
+
 }
 
 #' @rdname gg_partial
@@ -95,7 +96,7 @@ gg_partial_ll <- function(
         levels = c("ci_lower", "fit", "ci_upper")))
   }
 
-  gg_base <- ggplot(ll_df, aes_string(x = "intmid", y = "tz")) +
+  gg_base <- ggplot(ll_df, aes_string(x = "intmid", y =  tz_var)) +
     geom_tile(aes_string(fill = "fit"), colour = "grey30") +
     scale_fill_gradient2(high = "firebrick2", low = "steelblue",
       na.value = "grey30") +
