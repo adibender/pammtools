@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{data-transformation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
+link-citations: yes
 ---
 
 ```{r, echo = FALSE}
@@ -15,7 +16,9 @@ opts_chunk$set(
   fig.align  = "center",
   fig.width  = 4,
   fig.height = 4,
-  crop       = TRUE)
+  crop       = TRUE,
+  cache      = TRUE,
+  dpi        = 1200)
 ## output hooks, e.g., to truncate rows of output
 hook_output <- knit_hooks$get("output")
 knit_hooks$set(output = function(x, options) {
@@ -46,10 +49,11 @@ knit_hooks$set(output = function(x, options) {
 
 
 This vignette provides a short reference for the estimation and interpretation
-of cumulative effects. For a more detailed overview see @Bender2018f and
-@Bender2018.
-
-## Introduction
+of cumulative effects using **`pammtools`**. For a more detailed overview see
+@Bender2018f. In the first section, a short introduction to cumulative effects
+is provided. In the second section, we present a worked example on a real
+data set, including necessary data transformation, model estimation and
+visualization.
 
 <details>
   <summary>R Setup  </summary>
@@ -66,8 +70,11 @@ library(mgcv)
 
 </details>
 
-Cumulative effects can be thought of as an extension of time-constant effects
-of time-dependent covariates (TDCs; see vignette on [time-dependent covariates](./tdcovar.html)).
+## Introduction
+
+Cumulative effects can be thought of as an extension to the modeling of
+time-constant effects of time-dependent covariates
+(TDCs; see vignette on [time-dependent covariates](./tdcovar.html)).
 Standard modeling of TDCs assumes that only the
 current (or one lagged) value of the covariate can affect the hazard at time $t$,
 i.e.,
@@ -75,24 +82,8 @@ $$\lambda(t|z(t)) = \lambda_0(t)\exp(\beta z(t)).$$
 
 Cumulative effects on the other hand allow the hazard at time $t$ to depend on
 multiple past observations of the covariate, such that the effect at time $t$
-is the sum of all weighted effects of past observations (partial effects), e.g.:
-
-$$
-\lambda(t|z(t)) = \lambda_0(t)\exp\left(\sum_{t_z \leq t} h(t-t_z)z(t_z)\right)
-$$
-
-Here, past observations are weighted by a (potentially) non-linear function
-of the *latency* ($t-t_z$), i.e., the time that has passed since covariate $z(t_z)$ was observed,
-relative to the time of interest $t$.
-
-The above model also makes some simplifying assumptions, e.g.:
-
-  - the partial effect of the TDC ($z$) is linear in the covariate values
-  - the weighting function $h$ only depends on the latency, not on the specific
-  combination of $t$ and $t_z$
-  - the covariate has been observed in 1 unit steps w.r.t. time-scale $t$
-
-For a more flexible representation of the cumulative effect we therefore denote:
+is the sum of all weighted effects of past observations (partial effects).
+to make this more concrete, consider the following quantities:
 
   - $t$: the follow-up time
   - $t_z$: the time at which the TDC $z$ was observed (exposure time)
@@ -100,7 +91,26 @@ For a more flexible representation of the cumulative effect we therefore denote:
   - $\mathbf{z} = \{z(t_{z}):t_z \leq t\}$: the exposure history of TDC $z$,
   i.e., all recorded observations of the TDC (at time t).
 
-and define a general cumulative effect as:
+Given these definitions, one possible specification of a model with a
+cumulative effect was suggested by @Sylvestre2009 and is given below:
+
+$$
+\lambda(t|\mathbf{z}) = \lambda_0(t)\exp\left(\sum_{t_z \leq t} h(t-t_z)z(t_z)\right)
+$$
+
+Here, past observations are weighted by a (potentially) non-linear function $h$
+of the *latency* ($t-t_z$), i.e., the time that has passed since covariate
+$z(t_z)$ was observed, relative to the time of interest $t$. The cumulative
+effect is then the sum of all *partial effects* $h(t-t_z)z(t_z)$.
+
+The above model also makes some simplifying assumptions, e.g.:
+
+  - the partial effect of the TDC ($z$) is linear in the covariate values
+  - the weighting function $h$ only depends on the latency, not on the specific
+  combination of follow-up $t$ and *exposure time* $t_z$
+  - the covariate has been observed in 1 unit steps w.r.t. time-scale $t$
+
+A more flexible cumulative effect can be defined as follows:
 
 $$
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t, t_z, z(t_z))\mathrm{d}t_z,
@@ -113,15 +123,14 @@ with
   by a weighted sum)
   - $h(t, t_z, z(t_z))$: the contribution of covariate $z$ observed at
   time $t_z$ with value $z(t_z)$ to the cumulative effect at time $t$
-  (*partial effect* in the following). In our framework, these partial effects
-  ares estimated by penalized splines.
+  (*partial effect* in the following). In the framework of PAMMs, these partial
+  effects ares estimated by penalized splines.
   - $\mathcal{T}(t)$: the integration limits (lag-lead window) that control
   how many past observations of $\mathbf{z}$ contribute to the cumulative effect
   at time $t$. The minimal requirement is $\mathcal{T}(t)=\{t_{z}: t_z \leq t\}$,
   i.e., only past observations of the TDC can contribute to the cumulative effect at time $t$.
 
-A visual representation of examplary lag-lead windows is depicted in the Figure
-below:
+A visual representation of exemplary lag-lead windows is depicted below:
 
 <details>
 
@@ -140,7 +149,7 @@ p_ll <- p_ll1 + p_ll2
 ```
 </details>
 
-```{r, echo = FALSE, fig.width = 7, fig.height = 3.5, out.width="600px", fig.cap="Illustration of three different lag-lead windows.", dpi = 1200}
+```{r, echo = FALSE, fig.width = 7, fig.height = 3.5, out.width="600px", fig.cap="Illustration of three different lag-lead windows."}
 p_ll
 ```
 
@@ -148,8 +157,8 @@ p_ll
 $\mathcal{T}(t)=\{t_{z}: t_z \leq t\}$. For example, the
 observation of the TDC at time $t_z=4$, starts to contribute to the cumulative
 effect in interval $(4,5]$ and continues to contribute until the last interval
-$(9,10]$, although with potentially different weights, as $h(t=5, t_z = 4, z(4))$
-can be different to $h(t=10, t_z=4, z(4))$.
+$(9,10]$, although with potentially different weights, as, in general,
+$h(t=5, t_z = 4, z(4))$ can be different to $h(t=10, t_z=4, z(4))$.
 
 - The right panel illustrates that a "standard" model for time-to-event data
 with a constant effect follows as a special case of the general definition of
@@ -158,7 +167,8 @@ $\mathcal{T}(t)=\{t_{z}: t_z = t\}$ and $h(t, t_z, z(t_z)) \equiv \beta z(t)$
 
 
 ## Example: SOFA-score and extubation
-For illustration of the functionality, we use (a sample) of the
+For an illustration of the functionality that **`pammtools`** provides to
+work with cumulative effects, we use (a sample) of the
 data analyzed in @Heyard2018 and provided in the package **`TBFmultinomial`**
 (note that their analyses had a totally different goal, including modeling
 of competing risks; here we simply use the data for illustrative purposes).
@@ -172,9 +182,10 @@ Covariates include `gender`, `type` (admission type), `SAPSadmission`
 To use the data for our purposes, we first perform some preprocessing, which
 produces two data sets:
 
-  - `event_df`: Data in "standard" format (one row per subject)
+  - `event_df`: Data in "standard" format (one row per subject), that only
+  includes time-constant covariates
   - `tdc_df`: Data containing information on time-dependent covariates
-  (here `SOFA`)
+  (here `SOFA`) and exposure time $t_z$
 
 <details>
   <summary>R-Code data preprocessing</summary>
@@ -212,22 +223,21 @@ tdc_df <- VAP_complete %>%
 </details>
 &nbsp;
 
-Find an overview of the data below:
+An overview of the preprocessed data is given below:
 ```{r}
 event_df %>% head()
 tdc_df %>% head()
 ```
 
-The figure below shows the SOFA profiles for individual patients:
-```{r fig.width = 6, fig.height = 4, echo = FALSE, dpi = 1200, out.height = "300px"}
-ggplot(tdc_df, aes(x=day, y = SOFA, group = ID)) +
+```{r fig.width = 6, fig.height = 4, echo = FALSE, out.height = "300px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each dot represents a measurement."}
+ggplot(tdc_df, aes(x = day, y = SOFA, group = ID)) +
   geom_point(alpha = 0.5, size = rel(0.5)) +
   geom_line(alpha = 0.5)
 ```
 
 ### Data transformation
-We want to fit a DLNM [@Gasparrini2017] with cumulative effect of the SOFA score ($z$) as defined
-below
+We want to fit a DLNM [@Gasparrini2017] with cumulative effect of the SOFA score
+($z$) as defined below:
 
 $$
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
@@ -237,36 +247,47 @@ with $\mathcal{T}(t) = \{t_z: t_z \leq t \leq t_z + 5\}$, which means that only
 the SOFA scores observed within the last five days can affect the hazard at time
 $t$.
 
-[Remember](https://adibender.github.io/pammtools/articles/data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects) that the definition of the partial effect $h(t,t_z, z(t_z))$ as well
-as the specification of the lag-lead window are important parts of the analysis
+[Remember](https://adibender.github.io/pammtools/articles/data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects)
+that the specification of the partial effect $h(t,t_z, z(t_z))$ as well
+as the definition of the lag-lead window are important parts of the analysis
 and need to be considered at the beginning of the analysis as this information
 goes into the code for the data transformation:
 
 ```{r, message = FALSE}
 ped <- as_ped(list(event_df, tdc_df), Surv(time, outcome)~ . |
     cumulative(latency(day), SOFA, tz_var = "day",
-      ll_fun = function(t,tz) t >= tz &  t <= tz + 5),
-    cut = 0:49,
+      ll_fun = function(t, tz) t >= tz &  t <= tz + 5),
+    cut = 0:49, # administrative censoring at t = 49
     id = "ID")
 ped$day_latency = ped$day_latency * ped$LL
 ```
-Above, we used
+Above, we
 
-  - the formula special `cumulative` to inform `as_ped` to perform data
+  - used the formula special `cumulative` to inform `as_ped` to perform data
   preprocessing in order to fit cumulative effects
   - wrapped the variable `day` ($t_z$) within the `latency` function to calculate
   $t - t_z$
-  - customized the `ll_fun` argument to match the specification of $\mathcal{T}(t)$
+  - customized the `ll_fun` argument to match the desired specification of
+  $\mathcal{T}(t)$
 
 Note that the data now contains 3 matrix columns (`day_latency`, `SOFA` and
 `LL`; the latter stores the lag-lead matrix $\mathcal{T}(t)$):
+
+
+
 ```{r, fig.width = 4, fig.height = 4, out.height = "300px"}
 str(ped, 1)
-gg_laglead(ped)
+```
+
+```{r, echo = FALSE, fig.width = 4, fig.height=4, out.height = "300px", fig.cap = "Lag-lead window for the first 10 days of the follow-up."}
+ll_df <- get_laglead(ped)
+ll_df <- ll_df %>% filter(t <= 10, tz <=10)
+class(ll_df) <- c("LL_df", class(ll_df))
+gg_laglead(ll_df)
 ```
 
 ### Model estimation
-After successful data transformation with `as_ped` the model can be estimated
+After successful data transformation with `as_ped`, the model can be estimated
 directly using `mgcv::gam`. Including matrix columns into the model specification
 will inform `gam` to estimate cumulative effects. In our case the the following
 call estimates the DLNM with a cumulative effect (of the SOFA score) as specified
@@ -280,9 +301,10 @@ summary(mod)
 ```
 
 ### Interpretation
-Interpretation of the estimated effects is best performed by visualization of
-either the partial effects or the cumulative effect. **`pammtools`** provides
-a couple of convenience functions that facilitate this process:
+Interpretation of the estimated cumulative effects is best performed by
+visualization of either the partial effects or the cumulative effect.
+**`pammtools`** provides a couple of convenience functions that facilitate this
+process:
 
   - `gg_tensor`: This visualizes 2D effect surfaces as heat maps/contour plots and
   is based on the output of `mgcv::plot.gam`
@@ -291,7 +313,7 @@ a couple of convenience functions that facilitate this process:
   input, the latter visualizes the partial effects as a heat-map within the
   specified lag-lead window (this makes it easier to see which partial effects
   actually contribute to the cumulative effect in a specific interval)
-  - `gg_slice`: Plots 1D slices of 2D surfaces, but can be used more generally
+  - `gg_slice`: Plots 1D slices of 2D surfaces and can be used more generally
   to plot covariate effects conditional on pre-specified values of other covariates.
   - `gg_cumu_eff`: Either plots the cumulative effect for a concrete specification
   of $g(\mathbf{z}, t)$ or the (log-) hazard ratio
@@ -304,9 +326,9 @@ customized manually (see especially examples in `make_newdata`).
 #### 2D partial effect surface
 The below code visualizes the 2D partial effect $h(t-t_z, z(t_z))$ for each
 combination of latency and SOFA score (including confidence intervals).
-The grey areas indicate combinations that did not occur in the data.
+The gray areas indicate combinations that did not occur in the data.
 
-```{r fig.width = 9, fig.height = 4, warning = FALSE, out.width="700"}
+```{r fig.width = 9, fig.height = 4, warning = FALSE, out.width="650px"}
 gg_tensor(mod, ci = TRUE) + ylab("SOFA") + xlab("latency (day)") +
   theme(legend.position = "bottom")
 ```
@@ -314,14 +336,19 @@ gg_tensor(mod, ci = TRUE) + ylab("SOFA") + xlab("latency (day)") +
 This illustrates that a low SOFA scores substantially increases the log-hazard
 if it was observed recently (latency $<$ 2 days), while partial effects of the
 SOFA score observed further in the past (latency $>$ 3 days) go towards zero
-(note that the event of interest is "extubation", therefore increased (log-)hazards
-imply increased probabilities of extubation). For this graphic, the function
-is evaluated at values of day_latency that are not present in the data. An
-alternative to plot the partial effect surface is to use the `gg_partial`
-function:
-```{r fig.width = 4, fig.height = 4}
+(the event of interest is "extubation", therefore increased (log-)hazards
+imply increased probabilities of extubation). Note that for this graphic,
+the function $h(t-t_z, z(t_z))$ is evaluated at values of $t-t_z$ (`day_latency`)
+that are not present in the data.
+
+Alternatively, the function `gg_partial` can be used to produce similar
+visualizations and allows more control over the inputs. For example, the
+following code produces the partial effect surface plot evaluated only at
+latencies 0 through 5 and calculates the partial effects relative to a patient
+with SOFA score 10 (everything else being equal):
+```{r fig.width = 4, fig.height = 4, out.height = "300px"}
 gg_partial(ped, mod, term = "SOFA", day_latency = 0:5,
-  SOFA = seq_range(SOFA, n = 20) , LL = c(1))
+  SOFA = seq_range(SOFA, n = 20), LL = c(1), reference = list(SOFA = 10))
 ```
 See also `gg_partial_ll` that shows the lag-lead window and partial effects
 that contribute to the cumulative effect in each interval. Due to the definition
@@ -330,7 +357,7 @@ time-variation was specified.
 
 #### 1D conditional effects (slices through the 2D surface):
 
-```{r, fig.width = 8, fig.height = 4}
+```{r, fig.width = 8, fig.height = 4, out.width = "650px"}
 p_slice_latency = gg_slice(ped, mod, term = "SOFA",
   day_latency = unique(day_latency), SOFA = c(0, 5, 10))
 p_slice_sofa = gg_slice(ped, mod, term = "SOFA", day_latency = c(0, 1, 4),
@@ -338,16 +365,17 @@ p_slice_sofa = gg_slice(ped, mod, term = "SOFA", day_latency = c(0, 1, 4),
 p_slice_latency + p_slice_sofa
 ```
 
-Essentially the same information, but focus on effects of the individual
-variables. Can be especially useful for three-dimensional partial effects.
+These plots contain essentially the same information as the 2D surface, but focus
+on effects of the individual variables. Can be especially useful for
+three-dimensional partial effects.
 
 #### Cumulative effects
-Below, we visualize the cumulative effect in each interval. Since the
-effect depends on a TDC $\mathbf{z}$, it must be provided in the call to
-`gg_cumu_eff` as `z1` argument (either length 1 or number of intervals of the
+Below, we visualize the cumulative effect in each interval of the follow-up.
+Since the effect depends on a TDC $\mathbf{z}$, it must be provided in the call
+to `gg_cumu_eff` as `z1` argument (either length 1 or number of intervals of the
 follow-up). If `z2` is additionally specified, the log-hazard ratio is calculated
 $\frac{g(\mathbf{z}_1, t)}{g(\mathbf{z}_2, t)}$. Below, two such log-hazard
-ratios are visualized for two different comparisons of SOFA scores:
+ratios are visualized for two different comparisons of SOFA score profiles:
 
   - On the left hand side, a patient with SOFA scores continuously decreasing
   throughout the follow-up is compared to a patient with constant SOFA score
@@ -357,7 +385,7 @@ ratios are visualized for two different comparisons of SOFA scores:
   score 20 on the following 20 days and score 5 on the last 20 days of the
   follow-up.
 
-```{r fig.width = 8, fig.height = 4}
+```{r fig.width = 8, fig.height = 4, out.width = "650px"}
 p_cumu1 = gg_cumu_eff(ped, mod, term = "SOFA",
   z1 = seq(20, 0, length.out = 50), z2 = 10) +
   geom_point(size = rel(.5)) + geom_vline(xintercept = c(5, 25), lty = 2)
