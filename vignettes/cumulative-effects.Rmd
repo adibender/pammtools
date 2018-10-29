@@ -46,8 +46,6 @@ knit_hooks$set(output = function(x, options) {
 ```
 
 
-
-
 This vignette provides a short reference for the estimation and interpretation
 of cumulative effects using **`pammtools`**. For a more detailed overview see
 @Bender2018f. In the first section, a short introduction to cumulative effects
@@ -149,7 +147,7 @@ p_ll <- p_ll1 + p_ll2
 ```
 </details>
 
-```{r, echo = FALSE, fig.width = 7, fig.height = 3.5, out.width="600px", fig.cap="Illustration of three different lag-lead windows."}
+```{r, echo = FALSE, fig.width = 7, fig.height = 3.5, out.width="600px", fig.cap="Illustration of two different lag-lead windows."}
 p_ll
 ```
 
@@ -229,10 +227,23 @@ event_df %>% head()
 tdc_df %>% head()
 ```
 
-```{r fig.width = 6, fig.height = 4, echo = FALSE, out.height = "300px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each dot represents a measurement."}
+```{r fig.width = 6, fig.height = 4, echo = FALSE, out.height = "300px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each dot represents a measurement. FS: Each row represents a patient, SOFA score at day x represented by color. Patients sorted according to length of observation and mean SOFA score."}
 ggplot(tdc_df, aes(x = day, y = SOFA, group = ID)) +
   geom_point(alpha = 0.5, size = rel(0.5)) +
   geom_line(alpha = 0.5)
+
+# FS: alternativ
+tdc_df %>% group_by(ID) %>% 
+  mutate(
+    sort = 1000 * sum(!is.na(SOFA)) + 
+      rep(mean(SOFA, na.rm = TRUE), sum(!is.na(SOFA)))) %>%
+  ungroup() %>% 
+  mutate(ID = factor(ID) %>%  reorder(sort, mean)) %>% 
+
+  ggplot(aes(x = day, fill = SOFA, y = ID)) +
+  geom_raster() + scale_fill_viridis_c() + 
+  theme(axis.text.y = element_blank()) + 
+  scale_y_discrete("patients", breaks = NULL)
 ```
 
 ### Data transformation
@@ -308,23 +319,21 @@ process:
 
   - `gg_tensor`: This visualizes 2D effect surfaces as heat maps/contour plots and
   is based on the output of `mgcv::plot.gam`
-  - `gg_partial` and `gg_partial_ll`: The former visualizes the partial
-  effect, e.g., $h(t-t_z, z(t_z))$ for each combination of the (specified)
+  - `gg_partial` and `gg_partial_ll`: The former visualizes the estimated partial
+  effect, e.g., $\hat h(t-t_z, z(t_z))$ for each combination of the (specified)
   input, the latter visualizes the partial effects as a heat-map within the
   specified lag-lead window (this makes it easier to see which partial effects
   actually contribute to the cumulative effect in a specific interval)
   - `gg_slice`: Plots 1D slices of 2D surfaces and can be used more generally
   to plot covariate effects conditional on pre-specified values of other covariates.
-  - `gg_cumu_eff`: Either plots the cumulative effect for a concrete specification
-  of $g(\mathbf{z}, t)$ or the (log-) hazard ratio
-  $\log\frac{g(\mathbf{z}_1, t)}{g(\mathbf{z}_2, t)}$
+  - `gg_cumu_eff`: Either plots the estimated cumulative effect $\hat g(\mathbf{z}, t)$ for a given $\mathbf{z}$ or the (log-) hazard ratio  $\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)$
 
 Note that for each of these plot functions there are respective functions to
 retrieve the data used for plotting such that the plots can be generated and
 customized manually (see especially examples in `make_newdata`).
 
 #### 2D partial effect surface
-The below code visualizes the 2D partial effect $h(t-t_z, z(t_z))$ for each
+The code below visualizes the estimated 2D partial effect $\hat h(t-t_z, z(t_z))$ for each
 combination of latency and SOFA score (including confidence intervals).
 The gray areas indicate combinations that did not occur in the data.
 
@@ -338,7 +347,7 @@ if it was observed recently (latency $<$ 2 days), while partial effects of the
 SOFA score observed further in the past (latency $>$ 3 days) go towards zero
 (the event of interest is "extubation", therefore increased (log-)hazards
 imply increased probabilities of extubation). Note that for this graphic,
-the function $h(t-t_z, z(t_z))$ is evaluated at values of $t-t_z$ (`day_latency`)
+the function $\hat h(t-t_z, z(t_z))$ is evaluated at values of $t-t_z$ (`day_latency`)
 that are not present in the data.
 
 Alternatively, the function `gg_partial` can be used to produce similar
@@ -366,15 +375,22 @@ p_slice_latency + p_slice_sofa
 ```
 
 These plots contain essentially the same information as the 2D surface, but focus
-on effects of the individual variables. Can be especially useful for
-three-dimensional partial effects.
+on isolating the effects of the individual variables. This can be especially useful for
+three-dimensional partial effects which are hard to visualize otherwise.
 
 #### Cumulative effects
+
+Since it can be difficult to assess how the estimated partial effects actually affect
+estimated hazard rates, **`pammtools`** provides additional functions to visualize and
+compare estimated cumulative effects on the level of the (log-)hazard rates for given 
+TDCs $\mathbf{z}$.
+
 Below, we visualize the cumulative effect in each interval of the follow-up.
-Since the effect depends on a TDC $\mathbf{z}$, it must be provided in the call
-to `gg_cumu_eff` as `z1` argument (either length 1 or number of intervals of the
-follow-up). If `z2` is additionally specified, the log-hazard ratio is calculated
-$\frac{g(\mathbf{z}_1, t)}{g(\mathbf{z}_2, t)}$. Below, two such log-hazard
+Since the effect depends on a TDC $\mathbf{z}$, its values must be provided in the call
+to `gg_cumu_eff` as `z1` argument (either length 1 for time-constant values or 
+length equal to number of intervals of the follow-up). 
+If `z2` is additionally specified, the log-hazard ratio is calculated
+as $\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)$. Below, two such log-hazard
 ratios are visualized for two different comparisons of SOFA score profiles:
 
   - On the left hand side, a patient with SOFA scores continuously decreasing
