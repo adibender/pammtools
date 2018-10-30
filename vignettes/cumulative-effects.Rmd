@@ -229,7 +229,7 @@ event_df %>% head()
 tdc_df %>% head()
 ```
 
-```{r fig.width = 6, fig.height = 4, echo = FALSE, out.height = "300px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each dot represents a measurement."}
+```{r fig.width = 6, fig.height = 4, echo = FALSE, out.width = "600px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each dot represents a measurement."}
 ggplot(tdc_df, aes(x = day, y = SOFA, group = ID)) +
   geom_point(alpha = 0.5, size = rel(0.5)) +
   geom_line(alpha = 0.5)
@@ -275,11 +275,11 @@ Note that the data now contains 3 matrix columns (`day_latency`, `SOFA` and
 
 
 
-```{r, fig.width = 4, fig.height = 4, out.height = "300px"}
+```{r}
 str(ped, 1)
 ```
 
-```{r, echo = FALSE, fig.width = 4, fig.height=4, out.height = "300px", fig.cap = "Lag-lead window for the first 10 days of the follow-up."}
+```{r, echo = FALSE, fig.width = 4, fig.height = 4, out.width = "400px", fig.cap = "Lag-lead window for the first 10 days of the follow-up."}
 ll_df <- get_laglead(ped)
 ll_df <- ll_df %>% filter(t <= 10, tz <=10)
 class(ll_df) <- c("LL_df", class(ll_df))
@@ -346,7 +346,7 @@ visualizations and allows more control over the inputs. For example, the
 following code produces the partial effect surface plot evaluated only at
 latencies 0 through 5 and calculates the partial effects relative to a patient
 with SOFA score 10 (everything else being equal):
-```{r fig.width = 4, fig.height = 4, out.height = "300px"}
+```{r fig.width = 4, fig.height = 4, out.width = "400px"}
 gg_partial(ped, mod, term = "SOFA", day_latency = 0:5,
   SOFA = seq_range(SOFA, n = 20), LL = c(1), reference = list(SOFA = 10))
 ```
