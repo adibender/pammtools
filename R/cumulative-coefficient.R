@@ -125,15 +125,17 @@ cumu_coef <- function(data, model, term, ...) {
 #' @inherit get_cumu_coef
 #' @keywords internal
 get_cumu_coef_baseline <- function(data, model, ...) {
-  ped_info(data) %>%
+  data %>%
     mutate_at(
       .vars = vars(-one_of(c("tstart", "tend", "intlen", "intmid", "interval"))),
-      .funs = ~0) %>% add_cumu_hazard(model) %>%
+      .funs = ~0) %>%
+    add_cumu_hazard(model) %>%
     mutate(
       method      = class(model)[1],
       variable    = "(Intercept)") %>%
-    rename("time" = "tstart") %>%
-    select(one_of(c("method", "variable", "time")), everything())
+    rename("time" = "tend") %>%
+    select(one_of(c("method", "variable", "time", "cumu_hazard", "cumu_lower",
+      "cumu_upper")))
 }
 
 
