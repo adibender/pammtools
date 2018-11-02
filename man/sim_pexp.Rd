@@ -94,5 +94,4 @@ sim_df <- sim_pexp(
      fcumu(t, tz2, z.tz2, f_xyz=f_xyz2, ll_fun=ll_fun2),
   data = df,
   cut = 0:10)
-plot(survfit(Surv(time, status)~1, data = sim_df ))
 }

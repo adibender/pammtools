@@ -75,11 +75,6 @@ to the paired geom/stat.}
 is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
 row to the data, if not already the case.
 }
-\section{Aesthetics}{
-
-\Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "line")}
-}
-
 \examples{
 library(ggplot2)
 library(pammtools)

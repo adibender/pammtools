@@ -2,9 +2,9 @@
 output: github_document
 ---
 
-```{r options, echo=FALSE}
+```{r options, echo = FALSE}
 library(knitr)
-opts_chunk$set(warning=FALSE)
+opts_chunk$set(warning = FALSE)
 ```
 
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -26,7 +26,7 @@ devtools::install_github("adibender/pammtools")
 ```
 
 ### Overview
-`pammtools` offers various utilities and convenience functions that
+**`pammtools`** offers various utilities and convenience functions that
 facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).
 
 To get started, see the [Articles](articles/index.html) section.

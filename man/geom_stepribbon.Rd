@@ -60,11 +60,6 @@ to the paired geom/stat.}
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
 or a confidence band.
 }
-\section{Aesthetics}{
-
-\Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "ribbon")}
-}
-
 \examples{
 library(ggplot2)
 huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
@@ -77,8 +72,5 @@ h + geom_ribbon(aes(ymin = level - 1, ymax = level + 1), fill = "grey70") +
 \seealso{
 \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
   inherits from \code{geom_ribbon}.
-}
-\author{
-Triad Sou <triadsou@gmail.com>
 }
 \keyword{datasets}
