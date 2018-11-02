@@ -15,4 +15,4 @@ branches:
     - master
 
 after_success:
-  - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
+  - Rscript -e 'covr::package_coverage(type="all", line_exclusions="R/zzz.R")'
