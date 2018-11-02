@@ -57,18 +57,20 @@ test_that("Transformation of regular survival data works", {
 
 test_that("Error on wrong input", {
   ## preparations
-  data("veteran", package="survival")
+  data("veteran", package = "survival")
   veteran <- veteran[c(1:3, 135:137), ]
 
   ## tests
-  expect_error(as_ped(veteran, x~y, cut=c(0:5, 10, 40)))
-  expect_error(as_ped(veteran, Surv(time2, status)~., cut=c(0:5, 10, 40)))
-  expect_error(as_ped(data=rename(veteran, ped_time=time), Surv(ped_time, status)~.))
+  expect_error(as_ped(veteran, x ~ y, cut = c(0:5, 10, 40)))
+  expect_error(as_ped(veteran, Surv(time2, status) ~., cut = c(0:5, 10, 40)))
+  expect_error(as_ped(
+    data = rename(veteran, ped_time = time),
+    formula = Surv(ped_time, status) ~.))
   # already in data set ped_time
 
   ## error when specified id variable not unique
   veteran$id <- rep(1:2, 3)
   expect_error(
-    as_ped(veteran, Surv(time, status)~trt, cut=c(0, 100, 400), id="id"),
-    regexp="Specified ID variable.*")
+    as_ped(veteran, Surv(time, status) ~ trt, cut = c(0, 100, 400), id = "id"),
+    regexp = "Specified ID variable.*")
 })

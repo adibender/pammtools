@@ -7,7 +7,6 @@ pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)
 bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset, method = "fREML", discrete = TRUE)
-
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
