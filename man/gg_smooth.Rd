@@ -3,14 +3,11 @@
 \name{gg_smooth}
 \alias{gg_smooth}
 \alias{gg_smooth.default}
-\alias{gg_smooth.pamm}
 \title{Plot smooth 1d terms of gam objects}
 \usage{
 gg_smooth(x, ...)
 
 \method{gg_smooth}{default}(x, fit, ...)
-
-\method{gg_smooth}{pamm}(x, ...)
 }
 \arguments{
 \item{x}{A data frame or object of class \code{pamm}.}
@@ -34,4 +31,3 @@ gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
 \seealso{
 get_terms
 }
-\keyword{internal}

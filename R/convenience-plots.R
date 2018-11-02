@@ -37,22 +37,6 @@ gg_smooth.default <- function(x, fit, ...) {
 
 }
 
-#' @rdname gg_smooth
-#' @keywords internal
-gg_smooth.pamm <- function(x, ...) {
-
-  smooths1d <- tidy_smooth(unpam(x)) %>%
-  mutate(
-    ci_lower = .data$fit - .data$se,
-    ci_upper = .data$fit + .data$se)
-
-  ggplot(smooths1d, aes_string(x = "x", y = "fit")) +
-  geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3) +
-  geom_line() +
-  facet_wrap(~ylab)
-
-}
-
 #' Plot tensor product effects
 #'
 #' Given a gam model this convenience function returns a \code{ggplot2} object
