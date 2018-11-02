@@ -6,9 +6,6 @@
 #' is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
 #' row to the data, if not already the case.
 #'
-#' @section Aesthetics:
-#' \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "line")}
-#'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_line}},
 #'   \code{\link[ggplot2]{geom_step}}.
@@ -66,7 +63,6 @@ geom_hazard <- function(
 #' @format NULL
 #' @usage NULL
 #' @export
-
 GeomHazard <- ggproto(
   "GeomHazard", GeomLine,
   setup_data = function(data, params) {

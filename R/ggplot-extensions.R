@@ -6,9 +6,6 @@
 #' is optimized for Kaplan-Meier plots with pointwise confidence intervals
 #' or a confidence band.
 #'
-#' @section Aesthetics:
-#' \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "ribbon")}
-#'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
 #'   inherits from \code{geom_ribbon}.
@@ -23,7 +20,6 @@
 #'     geom_line(aes(y = level))
 #' @rdname geom_stepribbon
 #' @importFrom ggplot2 layer GeomRibbon
-#' @author Triad Sou <triadsou@@gmail.com>
 #' @export
 geom_stepribbon <- function(
   mapping     = NULL,
