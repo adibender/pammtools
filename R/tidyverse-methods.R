@@ -150,21 +150,6 @@ mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
   return(.data)
 }
 
-#' @inheritParams dplyr::mutate_all
-#' @export
-#' @export mutate_each
-#' @rdname dplyr_verbs
-mutate_each.ped <- function(tbl, funs, ..., keep_attributes=TRUE) {
-  if (keep_attributes) {
-    data_attr   <- ped_attr(tbl)
-  }
-  tbl <- reped(mutate_each(unped(tbl), funs, ...))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  return(tbl)
-}
-
 #' @export
 #' @export rename
 #' @rdname dplyr_verbs
@@ -431,21 +416,6 @@ mutate.nested_fdf <- function(.data, ..., keep_attributes=TRUE) {
     attributes(.data) <- c(attributes(.data), data_attr)
   }
   return(.data)
-}
-
-#' @inheritParams dplyr::mutate_all
-#' @export
-#' @export mutate_each
-#' @rdname dplyr_verbs
-mutate_each.nested_fdf <- function(tbl, funs, ..., keep_attributes=TRUE) {
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(tbl)
-  }
-  tbl <- re_nested_df(mutate_each(un_nested_df(tbl), funs, ...))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  return(tbl)
 }
 
 #' @export
