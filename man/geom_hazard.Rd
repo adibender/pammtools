@@ -79,7 +79,7 @@ row to the data, if not already the case.
 library(ggplot2)
 library(pammtools)
 ped <- tumor[10:50,] \%>\% as_ped(Surv(days, status)~1)
-pam <- pamm(ped_status ~ s(tend), data=ped)
+pam <- mgcv::gam(ped_status ~ s(tend), data=ped, family = poisson(), offset = offset)
 ndf <- make_newdata(ped, tend = unique(tend)) \%>\% add_hazard(pam)
 # piece-wise constant hazards
 ggplot(ndf, aes(x = tend, y = hazard)) +
