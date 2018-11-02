@@ -269,7 +269,7 @@ ped <- as_ped(list(event_df, tdc_df), Surv(time, outcome)~ . |
       ll_fun = function(t, tz) t >= tz &  t <= tz + 5),
     cut = 0:49, # administrative censoring at t = 49
     id = "ID")
-ped$day_latency = ped$day_latency * ped$LL
+ped$day_latency <- ped$day_latency * ped$LL
 ```
 Above, we
 
@@ -291,7 +291,7 @@ str(ped, 1)
 
 ```{r, echo = FALSE, fig.width = 4, fig.height = 4, out.width = "400px", fig.cap = "Lag-lead window for the first 10 days of the follow-up."}
 ll_df <- get_laglead(ped)
-ll_df <- ll_df %>% filter(t <= 10, tz <=10)
+ll_df <- ll_df %>% filter(t <= 10, tz <= 10)
 class(ll_df) <- c("LL_df", class(ll_df))
 gg_laglead(ll_df)
 ```
@@ -366,9 +366,9 @@ time-variation was specified.
 #### 1D conditional effects (slices through the 2D surface):
 
 ```{r, fig.width = 8, fig.height = 4, out.width = "650px"}
-p_slice_latency = gg_slice(ped, mod, term = "SOFA",
+p_slice_latency <- gg_slice(ped, mod, term = "SOFA",
   day_latency = unique(day_latency), SOFA = c(0, 5, 10))
-p_slice_sofa = gg_slice(ped, mod, term = "SOFA",
+p_slice_sofa <- gg_slice(ped, mod, term = "SOFA",
   day_latency = c(0, 1, 4), SOFA = unique(SOFA))
 p_slice_latency + p_slice_sofa
 ```
@@ -388,7 +388,7 @@ visualize and compare estimated cumulative effects on the level of the
 Below, we visualize the cumulative effect in each interval of the follow-up.
 Since the effect depends on a TDC $\mathbf{z}$, its values must be provided in
 the call to `gg_cumu_eff` as `z1` argument (either length 1 for time-constant
-values or length equal to number of intervals of the follow-up).
+values or length equal to maximum number of times $z(t_z)$ was observed).
 If `z2` is additionally specified, the log-hazard ratio is calculated
 as $\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)$.
 Below, two such log-hazard ratios are visualized for two different comparisons
@@ -403,11 +403,12 @@ of SOFA score profiles:
   follow-up.
 
 ```{r fig.width = 8, fig.height = 4, out.width = "650px"}
-p_cumu1 = gg_cumu_eff(ped, mod, term = "SOFA",
+p_cumu1 <- gg_cumu_eff(ped, mod, term = "SOFA",
   z1 = seq(20, 0, length.out = 50), z2 = 10) +
   geom_point(size = rel(.5)) + geom_vline(xintercept = c(5, 25), lty = 2)
-p_cumu2 = gg_cumu_eff(ped, mod, term = "SOFA",
-  z1 = seq(0, 20, length.out = 50), z2 = c(rep(0, 10), rep(20, 20), rep(5, 20))) +
+p_cumu2 <- gg_cumu_eff(ped, mod, term = "SOFA",
+    z1 = seq(0, 20, length.out = 50),
+    z2 = c(rep(0, 10), rep(20, 20), rep(5, 20))) +
   geom_point(size = rel(.5)) + geom_vline(xintercept = c(10, 30), lty = 2)
 p_cumu1 + p_cumu2
 ```
