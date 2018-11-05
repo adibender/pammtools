@@ -1,6 +1,5 @@
 ---
 title: "Stratified baseline"
-author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

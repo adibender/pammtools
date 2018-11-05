@@ -1,6 +1,5 @@
 ---
-title: "Splines"
-author: "Andreas Bender"
+title: "Non-linear effects (penalized splines)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
