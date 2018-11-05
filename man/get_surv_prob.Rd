@@ -4,9 +4,9 @@
 \alias{get_surv_prob}
 \title{Calculate survival probabilities}
 \usage{
-get_surv_prob(newdata, object, ci = TRUE, ci_type = c("default", "delta",
-  "sim"), se_mult = 2L, time_variable = NULL, interval_length = "intlen",
-  nsim = 100L, ...)
+get_surv_prob(newdata, object, ci = TRUE, ci_type = c("default",
+  "delta", "sim"), se_mult = 2L, time_var = NULL,
+  interval_length = "intlen", nsim = 100L, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -24,7 +24,7 @@ to \code{TRUE}}
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
 
-\item{time_variable}{Name of the variable used for the baseline hazard. If
+\item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}

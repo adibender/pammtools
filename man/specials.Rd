@@ -6,10 +6,10 @@
 \alias{has_special}
 \title{Formula specials for defining  time-dependent covariates}
 \usage{
-cumulative(..., tz_var, ll_fun = function(t, tz) {     t >= tz },
+cumulative(..., tz_var, ll_fun = function(t, tz) t >= tz,
   suffix = NULL)
 
-concurrent(..., tz_var, ll_fun = function(t) {     t == t }, suffix = NULL)
+concurrent(..., tz_var, ll_fun = function(t) t == t, suffix = NULL)
 
 has_special(formula, special = "cumulative")
 }
@@ -26,7 +26,7 @@ the TDCs that share the same \code{tz} and Lag-lead window (\code{ll_fun}).}
 times at which the TDCs specified in this term where observed.}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix
-should be contructed. First argument is the follow up time
+should be constructed. First argument is the follow up time
 second argument is the time of exposure.}
 
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object

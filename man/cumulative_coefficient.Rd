@@ -11,9 +11,11 @@ get_cumu_coef(model, data = NULL, terms, ...)
 
 \method{get_cumu_coef}{gam}(model, data, terms, ...)
 
-\method{get_cumu_coef}{aalen}(model, data = NULL, terms, ci = TRUE, ...)
+\method{get_cumu_coef}{aalen}(model, data = NULL, terms, ci = TRUE,
+  ...)
 
-\method{get_cumu_coef}{cox.aalen}(model, data = NULL, terms, ci = TRUE, ...)
+\method{get_cumu_coef}{cox.aalen}(model, data = NULL, terms, ci = TRUE,
+  ...)
 }
 \arguments{
 \item{model}{Object from which to extract cumulative coefficients.}
@@ -29,7 +31,7 @@ coefficient should be calculated.}
 well.}
 }
 \description{
-These functions are designed to extract (or mimick) the cumulative coefficients
+These functions are designed to extract (or mimic) the cumulative coefficients
 usually used in additive hazards models (Aalen model) to depict (time-varying)
 covariate effects. For PAMMs, these are the differences
 between the cumulative hazard rates where all covariates except one have the

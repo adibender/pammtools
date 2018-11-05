@@ -27,7 +27,7 @@
 #' @keywords internal
 cumulative <- function(...,
   tz_var,
-  ll_fun = function(t, tz) {t >= tz},
+  ll_fun = function(t, tz) t >= tz,
   suffix = NULL) {
 
   vars        <- as.list(substitute(list(...)))[-1]
@@ -57,7 +57,7 @@ cumulative <- function(...,
 #' @keywords internal
 concurrent <- function(...,
   tz_var,
-  ll_fun = function(t) {t == t},
+  ll_fun = function(t) t == t,
   suffix = NULL) {
 
   vars     <- as.list(substitute(list(...)))[-1]
@@ -102,7 +102,8 @@ get_cumulative <- function(data, formula) {
   names(tz) <- names(tz_vars) <- names(ll_funs) <- tz_vars
 
   ## create matrices
-  func_mats <- map(func_list, ~expand_cumulative(data=data, ., n_func=n_func)) %>%
+  func_mats <- map(func_list,
+      ~ expand_cumulative(data = data, ., n_func = n_func)) %>%
     flatten()
 
   list(
@@ -122,7 +123,7 @@ eval_special <- function(formula, special="cumulative") {
   # extract components
   if (!is.null(ind_special)) {
     terms_vec <- attr(tf, "term.labels")[ind_special]
-    map(terms_vec, ~eval(expr=parse(text=.)))
+    map(terms_vec, ~eval(expr = parse(text = .x)))
   } else {
     NULL
   }
@@ -136,12 +137,12 @@ eval_special <- function(formula, special="cumulative") {
 #' \code{formula} should be checked
 #' @keywords internal
 has_special <- function(formula, special = "cumulative") {
-  if(!has_tdc_form(formula)) {
+  if (!has_tdc_form(formula)) {
     return(FALSE)
   } else {
-    formula <- formula(Formula(formula), lhs=FALSE, rhs = 2)
-    terms <- terms(formula, specials = special)
-    if(is.null(attr(terms, "specials")[[special]])) {
+    formula <- formula(Formula(formula), lhs = FALSE, rhs = 2)
+    terms   <- terms(formula, specials = special)
+    if (is.null(attr(terms, "specials")[[special]])) {
       return(FALSE)
     } else {
       return(TRUE)
@@ -168,16 +169,17 @@ expand_cumulative <- function(data, func, n_func) {
   }
   ncols_vars <- get_ncols(data, col_vars[!(col_vars == time_var)])
   if (!all(diff(ncols_vars) == 0)) {
-    stop(paste0("The following variables have unequal maximum number of elements per ",
-      id_var, ": ", paste0(col_vars[!(col_vars == time_var)], sep="; ")))
+    stop(paste0(
+      "The following variables have unequal maximum number of elements per ",
+      id_var, ": ", paste0(col_vars[!(col_vars == time_var)], sep = "; ")))
   } else {
     nz <- ncols_vars[1]
   }
 
   # create list of matrices for covariates/time matrices provided in func
   hist_mats <- list()
-  for(i in seq_along(col_vars)) {
-    hist_mats[[i]] <- if(col_vars[i] == attr(data, "time_var")) {
+  for (i in seq_along(col_vars)) {
+    hist_mats[[i]] <- if (col_vars[i] == attr(data, "time_var")) {
       make_time_mat(data, nz)
     } else if (col_vars[i] == func$latency_var) {
       make_latency_mat(data, tz)
@@ -186,12 +188,13 @@ expand_cumulative <- function(data, func, n_func) {
     }
   }
 
-  if(any(c(time_var, tz_var) %in% col_vars)) {
+  if (any(c(time_var, tz_var) %in% col_vars)) {
     hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun)))
     names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
       tz_var, func$suffix, n_func)
     time_mat_ind <- grepl(time_var, names(hist_mats))
-    names(hist_mats)[time_mat_ind] <- paste0(names(hist_mats)[time_mat_ind], "_mat")
+    names(hist_mats)[time_mat_ind] <- paste0(names(hist_mats)[time_mat_ind],
+      "_mat")
   } else {
     names(hist_mats) <- make_mat_names(col_vars, func$latency_var, tz_var,
       func$suffix, n_func)
@@ -218,8 +221,8 @@ prep_concurrent.list <- function(x, formula, ...) {
 
   lgl_concurrent <- has_special(formula, "concurrent")
 
-  if(lgl_concurrent) {
-    ccr_list    <- eval_special(formula, special="concurrent")
+  if (lgl_concurrent) {
+    ccr_list    <- eval_special(formula, special = "concurrent")
     ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
     ccr_time    <- map2(ccr_tz_vars, x, ~get_tz(.y, .x)) %>%
       reduce(union) %>% sort()
@@ -247,14 +250,14 @@ add_concurrent <- function(ped, data, id_var) {
 
   ccr <- attr(data, "ccr")
 
-  for(ccr_i in ccr[["ccr_list"]]) {
+  for (ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
     tz_var_i   <- ccr_i[["tz_var"]]
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
     ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
       unnest()
     ped <- ped %>%
-      left_join(ccr_i_df, by = c(id_var, "tstart"=tz_var_i)) %>%
+      left_join(ccr_i_df, by = c(id_var, "tstart" = tz_var_i)) %>%
       group_by(!!sym(id_var)) %>%
       fill(tdc_vars_i)
 
@@ -272,7 +275,7 @@ add_cumulative <- function(ped, data, formula) {
 
   func_components <- get_cumulative(data, formula)
   func_matrices <- func_components$func_mats
-  for(i in seq_along(func_matrices)) {
+  for (i in seq_along(func_matrices)) {
     ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
   }
   attr(ped, "func")           <- func_components$func_list
@@ -289,19 +292,24 @@ make_mat_names <- function(x, ...) {
 }
 
 #' @keywords internal
-make_mat_names.default <- function(col_vars, latency_var=NULL, tz_var=NULL, suffix=NULL,
-  nfunc = 1) {
+make_mat_names.default <- function(
+  col_vars,
+  latency_var = NULL,
+  tz_var      = NULL,
+  suffix      = NULL,
+  nfunc       = 1) {
 
   if (!is.null(suffix)) {
-    return(paste(col_vars, suffix, sep="_"))
+    return(paste(col_vars, suffix, sep = "_"))
   } else {
     if (!is.null(tz_var) & nfunc > 1)  {
       tz_ind <- col_vars == tz_var
-      col_vars[!tz_ind] <- paste(col_vars[!tz_ind], tz_var,  sep="_")
+      col_vars[!tz_ind] <- paste(col_vars[!tz_ind], tz_var,  sep = "_")
     }
     if (!is.null(latency_var)) {
       latency_ind <- col_vars == latency_var
-      col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency", sep="_")
+      col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency",
+        sep = "_")
     }
   }
 
@@ -316,8 +324,9 @@ make_mat_names.list <- function(func_list, time_var) {
     nfunc = length(func_list)))
 
   time_mat_ind <- map(hist_names, ~grepl(time_var, .))
-  for(i in seq_along(time_mat_ind)) {
-    hist_names[[i]][time_mat_ind[[i]]] <- paste0(hist_names[[i]][time_mat_ind[[i]]], "_mat")
+  for (i in seq_along(time_mat_ind)) {
+    hist_names[[i]][time_mat_ind[[i]]] <-
+      paste0(hist_names[[i]][time_mat_ind[[i]]], "_mat")
   }
 
   hist_names
@@ -337,7 +346,7 @@ make_time_mat <- function(data, nz) {
 
   brks    <- attr(data, "breaks")
   id_tseq <- attr(data, "id_tseq")
-  Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol=nz)
+  Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol = nz)
   Tmat
 
 }
@@ -351,7 +360,7 @@ make_latency_mat <- function(data, tz) {
   id_tseq     <- attr(data, "id_tseq")
   Latency_mat <- outer(time, tz, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
-  Latency_mat[id_tseq, , drop=FALSE]
+  Latency_mat[id_tseq, , drop = FALSE]
 
 }
 
@@ -361,14 +370,14 @@ make_latency_mat <- function(data, tz) {
 make_lag_lead_mat <- function(
   data,
   tz,
-  ll_fun = function(t, tz) {(t >= tz)}) {
+  ll_fun = function(t, tz) t >= tz) {
 
-  LL <- outer(attr(data, "breaks"), tz, FUN=ll_fun)*1L
+  LL    <- outer(attr(data, "breaks"), tz, FUN = ll_fun) * 1L
   delta <- abs(diff(tz))
-  IW <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
-    byrow=TRUE)
-  LL <- LL * IW
-  LL[attr(data, "id_tseq"), , drop=FALSE]
+  IW    <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
+    byrow = TRUE)
+  LL    <- LL * IW
+  LL[attr(data, "id_tseq"), , drop = FALSE]
 
 }
 
@@ -376,20 +385,24 @@ make_lag_lead_mat <- function(
 #' @inherit make_time_mat
 #' @param z_var Which should be transformed into functional covariate format
 #' suitable to fit cumulative effects in \code{mgcv::gam}.
-#' @importFrom purrr map
+#' @importFrom purrr map map_int
 #' @importFrom dplyr pull
 #' @keywords internal
 make_z_mat <- function(data, z_var, nz, ...) {
 
   tz_ind <- seq_len(nz)
-  Z <- map(data[[z_var]], .f=~unlist(.x)[tz_ind])
+  Z <- map(data[[z_var]], .f = ~ unlist(.x)[tz_ind])
   Z <- do.call(rbind, Z)
-  Z[attr(data, "id_tz_seq"), , drop=FALSE]
+  colnames(Z) <- paste0(z_var, tz_ind)
+  Z[is.na(Z)] <- 0
+  Z[attr(data, "id_tz_seq"), , drop = FALSE]
 
  }
 
 get_ncols <- function(data, col_vars) {
-  map(col_vars, function(var) pull(data, var)) %>%
-    map_int(function(z) max(map_int(z, ~ifelse(is_atomic(.), length(.), nrow(.)))))
+
+  map(col_vars, ~pull(data, .x) %>% map_int(function(z)
+    ifelse(is.atomic(z), length(z), nrow(z)))) %>%
+  map_int(max)
 
 }

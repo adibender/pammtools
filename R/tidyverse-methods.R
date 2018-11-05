@@ -38,8 +38,8 @@ fped_attr <- function(fped) {
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
 #' @import dplyr
-#' @aliases arrange filter distinct_ full_join group_by group_by_ inner_join left_join mutate mutate_each rename rename_ right_join sample_frac sample_n select select_ slice summarise summarise_each transmute ungroup
-# FIXME: replace deprecated "underscore" verbs, [summarise|mutate]_each
+#' @aliases arrange filter distinct_ full_join group_by group_by_ inner_join left_join mutate rename rename_ right_join sample_frac sample_n select select_ slice summarise transmute ungroup
+# FIXME: replace deprecated "underscore" verbs
 #' @keywords internal
 NULL
 
@@ -150,21 +150,6 @@ mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
   return(.data)
 }
 
-#' @inheritParams dplyr::mutate_all
-#' @export
-#' @export mutate_each
-#' @rdname dplyr_verbs
-mutate_each.ped <- function(tbl, funs, ..., keep_attributes=TRUE) {
-  if (keep_attributes) {
-    data_attr   <- ped_attr(tbl)
-  }
-  tbl <- reped(mutate_each(unped(tbl), funs, ...))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  return(tbl)
-}
-
 #' @export
 #' @export rename
 #' @rdname dplyr_verbs
@@ -188,13 +173,6 @@ summarise.ped <- function(.data, ...) {
 #' @export
 #' @rdname dplyr_verbs
 summarize.ped <- summarise.ped
-
-#' @export
-#' @export summarise_each
-#' @rdname dplyr_verbs
-summarise_each.ped <- function(tbl, funs, ...) {
-  reped(summarise_each(unped(tbl), funs,...))
-}
 
 #' @export
 #' @export transmute
@@ -433,21 +411,6 @@ mutate.nested_fdf <- function(.data, ..., keep_attributes=TRUE) {
   return(.data)
 }
 
-#' @inheritParams dplyr::mutate_all
-#' @export
-#' @export mutate_each
-#' @rdname dplyr_verbs
-mutate_each.nested_fdf <- function(tbl, funs, ..., keep_attributes=TRUE) {
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(tbl)
-  }
-  tbl <- re_nested_df(mutate_each(un_nested_df(tbl), funs, ...))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  return(tbl)
-}
-
 #' @export
 #' @export rename
 #' @rdname dplyr_verbs
@@ -473,13 +436,6 @@ summarise.nested_fdf <- function(.data, ...) {
 summarize.nested_fdf <- summarise.nested_fdf
 
 #' @export
-#' @export summarise_each
-#' @rdname dplyr_verbs
-summarise_each.nested_fdf <- function(tbl, funs, ...) {
-  re_nested_df(summarise_each(un_nested_df(tbl), funs,...))
-}
-
-#' @export
 #' @export transmute
 #' @rdname dplyr_verbs
 transmute.nested_fdf <- function(.data, ...) {
@@ -493,7 +449,8 @@ transmute.nested_fdf <- function(.data, ...) {
 #' @export
 #' @export inner_join
 #' @rdname dplyr_verbs
-inner_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+inner_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"),
   ...) {
   #FIXME?
   re_nested_df(inner_join(un_nested_df(x), y, by, copy, suffix, ...))
@@ -503,7 +460,8 @@ inner_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x"
 #' @export
 #' @export full_join
 #' @rdname dplyr_verbs
-full_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+full_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"),
   ...) {
   #FIXME?
   re_nested_df(full_join(un_nested_df(x), y, by, copy, suffix, ...))

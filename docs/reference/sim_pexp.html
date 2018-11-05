@@ -79,19 +79,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -102,36 +96,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -208,7 +205,7 @@ below.</p></td>
 <span class='co'># set number of observations/subjects</span>
 <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>250</span>
 <span class='co'># create data set with variables which will affect the hazard rate.</span>
-<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'>cbind.data.frame</span>(<span class='kw'>x1</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='no'>n</span>, -<span class='fl'>3</span>, <span class='fl'>3</span>), <span class='kw'>x2</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>6</span>)) <span class='kw'>%&gt;%</span>
+<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'>cbind.data.frame</span>(<span class='kw'>x1</span> <span class='kw'>=</span> <span class='fu'>runif</span> (<span class='no'>n</span>, -<span class='fl'>3</span>, <span class='fl'>3</span>), <span class='kw'>x2</span> <span class='kw'>=</span> <span class='fu'>runif</span> (<span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>6</span>)) <span class='kw'>%&gt;%</span>
  <span class='fu'><a href='http://dplyr.tidyverse.org/reference/reexports.html'>as_tibble</a></span>()
 <span class='co'># the formula which specifies how covariates affet the hazard rate</span>
 <span class='no'>f0</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>) {
@@ -237,10 +234,10 @@ below.</p></td>
 <span class='fu'>library</span>(<span class='no'>mgcv</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: nlme</span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: ‘nlme’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:dplyr’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    collapse</span></div><div class='output co'>#&gt; <span class='message'>This is mgcv 1.8-23. For overview type 'help("mgcv-package")'.</span></div><div class='input'><span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>tend</span>) + <span class='no'>x1</span> + <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>x2</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='no'>poisson</span>, <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
+#&gt; <span class='message'>    collapse</span></div><div class='output co'>#&gt; <span class='message'>This is mgcv 1.8-24. For overview type 'help("mgcv-package")'.</span></div><div class='input'><span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>tend</span>) + <span class='no'>x1</span> + <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>x2</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='no'>poisson</span>, <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
 <span class='fu'>coef</span>(<span class='no'>pam</span>)[<span class='fl'>2</span>]</div><div class='output co'>#&gt;         x1 
 #&gt; -0.5534093 </div><div class='input'><span class='fu'>plot</span>(<span class='no'>pam</span>, <span class='kw'>page</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='sim_pexp-3.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Example 2: Functional covariates/cumulative coefficients</span>
+<span class='co'># Example 2: Functional covariates/cumulative coefficients</span>
 <span class='co'># function to generate one exposure profile, tz is a vector of time points</span>
 <span class='co'># at which TDC z was observed</span>
 <span class='no'>rng_z</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>nz</span>) {
@@ -290,7 +287,7 @@ below.</p></td>
      <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz1</span>, <span class='no'>z.tz1</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz1</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun</span>) +
      <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz2</span>, <span class='no'>z.tz2</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz2</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun2</span>),
   <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>,
-  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fcumu(t, tz1, z.tz1, f_xyz = f_xyz1, ll_fun = ll_fun): object 'f_xyz1' not found</span></div><div class='input'><span class='fu'>plot</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/survfit'>survfit</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>sim_df</span> ))</div><div class='img'><img src='sim_pexp-4.png' alt='' width='700' height='433' /></div></pre>
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fcumu(t, tz1, z.tz1, f_xyz = f_xyz1, ll_fun = ll_fun): object 'f_xyz1' not found</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

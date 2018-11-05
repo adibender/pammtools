@@ -1,6 +1,5 @@
 ---
 title: "Data Transformation"
-author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -55,9 +54,9 @@ data("veteran", package = "survival")
 veteran <- veteran %>%
   mutate(
     id    = row_number(),
-    trt   = 1*(trt == 2),
-    prior = 1*(prior != 0)) %>%
-  select(id,everything())
+    trt   = 1L * (trt == 2),
+    prior = 1L * (prior != 0)) %>%
+  select(id, everything())
 head(veteran)
 ```
 
@@ -103,12 +102,12 @@ which subject $i$ was in the risk set.
 
 
 ### Custom cut points
-Per default the `as_ped` function uses all unique event times as cut points
+Per default, the `as_ped` function uses all unique event times as cut points
 (which is a sensible default as for example the (cumulative) baseline hazard
-estimates in Cox-PH functions are updated also only at event times).
+estimates in Cox-PH functions are also updated at event times).
 
 In some cases, however, one might want to reduce the number of cut points,
-to reduce the size of the resulting data object and/or faster estimation times.
+to reduce the size of the resulting data and/or faster estimation times.
 To do so the `cut` argument has to be specified.
 Following the above example, we can use only 4 cut points
 $\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$,
@@ -145,9 +144,9 @@ Before the actual data transformation we perform the data preprocessing
 in `vignette("timedep", package="survival")`:
 
 ```{r}
-data("pbc", package="survival")
+data("pbc", package = "survival") # loads pbc and pbcseq
 pbc <- pbc %>% filter(id <= 312) %>%
-  mutate(status = 1L*(status == 2)) %>%
+  mutate(status = 1L * (status == 2)) %>%
   select(id:sex, bili, protime)
 ```
 
@@ -163,7 +162,7 @@ updated.
 ```{r}
 ped_pbc <- as_ped(
   data    = list(pbc, pbcseq),
-  formula = Surv(time, status)~.|concurrent(bili, protime, tz_var = "day"),
+  formula = Surv(time, status) ~ . | concurrent(bili, protime, tz_var = "day"),
   id      = "id")
 ```
 
@@ -287,7 +286,7 @@ however, you can override the suffix by specifying the
 ped <- as_ped(
   data    = list(patient, daily),
   formula = Surv(survhosp, PatientDied) ~ . |
-    cumulative(latency(Study_Day), caloriesPercentage, tz_var="Study_Day"),
+    cumulative(latency(Study_Day), caloriesPercentage, tz_var = "Study_Day"),
   cut     = 0:30,
   id = "CombinedID")
 str(ped, 1)
@@ -349,19 +348,19 @@ specifications as illustrated below:
 ```{r}
 ped_sim <- as_ped(
   data = simdf_elra,
-  formula = Surv(time, status)~.| cumulative(time, latency(tz1), z.tz1, tz_var="tz1") +
+  formula = Surv(time, status) ~ . |
+    cumulative(time, latency(tz1), z.tz1, tz_var = "tz1") +
     cumulative(latency(tz2), z.tz2, tz_var = "tz2"),
   cut = 0:10,
   id = "id")
-str(ped_sim,1)
+str(ped_sim, 1)
 ```
 
 Note how the matrix covariates associated with `tz1` have 10 columns while
 matrix covariates associated with `tz2` have 11 columns. Note also that
 the lag-lead matrices differ
-```{r}
-ped_sim %>% select(id, LL_tz1) %>% head(16)
-ped_sim %>% select(id, LL_tz2) %>% head(16)
+```{r, fig.width = 8, out.width = "600px"}
+gg_laglead(ped_sim)
 ```
 
 ## References

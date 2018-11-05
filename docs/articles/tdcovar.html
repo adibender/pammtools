@@ -38,18 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,36 +55,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -119,9 +116,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Time-dependent covariates</h1>
-                        <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-06-03</h4>
+            <h4 class="date">2018-11-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/tdcovar.Rmd"><code>vignettes/tdcovar.Rmd</code></a></small>
       <div class="hidden name"><code>tdcovar.Rmd</code></div>
@@ -133,7 +129,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyr)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>())</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(survival)</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(mgcv)</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(pammtools)</a>
@@ -154,7 +150,7 @@
 <p>In this example we don’t need a dedicated function for transformation, as we basically just need to transform the data into long format (equals splitting at each week for which subjects are in the risk set):</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># transform into long format</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">recidivism_long &lt;-<span class="st"> </span>recidivism <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/gather">gather</a></span>(calendar.week, employed, emp1<span class="op">:</span>emp52) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(calendar.week, employed, emp1<span class="op">:</span>emp52) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(<span class="op">!</span><span class="kw">is.na</span>(employed)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># employed unequal to NA only for intervals under risk</span></a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">group_by</a></span>(subject) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(</a>
@@ -217,19 +213,19 @@
 <a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">Method =</span> <span class="kw">factor</span>(Method, <span class="dt">levels=</span><span class="dv">2</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">labels=</span><span class="kw">c</span>(<span class="st">"Cox-PH"</span>, <span class="st">"PAM"</span>)))</a>
 <a class="sourceLine" id="cb8-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb8-8" data-line-number="8">## plot of fixed coefficients</a>
-<a class="sourceLine" id="cb8-9" data-line-number="9">coef_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(all_eff, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>variable, <span class="dt">y=</span>coef, <span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline">geom_hline</a></span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">lty=</span><span class="dv">3</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_linerange">geom_pointrange</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span>Method, <span class="dt">shape=</span>Method),</a>
-<a class="sourceLine" id="cb8-12" data-line-number="12">    <span class="dt">position=</span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/position_dodge">position_dodge</a></span>(<span class="dt">width=</span><span class="fl">0.5</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">coef_gg &lt;-<span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(all_eff, <span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x=</span>variable, <span class="dt">y=</span>coef, <span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">lty=</span><span class="dv">3</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_linerange.html">geom_pointrange</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">col=</span>Method, <span class="dt">shape=</span>Method),</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">    <span class="dt">position=</span><span class="kw"><a href="ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span>(<span class="dt">width=</span><span class="fl">0.5</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span>(</a>
 <a class="sourceLine" id="cb8-14" data-line-number="14">    <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">1</span>, Set1[<span class="dv">1</span>]),</a>
 <a class="sourceLine" id="cb8-15" data-line-number="15">    <span class="dt">limits =</span> <span class="kw">rev</span>(<span class="kw">levels</span>(all_eff<span class="op">$</span>Method))) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_shape_manual</a></span>(</a>
+<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/scale_manual.html">scale_shape_manual</a></span>(</a>
 <a class="sourceLine" id="cb8-17" data-line-number="17">    <span class="dt">values =</span> <span class="kw">c</span>(<span class="dv">19</span>, <span class="dv">15</span>),</a>
 <a class="sourceLine" id="cb8-18" data-line-number="18">    <span class="dt">limits =</span> <span class="kw">rev</span>(<span class="kw">levels</span>(all_eff<span class="op">$</span>Method))) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/coord_flip">coord_flip</a></span>(<span class="dt">ylim=</span><span class="kw">range</span>(<span class="op">-</span><span class="fl">1.5</span>, <span class="dv">1</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-20" data-line-number="20"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(beta)<span class="op">%+-%</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">%.%</span><span class="st"> </span>SE)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-21" data-line-number="21"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">""</span>)</a>
+<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span>(<span class="dt">ylim=</span><span class="kw">range</span>(<span class="op">-</span><span class="fl">1.5</span>, <span class="dv">1</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-20" data-line-number="20"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(beta)<span class="op">%+-%</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">%.%</span><span class="st"> </span>SE)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">""</span>)</a>
 <a class="sourceLine" id="cb8-22" data-line-number="22"></a>
 <a class="sourceLine" id="cb8-23" data-line-number="23">## to visualize smooth effect of age, create data set where all covariates are</a>
 <a class="sourceLine" id="cb8-24" data-line-number="24">## fixed to mean values except for age, which varies between min and max</a>
@@ -242,15 +238,15 @@
 <a class="sourceLine" id="cb8-31" data-line-number="31"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cphfit =</span> <span class="kw">predict</span>(<span class="dt">object=</span>cph, ., <span class="dt">type=</span><span class="st">"terms"</span>)[,<span class="st">"pspline(age)"</span>])</a>
 <a class="sourceLine" id="cb8-32" data-line-number="32"></a>
 <a class="sourceLine" id="cb8-33" data-line-number="33">## prep plot object for smooth effects</a>
-<a class="sourceLine" id="cb8-34" data-line-number="34">smooth_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(age_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>fit)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-35" data-line-number="35"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-36" data-line-number="36"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-37" data-line-number="37"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>cphfit, <span class="dt">col=</span><span class="st">"Cox-PH"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-38" data-line-number="38"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-39" data-line-number="39"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(x))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position=</span><span class="st">"none"</span>)</a>
+<a class="sourceLine" id="cb8-34" data-line-number="34">smooth_gg &lt;-<span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(age_df, <span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">y=</span>fit)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-35" data-line-number="35"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-36" data-line-number="36"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-37" data-line-number="37"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">y=</span>cphfit, <span class="dt">col=</span><span class="st">"Cox-PH"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-38" data-line-number="38"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-39" data-line-number="39"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="kw">expression</span>(<span class="kw">hat</span>(f)(x))) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position=</span><span class="st">"none"</span>)</a>
 <a class="sourceLine" id="cb8-40" data-line-number="40"></a>
 <a class="sourceLine" id="cb8-41" data-line-number="41">## plot of the age effect</a>
-<a class="sourceLine" id="cb8-42" data-line-number="42">age_gg &lt;-<span class="st"> </span>smooth_gg <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>age) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"Age"</span>)</a>
+<a class="sourceLine" id="cb8-42" data-line-number="42">age_gg &lt;-<span class="st"> </span>smooth_gg <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x=</span>age) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Age"</span>)</a>
 <a class="sourceLine" id="cb8-43" data-line-number="43"></a>
 <a class="sourceLine" id="cb8-44" data-line-number="44"></a>
 <a class="sourceLine" id="cb8-45" data-line-number="45">## same as "age"" for "prio" variable</a>
@@ -260,12 +256,12 @@
 <a class="sourceLine" id="cb8-49" data-line-number="49"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cphfit =</span> <span class="kw">predict</span>(<span class="dt">object=</span>cph, ., <span class="dt">type=</span><span class="st">"terms"</span>)[,<span class="dv">7</span>])</a>
 <a class="sourceLine" id="cb8-50" data-line-number="50"></a>
 <a class="sourceLine" id="cb8-51" data-line-number="51">## plot of the prio effect</a>
-<a class="sourceLine" id="cb8-52" data-line-number="52">prio_gg &lt;-<span class="st"> </span>smooth_gg <span class="op">%+%</span><span class="st"> </span>prio_df <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>prio) <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-53" data-line-number="53"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">xlab</a></span>(<span class="st">"Number of prior convictions"</span>)</a>
+<a class="sourceLine" id="cb8-52" data-line-number="52">prio_gg &lt;-<span class="st"> </span>smooth_gg <span class="op">%+%</span><span class="st"> </span>prio_df <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x=</span>prio) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-53" data-line-number="53"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"Number of prior convictions"</span>)</a>
 <a class="sourceLine" id="cb8-54" data-line-number="54"></a>
 <a class="sourceLine" id="cb8-55" data-line-number="55">## put all plots together</a>
 <a class="sourceLine" id="cb8-56" data-line-number="56">gridExtra<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(</a>
-<a class="sourceLine" id="cb8-57" data-line-number="57">  coef_gg <span class="op">+</span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">legend.position=</span><span class="st">"bottom"</span>),</a>
+<a class="sourceLine" id="cb8-57" data-line-number="57">  coef_gg <span class="op">+</span><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position=</span><span class="st">"bottom"</span>),</a>
 <a class="sourceLine" id="cb8-58" data-line-number="58">  age_gg,</a>
 <a class="sourceLine" id="cb8-59" data-line-number="59">  prio_gg,</a>
 <a class="sourceLine" id="cb8-60" data-line-number="60">  <span class="dt">layout_matrix=</span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="dt">ncol=</span><span class="dv">2</span>))</a></code></pre></div>
@@ -341,11 +337,11 @@
 <a class="sourceLine" id="cb18-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pbc_pam, <span class="dt">term=</span><span class="st">"bili"</span>, <span class="dt">relative=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb18-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cox =</span> <span class="kw">predict</span>(fit2, ., <span class="dt">type=</span><span class="st">"term"</span>)[, <span class="st">"log(bili)"</span>])</a>
 <a class="sourceLine" id="cb18-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb18-10" data-line-number="10">bili_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(bili_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>bili, <span class="dt">y=</span>fit)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>))</a>
+<a class="sourceLine" id="cb18-10" data-line-number="10">bili_gg &lt;-<span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(bili_df, <span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x=</span>bili, <span class="dt">y=</span>fit)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>))</a>
 <a class="sourceLine" id="cb18-15" data-line-number="15"></a>
 <a class="sourceLine" id="cb18-16" data-line-number="16">## Effect of protime</a>
 <a class="sourceLine" id="cb18-17" data-line-number="17">protime_df &lt;-<span class="st"> </span>pbc_ped <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">ungroup</a></span>() <span class="op">%&gt;%</span></a>
@@ -353,11 +349,11 @@
 <a class="sourceLine" id="cb18-19" data-line-number="19"><span class="st">  </span><span class="kw"><a href="../reference/add_term.html">add_term</a></span>(pbc_pam, <span class="dt">term=</span><span class="st">"protime"</span>, <span class="dt">relative=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb18-20" data-line-number="20"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">cox =</span> <span class="kw">predict</span>(fit2, ., <span class="dt">type=</span><span class="st">"term"</span>)[, <span class="st">"log(protime)"</span>])</a>
 <a class="sourceLine" id="cb18-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb18-22" data-line-number="22">protime_gg &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(protime_df, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x=</span>protime, <span class="dt">y=</span>fit)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-23" data-line-number="23"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-24" data-line-number="24"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_ribbon">geom_ribbon</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-25" data-line-number="25"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox"</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-26" data-line-number="26"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_manual">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>))</a>
+<a class="sourceLine" id="cb18-22" data-line-number="22">protime_gg &lt;-<span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(protime_df, <span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x=</span>protime, <span class="dt">y=</span>fit)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-23" data-line-number="23"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">col=</span><span class="st">"PAM"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-24" data-line-number="24"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">ymin=</span>ci_lower, <span class="dt">ymax=</span>ci_upper), <span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-25" data-line-number="25"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">y=</span>cox, <span class="dt">col=</span><span class="st">"Cox"</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-26" data-line-number="26"><span class="st">    </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span>(<span class="dt">name=</span><span class="st">"Method"</span>, <span class="dt">values=</span><span class="kw">c</span>(<span class="st">"#E41A1C"</span>, <span class="st">"#000000"</span>))</a>
 <a class="sourceLine" id="cb18-27" data-line-number="27"></a>
 <a class="sourceLine" id="cb18-28" data-line-number="28">## combine figures</a>
 <a class="sourceLine" id="cb18-29" data-line-number="29">gridExtra<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(bili_gg, protime_gg, <span class="dt">nrow =</span> 1L)</a></code></pre></div>

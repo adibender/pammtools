@@ -82,19 +82,13 @@ Thus most arguments and their documentation below is from predict.gam." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -105,36 +99,39 @@ Thus most arguments and their documentation below is from predict.gam." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -247,16 +244,16 @@ if <code>se.fit = TRUE</code>. Defaults to <code>FALSE</code>.</p></td>
 <span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_term</span>(<span class='no'>pam</span>, <span class='kw'>term</span><span class='kw'>=</span><span class='st'>"tend"</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
 #&gt;    tstart  tend intlen intmid interval    age       fit ci_lower ci_upper
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7  0.367     -0.141     0.874
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7  0.359     -0.135     0.852
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7  0.329     -0.114     0.772
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7  0.319     -0.108     0.747
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7  0.215     -0.0622    0.493
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7  0.123     -0.0694    0.315
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7  0.116     -0.0726    0.305
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7  0.0606    -0.119     0.240
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7  0.000357  -0.202     0.202
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7 -0.00474   -0.210     0.200
+#&gt;  1      0    27     27   13.5 (0,27]     59.7  0.367     -0.141     0.874
+#&gt;  2     27    33      6   30   (27,33]    59.7  0.359     -0.135     0.852
+#&gt;  3     33    55     22   44   (33,55]    59.7  0.329     -0.114     0.772
+#&gt;  4     55    62      7   58.5 (55,62]    59.7  0.319     -0.108     0.747
+#&gt;  5     62   139     77  100.  (62,139]   59.7  0.215     -0.0622    0.493
+#&gt;  6    139   209     70  174   (139,209]  59.7  0.123     -0.0694    0.315
+#&gt;  7    209   214      5  212.  (209,214]  59.7  0.116     -0.0726    0.305
+#&gt;  8    214   257     43  236.  (214,257]  59.7  0.0606    -0.119     0.240
+#&gt;  9    257   304     47  280.  (257,304]  59.7  0.000357  -0.202     0.202
+#&gt; 10    304   308      4  306   (304,308]  59.7 -0.00474   -0.210     0.200
 #&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -24,6 +24,7 @@
 #' The RHS can be an extended formula, which specifies how TDCs should be transformed
 #' using specials \code{concurrent} and \code{cumulative}.
 #' @param ... Further arguments passed to \code{split_data}.
+#' @importFrom Formula Formula
 #' @examples
 #' tumor[1:3, ]
 #' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
@@ -42,7 +43,7 @@ as_ped.data.frame <- function(data, formula, ...) {
 
   dots         <- list(...)
   dots$data    <- data
-  dots$formula <- formula(Formula(formula), lhs=1, rhs=1)
+  dots$formula <- formula(Formula(formula), lhs = 1, rhs = 1)
   ped <- do.call(split_data, dots)
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
@@ -59,14 +60,14 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   dots <- list(...)
   # update interval break points (if neccessary)
   cut <- dots$cut
-  if(is.null(cut)) {
+  if (is.null(cut)) {
     cut <- attr(data, "breaks")
   }
   ccr_breaks <- attr(data, "ccr_breaks")
   cut <- union(cut, ccr_breaks) %>% sort()
 
   ped <- data %>%
-    select_if(is.atomic) %>%
+    select_if (is.atomic) %>%
     as_ped.data.frame(
       formula  = formula,
       id       = dots$id,
@@ -79,16 +80,16 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
   attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
     transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)), times=attr(data, "id_n"))
+  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)), times = attr(data, "id_n"))
 
-  if(has_special(formula, "concurrent")) {
-    ped <- ped %>% add_concurrent(data=data, id_var=dots$id)
+  if (has_special(formula, "concurrent")) {
+    ped <- ped %>% add_concurrent(data = data, id_var = dots$id)
   }
 
-  if(has_special(formula, "cumulative")) {
-    ped <- add_cumulative(ped, data=data, formula=formula)
+  if (has_special(formula, "cumulative")) {
+    ped <- add_cumulative(ped, data = data, formula = formula)
     attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
-      ~bind_cols(!!.y := .x, ll_weight=c(mean(abs(diff(.x))), abs(diff(.x)))))
+      ~bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x)))))
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
@@ -112,7 +113,7 @@ as_ped.list <- function(data, formula, ...) {
   n_rhs <- length(form)[2]
 
   if (nl == 1 & n_rhs == 1) {
-    ped <- data[[1]] %>% as_ped(formula=form, ...)
+    ped <- data[[1]] %>% as_ped(formula = form, ...)
   } else {
     if (nl == 2 & n_rhs == 1) {
     stop("Two data sets provided in 'data' but no specification of

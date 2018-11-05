@@ -12,6 +12,6 @@ simdf_elra
 This is data simulated using the \code{\link[pammtools]{sim_pexp}} function.
 It contains two time-constant and two time-dependent covariates (observed
 on different exposure time grids). The code used for simulation is
-contained in the exmaples of \code{?sim_pexp}.
+contained in the examples of \code{?sim_pexp}.
 }
 \keyword{datasets}

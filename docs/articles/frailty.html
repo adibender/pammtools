@@ -38,18 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,36 +55,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -119,9 +116,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Frailty and random effects</h1>
-                        <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-06-03</h4>
+            <h4 class="date">2018-11-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/frailty.Rmd"><code>vignettes/frailty.Rmd</code></a></small>
       <div class="hidden name"><code>frailty.Rmd</code></div>
@@ -136,7 +132,7 @@
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(pammtools)</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(mgcv)</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme_get">theme_set</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>())</a></code></pre></div>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>())</a></code></pre></div>
 <p>Whenever subjects belonging to a cluster or group could have correlated outcomes, our models must account for such dependency structures. We can do so by including random effects in the model. In the context of survival analysis such effects are called “frailty” terms.</p>
 <div id="ncctg-lung-cancer-data" class="section level2">
 <h2 class="hasAnchor">
@@ -192,7 +188,7 @@
 ## -0.102068 -0.041483 -0.009171  0.000000  0.038432  0.102873</code></pre>
 <ul>
 <li>The effect of <code>ph.ecog</code> was estimated to be about <code>0.5</code> on the log-hazard scale.</li>
-<li>The estimated random intercepts (“frailties”“) for the different institution are all relatively close to zero and have small standard deviation: <code>sd(cme$frail$inst)=</code>0.059,</li>
+<li>The estimated random intercepts (“frailties”") for the different institution are all relatively close to zero and have small standard deviation: <code>sd(cme$frail$inst)=</code>0.059,</li>
 </ul>
 </div>
 <div id="pam-with-gaussian-frailty" class="section level2">
@@ -219,13 +215,13 @@
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-Loprinzi1994">
-<p>Loprinzi, C L, J A Laurie, H S Wieand, J E Krook, P J Novotny, J W Kugler, J Bartel, M Law, M Bateman, and N E Klatt. 1994. “Prospective Evaluation of Prognostic Variables from Patient-Completed Questionnaires. North Central Cancer Treatment Group.” <em>Journal of Clinical Oncology</em> 12 (3):601–7. <a href="https://doi.org/10.1200/JCO.1994.12.3.601" class="uri">https://doi.org/10.1200/JCO.1994.12.3.601</a>.</p>
+<p>Loprinzi, C L, J A Laurie, H S Wieand, J E Krook, P J Novotny, J W Kugler, J Bartel, M Law, M Bateman, and N E Klatt. 1994. “Prospective Evaluation of Prognostic Variables from Patient-Completed Questionnaires. North Central Cancer Treatment Group.” <em>Journal of Clinical Oncology</em> 12 (3): 601–7. <a href="https://doi.org/10.1200/JCO.1994.12.3.601" class="uri">https://doi.org/10.1200/JCO.1994.12.3.601</a>.</p>
 </div>
 <div id="ref-Thernau2015">
 <p>Terry M. Therneau, and Patricia M. Grambsch. 2000. <em>Modeling Survival Data: Extending the Cox Model</em>. New York: Springer.</p>
 </div>
 <div id="ref-Thernau2003">
-<p>Therneau, Terry M., Patricia M. Grambsch, and V. Shane Pankratz. 2003. “Penalized Survival Models and Frailty.” <em>Journal of Computational and Graphical Statistics</em> 12 (1):156–75. <a href="http://www.jstor.org/stable/1391074" class="uri">http://www.jstor.org/stable/1391074</a>.</p>
+<p>Therneau, Terry M., Patricia M. Grambsch, and V. Shane Pankratz. 2003. “Penalized Survival Models and Frailty.” <em>Journal of Computational and Graphical Statistics</em> 12 (1): 156–75. <a href="http://www.jstor.org/stable/1391074" class="uri">http://www.jstor.org/stable/1391074</a>.</p>
 </div>
 </div>
 </div>

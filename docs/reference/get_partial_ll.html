@@ -80,19 +80,13 @@ bivariate surface or  (1D) cumulative effect." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -103,36 +97,39 @@ bivariate surface or  (1D) cumulative effect." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -200,12 +197,101 @@ to an observation specified in <code>reference</code>.</p></td>
     </table>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>200</span>, ] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~<span class='no'>.</span>)
+<span class='no'>model</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span>~<span class='fu'>s</span>(<span class='no'>tend</span>) + <span class='fu'>s</span>(<span class='no'>age</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='no'>complications</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
+<span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>age</span> <span class='kw'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span> <span class='kw'>=</span> <span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='output co'>#&gt;    tstart tend intlen interval       id   offset ped_status charlson_score
+#&gt; 1       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 2       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 3       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 4       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 5       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 6       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 7       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 8       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 9       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 10      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 11      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 12      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 13      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 14      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 15      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 16      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 17      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 18      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 19      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 20      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 21      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 22      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 23      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 24      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 25      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 26      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 27      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 28      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 29      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 30      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 31      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 32      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 33      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 34      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 35      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 36      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 37      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 38      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 39      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt; 40      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
+#&gt;         age  sex transfusion complications metastases resection
+#&gt; 1  16.00000 male          no            no        yes        no
+#&gt; 2  19.89474 male          no            no        yes        no
+#&gt; 3  23.78947 male          no            no        yes        no
+#&gt; 4  27.68421 male          no            no        yes        no
+#&gt; 5  31.57895 male          no            no        yes        no
+#&gt; 6  35.47368 male          no            no        yes        no
+#&gt; 7  39.36842 male          no            no        yes        no
+#&gt; 8  43.26316 male          no            no        yes        no
+#&gt; 9  47.15789 male          no            no        yes        no
+#&gt; 10 51.05263 male          no            no        yes        no
+#&gt; 11 54.94737 male          no            no        yes        no
+#&gt; 12 58.84211 male          no            no        yes        no
+#&gt; 13 62.73684 male          no            no        yes        no
+#&gt; 14 66.63158 male          no            no        yes        no
+#&gt; 15 70.52632 male          no            no        yes        no
+#&gt; 16 74.42105 male          no            no        yes        no
+#&gt; 17 78.31579 male          no            no        yes        no
+#&gt; 18 82.21053 male          no            no        yes        no
+#&gt; 19 86.10526 male          no            no        yes        no
+#&gt; 20 90.00000 male          no            no        yes        no
+#&gt; 21 16.00000 male          no           yes        yes        no
+#&gt; 22 19.89474 male          no           yes        yes        no
+#&gt; 23 23.78947 male          no           yes        yes        no
+#&gt; 24 27.68421 male          no           yes        yes        no
+#&gt; 25 31.57895 male          no           yes        yes        no
+#&gt; 26 35.47368 male          no           yes        yes        no
+#&gt; 27 39.36842 male          no           yes        yes        no
+#&gt; 28 43.26316 male          no           yes        yes        no
+#&gt; 29 47.15789 male          no           yes        yes        no
+#&gt; 30 51.05263 male          no           yes        yes        no
+#&gt; 31 54.94737 male          no           yes        yes        no
+#&gt; 32 58.84211 male          no           yes        yes        no
+#&gt; 33 62.73684 male          no           yes        yes        no
+#&gt; 34 66.63158 male          no           yes        yes        no
+#&gt; 35 70.52632 male          no           yes        yes        no
+#&gt; 36 74.42105 male          no           yes        yes        no
+#&gt; 37 78.31579 male          no           yes        yes        no
+#&gt; 38 82.21053 male          no           yes        yes        no
+#&gt; 39 86.10526 male          no           yes        yes        no
+#&gt; 40 90.00000 male          no           yes        yes        no</div><div class='input'><span class='fu'><a href='gg_partial.html'>gg_slice</a></span>(<span class='no'>ped</span>, <span class='no'>model</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>))</div><div class='img'><img src='get_partial_ll-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='gg_partial.html'>gg_slice</a></span>(<span class='no'>ped</span>, <span class='no'>model</span>, <span class='st'>"age"</span>, <span class='kw'>age</span><span class='kw'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span>(<span class='no'>age</span>, <span class='fl'>20</span>), <span class='kw'>complications</span><span class='kw'>=</span><span class='fu'>levels</span>(<span class='no'>complications</span>),
+  <span class='kw'>reference</span><span class='kw'>=</span><span class='fu'>list</span>(<span class='kw'>age</span> <span class='kw'>=</span> <span class='fl'>50</span>))</div><div class='img'><img src='get_partial_ll-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+            
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

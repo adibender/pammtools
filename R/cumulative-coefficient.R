@@ -1,6 +1,6 @@
 #' Extract cumulative coefficients (cumulative hazard differences)
 #'
-#' These functions are designed to extract (or mimick) the cumulative coefficients
+#' These functions are designed to extract (or mimic) the cumulative coefficients
 #' usually used in additive hazards models (Aalen model) to depict (time-varying)
 #' covariate effects. For PAMMs, these are the differences
 #' between the cumulative hazard rates where all covariates except one have the
@@ -17,7 +17,7 @@
 #' coefficient should be calculated.
 #' @param ... Further arguments passed to methods.
 #' @export
-get_cumu_coef <- function(model, data=NULL, terms, ...) {
+get_cumu_coef <- function(model, data = NULL, terms, ...) {
   UseMethod("get_cumu_coef", model)
 }
 
@@ -38,22 +38,25 @@ get_cumu_coef.gam <- function(model, data, terms, ...) {
 #' @param ci Logical. Indicates if confidence intervals should be returned as
 #' well.
 #' @export
-get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE,...) {
+get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
 
     cumu_coef <- model$cum %>% as_tibble() %>%
-      select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
+      select(map_int(c("time", terms),
+        ~which(grepl(., colnames(model$cum))))) %>%
       gather("variable", "cumu_hazard", -.data$time)
     cumu_var <- model[["var.cum"]] %>% as_tibble() %>%
-     select(map_int(c("time", terms), ~which(grepl(., colnames(model$cum))))) %>%
+     select(map_int(c("time", terms),
+        ~which(grepl(., colnames(model$cum))))) %>%
       gather("variable", "cumu_var", -.data$time)
 
     suppressMessages(
       left_join(cumu_coef, cumu_var) %>%
       mutate(
         method     = class(model)[1],
-        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var^0.5,
-        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var^0.5) %>%
-      select(one_of(c("method", "variable", "time")), everything(), -one_of("cumu_var"))
+        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var ** 0.5,
+        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var ** 0.5) %>%
+      select(one_of(c("method", "variable", "time")), everything(),
+        -one_of("cumu_var"))
       )
 
 }
@@ -61,9 +64,9 @@ get_cumu_coef.aalen <- function(model, data=NULL, terms, ci = TRUE,...) {
 #' @rdname cumulative_coefficient
 #' @inherit get_cumu_coef
 #' @export
-get_cumu_coef.cox.aalen <- function(model, data=NULL, terms, ci = TRUE, ...) {
+get_cumu_coef.cox.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
 
-  get_cumu_coef.aalen(model=model, data=data, terms=terms, ci = ci, ...)
+  get_cumu_coef.aalen(model = model, data = data, terms = terms, ci = ci, ...)
 
 }
 
@@ -87,22 +90,24 @@ cumu_coef <- function(data, model, term, ...) {
     return(get_cumu_coef_baseline(data, model))
   }
 
-  if(is.character(term)) {
+  if (is.character(term)) {
     term <- sym(term)
   } else {
     term <- enquo(term)
   }
   qname_term   <- quo_name(term)
-  if(!is.numeric(data[[qname_term]])) {
+  if (!is.numeric(data[[qname_term]])) {
     x <- levels(as.factor(unique(data[[qname_term]])))
   } else {
-    x <- mean(data[[qname_term]], na.rm =TRUE)
+    x <- mean(data[[qname_term]], na.rm = TRUE)
     x <- c(x, x + 1)
   }
-  dat_list <- map(.x=x, function(z) {
-    mutate_at(.tbl=data, .vars=qname_term, .funs = ~identity(z)) %>%
-    mutate(variable = paste0(qname_term,
-      ifelse(is.numeric(z), "", paste0(" (", z, ")"))))})
+  dat_list <- map(.x = x,
+    function(z) {
+      mutate_at(.tbl = data, .vars = qname_term, .funs = ~identity(z)) %>%
+      mutate(variable = paste0(qname_term,
+        ifelse(is.numeric(z), "", paste0(" (", z, ")"))))
+    })
 
   map2(
     .x = dat_list[1],
@@ -110,7 +115,7 @@ cumu_coef <- function(data, model, term, ...) {
     .f = ~ get_cumu_diff(.x, .y, model)) %>%
     map(
     ~ select(., one_of(c("variable", "tend")), contains("cumu")) %>%
-      rename("time"="tend") %>%
+      rename("time" = "tend") %>%
       mutate(method = class(model)[1]) ) %>%
   bind_rows() %>%
   select(one_of(c("method", "variable", "time")), everything())
@@ -120,15 +125,17 @@ cumu_coef <- function(data, model, term, ...) {
 #' @inherit get_cumu_coef
 #' @keywords internal
 get_cumu_coef_baseline <- function(data, model, ...) {
-  ped_info(data) %>%
+  data %>%
     mutate_at(
       .vars = vars(-one_of(c("tstart", "tend", "intlen", "intmid", "interval"))),
-      .funs = ~0) %>% add_cumu_hazard(model) %>%
+      .funs = ~0) %>%
+    add_cumu_hazard(model) %>%
     mutate(
       method      = class(model)[1],
       variable    = "(Intercept)") %>%
-    rename("time" = "tstart") %>%
-    select(one_of(c("method", "variable", "time")), everything())
+    rename("time" = "tend") %>%
+    select(one_of(c("method", "variable", "time", "cumu_hazard", "cumu_lower",
+      "cumu_upper")))
 }
 
 
@@ -152,15 +159,17 @@ compute_cumu_diff <-  function(d1, d2, model, alpha = 0.05, nsim = 100L) {
   X2    <- predict.gam(model, newdata = d2, type = "lpmatrix")
   V     <- model$Vp
   coefs <- coef(model)
-  sim_coef_mat <- rmvnorm(nsim, mean=coefs, sigma=V)
-  sim_fit_mat  <- apply(sim_coef_mat, 1, function(z)
-    cumsum(d2$intlen * exp(drop(X2 %*% z))) - cumsum(d1$intlen * exp(drop(X1 %*% z))))
+  sim_coef_mat <- rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_fit_mat  <- apply(sim_coef_mat, 1, function(z) {
+    cumsum(d2$intlen * exp(drop(X2 %*% z))) -
+      cumsum(d1$intlen * exp(drop(X1 %*% z)))
+    })
 
-  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha/2)
-  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1-alpha/2)
+  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
+  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
   haz1       <- exp(drop(X1 %*% model$coefficients))
   haz2       <- exp(drop(X2 %*% model$coefficients))
-  cumu_diff  <- cumsum(haz2*d2$intlen) - cumsum(haz1*d1$intlen)
+  cumu_diff  <- cumsum(haz2 * d2$intlen) - cumsum(haz1 * d1$intlen)
 
   list(cumu_diff = cumu_diff, cumu_lower = cumu_lower, cumu_upper = cumu_upper)
 

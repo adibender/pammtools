@@ -39,8 +39,8 @@
 <meta property="og:title" content="Extract risk set information for each interval. — riskset_info" />
 
 <meta property="og:description" content="The columns ped_riskset, ped_events, ped_censored provide the
-size of the riskset at the beginning of each interval as well as the number
-of events and censorings that occured in the interval, respectively." />
+size of the risk set at the beginning of each interval as well as the number
+of events and censorings that occurred in the interval, respectively." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -81,19 +81,13 @@ of events and censorings that occured in the interval, respectively." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -104,36 +98,39 @@ of events and censorings that occured in the interval, respectively." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -170,8 +167,8 @@ of events and censorings that occured in the interval, respectively." />
     <div class="ref-description">
     
     <p>The columns <code>ped_riskset, ped_events, ped_censored</code> provide the
-size of the riskset at the beginning of each interval as well as the number
-of events and censorings that occured in the interval, respectively.</p>
+size of the risk set at the beginning of each interval as well as the number
+of events and censorings that occurred in the interval, respectively.</p>
     
     </div>
 
@@ -201,8 +198,8 @@ of events and censorings that occured in the interval, respectively.</p>
 <span class='fu'>riskset_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt; # A tibble: 2 x 4
 #&gt;   interval ped_riskset ped_events ped_censored
 #&gt; * &lt;fct&gt;          &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;
-#&gt; 1 (0,33]             4         1.           0.
-#&gt; 2 (33,308]           3         1.           2.</div></pre>
+#&gt; 1 (0,33]             4          1            0
+#&gt; 2 (33,308]           3          1            2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

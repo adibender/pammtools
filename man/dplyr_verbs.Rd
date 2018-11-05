@@ -11,7 +11,6 @@
 \alias{inner_join}
 \alias{left_join}
 \alias{mutate}
-\alias{mutate_each}
 \alias{rename}
 \alias{rename_}
 \alias{right_join}
@@ -21,7 +20,6 @@
 \alias{select_}
 \alias{slice}
 \alias{summarise}
-\alias{summarise_each}
 \alias{transmute}
 \alias{ungroup}
 \alias{arrange.ped}
@@ -36,12 +34,10 @@
 \alias{select.ped}
 \alias{select_.ped}
 \alias{mutate.ped}
-\alias{mutate_each.ped}
 \alias{rename.ped}
 \alias{rename_.ped}
 \alias{summarise.ped}
 \alias{summarize.ped}
-\alias{summarise_each.ped}
 \alias{transmute.ped}
 \alias{inner_join.ped}
 \alias{full_join.ped}
@@ -59,12 +55,10 @@
 \alias{select.nested_fdf}
 \alias{select_.nested_fdf}
 \alias{mutate.nested_fdf}
-\alias{mutate_each.nested_fdf}
 \alias{rename.nested_fdf}
 \alias{rename_.nested_fdf}
 \alias{summarise.nested_fdf}
 \alias{summarize.nested_fdf}
-\alias{summarise_each.nested_fdf}
 \alias{transmute.nested_fdf}
 \alias{inner_join.nested_fdf}
 \alias{full_join.nested_fdf}
@@ -87,8 +81,8 @@
 \method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
   .env = NULL)
 
-\method{sample_frac}{ped}(tbl, size = 1, replace = FALSE, weight = NULL,
-  .env = NULL)
+\method{sample_frac}{ped}(tbl, size = 1, replace = FALSE,
+  weight = NULL, .env = NULL)
 
 \method{slice}{ped}(.data, ...)
 
@@ -98,8 +92,6 @@
 
 \method{mutate}{ped}(.data, ..., keep_attributes = TRUE)
 
-mutate_each.ped(tbl, funs, ..., keep_attributes = TRUE)
-
 \method{rename}{ped}(.data, ...)
 
 \method{rename_}{ped}(.data, ..., .dots = list())
@@ -108,21 +100,19 @@ mutate_each.ped(tbl, funs, ..., keep_attributes = TRUE)
 
 \method{summarize}{ped}(.data, ...)
 
-summarise_each.ped(tbl, funs, ...)
-
 \method{transmute}{ped}(.data, ...)
 
-\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ...)
+\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"), ...)
 
-\method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ...)
+\method{full_join}{ped}(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"), ...)
 
-\method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., keep_attributes = TRUE)
+\method{left_join}{ped}(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
 
-\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x",
-  ".y"), ..., keep_attributes = TRUE)
+\method{right_join}{ped}(x, y, by = NULL, copy = FALSE,
+  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
 
 \method{arrange}{nested_fdf}(.data, ...)
 
@@ -136,8 +126,8 @@ summarise_each.ped(tbl, funs, ...)
 
 \method{filter}{nested_fdf}(.data, ...)
 
-\method{sample_n}{nested_fdf}(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL)
+\method{sample_n}{nested_fdf}(tbl, size, replace = FALSE,
+  weight = NULL, .env = NULL)
 
 \method{sample_frac}{nested_fdf}(tbl, size = 1, replace = FALSE,
   weight = NULL, .env = NULL)
@@ -150,8 +140,6 @@ summarise_each.ped(tbl, funs, ...)
 
 \method{mutate}{nested_fdf}(.data, ..., keep_attributes = TRUE)
 
-mutate_each.nested_fdf(tbl, funs, ..., keep_attributes = TRUE)
-
 \method{rename}{nested_fdf}(.data, ...)
 
 \method{rename_}{nested_fdf}(.data, ..., .dots = list())
@@ -159,8 +147,6 @@ mutate_each.nested_fdf(tbl, funs, ..., keep_attributes = TRUE)
 \method{summarise}{nested_fdf}(.data, ...)
 
 \method{summarize}{nested_fdf}(.data, ...)
-
-summarise_each.nested_fdf(tbl, funs, ...)
 
 \method{transmute}{nested_fdf}(.data, ...)
 
@@ -212,8 +198,6 @@ now unquote a \link[rlang:quosure]{quosure}.}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 
-\item{funs}{see \code{\link[dplyr]{summarize_all}}}
-
 \item{y}{tbls to join}
 
 \item{by}{a character vector of variables to join by.  If \code{NULL}, the
@@ -234,6 +218,8 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
+
+\item{funs}{see \code{\link[dplyr]{summarize_all}}}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 }

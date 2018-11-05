@@ -1,16 +1,16 @@
 #' Warn if new t_j are used
 #'
 #' @keywords internal
-warn_about_new_evaluation_time_points <- function(newdata, object, time_variable) {
+warn_about_new_time_points <- function(newdata, object, time_var) {
 
   is_pam <- inherits(object, "gam")
 
   original_intervals <- if (is_pam) {
-    unique(model.frame(object)[[time_variable]])
-  } else levels(model.frame(object)[[time_variable]])
+    unique(model.frame(object)[[time_var]])
+  } else levels(model.frame(object)[[time_var]])
   prediction_intervals <- if (is_pam) {
-    unique(newdata[[time_variable]])
-  } else levels(factor(newdata[[time_variable]]))
+    unique(newdata[[time_var]])
+  } else levels(factor(newdata[[time_var]]))
   new_ints <- which(!(prediction_intervals %in% original_intervals))
   n_out <- pmin(10, length(new_ints))
   if (length(new_ints)) {
@@ -29,7 +29,7 @@ warn_about_new_evaluation_time_points <- function(newdata, object, time_variable
 warn_partial_overlap <- function(event_id, tdc_id) {
   common_id <- intersect(event_id, tdc_id)
   union_id  <- union(event_id, tdc_id)
-  if(!setequal(common_id, union_id)) {
+  if (!setequal(common_id, union_id)) {
     warning("Not all IDs are present in both data sets.
       IDs that do not appear in both data sets will be removed.")
   }
@@ -42,8 +42,8 @@ warn_partial_overlap <- function(event_id, tdc_id) {
 status_error <- function(data, formula) {
 
   outcome_vars <- get_lhs_vars(formula)
-  if (!any(1L*(unique(data[[outcome_vars[2]]])) == 1)) {
-    stop(paste0("No events in data! Check your ", outcome_vars[2], " variable."))
+  if (!any(1L * (unique(data[[outcome_vars[2]]])) == 1)) {
+    stop(paste("No events in data! Check your", outcome_vars[2], "variable."))
   }
 
 }

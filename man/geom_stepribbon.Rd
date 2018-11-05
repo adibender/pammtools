@@ -27,7 +27,7 @@ data. All objects will be fortified to produce a data frame. See
 \code{\link[=fortify]{fortify()}} for which variables will be created.
 
 A \code{function} will be called with a single argument,
-the plot data. The return value must be a \code{data.frame}, and
+the plot data. The return value must be a \code{data.frame.}, and
 will be used as the layer data.}
 
 \item{stat}{The statistical transformation to use on the data for this
@@ -52,7 +52,7 @@ the default plot specification, e.g. \code{\link[=borders]{borders()}}.}
 
 \item{...}{Other arguments passed on to \code{\link[=layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
-\code{colour = "red"} or \code{size = 3}. They may also be parameters
+\code{color = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 }
 \description{
@@ -60,11 +60,6 @@ to the paired geom/stat.}
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
 or a confidence band.
 }
-\section{Aesthetics}{
-
-\Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "ribbon")}
-}
-
 \examples{
 library(ggplot2)
 huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
@@ -77,8 +72,5 @@ h + geom_ribbon(aes(ymin = level - 1, ymax = level + 1), fill = "grey70") +
 \seealso{
 \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
   inherits from \code{geom_ribbon}.
-}
-\author{
-Triad Sou <triadsou@gmail.com>
 }
 \keyword{datasets}

@@ -82,19 +82,13 @@ surv_lower, surv_upper if ci=TRUE)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -105,36 +99,39 @@ surv_lower, surv_upper if ci=TRUE)." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -177,8 +174,9 @@ for the specified covariate and follow-up information (and CIs
     
     </div>
 
-    <pre class="usage"><span class='fu'>add_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>add_surv_prob</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>,
+  <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -212,7 +210,7 @@ the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with
 <code>c("hazard", "se", "lower", "upper")</code> will be overwritten.</p></td>
     </tr>
     <tr>
-      <th>time_variable</th>
+      <th>time_var</th>
       <td><p>Name of the variable used for the baseline hazard. If
 not given, defaults to <code>"tend"</code> for <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code> fits, else
 <code>"interval"</code>. The latter is assumed to be a factor, the former
@@ -241,16 +239,16 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 <span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_surv_prob</span>(<span class='no'>pam</span>, <span class='kw'>ci</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
 #&gt;    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7     0.977      0.989      0.950
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7     0.972      0.987      0.939
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7     0.954      0.978      0.904
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7     0.949      0.976      0.893
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7     0.896      0.946      0.803
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7     0.854      0.920      0.739
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7     0.851      0.919      0.734
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7     0.828      0.904      0.700
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7     0.805      0.889      0.667
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7     0.803      0.888      0.665
+#&gt;  1      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950
+#&gt;  2     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939
+#&gt;  3     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904
+#&gt;  4     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893
+#&gt;  5     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803
+#&gt;  6    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739
+#&gt;  7    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734
+#&gt;  8    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700
+#&gt;  9    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667
+#&gt; 10    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665
 #&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

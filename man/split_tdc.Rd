@@ -44,8 +44,3 @@ and one containing information on time-dependent covariates, creates
 piece-wise exponential data (with one split per event time and time at
 which a TDC changes its value).
 }
-\examples{
-data("pbc", package="survival")# loads both, pbc and pbcseq
-pbc$status = 1*(pbc$status == 2)
-pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, tz_var="day")
-}

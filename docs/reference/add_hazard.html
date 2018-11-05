@@ -81,19 +81,13 @@ be controlled via the se_mult argument." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -104,36 +98,39 @@ be controlled via the se_mult argument." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -176,11 +173,11 @@ be controlled via the <code>se_mult</code> argument.</p>
     </div>
 
     <pre class="usage"><span class='fu'>add_hazard</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>), <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"default"</span>, <span class='st'>"delta"</span>, <span class='st'>"sim"</span>), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+  <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"default"</span>, <span class='st'>"delta"</span>, <span class='st'>"sim"</span>),
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
 
 <span class='fu'>add_cumu_hazard</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_variable</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>,
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='st'>"intlen"</span>,
   <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -243,7 +240,7 @@ the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with
 <code>c("hazard", "se", "lower", "upper")</code> will be overwritten.</p></td>
     </tr>
     <tr>
-      <th>time_variable</th>
+      <th>time_var</th>
       <td><p>Name of the variable used for the baseline hazard. If
 not given, defaults to <code>"tend"</code> for <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code> fits, else
 <code>"interval"</code>. The latter is assumed to be a factor, the former
@@ -272,42 +269,42 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 <span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_hazard</span>(<span class='no'>pam</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"link"</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 10
 #&gt;    tstart  tend intlen intmid interval    age hazard    se ci_lower ci_upper
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7  -7.05 0.391    -7.83    -6.27
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7  -7.06 0.386    -7.83    -6.28
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7  -7.09 0.367    -7.82    -6.35
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7  -7.10 0.361    -7.82    -6.37
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7  -7.20 0.310    -7.82    -6.58
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7  -7.29 0.280    -7.85    -6.73
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7  -7.30 0.279    -7.86    -6.74
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7  -7.35 0.269    -7.89    -6.82
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7  -7.41 0.265    -7.94    -6.88
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7  -7.42 0.265    -7.95    -6.89
-#&gt; # ... with 12 more rows</div><div class='input'><span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_hazard</span>(<span class='no'>pam</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"response"</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 10
+#&gt;  1      0    27     27   13.5 (0,27]     59.7  -7.05 0.391    -7.83    -6.27
+#&gt;  2     27    33      6   30   (27,33]    59.7  -7.06 0.386    -7.83    -6.28
+#&gt;  3     33    55     22   44   (33,55]    59.7  -7.09 0.367    -7.82    -6.35
+#&gt;  4     55    62      7   58.5 (55,62]    59.7  -7.10 0.361    -7.82    -6.37
+#&gt;  5     62   139     77  100.  (62,139]   59.7  -7.20 0.310    -7.82    -6.58
+#&gt;  6    139   209     70  174   (139,209]  59.7  -7.29 0.280    -7.85    -6.73
+#&gt;  7    209   214      5  212.  (209,214]  59.7  -7.30 0.279    -7.86    -6.74
+#&gt;  8    214   257     43  236.  (214,257]  59.7  -7.35 0.269    -7.89    -6.82
+#&gt;  9    257   304     47  280.  (257,304]  59.7  -7.41 0.265    -7.94    -6.88
+#&gt; 10    304   308      4  306   (304,308]  59.7  -7.42 0.265    -7.95    -6.89
+#&gt; # ... with 12 more rows</div><div class='input'><span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_hazard</span>(<span class='no'>pam</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"response"</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 10
 #&gt;    tstart  tend intlen intmid interval    age   hazard    se ci_lower ci_upper
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7 0.000869 0.391 0.000397  0.00190
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7 0.000862 0.386 0.000398  0.00187
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7 0.000837 0.367 0.000402  0.00174
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7 0.000829 0.361 0.000402  0.00171
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7 0.000747 0.310 0.000402  0.00139
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7 0.000681 0.280 0.000389  0.00119
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7 0.000676 0.279 0.000387  0.00118
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7 0.000640 0.269 0.000373  0.00110
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7 0.000602 0.265 0.000355  0.00102
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7 0.000599 0.265 0.000353  0.00102
+#&gt;  1      0    27     27   13.5 (0,27]     59.7 0.000869 0.391 0.000397  0.00190
+#&gt;  2     27    33      6   30   (27,33]    59.7 0.000862 0.386 0.000398  0.00187
+#&gt;  3     33    55     22   44   (33,55]    59.7 0.000837 0.367 0.000402  0.00174
+#&gt;  4     55    62      7   58.5 (55,62]    59.7 0.000829 0.361 0.000402  0.00171
+#&gt;  5     62   139     77  100.  (62,139]   59.7 0.000747 0.310 0.000402  0.00139
+#&gt;  6    139   209     70  174   (139,209]  59.7 0.000681 0.280 0.000389  0.00119
+#&gt;  7    209   214      5  212.  (209,214]  59.7 0.000676 0.279 0.000387  0.00118
+#&gt;  8    214   257     43  236.  (214,257]  59.7 0.000640 0.269 0.000373  0.00110
+#&gt;  9    257   304     47  280.  (257,304]  59.7 0.000602 0.265 0.000355  0.00102
+#&gt; 10    304   308      4  306   (304,308]  59.7 0.000599 0.265 0.000353  0.00102
 #&gt; # ... with 12 more rows</div><div class='input'><span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_cumu_hazard</span>(<span class='no'>pam</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
 #&gt;    tstart  tend intlen intmid interval    age cumu_hazard cumu_lower cumu_upper
 #&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
-#&gt;  1     0.   27.    27.   13.5 (0,27]     59.7      0.0235     0.0107     0.0513
-#&gt;  2    27.   33.     6.   30.0 (27,33]    59.7      0.0286     0.0131     0.0625
-#&gt;  3    33.   55.    22.   44.0 (33,55]    59.7      0.0470     0.0220     0.101 
-#&gt;  4    55.   62.     7.   58.5 (55,62]    59.7      0.0528     0.0248     0.113 
-#&gt;  5    62.  139.    77.  100.  (62,139]   59.7      0.110      0.0557     0.220 
-#&gt;  6   139.  209.    70.  174.  (139,209]  59.7      0.158      0.0829     0.303 
-#&gt;  7   209.  214.     5.  212.  (209,214]  59.7      0.161      0.0849     0.309 
-#&gt;  8   214.  257.    43.  236.  (214,257]  59.7      0.189      0.101      0.356 
-#&gt;  9   257.  304.    47.  280.  (257,304]  59.7      0.217      0.118      0.404 
-#&gt; 10   304.  308.     4.  306.  (304,308]  59.7      0.220      0.119      0.408 
+#&gt;  1      0    27     27   13.5 (0,27]     59.7      0.0235     0.0107     0.0513
+#&gt;  2     27    33      6   30   (27,33]    59.7      0.0286     0.0131     0.0625
+#&gt;  3     33    55     22   44   (33,55]    59.7      0.0470     0.0220     0.101 
+#&gt;  4     55    62      7   58.5 (55,62]    59.7      0.0528     0.0248     0.113 
+#&gt;  5     62   139     77  100.  (62,139]   59.7      0.110      0.0557     0.220 
+#&gt;  6    139   209     70  174   (139,209]  59.7      0.158      0.0829     0.303 
+#&gt;  7    209   214      5  212.  (209,214]  59.7      0.161      0.0849     0.309 
+#&gt;  8    214   257     43  236.  (214,257]  59.7      0.189      0.101      0.356 
+#&gt;  9    257   304     47  280.  (257,304]  59.7      0.217      0.118      0.404 
+#&gt; 10    304   308      4  306   (304,308]  59.7      0.220      0.119      0.408 
 #&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

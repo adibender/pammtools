@@ -80,19 +80,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -103,36 +97,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -196,8 +193,8 @@
   <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>sample_frac</span>(<span class='no'>tbl</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>sample_frac</span>(<span class='no'>tbl</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for ped</span>
 <span class='fu'>slice</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
@@ -211,8 +208,6 @@
 <span class='co'># S3 method for ped</span>
 <span class='fu'>mutate</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='fu'>mutate_each.ped</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
 <span class='co'># S3 method for ped</span>
 <span class='fu'>rename</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
 
@@ -225,26 +220,24 @@
 <span class='co'># S3 method for ped</span>
 <span class='fu'>summarize</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
 
-<span class='fu'>summarise_each.ped</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>)
-
 <span class='co'># S3 method for ped</span>
 <span class='fu'>transmute</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>inner_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>,
-  <span class='st'>".y"</span>), <span class='no'>...</span>)
+<span class='fu'>inner_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>full_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>,
-  <span class='st'>".y"</span>), <span class='no'>...</span>)
+<span class='fu'>full_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>left_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>,
-  <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'>left_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># S3 method for ped</span>
-<span class='fu'>right_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>,
-  <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'>right_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>".x"</span>, <span class='st'>".y"</span>), <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>arrange</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
@@ -265,8 +258,8 @@
 <span class='fu'>filter</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
-<span class='fu'>sample_n</span>(<span class='no'>tbl</span>, <span class='no'>size</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+<span class='fu'>sample_n</span>(<span class='no'>tbl</span>, <span class='no'>size</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>weight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>.env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>sample_frac</span>(<span class='no'>tbl</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
@@ -284,8 +277,6 @@
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>mutate</span>(<span class='no'>.data</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='fu'>mutate_each.nested_fdf</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>, <span class='kw'>keep_attributes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>rename</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
 
@@ -297,8 +288,6 @@
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>summarize</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
-
-<span class='fu'>summarise_each.nested_fdf</span>(<span class='no'>tbl</span>, <span class='no'>funs</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>transmute</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
@@ -363,24 +352,20 @@ If <code>tbl</code> is grouped, <code>size</code> applies to each group.</p></td
       <td><p>Sampling weights. This must evaluate to a vector of
 non-negative numbers the same length as the input. Weights are
 automatically standardised to sum to 1.</p>
-<p>This argument is automatically <a href='http://www.rdocumentation.org/packages/rlang/topics/quotation'>quoted</a> and later
-<a href='http://www.rdocumentation.org/packages/rlang/topics/eval_tidy'>evaluated</a> in the context of the data
-frame. It supports <a href='http://www.rdocumentation.org/packages/rlang/topics/quasiquotation'>unquoting</a>. See
+<p>This argument is automatically <a href='https://rlang.r-lib.org/reference/quotation.html'>quoted</a> and later
+<a href='https://rlang.r-lib.org/reference/eval_tidy.html'>evaluated</a> in the context of the data
+frame. It supports <a href='https://rlang.r-lib.org/reference/quasiquotation.html'>unquoting</a>. See
 <code>vignette("programming")</code> for an introduction to these concepts.</p></td>
     </tr>
     <tr>
       <th>.env</th>
       <td><p>This variable is deprecated and no longer has any
 effect. To evaluate <code>weight</code> in a particular context, you can
-now unquote a <a href='http://www.rdocumentation.org/packages/rlang/topics/quosure'>quosure</a>.</p></td>
+now unquote a <a href='https://rlang.r-lib.org/reference/quosure.html'>quosure</a>.</p></td>
     </tr>
     <tr>
       <th>keep_attributes</th>
       <td><p>conserve attributes? defaults to <code>TRUE</code></p></td>
-    </tr>
-    <tr>
-      <th>funs</th>
-      <td><p>see <code><a href='http://dplyr.tidyverse.org/reference/summarise_all.html'>summarize_all</a></code></p></td>
     </tr>
     <tr>
       <th>y</th>
@@ -409,6 +394,10 @@ it is a potentially expensive operation so you must opt into it.</p></td>
       <td><p>If there are non-joined duplicate variables in <code>x</code> and
 <code>y</code>, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.</p></td>
+    </tr>
+    <tr>
+      <th>funs</th>
+      <td><p>see <code><a href='http://dplyr.tidyverse.org/reference/summarise_all.html'>summarize_all</a></code></p></td>
     </tr>
     <tr>
       <th>keep_attributes</th>

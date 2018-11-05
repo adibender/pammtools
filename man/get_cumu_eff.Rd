@@ -10,8 +10,8 @@ get_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2)
 \item{model}{A suitable model object which will be used to estimate the
 partial effect of \code{term}.}
 
-\item{z1}{The expoure profile for which to calculate the cumulative effect.
-Can be either a singel number or a vector of same length as unique observation
+\item{z1}{The exposure profile for which to calculate the cumulative effect.
+Can be either a single number or a vector of same length as unique observation
 time points.}
 
 \item{z2}{If provided, calculated cumulative effect is for the difference

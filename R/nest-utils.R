@@ -7,7 +7,7 @@
 #' @inheritParams tidyr::nest
 #' @inheritParams split_data
 #' @param data A suitable data structure (e.g. unnested data frame with
-#' concurrent TDCs or a list wehre each element is a data frame, potentially
+#' concurrent TDCs or a list where each element is a data frame, potentially
 #' containing TDCs as specified in the RHS of \code{formula}).
 #' Only TDCs present in \code{formula} will be returned.
 #' @param formula A two sided formula with a two part RHS, where the second
@@ -18,7 +18,7 @@
 #' @importFrom purrr map map_int reduce
 #' @export
 #' @keywords internal
-nest_tdc <- function(data, formula,...) {
+nest_tdc <- function(data, formula, ...) {
   UseMethod("nest_tdc", data)
 }
 
@@ -34,22 +34,24 @@ nest_tdc.default <- function(data, formula, ...) {
 
   tdc_vars     <- dots$tdc_vars
   outcome_vars <- dots$outcome_vars
-  if(is.null(tdc_vars)) {
+  if (is.null(tdc_vars)) {
     tdc_vars <- get_tdc_vars(formula)
   }
-  if(is.null(outcome_vars)) {
+  if (is.null(outcome_vars)) {
     outcome_vars <- get_lhs_vars(formula)
   }
-  time_var     <- outcome_vars[1]
+
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
 
   if (!any(colnames(data) %in% tdc_vars) | !has_tdc(data, id)) {
     vars_to_exclude <- intersect(colnames(data), tdc_vars)
     return(data %>% select(-one_of(vars_to_exclude)))
   } else {
+    suppressMessages(
     nested_df <- map(tdc_vars,
-        ~nest(data=data[, c(id, .)], -one_of(id), .key = !!.)) %>%
-      reduce(left_join)# Would be better to have numeric vecotrs within each list element
+        ~nest(data = data[, c(id, .)], -one_of(id), .key = !!.)) %>%
+      reduce(left_join) # better: numeric vectors in each list element
+      )
       class(nested_df) <- c("nested_fdf", class(nested_df))
   }
 
@@ -67,7 +69,7 @@ nest_tdc.list <- function(data, formula, ...) {
   dots <- list(...)
   cut  <- dots[["cut"]]
 
-  ## preprocess information on time-dependent covariates
+  # preprocess information on time-dependent covariates
   lgl_concurrent <- has_special(formula, special = "concurrent")
   lgl_cumulative <- has_special(formula)
   tdc_vars <- character(0)
@@ -99,17 +101,18 @@ nest_tdc.list <- function(data, formula, ...) {
   outcome_vars <- get_lhs_vars(formula)
   time_var     <- outcome_vars[1]
   tdc_vars     <- setdiff(tdc_vars, outcome_vars)
-
-  nested_df <- map(data, ~nest_tdc(.x, formula = formula, id=dots$id,
-      tdc_vars=tdc_vars, outcome_vars = outcome_vars)) %>%
+  suppressMessages(
+  nested_df <- map(data, ~nest_tdc(.x, formula = formula, id = dots$id,
+      tdc_vars = tdc_vars, outcome_vars = outcome_vars)) %>%
     reduce(left_join) %>% as_tibble()
+    )
 
   ## add atrributes
-  cut <- get_cut(nested_df, formula, cut=dots$cut, max_time=dots$max_time)
+  cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
 
   id_n <- nested_df %>% pull(time_var) %>%
     pmin(max(cut)) %>%
-    map_int(findInterval, vec=cut, left.open=TRUE, rightmost.closed=TRUE)
+    map_int(findInterval, vec = cut, left.open = TRUE, rightmost.closed = TRUE)
 
   attr_old <- attributes(nested_df)
   attributes(nested_df) <- c(attr_old, list(

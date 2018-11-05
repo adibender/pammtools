@@ -4,9 +4,9 @@
 \alias{get_cumu_hazard}
 \title{Calculate cumulative hazard}
 \usage{
-get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default", "delta",
-  "sim"), time_variable = NULL, se_mult = 2, interval_length = "intlen",
-  nsim = 100L, ...)
+get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default",
+  "delta", "sim"), time_var = NULL, se_mult = 2,
+  interval_length = "intlen", nsim = 100L, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -28,7 +28,7 @@ error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
 the estimated coefficients. CIs are given by respective quantiles.}
 
-\item{time_variable}{Name of the variable used for the baseline hazard. If
+\item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}

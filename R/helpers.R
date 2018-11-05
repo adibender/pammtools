@@ -5,16 +5,16 @@
 #' @keywords internal
 modus <- function(var) {
 
-	# input checks
-	assert_atomic_vector(var, all.missing=FALSE, min.len=1)
+  # input checks
+  assert_atomic_vector(var, all.missing = FALSE, min.len = 1)
 
-	# calculate modus
+  # calculate modus
   freqs <- table(var)
   mod   <- names(freqs)[which.max(freqs)]
 
   # factors should be returned as factors with all factor levels
-  if(is.factor(var)) {
-  	mod <- factor(mod, levels=levels(var))
+  if (is.factor(var)) {
+    mod <- factor(mod, levels = levels(var))
   }
 
   return(mod)
@@ -48,7 +48,7 @@ modus <- function(var) {
 #' seq_range(x, by = 1, trim = 0.1)
 #'
 #' # Make pretty sequences
-#' y <- runif(100)
+#' y <- runif (100)
 #' seq_range(y, n = 10)
 #' seq_range(y, n = 10, pretty = TRUE)
 #' seq_range(y, n = 10, expand = 0.5, pretty = TRUE)

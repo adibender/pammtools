@@ -4,7 +4,8 @@
 \alias{tidy_smooth}
 \title{Extract 1d smooth objects in tidy data format.}
 \usage{
-tidy_smooth(x, keep = c("x", "fit", "se", "xlab", "ylab"), ci = TRUE, ...)
+tidy_smooth(x, keep = c("x", "fit", "se", "xlab", "ylab"), ci = TRUE,
+  ...)
 }
 \arguments{
 \item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}

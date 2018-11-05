@@ -38,18 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,36 +55,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -119,9 +116,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Basic Modeling</h1>
-                        <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-06-03</h4>
+            <h4 class="date">2018-11-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/basics.Rmd"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
@@ -130,21 +126,21 @@
 
     
     
-<p>In this tutorial we present basic examples for the usage of this package and compare results to the ones obtained with classical approaches, namely using the <code>coxph</code> function from the <code>survival</code> package.</p>
+<p>In this article we present basic examples for the estimation of PAMs using <strong><code>pammtools</code></strong> and compare the results to estimates obtained using the <code>coxph</code> function from the <strong><code>survival</code></strong> package.</p>
 <p>In the following two sections, we first describe the classical piece-wise exponential model (PEM) and after that the extension to piece-wise exponential additive models (PAM).</p>
 <div id="piece-wise-exponential-model-pem" class="section level2">
 <h2 class="hasAnchor">
 <a href="#piece-wise-exponential-model-pem" class="anchor"></a>Piece-wise exponential model (PEM)</h2>
-<p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields equivalent coefficient estimates as Cox Proportional Hazards models if</p>
+<p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields coefficient estimates that are equivalent to the estimates obtained from <em>Cox Proportional Hazards</em> models if</p>
 <ol style="list-style-type: decimal">
 <li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
 <li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/as_ped.html">?as_ped</a></code> and the <a href="data-transformation.html">vignette on data transformation</a>).</p></li>
 </ol>
-<p>Estimates between the two approaches can differ due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead 1980)</span>. In practice these differences are not very large (see examples below).</p>
+<p>Estimates can differ between the two approaches due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead <a href="#ref-whitehead1980">1980</a>)</span>. In practice these differences are usually negligible (see examples below).</p>
 <div id="subset-with-unique-event-times" class="section level3">
 <h3 class="hasAnchor">
 <a href="#subset-with-unique-event-times" class="anchor"></a>Subset with unique event times</h3>
-<p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice 1980)</span> provided in the <code>survival</code> package:</p>
+<p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice <a href="#ref-Kalbfleisch1980">1980</a>)</span> provided in the <code>survival</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(survival)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(mgcv)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(pammtools)</a>
@@ -188,13 +184,13 @@
 <div id="piece-wise-exponential-additive-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#piece-wise-exponential-additive-model" class="anchor"></a>Piece-wise exponential additive model</h2>
-<p>PAMs have two main advantages over PEMs:</p>
+<p>PAMs have two main advantages over PEMs <span class="citation">(Bender, Groll, and Scheipl <a href="#ref-Bender2018a">2018</a>)</span>:</p>
 <ul>
 <li><p>PAM estimation scales better when the number of intervals becomes large: PEMs need to estimate one parameter per interval for the baseline hazard, while the number of parameters in PAMs only depends on the number of basis functions used for the spline estimate of the baseline hazard.</p></li>
 <li><p>In PEMs, baseline hazard estimates for each interval can vary a lot between neighboring intervals, especially when intervals only contain few events. For PAMs on the other hand estimates of the baseline hazard in neighboring intervals are similar due to penalization unless the data provides very strong evidence for large changes between neighboring intervals.</p></li>
 </ul>
-<p>Note that coefficient estimates in PAMs are no longer equivalent to those from Cox PH models, since the estimation of the baseline hazard is performed semi-parametrically. In our experience the differences are very small.</p>
-<p>Using the example above we get:</p>
+<p>Note that coefficient estimates in PAMs are no longer equivalent to those from Cox PH models, since the estimation of the baseline hazard is performed semi-parametrically. In our experience the differences are negligible.</p>
+<p>Using the example above (data without ties) we get:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">## compare to PAM</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">pam_age &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/gam">gam</a></span>(ped_status <span class="op">~</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/mgcv/topics/s">s</a></span>(tend) <span class="op">+</span><span class="st"> </span>age, <span class="dt">data =</span> ped_vetu,</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="dt">family =</span> <span class="st">"poisson"</span>, <span class="dt">offset =</span> offset)</a>
@@ -209,11 +205,14 @@
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
+<div id="ref-Bender2018a">
+<p>Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” <em>Statistical Modelling</em>, 1471082X17748083. <a href="https://doi.org/10.1177/1471082X17748083" class="uri">https://doi.org/10.1177/1471082X17748083</a>.</p>
+</div>
 <div id="ref-Kalbfleisch1980">
 <p>Kalbfleisch, J., and R. Prentice. 1980. <em>The Statistical Analysis of Failure Time Data</em>. New York: Wiley.</p>
 </div>
 <div id="ref-whitehead1980">
-<p>Whitehead, John. 1980. “Fitting Cox’s Regression Model to Survival Data Using GLIM.” <em>Applied Statistics</em> 29 (3). JSTOR:268–75.</p>
+<p>Whitehead, John. 1980. “Fitting Cox’s Regression Model to Survival Data Using GLIM.” <em>Applied Statistics</em> 29 (3). JSTOR: 268–75.</p>
 </div>
 </div>
 </div>

@@ -6,9 +6,6 @@
 #' is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
 #' row to the data, if not already the case.
 #'
-#' @section Aesthetics:
-#' \Sexpr[results=rd,stage=build]{ggplot2:::rd_aesthetics("geom", "line")}
-#'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_line}},
 #'   \code{\link[ggplot2]{geom_step}}.
@@ -19,7 +16,7 @@
 #' library(ggplot2)
 #' library(pammtools)
 #' ped <- tumor[10:50,] %>% as_ped(Surv(days, status)~1)
-#' pam <- pamm(ped_status ~ s(tend), data=ped)
+#' pam <- mgcv::gam(ped_status ~ s(tend), data=ped, family = poisson(), offset = offset)
 #' ndf <- make_newdata(ped, tend = unique(tend)) %>% add_hazard(pam)
 #' # piece-wise constant hazards
 #' ggplot(ndf, aes(x = tend, y = hazard)) +
@@ -66,7 +63,6 @@ geom_hazard <- function(
 #' @format NULL
 #' @usage NULL
 #' @export
-
 GeomHazard <- ggproto(
   "GeomHazard", GeomLine,
   setup_data = function(data, params) {
@@ -139,10 +135,10 @@ stairstep <- function(data, direction="hv") {
   }
 
   if (direction == "vh") {
-    xs <- rep(1:n, each = 2)[-2*n]
+    xs <- rep(1:n, each = 2)[-2 * n]
     ys <- c(1, rep(2:n, each = 2))
   } else {
-    ys <- rep(1:n, each = 2)[-2*n]
+    ys <- rep(1:n, each = 2)[-2 * n]
     xs <- c(1, rep(2:n, each = 2))
   }
 

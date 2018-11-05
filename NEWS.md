@@ -1,3 +1,12 @@
+# pammtools 0.1.7
+
+* Futher improved support for cumulative effects
+* Added vignette on estimation and visualization of cumulative effect
+* Updated vignette on convenience functions (now "Workflow and convenience functions")
+* Other (minor) upgrades/updates to documentation/vignettes
+* Updates homepage (via pkgdown)
+
+
 # pamtools 0.1.3
 
 ## Minor changes

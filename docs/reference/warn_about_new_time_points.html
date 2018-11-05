@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit a piece-wise exponential additive model — pamm • pammtools</title>
+<title>Warn if new t_j are used — warn_about_new_time_points • pammtools</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -36,13 +36,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="Fit a piece-wise exponential additive model — pamm" />
+<meta property="og:title" content="Warn if new t_j are used — warn_about_new_time_points" />
 
-<meta property="og:description" content="Basically a wrapper around gam. However, we set
-family=poisson(), offset=data$offset and method=&quot;REML&quot;
-by default. The first two can not be overriden. The method argument
-can be specified as usually, but defaults to GCV.cp in gam.
-Check if object is of class pamm" />
+<meta property="og:description" content="Warn if new t_j are used" />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -83,19 +79,13 @@ Check if object is of class pamm" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -106,36 +96,39 @@ Check if object is of class pamm" />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -164,85 +157,25 @@ Check if object is of class pamm" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit a piece-wise exponential additive model</h1>
-    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/pamfit.R'><code>R/pamfit.R</code></a></small>
-    <div class="hidden name"><code>pamm.Rd</code></div>
+    <h1>Warn if new t_j are used</h1>
+    <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/warnings.R'><code>R/warnings.R</code></a></small>
+    <div class="hidden name"><code>warn_about_new_time_points.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Basically a wrapper around <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code>. However, we set
-<code>family=poisson()</code>, <code>offset=data$offset</code> and <code>method="REML"</code>
-by default. The first two can not be overriden. The <code>method</code> argument
-can be specified as usually, but defaults to <code>GCV.cp</code> in <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code>.</p>
-<p>Check if object is of class pamm</p>
+    <p>Warn if new t_j are used</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>pamm</span>(<span class='no'>formula</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>list</span>(), <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"REML"</span>, <span class='no'>...</span>, <span class='kw'>trafo.args</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>is.pamm</span>(<span class='no'>x</span>)
-
-<span class='co'># S3 method for pamm</span>
-<span class='fu'>print</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for pamm</span>
-<span class='fu'>summary</span>(<span class='no'>object</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for pamm</span>
-<span class='fu'>plot</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>formula</th>
-      <td><p>A GAM formula, or a list of formulae (see <code>formula.gam</code> and also <code>gam.models</code>). 
-These are exactly like the formula for a GLM except that smooth terms, <code>s</code>, <code>te</code>, <code>ti</code> 
-and <code>t2</code>, can be added to the right hand side to specify that the linear predictor depends on smooth functions of predictors (or linear functionals of these).</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>A data frame or list containing the model response variable and 
-covariates required by the formula. By default the variables are taken 
-from <code>environment(formula)</code>: typically the environment from 
-which <code>gam</code> is called.</p></td>
-    </tr>
-    <tr>
-      <th>method</th>
-      <td><p>The smoothing parameter estimation method. <code>"GCV.Cp"</code> to use GCV for unknown scale parameter and
-Mallows' Cp/UBRE/AIC for known scale. <code>"GACV.Cp"</code> is equivalent, but using GACV in place of GCV. <code>"REML"</code> 
-for REML estimation, including of unknown scale, <code>"P-REML"</code> for REML estimation, but using a Pearson estimate 
-of the scale. <code>"ML"</code> and <code>"P-ML"</code> are similar, but using maximum likelihood in place of REML. Beyond the 
-exponential family <code>"REML"</code> is the default, and the only other option is <code>"ML"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>x</th>
-      <td><p>Any R object.</p></td>
-    </tr>
-    <tr>
-      <th>object</th>
-      <td><p>An object of class <code>pamm</code> as returned by <code>pamm</code>.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></code></p></div>
-    
+    <pre class="usage"><span class='fu'>warn_about_new_time_points</span>(<span class='no'>newdata</span>, <span class='no'>object</span>, <span class='no'>time_var</span>)</pre>
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#see-also">See also</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

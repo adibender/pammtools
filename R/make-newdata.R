@@ -28,12 +28,12 @@ sample_info <- function(x) {
 sample_info.data.frame <- function(x) {
 
   cn  <- colnames(x)
-  num <- summarize_if(x, .predicate = is.numeric, ~mean(., na.rm = TRUE))
-  fac <- summarize_if(x, .predicate = compose("!", is.numeric), modus)
+  num <- summarize_if (x, .predicate = is.numeric, ~mean(., na.rm = TRUE))
+  fac <- summarize_if (x, .predicate = compose("!", is.numeric), modus)
 
   nnames <- intersect(names(num), names(fac))
 
-  if(length(nnames) != 0) {
+  if (length(nnames) != 0) {
     suppressMessages(
       x <- left_join(num, fac) %>% grouped_df(vars = lapply(nnames, as.name))
     )
@@ -75,8 +75,7 @@ sample_info.ped <- function(x) {
 #' @export
 sample_info.fped <- function(x) {
 
-  lgl_matrix <- map_lgl(x, is.matrix)
-  x %>% select_if(~!is.matrix(.x)) %>% sample_info.ped()
+  x %>% select_if (~!is.matrix(.x)) %>% sample_info.ped()
 
 }
 
@@ -99,14 +98,15 @@ sample_info.fped <- function(x) {
 combine_df <- function(...) {
 
   dots <- list(...)
-  if(!all(sapply(dots, test_data_frame))) {
+  if (!all(sapply(dots, test_data_frame))) {
     stop("All elements in ... must inherit from data.frame!")
   }
   ind_seq   <- map(dots, ~ seq_len(nrow(.x)))
   not_empty <- map_lgl(ind_seq, ~ length(.x) > 0)
   ind_list  <- ind_seq[not_empty] %>% cross() %>% transpose() %>% map(combine)
 
-  map2(dots[not_empty], ind_list, function(.x, .y) slice(.x, .y)) %>% bind_cols()
+  map2(dots[not_empty], ind_list, function(.x, .y) slice(.x, .y)) %>%
+    bind_cols()
 
 }
 
@@ -169,14 +169,14 @@ make_newdata.default <- function(x, ...) {
   orig_names <- names(x)
 
   expressions    <- quos(...)
-  expr_evaluated <- map(expressions, lazyeval::f_eval, data=x)
+  expr_evaluated <- map(expressions, lazyeval::f_eval, data = x)
 
   # construct data parts depending on input type
-  lgl_atomic     <- map_lgl(expr_evaluated, is_atomic)
-  partI  <- expr_evaluated[lgl_atomic] %>% cross_df()
-  partII <- do.call(combine_df, expr_evaluated[!lgl_atomic])
+  lgl_atomic <- map_lgl(expr_evaluated, is_atomic)
+  part1  <- expr_evaluated[lgl_atomic] %>% cross_df()
+  part2 <- do.call(combine_df, expr_evaluated[!lgl_atomic])
 
-  ndf    <- combine_df(partI, partII)
+  ndf    <- combine_df(part1, part2)
   rest   <- x %>% select(-one_of(c(colnames(ndf))))
   if (ncol(rest) > 0) {
     si     <- sample_info(rest) %>% ungroup()
@@ -213,7 +213,7 @@ make_newdata.ped <- function(x, ...) {
       ndf <- right_join(int_df, ndf)
       )
   } else {
-    ndf <- combine_df(int_df[1,], ndf)
+    ndf <- combine_df(int_df[1, ], ndf)
   }
 
   int_names <- intersect(int_names, c("intlen", orig_vars))
@@ -238,13 +238,13 @@ make_newdata.fped <- function(x, ...) {
   expressions <- quos(...)
   dot_names   <- names(expressions)
   orig_vars   <- names(x)
-  cumu_vars   <- setdiff(unlist(attr(x, "func_mat_names")) ,dot_names)
+  cumu_vars   <- setdiff(unlist(attr(x, "func_mat_names")), dot_names)
   cumu_smry   <- smry_cumu_vars(x, attr(x, "time_var")) %>%
     select(one_of(cumu_vars))
 
   int_names   <- attr(x, "intvars")
   ndf <- x %>%
-    select(one_of(setdiff(names(x),cumu_vars))) %>%
+    select(one_of(setdiff(names(x), cumu_vars))) %>%
     unfped() %>% make_newdata(...)
 
   out_df <- do.call(combine_df, compact(list(cumu_smry, ndf)))
@@ -254,9 +254,7 @@ make_newdata.fped <- function(x, ...) {
       select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
-  # out_df <- adjust_time_vars(out_df, x, dot_names)
-
-  ## adjust lag-lead indicator
+  # adjust lag-lead indicator
   out_df <- adjust_ll(out_df, x)
 
   out_df
@@ -271,8 +269,9 @@ smry_cumu_vars <- function(data, time_var) {
   z_vars    <- map(func_list, ~get_zvars(.x, time_var, length(func_list))) %>%
     unlist()
   smry_z <- select(data, one_of(z_vars)) %>%
-    map(~.x[1,]) %>% map(~mean(unlist(.x))) %>% bind_cols()
-  smry_time <- select(data, setdiff(cumu_vars, z_vars)) %>% map(~.x[1,1])
+    map(~ .x[1, ]) %>% map(~mean(unlist(.x))) %>% bind_cols()
+  smry_time <- select(data, setdiff(cumu_vars, z_vars)) %>% map(~.x[1, 1])
+
   bind_cols(smry_z, smry_time)
 
 }
@@ -295,9 +294,9 @@ adjust_ll <- function(out_df, data) {
 
   func_list <- attr(data, "func")
   n_func    <- length(func_list)
-  LL_names <- grep("LL", unlist(attr(data, "func_mat_names")), value=TRUE)
+  LL_names <- grep("LL", unlist(attr(data, "func_mat_names")), value = TRUE)
 
-  for(i in LL_names) {
+  for (i in LL_names) {
     ind_ll <- map_lgl(names(attr(data, "ll_funs")), ~grepl(.x, i))
     if (any(ind_ll)) {
       ind_ll <- which(ind_ll)
@@ -308,11 +307,13 @@ adjust_ll <- function(out_df, data) {
     func   <- func_list[[ind_ll]]
     ll_i   <- attr(data, "ll_funs")[[ind_ll]]
     tz_var <- attr(data, "tz_vars")[[ind_ll]]
-    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix, n_func)
+    tz_var <- make_mat_names(tz_var, func$latency_var, func$tz_var, func$suffix,
+      n_func)
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]]) * 1L
     } else {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] - out_df[[tz_var]])*1L
+      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[["tend"]] -
+        out_df[[tz_var]]) * 1L
     }
   }
 
@@ -327,16 +328,16 @@ adjust_ll <- function(out_df, data) {
 #     grep(attr(data, "time_var"), unlist(attr(data, "func_mat_names")), value=TRUE))
 #   time_vars_dots <- c(grep("tend", dot_names, value=TRUE),
 #     grep(attr(data, "time_var"), dot_names, value=TRUE))
-#   if(length(time_vars_dots) == 0) {
+#   if (length(time_vars_dots) == 0) {
 #     time_vars_dots <- "tend"
 #   } else {
-#     if(length(time_vars_dots) > 1) {
+#     if (length(time_vars_dots) > 1) {
 #       warning(paste0("Only one of ", paste0(time_vars_dots, collapse=", "),
 #         "must be specified. Only the first one will be used!"))
 #       time_vars_dots <- time_vars_dots[1]
 #     }
 #   }
-#   for(i in setdiff(time_vars, time_vars_dots)) {
+#   for (i in setdiff(time_vars, time_vars_dots)) {
 #     out_df[[i]] <- out_df[[time_vars_dots]]
 #   }
 

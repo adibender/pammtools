@@ -17,15 +17,15 @@ get_laglead <- function(x, ...) {
 #' @inherit get_laglead
 #' @param tz A vector of exposure times
 #' @param ll_fun Function that specifies how the lag-lead matrix
-#' should be contructed. First argument is the follow up time
+#' should be constructed. First argument is the follow up time
 #' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing
 #' @export
 get_laglead.default <- function(x, tz, ll_fun, ...) {
 
-  LL_df <- crossing(t=x, tz=tz) %>%
-    mutate(LL = ll_fun(.data$t, .data$tz)*1L) %>%
+  LL_df <- crossing(t = x, tz = tz) %>%
+    mutate(LL = ll_fun(.data$t, .data$tz) * 1L) %>%
     group_by(tz) %>%
     mutate(LL = lag(.data$LL, default = 0)) %>%
     ungroup()
@@ -41,13 +41,13 @@ get_laglead.default <- function(x, tz, ll_fun, ...) {
 #' @export
 get_laglead.data.frame <- function(x, ...) {
 
-  t       <- attr(x, "breaks")
+  time    <- attr(x, "breaks")
   tz      <- attr(x, "tz")
   ll_funs <- attr(x, "ll_funs")
 
   LL_df <- map2_dfr(tz, ll_funs,
-      ~get_laglead.default(t, .x, ll_fun = .y), .id = "tz_var")
-  if(!inherits(LL_df, "LL_df")) {
+      ~get_laglead.default(time, .x, ll_fun = .y), .id = "tz_var")
+  if (!inherits(LL_df, "LL_df")) {
     class(LL_df) <- c("LL_df", class(LL_df))
   }
 
@@ -103,17 +103,18 @@ gg_laglead.LL_df <- function(
   x <- left_join(x, int_info(unique(x$t)), by = c("t" = "tend"))
   x <- x %>% filter(!is.na(.data$interval)) %>%
     mutate(
-      tz = factor(.data$tz, levels = sort(unique(.data$tz), decreasing=FALSE)),
+      tz = factor(.data$tz, levels = sort(unique(.data$tz),
+        decreasing = FALSE)),
       interval = factor(.data$interval, levels = levels(.data$interval)) )
   gg_ll <- ggplot(x, aes_string(x = "interval", y = "tz")) +
     geom_tile(aes_string(fill = "LL"), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
-    scale_x_discrete(expand=c(0,0)) +
-    scale_y_discrete(expand=c(0,0)) +
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
     ylab(expression(t[z])) + xlab(expression(t))
 
-  if(!is.null(x[["tz_var"]])) {
-    gg_ll <- gg_ll + facet_wrap(~tz_var, scales="free_y")
+  if (!is.null(x[["tz_var"]])) {
+    gg_ll <- gg_ll + facet_wrap(~tz_var, scales = "free_y")
   }
 
   gg_ll + theme(legend.position = "none")
