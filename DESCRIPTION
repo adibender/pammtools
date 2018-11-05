@@ -5,7 +5,7 @@ Date: 2018-11-02
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
-Description: This package provides functions that facilitate fitting
+Description: Functions that facilitate fitting
     piece-wise exponential (additive mixed) models.
     This includes restructuring the data to the needed format and various
     convenience functions, e.g., for plotting the results.
