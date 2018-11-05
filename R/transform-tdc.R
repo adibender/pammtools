@@ -90,10 +90,6 @@ combine_cut <- function(
 #' entry time could be supported through this argument).
 #' @importFrom tidyr fill
 #' @importFrom rlang sym
-#' @examples
-#' data("pbc", package="survival")# loads both, pbc and pbcseq
-#' pbc$status = 1*(pbc$status == 2)
-#' pbc_ped <- split_tdc(Surv(time, status)~., pbc, pbcseq, tz_var="day")
 #' @export
 split_tdc <- function(
   formula,

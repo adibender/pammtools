@@ -1,5 +1,5 @@
 Package: pammtools
-Title: Piece-Wise exponential Additive Mixed Modeling Tools
+Title: Piece-Wise Exponential Additive Mixed Modeling Tools
 Version: 0.1.7
 Date: 2018-11-02
 Authors@R: c(
