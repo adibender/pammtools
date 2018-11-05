@@ -1,10 +1,11 @@
-pandoc: 2.1.1
-pkgdown: 1.0.0.9000
-pkgdown_sha: 151fe303511fa1a97cd7b3e9fde76e50ed4a66c6
+pandoc: 2.2.1
+pkgdown: 1.1.0
+pkgdown_sha: ~
 articles:
   baseline: baseline.html
   basics: basics.html
   convenience: convenience.html
+  cumulative-effects: cumulative-effects.html
   data-transformation: data-transformation.html
   frailty: frailty.html
   splines: splines.html

@@ -80,19 +80,13 @@ ggplot2 object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -103,36 +97,39 @@ ggplot2 object." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -179,8 +176,8 @@ ggplot2 object." />
 <span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='no'>tz</span>, <span class='no'>ll_fun</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for LL_df</span>
-<span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='kw'>high_col</span> <span class='kw'>=</span> <span class='st'>"grey20"</span>, <span class='kw'>low_col</span> <span class='kw'>=</span> <span class='st'>"whitesmoke"</span>,
-  <span class='kw'>grid_col</span> <span class='kw'>=</span> <span class='st'>"lightgrey"</span>, <span class='no'>...</span>)
+<span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='kw'>high_col</span> <span class='kw'>=</span> <span class='st'>"grey20"</span>,
+  <span class='kw'>low_col</span> <span class='kw'>=</span> <span class='st'>"whitesmoke"</span>, <span class='kw'>grid_col</span> <span class='kw'>=</span> <span class='st'>"lightgrey"</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>gg_laglead</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>

@@ -5,17 +5,17 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Piece-Wise Exponential Additive Mixed Modeling Tools • pammtools</title>
+<title>Piece-Wise exponential Additive Mixed Modeling Tools • pammtools</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><!-- docsearch --><script src="docsearch.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 <link href="docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Piece-Wise Exponential Additive Mixed Modeling Tools">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Piece-Wise exponential Additive Mixed Modeling Tools">
 <meta property="og:description" content="This package provides functions that facilitate fitting
     piece-wise exponential (additive mixed) models.
     This includes restructuring the data to the needed format and various
-    convenience functions, e.g., for ploting the results.">
+    convenience functions, e.g., for plotting the results.">
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -41,18 +41,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -64,36 +58,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/baseline.html">Baseline Hazard</a>
+      <a href="articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="articles/basics.html">Basic Modeling </a>
+      <a href="articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="articles/data-transformation.html">Data Transformation</a>
+      <a href="articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="articles/frailty.html">Frailty and random effects</a>
+      <a href="articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="articles/splines.html">Splines</a>
+      <a href="articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="articles/strata.html">Stratified baseline</a>
+      <a href="articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="articles/tveffects.html">Time-varying effects</a>
+      <a href="articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="news/index.html">Changelog</a>
+  <a href="news/index.html">News</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -127,7 +124,7 @@
 
 <div id="pammtools-piece-wise-exponential-additive-mixed-modeling-tools" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#pammtools-piece-wise-exponential-additive-mixed-modeling-tools" class="anchor"></a><code>pammtools</code>: Piece-Wise Exponential Additive Mixed Modeling Tools</h1></div>
+<a href="#pammtools-piece-wise-exponential-additive-mixed-modeling-tools" class="anchor"></a><strong><code>pammtools</code></strong>: Piece-Wise Exponential Additive Mixed Modeling Tools</h1></div>
 <div id="installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h3>
@@ -137,7 +134,7 @@
 <div id="overview" class="section level3">
 <h3 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h3>
-<p><code>pammtools</code> offers various utilities and convenience functions that facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).</p>
+<p><strong><code>pammtools</code></strong> offers various utilities and convenience functions that facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).</p>
 <p>To get started, see the <a href="articles/index.html">Articles</a> section.</p>
 <p>An overview over the packages functionality is given in</p>
 <ul>

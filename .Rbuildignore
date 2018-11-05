@@ -16,3 +16,4 @@
 ^sanbox/$
 ^codecov\.yml$
 ^sandbox$
+^cran-comments\.md$

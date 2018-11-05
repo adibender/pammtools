@@ -82,19 +82,13 @@ time-dependent covariate changes its value." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -105,36 +99,39 @@ time-dependent covariate changes its value." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -177,7 +174,8 @@ time-dependent covariate changes its value.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>combine_cut</span>(<span class='no'>event_df</span>, <span class='no'>tdc_df</span>, <span class='no'>time_var</span>, <span class='no'>status_var</span>, <span class='no'>tz_var</span>, <span class='kw'>cens_value</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+    <pre class="usage"><span class='fu'>combine_cut</span>(<span class='no'>event_df</span>, <span class='no'>tdc_df</span>, <span class='no'>time_var</span>, <span class='no'>status_var</span>, <span class='no'>tz_var</span>,
+  <span class='kw'>cens_value</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

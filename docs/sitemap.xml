@@ -43,6 +43,9 @@
     <loc>https://adibender.github.io/pammtools/reference/elra_matrix.html</loc>
   </url>
   <url>
+    <loc>https://adibender.github.io/pammtools/reference/extub_event.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/fcumu.html</loc>
   </url>
   <url>
@@ -142,9 +145,6 @@
     <loc>https://adibender.github.io/pammtools/reference/newdata.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/pamm.html</loc>
-  </url>
-  <url>
     <loc>https://adibender.github.io/pammtools/reference/pammtools.html</loc>
   </url>
   <url>
@@ -202,7 +202,7 @@
     <loc>https://adibender.github.io/pammtools/reference/tumor.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/warn_about_new_evaluation_time_points.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/warn_about_new_time_points.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/articles/baseline.html</loc>
@@ -212,6 +212,9 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/articles/convenience.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/cumulative-effects.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/articles/data-transformation.html</loc>

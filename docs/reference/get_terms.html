@@ -82,19 +82,13 @@ stacked to a tidy data frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -105,36 +99,39 @@ stacked to a tidy data frame." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
       
@@ -214,7 +211,7 @@ for which partial effects will be returned</p></td>
 <span class='fu'>head</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
 #&gt;   term      x   eff    se ci_lower ci_upper
 #&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-#&gt; 1 karno  10.0  1.90 0.884    0.127     3.66
+#&gt; 1 karno  10    1.90 0.884    0.127     3.66
 #&gt; 2 karno  10.9  1.89 0.822    0.243     3.53
 #&gt; 3 karno  11.8  1.88 0.763    0.353     3.41
 #&gt; 4 karno  12.7  1.87 0.707    0.455     3.28
@@ -227,7 +224,7 @@ for which partial effects will be returned</p></td>
 #&gt; 3 age    79.6 -0.219 0.793    -1.80     1.37
 #&gt; 4 age    80.1 -0.247 0.837    -1.92     1.43
 #&gt; 5 age    80.5 -0.275 0.884    -2.04     1.49
-#&gt; 6 age    81.0 -0.303 0.933    -2.17     1.56</div></pre>
+#&gt; 6 age    81   -0.303 0.933    -2.17     1.56</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

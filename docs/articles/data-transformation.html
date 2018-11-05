@@ -38,18 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.2</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,36 +55,39 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/baseline.html">Baseline Hazard</a>
+      <a href="../articles/data-transformation.html">Data transformation</a>
     </li>
     <li>
-      <a href="../articles/basics.html">Basic Modeling </a>
+      <a href="../articles/baseline.html">Estimating the baseline hazard</a>
     </li>
     <li>
-      <a href="../articles/convenience.html">Convenience functions for post-processing PAMs</a>
+      <a href="../articles/basics.html">Basic modeling</a>
     </li>
     <li>
-      <a href="../articles/data-transformation.html">Data Transformation</a>
+      <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
-      <a href="../articles/frailty.html">Frailty and random effects</a>
+      <a href="../articles/strata.html">Stratified models</a>
     </li>
     <li>
-      <a href="../articles/splines.html">Splines</a>
+      <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
-      <a href="../articles/strata.html">Stratified baseline</a>
+      <a href="../articles/tveffects.html">Time-varying effects (TVEs)</a>
     </li>
     <li>
-      <a href="../articles/tdcovar.html">Time-dependent covariates</a>
+      <a href="../articles/frailty.html">Frailties (random effects)</a>
     </li>
     <li>
-      <a href="../articles/tveffects.html">Time-varying effects</a>
+      <a href="../articles/tdcovar.html">Time-dependent covariates (TDCs)</a>
+    </li>
+    <li>
+      <a href="../articles/cumulative-effects.html">Cumulative effects/Exposure-Lag-Response Associations</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="../news/index.html">News</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -119,9 +116,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Data Transformation</h1>
-                        <h4 class="author">Andreas Bender</h4>
             
-            <h4 class="date">2018-06-03</h4>
+            <h4 class="date">2018-11-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/data-transformation.Rmd"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -151,9 +147,9 @@
 <a class="sourceLine" id="cb2-2" data-line-number="2">veteran &lt;-<span class="st"> </span>veteran <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(</a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">    <span class="dt">id    =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span>(),</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="dt">trt   =</span> <span class="dv">1</span><span class="op">*</span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">    <span class="dt">prior =</span> <span class="dv">1</span><span class="op">*</span>(prior <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id,<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select_helpers.html">everything</a></span>())</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="dt">trt   =</span> 1L <span class="op">*</span><span class="st"> </span>(trt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">    <span class="dt">prior =</span> 1L <span class="op">*</span><span class="st"> </span>(prior <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, <span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">everything</a></span>())</a>
 <a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">head</span>(veteran)</a></code></pre></div>
 <pre><code>##   id trt celltype time status karno diagtime age prior
 ## 1  1   0 squamous   72      1    60        7  69     0
@@ -233,8 +229,8 @@
 <div id="custom-cut-points" class="section level3">
 <h3 class="hasAnchor">
 <a href="#custom-cut-points" class="anchor"></a>Custom cut points</h3>
-<p>Per default the <code>as_ped</code> function uses all unique event times as cut points (which is a sensible default as for example the (cumulative) baseline hazard estimates in Cox-PH functions are updated also only at event times).</p>
-<p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data object and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
+<p>Per default, the <code>as_ped</code> function uses all unique event times as cut points (which is a sensible default as for example the (cumulative) baseline hazard estimates in Cox-PH functions are also updated at event times).</p>
+<p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ped2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(<span class="kw">Surv</span>(time, status)<span class="op">~</span>., <span class="dt">data =</span> veteran, <span class="dt">cut =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">200</span>, <span class="dv">400</span>),</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="dt">id =</span> <span class="st">"id"</span>)</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">ped2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">42</span>, <span class="dv">85</span>, <span class="dv">112</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(<span class="op">-</span>diagtime, <span class="op">-</span>prior)</a></code></pre></div>
@@ -245,11 +241,9 @@
 ## 4 112     50  200 (50,200] 0.000000          1   1     adeno    60  62</code></pre>
 <p>Note that now subjects <code>42</code> and <code>85</code> have only one row in the data set. The fact that subject <code>42</code> was in the risk set longer than subject <code>85</code> is, however, still accounted for by the <code>offset</code> variable. Note that the <code>offset</code>s for subject <code>85</code> and subject <code>112</code> in interval <code>(50,200]</code> are only zero because subject <code>85</code> had an observed event time of <code>1</code>, thus <code>log(1-0)=0</code> and subject <code>112</code> had an event at time <code>51</code>, thus <code>log(51-50)=0</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">veteran <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="kw">c</span>(<span class="dv">85</span>, <span class="dv">112</span>))</a></code></pre></div>
-<pre><code>## # A tibble: 2 x 9
-##      id   trt celltype  time status karno diagtime   age prior
-##   &lt;int&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1    85    1. squamous    1.     1.   50.       7.   35.    0.
-## 2   112    1. adeno      51.     1.   60.       5.   62.    0.</code></pre>
+<pre><code>##    id trt celltype time status karno diagtime age prior
+## 1  85   1 squamous    1      1    50        7  35     0
+## 2 112   1    adeno   51      1    60        5  62     0</code></pre>
 </div>
 </div>
 <div id="data-with-time-dependent-covariates" class="section level2">
@@ -258,19 +252,18 @@
 <p>In case of data with time-dependent covariates (that should not be modeled as cumulative effects), the follow-up is usually split at desired cut-points and <em>additionally</em> at the time-points at which the TDC changes its value.</p>
 <p>We assume that the data is provided in two data sets, one that contains time-to-event data and time-constant covariates and one data set that contains information of time-dependent covariates.</p>
 <p>For illustration, we use the <code>pbc</code> data from the <code>survival</code> package. Before the actual data transformation we perform the data preprocessing in <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf">vignette("timedep", package="survival")</a></code>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">data</span>(<span class="st">"pbc"</span>, <span class="dt">package=</span><span class="st">"survival"</span>)</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">data</span>(<span class="st">"pbc"</span>, <span class="dt">package =</span> <span class="st">"survival"</span>) <span class="co"># loads pbc and pbcseq</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2">pbc &lt;-<span class="st"> </span>pbc <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">filter</a></span>(id <span class="op">&lt;=</span><span class="st"> </span><span class="dv">312</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">status =</span> 1L<span class="op">*</span>(status <span class="op">==</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">mutate</a></span>(<span class="dt">status =</span> 1L <span class="op">*</span><span class="st"> </span>(status <span class="op">==</span><span class="st"> </span><span class="dv">2</span>)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id<span class="op">:</span>sex, bili, protime)</a></code></pre></div>
 <p>We want to transform the data such that we could fit a concurrent effect of the time-dependent covariates <code>bili</code> and <code>protime</code>, therefore, the RHS of the formula passed to <code>as_ped</code> needs to contain an additional component, separated by <code>|</code> and all variables for which should be transformed to the concurrent format specified within the <code>concurrent</code> special. The data sets are provided within a list. In <code>concurrent</code>, we also have to specify the name of the variable which stores information on the time points at which the TDCs are updated.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">ped_pbc &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(pbc, pbcseq),</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status)<span class="op">~</span>.<span class="op">|</span><span class="kw"><a href="../reference/specials.html">concurrent</a></span>(bili, protime, <span class="dt">tz_var =</span> <span class="st">"day"</span>),</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span><span class="st"> </span><span class="kw"><a href="../reference/specials.html">concurrent</a></span>(bili, protime, <span class="dt">tz_var =</span> <span class="st">"day"</span>),</a>
 <a class="sourceLine" id="cb11-4" data-line-number="4">  <span class="dt">id      =</span> <span class="st">"id"</span>)</a></code></pre></div>
 <pre><code>## Joining, by = "id"
 ## Joining, by = "id"
 ## Joining, by = "id"</code></pre>
-<pre><code>## Adding missing grouping variables: `id`</code></pre>
 <p>Multiple data sets can be provided within the list and multiple <code>concurrent</code> terms with different <code>tz_var</code> arguments can be specified. If different <code>tz_var</code> arguments are provided, the union of both will be used as cut points in addition to usual cut points.</p>
 <p><strong>Warning</strong>: For time-points on the follow up that have no observation of the TDC, the last observation will be carried forward until the next update is available.</p>
 </div>
@@ -343,59 +336,61 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#one-time-dependent-covariate" class="anchor"></a>One time-dependent covariate</h3>
 <p>For illustration we use the ICU patients data sets <code>patient</code> and <code>daily</code> provided in the <strong><code>pammtools</code></strong> package, with follow-up time <code>survhosp</code> (<span class="math inline">\(t\)</span>), exposure time <code>Study_Day</code> (<span class="math inline">\(t_z\)</span>) and TDCs <code>caloriesPercentage</code> <span class="math inline">\(\mathbf{z}_1\)</span> and <code>proteinGproKG</code> (<span class="math inline">\(\mathbf{z}_2\)</span>):</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">head</span>(patient)</a></code></pre></div>
-<pre><code>## # A tibble: 6 x 12
-##   Year  CombinedicuID CombinedID Survdays PatientDied survhosp Gender
-##   &lt;fct&gt; &lt;fct&gt;              &lt;int&gt;    &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt; 
-## 1 2007  1114                1110    30.1           0.    30.1  Male  
-## 2 2007  1114                1111    30.1           0.    30.1  Female
-## 3 2007  1114                1116     9.80          1.     9.80 Female
-## 4 2007  598                 1316    30.1           0.    30.1  Male  
-## 5 2007  365                 1410    30.1           0.    30.1  Male  
-## 6 2007  365                 1414    30.1           0.     5.40 Male  
-## # ... with 5 more variables: Age &lt;int&gt;, AdmCatID &lt;fct&gt;,
-## #   ApacheIIScore &lt;int&gt;, BMI &lt;dbl&gt;, DiagID2 &lt;fct&gt;</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">head</span>(daily)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">head</span>(patient)</a></code></pre></div>
+<pre><code>##   Year CombinedicuID CombinedID Survdays PatientDied survhosp Gender Age
+## 1 2007          1114       1101     30.1           0      6.7 Female  71
+## 2 2007          1114       1102     30.1           0     30.1   Male  58
+## 3 2007          1114       1103     30.1           0     16.2   Male  50
+## 4 2007          1114       1104     30.1           0     30.1   Male  58
+## 5 2007          1114       1105     30.1           0      8.6 Female  47
+## 6 2007          1114       1107     30.1           0     30.1 Female  68
+##             AdmCatID ApacheIIScore      BMI     DiagID2
+## 1            Medical            13 38.97392      Sepsis
+## 2            Medical            19 23.30668 Respiratory
+## 3 Surgical Emergency            25 23.38869  Neurologic
+## 4            Medical            21 23.67125      Sepsis
+## 5            Medical            15 28.68514  Neurologic
+## 6            Medical            21 30.08137 Respiratory</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">head</span>(daily)</a></code></pre></div>
 <pre><code>## # A tibble: 6 x 4
 ##   CombinedID Study_Day caloriesPercentage proteinGproKG
-##        &lt;int&gt;     &lt;int&gt;              &lt;dbl&gt;         &lt;dbl&gt;
-## 1       1110         1               0.           0.   
-## 2       1110         2               0.           0.   
-## 3       1110         3               4.05         0.   
-## 4       1110         4              35.1          0.259
-## 5       1110         5              77.2          0.647
-## 6       1110         6              17.3          0.</code></pre>
+##        &lt;int&gt;     &lt;dbl&gt;              &lt;dbl&gt;         &lt;dbl&gt;
+## 1       1101         0                0           0    
+## 2       1101         1               29.2         0.255
+## 3       1101         2              100           0.873
+## 4       1101         3              100           0.873
+## 5       1101         4              100           0.873
+## 6       1101         5               95.8         0.836</code></pre>
 <p>Below we illustrate the usage of <code>as_ped</code> and <code>cumulative</code> to obtain covariate matrices for the latency matrix of follow up time and exposure time and a matrix of the TDC (<code>caloriesPercentage</code>). The follow up will be split in 30 intervals with interval breaks points <code>0:30</code>. By default, the exposure time provided to <code>tz_var</code> will be used as a suffix for the names of the new matrix columns to indicate the exposure they refer to, however, you can override the suffix by specifying the <code>suffix</code> argument to <code>cumulative</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(patient, daily),</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
-<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(Study_Day), caloriesPercentage, <span class="dt">tz_var=</span><span class="st">"Study_Day"</span>),</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">  <span class="dt">cut     =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(patient, daily),</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(Study_Day), caloriesPercentage, <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">  <span class="dt">cut     =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
 <pre><code>## Joining, by = "CombinedID"
 ## Joining, by = "CombinedID"</code></pre>
-<pre><code>## Adding missing grouping variables: `CombinedID`</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  18 variables:
-##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
-##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
-##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...
-##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
+<pre><code>## Classes 'fped', 'ped' and 'data.frame':  195230 obs. of  18 variables:
+##  $ CombinedID        : int  1101 1101 1101 1101 1101 1101 1101 1102 1102 1102 ...
+##  $ tstart            : num  0 1 2 3 4 5 6 0 1 2 ...
+##  $ tend              : int  1 2 3 4 5 6 7 1 2 3 ...
+##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 1 2 3 ...
+##  $ offset            : num  0 0 0 0 0 ...
 ##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...
+##  $ CombinedicuID     : Factor w/ 451 levels "21","24","25",..: 350 350 350 350 350 350 350 350 350 350 ...
 ##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...
-##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...
-##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...
-##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...
-##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...
-##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ Gender            : Factor w/ 2 levels "Female","Male": 1 1 1 1 1 1 1 2 2 2 ...
+##  $ Age               : int  71 71 71 71 71 71 71 58 58 58 ...
+##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ApacheIIScore     : int  13 13 13 13 13 13 13 19 19 19 ...
+##  $ BMI               : num  39 39 39 39 39 ...
+##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 9 9 9 9 9 9 9 8 8 8 ...
+##  $ Study_Day_latency : num [1:195230, 1:12] 0 1 2 3 4 5 6 0 1 2 ...
+##  $ caloriesPercentage: num [1:195230, 1:12] 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
-##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...
+##  $ LL                : num [1:195230, 1:12] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "CombinedID"
 ##  - attr(*, "intvars")= chr  "CombinedID" "tstart" "tend" "interval" ...
@@ -412,41 +407,40 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#two-time-dependent-covariates-observed-on-the-same-exposure-time-grid" class="anchor"></a>Two time-dependent covariates observed on the same exposure time grid</h3>
 <p>Using the same data, we show a slightly more complex example with two functional covariate terms with partial effects <span class="math inline">\(h(t, t-t_z, z_1(t_z))\)</span> and <span class="math inline">\(h(t-t_z, z_2(t_z))\)</span>. As in the case of ICU patient data, both TDCs were observed on the same exposure time grid, we want to use the same lag-lead window and the latency term <span class="math inline">\(t-t_z\)</span> occurs in both partial effects, we only need to specify one <code>cumulative</code> term.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">  <span class="dt">data =</span> <span class="kw">list</span>(patient, daily),</a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
-<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(survhosp, <span class="kw">latency</span>(Study_Day), caloriesPercentage, proteinGproKG,</a>
-<a class="sourceLine" id="cb23-5" data-line-number="5">      <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
-<a class="sourceLine" id="cb23-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
-<a class="sourceLine" id="cb23-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">  <span class="dt">data =</span> <span class="kw">list</span>(patient, daily),</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(survhosp, <span class="kw">latency</span>(Study_Day), caloriesPercentage, proteinGproKG,</a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">      <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb21-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
 <pre><code>## Joining, by = "CombinedID"
 ## Joining, by = "CombinedID"
 ## Joining, by = "CombinedID"</code></pre>
-<pre><code>## Adding missing grouping variables: `CombinedID`</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  20 variables:
-##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
-##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
-##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...
-##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
+<pre><code>## Classes 'fped', 'ped' and 'data.frame':  195230 obs. of  20 variables:
+##  $ CombinedID        : int  1101 1101 1101 1101 1101 1101 1101 1102 1102 1102 ...
+##  $ tstart            : num  0 1 2 3 4 5 6 0 1 2 ...
+##  $ tend              : int  1 2 3 4 5 6 7 1 2 3 ...
+##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 1 2 3 ...
+##  $ offset            : num  0 0 0 0 0 ...
 ##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...
+##  $ CombinedicuID     : Factor w/ 451 levels "21","24","25",..: 350 350 350 350 350 350 350 350 350 350 ...
 ##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...
-##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...
-##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...
-##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...
-##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...
-##  $ survhosp_mat      : int [1:37258, 1:12] 0 1 2 3 4 5 6 7 8 9 ...
-##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...
-##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ Gender            : Factor w/ 2 levels "Female","Male": 1 1 1 1 1 1 1 2 2 2 ...
+##  $ Age               : int  71 71 71 71 71 71 71 58 58 58 ...
+##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ApacheIIScore     : int  13 13 13 13 13 13 13 19 19 19 ...
+##  $ BMI               : num  39 39 39 39 39 ...
+##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 9 9 9 9 9 9 9 8 8 8 ...
+##  $ survhosp_mat      : int [1:195230, 1:12] 0 1 2 3 4 5 6 0 1 2 ...
+##  $ Study_Day_latency : num [1:195230, 1:12] 0 1 2 3 4 5 6 0 1 2 ...
+##  $ caloriesPercentage: num [1:195230, 1:12] 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
-##  $ proteinGproKG     : num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ proteinGproKG     : num [1:195230, 1:12] 0 0 0 0 0 0 0 0 0 0 ...
 ##   ..- attr(*, "dimnames")=List of 2
-##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...
+##  $ LL                : num [1:195230, 1:12] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "CombinedID"
 ##  - attr(*, "intvars")= chr  "CombinedID" "tstart" "tend" "interval" ...
@@ -462,22 +456,22 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#multiple-tdcs-observed-at-different-exposure-time-grids" class="anchor"></a>Multiple TDCs observed at different exposure time grids</h3>
 <p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">simdf_elra</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">simdf_elra</a></code></pre></div>
 <pre><code>## # A tibble: 250 x 9
-##       id   time status      x1    x2 tz1        z.tz1      tz2     z.tz2  
-##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;list&gt;  &lt;list&gt; 
-##  1     1  3.22       1  1.59   4.61  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  2     2 10.0        0 -0.530  0.178 &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  3     3  0.808      1 -2.43   3.25  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  4     4  3.04       1  0.696  1.26  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  5     5  3.36       1  2.54   3.71  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  6     6  4.07       1 -0.0231 0.607 &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  7     7  0.534      1  1.68   1.74  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  8     8  1.57       1 -1.89   2.51  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-##  9     9  2.39       1  0.126  3.38  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
-## 10    10  6.61       1  1.79   1.06  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [… &lt;dbl […
+##       id   time status      x1    x2 tz1       z.tz1     tz2      z.tz2   
+##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;    &lt;list&gt;   &lt;list&gt;  
+##  1     1  3.22       1  1.59   4.61  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  2     2 10          0 -0.530  0.178 &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  3     3  0.808      1 -2.43   3.25  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  4     4  3.04       1  0.696  1.26  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  5     5  3.36       1  2.54   3.71  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  6     6  4.07       1 -0.0231 0.607 &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  7     7  0.534      1  1.68   1.74  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  8     8  1.57       1 -1.89   2.51  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##  9     9  2.39       1  0.126  3.38  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+## 10    10  6.61       1  1.79   1.06  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
 ## # ... with 240 more rows</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/unnest">unnest</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
 <pre><code>## # A tibble: 10 x 2
 ##       id   tz1
 ##    &lt;int&gt; &lt;int&gt;
@@ -491,7 +485,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  8     1     8
 ##  9     1     9
 ## 10     1    10</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/unnest">unnest</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
 <pre><code>## # A tibble: 11 x 2
 ##       id   tz2
 ##    &lt;int&gt; &lt;int&gt;
@@ -514,14 +508,14 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <li><span class="math inline">\(g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))\)</span></li>
 </ul>
 <p>with <span class="math inline">\(\mathcal{T}_1(t) = \{t_z: t \geq t_z + 2\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_z: t \geq s_z\}\)</span> the data transformation function must reflect the different exposure times as well as different lag-lead window specifications as illustrated below:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">ped_sim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">  <span class="dt">data =</span> simdf_elra,</a>
-<a class="sourceLine" id="cb34-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status)<span class="op">~</span>.<span class="op">|</span><span class="st"> </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(time, <span class="kw">latency</span>(tz1), z.tz1, <span class="dt">tz_var=</span><span class="st">"tz1"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb34-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(tz2), z.tz2, <span class="dt">tz_var =</span> <span class="st">"tz2"</span>),</a>
-<a class="sourceLine" id="cb34-5" data-line-number="5">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb34-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"id"</span>)</a></code></pre></div>
-<pre><code>## Adding missing grouping variables: `id`</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="kw">str</span>(ped_sim,<span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">ped_sim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb31-2" data-line-number="2">  <span class="dt">data =</span> simdf_elra,</a>
+<a class="sourceLine" id="cb31-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(time, <span class="kw">latency</span>(tz1), z.tz1, <span class="dt">tz_var =</span> <span class="st">"tz1"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(tz2), z.tz2, <span class="dt">tz_var =</span> <span class="st">"tz2"</span>),</a>
+<a class="sourceLine" id="cb31-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb31-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"id"</span>)</a>
+<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="kw">str</span>(ped_sim, <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## Classes 'fped', 'ped' and 'data.frame':  1004 obs. of  15 variables:
 ##  $ id          : int  1 1 1 1 2 2 2 2 2 2 ...
 ##  $ tstart      : num  0 1 2 3 0 1 2 3 4 5 ...
@@ -534,9 +528,11 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  $ time_tz1_mat: int [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...
 ##  $ tz1_latency : num [1:1004, 1:10] 0 0 1 2 0 0 1 2 3 4 ...
 ##  $ z.tz1_tz1   : num [1:1004, 1:10] -2.014 -2.014 -2.014 -2.014 -0.978 ...
+##   ..- attr(*, "dimnames")=List of 2
 ##  $ LL_tz1      : num [1:1004, 1:10] 0 1 1 1 0 1 1 1 1 1 ...
 ##  $ tz2_latency : num [1:1004, 1:11] 5 6 7 8 5 6 7 8 9 10 ...
 ##  $ z.tz2_tz2   : num [1:1004, 1:11] -0.689 -0.689 -0.689 -0.689 0.693 ...
+##   ..- attr(*, "dimnames")=List of 2
 ##  $ LL_tz2      : num [1:1004, 1:11] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "id"
@@ -549,76 +545,8 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  - attr(*, "ll_weights")=List of 2
 ##  - attr(*, "func_mat_names")=List of 2</code></pre>
 <p>Note how the matrix covariates associated with <code>tz1</code> have 10 columns while matrix covariates associated with <code>tz2</code> have 11 columns. Note also that the lag-lead matrices differ</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">ped_sim <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, LL_tz1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>(<span class="dv">16</span>)</a></code></pre></div>
-<pre><code>##    id LL_tz1.1 LL_tz1.2 LL_tz1.3 LL_tz1.4 LL_tz1.5 LL_tz1.6 LL_tz1.7
-## 1   1        0        0        0        0        0        0        0
-## 2   1        1        0        0        0        0        0        0
-## 3   1        1        1        0        0        0        0        0
-## 4   1        1        1        1        0        0        0        0
-## 5   2        0        0        0        0        0        0        0
-## 6   2        1        0        0        0        0        0        0
-## 7   2        1        1        0        0        0        0        0
-## 8   2        1        1        1        0        0        0        0
-## 9   2        1        1        1        1        0        0        0
-## 10  2        1        1        1        1        1        0        0
-## 11  2        1        1        1        1        1        1        0
-## 12  2        1        1        1        1        1        1        1
-## 13  2        1        1        1        1        1        1        1
-## 14  2        1        1        1        1        1        1        1
-## 15  3        0        0        0        0        0        0        0
-## 16  4        0        0        0        0        0        0        0
-##    LL_tz1.8 LL_tz1.9 LL_tz1.10
-## 1         0        0         0
-## 2         0        0         0
-## 3         0        0         0
-## 4         0        0         0
-## 5         0        0         0
-## 6         0        0         0
-## 7         0        0         0
-## 8         0        0         0
-## 9         0        0         0
-## 10        0        0         0
-## 11        0        0         0
-## 12        0        0         0
-## 13        1        0         0
-## 14        1        1         0
-## 15        0        0         0
-## 16        0        0         0</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1">ped_sim <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, LL_tz2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>(<span class="dv">16</span>)</a></code></pre></div>
-<pre><code>##    id LL_tz2.1 LL_tz2.2 LL_tz2.3 LL_tz2.4 LL_tz2.5 LL_tz2.6 LL_tz2.7
-## 1   1        1        1        1        1        1        1        0
-## 2   1        1        1        1        1        1        1        1
-## 3   1        1        1        1        1        1        1        1
-## 4   1        1        1        1        1        1        1        1
-## 5   2        1        1        1        1        1        1        0
-## 6   2        1        1        1        1        1        1        1
-## 7   2        1        1        1        1        1        1        1
-## 8   2        1        1        1        1        1        1        1
-## 9   2        1        1        1        1        1        1        1
-## 10  2        1        1        1        1        1        1        1
-## 11  2        1        1        1        1        1        1        1
-## 12  2        1        1        1        1        1        1        1
-## 13  2        1        1        1        1        1        1        1
-## 14  2        1        1        1        1        1        1        1
-## 15  3        1        1        1        1        1        1        0
-## 16  4        1        1        1        1        1        1        0
-##    LL_tz2.8 LL_tz2.9 LL_tz2.10 LL_tz2.11
-## 1         0        0         0         0
-## 2         0        0         0         0
-## 3         1        0         0         0
-## 4         1        1         0         0
-## 5         0        0         0         0
-## 6         0        0         0         0
-## 7         1        0         0         0
-## 8         1        1         0         0
-## 9         1        1         1         0
-## 10        1        1         1         1
-## 11        1        1         1         1
-## 12        1        1         1         1
-## 13        1        1         1         1
-## 14        1        1         1         1
-## 15        0        0         0         0
-## 16        0        0         0         0</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="../reference/gg_laglead.html">gg_laglead</a></span>(ped_sim)</a></code></pre></div>
+<p><img src="data-transformation_files/figure-html/unnamed-chunk-14-1.png" width="600px" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
@@ -629,13 +557,13 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <p>Bender, Andreas, Fabian Scheipl, Wolfgang Hartl, Andrew G. Day, and Helmut Küchenhoff. 2018. “Penalized Estimation of Complex, Non-Linear Exposure-Lag-Response Associations.” <em>Biostatistics</em>. <a href="https://doi.org/10.1093/biostatistics/kxy003" class="uri">https://doi.org/10.1093/biostatistics/kxy003</a>.</p>
 </div>
 <div id="ref-Gasparrini2017">
-<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73:938–48. <a href="https://doi.org/10.1111/biom.12645" class="uri">https://doi.org/10.1111/biom.12645</a>.</p>
+<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="uri">https://doi.org/10.1111/biom.12645</a>.</p>
 </div>
 <div id="ref-Kalbfleisch1980">
 <p>Kalbfleisch, J., and R. Prentice. 1980. <em>The Statistical Analysis of Failure Time Data</em>. New York: Wiley.</p>
 </div>
 <div id="ref-Sylvestre2009">
-<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27):3437–53. <a href="https://doi.org/10.1002/sim.3701" class="uri">https://doi.org/10.1002/sim.3701</a>.</p>
+<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="uri">https://doi.org/10.1002/sim.3701</a>.</p>
 </div>
 </div>
 </div>

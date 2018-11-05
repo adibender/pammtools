@@ -14,7 +14,7 @@ opts_chunk$set(warning = FALSE)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1048832.svg)](https://doi.org/10.5281/zenodo.1048832)
 
-# `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
+# **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools
 
 
 ### Installation
