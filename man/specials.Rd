@@ -26,7 +26,7 @@ the TDCs that share the same \code{tz} and Lag-lead window (\code{ll_fun}).}
 times at which the TDCs specified in this term where observed.}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix
-should be contructed. First argument is the follow up time
+should be constructed. First argument is the follow up time
 second argument is the time of exposure.}
 
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object

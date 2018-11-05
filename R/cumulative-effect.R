@@ -1,8 +1,8 @@
 #' Calculate cumulative effect for all time-points
 #'
 #' @inheritParams gg_partial
-#' @param z1 The expoure profile for which to calculate the cumulative effect.
-#' Can be either a singel number or a vector of same length as unique observation
+#' @param z1 The exposure profile for which to calculate the cumulative effect.
+#' Can be either a single number or a vector of same length as unique observation
 #' time points.
 #' @param z2 If provided, calculated cumulative effect is for the difference
 #' between the two exposure profiles (g(z1,t)-g(z2,t)).

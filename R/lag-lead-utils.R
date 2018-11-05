@@ -17,7 +17,7 @@ get_laglead <- function(x, ...) {
 #' @inherit get_laglead
 #' @param tz A vector of exposure times
 #' @param ll_fun Function that specifies how the lag-lead matrix
-#' should be contructed. First argument is the follow up time
+#' should be constructed. First argument is the follow up time
 #' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing

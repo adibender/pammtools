@@ -180,8 +180,8 @@ ped_info <- function(ped) {
 #' Extract risk set information for each interval.
 #'
 #' The columns \code{ped_riskset, ped_events, ped_censored} provide the
-#' size of the riskset at the beginning of each interval as well as the number
-#' of events and censorings that occured in the interval, respectively.
+#' size of the risk set at the beginning of each interval as well as the number
+#' of events and censorings that occurred in the interval, respectively.
 #'
 #' @inheritParams ped_info
 #' @import checkmate dplyr

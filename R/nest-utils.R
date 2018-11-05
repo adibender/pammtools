@@ -7,7 +7,7 @@
 #' @inheritParams tidyr::nest
 #' @inheritParams split_data
 #' @param data A suitable data structure (e.g. unnested data frame with
-#' concurrent TDCs or a list wehre each element is a data frame, potentially
+#' concurrent TDCs or a list where each element is a data frame, potentially
 #' containing TDCs as specified in the RHS of \code{formula}).
 #' Only TDCs present in \code{formula} will be returned.
 #' @param formula A two sided formula with a two part RHS, where the second

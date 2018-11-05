@@ -1,6 +1,6 @@
 #' Extract cumulative coefficients (cumulative hazard differences)
 #'
-#' These functions are designed to extract (or mimick) the cumulative coefficients
+#' These functions are designed to extract (or mimic) the cumulative coefficients
 #' usually used in additive hazards models (Aalen model) to depict (time-varying)
 #' covariate effects. For PAMMs, these are the differences
 #' between the cumulative hazard rates where all covariates except one have the
