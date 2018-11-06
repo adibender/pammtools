@@ -55,6 +55,7 @@ pam <- gam(ped_status ~ s(tend) + x1 + s(x2), data=ped, family=poisson, offset=o
 coef(pam)[2]
 plot(pam, page=1)
 
+\dontrun{
 # Example 2: Functional covariates/cumulative coefficients
 # function to generate one exposure profile, tz is a vector of time points
 # at which TDC z was observed
@@ -94,4 +95,5 @@ sim_df <- sim_pexp(
      fcumu(t, tz2, z.tz2, f_xyz=f_xyz2, ll_fun=ll_fun2),
   data = df,
   cut = 0:10)
+}
 }
