@@ -12,6 +12,7 @@
     - Byte-Comile field was removed
     - Removed "This package..." from description
     - Added Reference + DOI in description
+    - Added \dontrun{} to second part of sim_pexp to reduce runtime
 
 ## Reverse dependencies
 
