@@ -7,11 +7,16 @@
 #' @importFrom rlang quos
 #'
 #' @inheritParams make_newdata
+#' @param data Data used to fit the \code{model}.
 #' @param model A suitable model object which will be used to estimate the
 #' partial effect of \code{term}.
+#' @param term A character string indicating the model term for which partial
+#' effects should be plotted.
 #' @param reference If specified, should be a list with covariate value pairs,
-#' e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
+#' e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
 #' to an observation specified in \code{reference}.
+#' @param ci Logical. Indicates if confidence intervals for the \code{term}
+#' of interest should be calculated. Defaults to \code{TRUE}.
 #' @export
 gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
@@ -51,6 +56,8 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 #' @rdname gg_partial
 #' @inherit gg_partial
 #' @importFrom tidyr complete
+#' @param time_var The name of the variable that was used in \code{model} to
+#' represent follow-up time.
 #' @export
 gg_partial_ll <- function(
   data,
@@ -108,6 +115,7 @@ gg_partial_ll <- function(
 #' on further covariate specifications and potentially relative to
 #' a comparison specification.
 #'
+#' @inheritParams gg_partial
 #' @importFrom purrr map_int
 #' @importFrom rlang quos
 #' @examples
@@ -149,9 +157,9 @@ gg_slice <- function(data, model, term, ..., reference=NULL) {
 }
 
 
-#' @rdname gg_partial
-#' @inherit gg_partial
-#'
+#' @rdname get_cumu_eff
+#' @inherit get_cumu_eff
+#' @inheritParams get_cumu_eff
 #' @export
 gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
 
@@ -168,22 +176,22 @@ gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
 
 
 
-#' @inherit gg_partial
+#' @inherit gg_partial_ll
+#' @rdname gg_partial
 #' @export
-#' @keywords internal
 get_partial_ll <- function(
-  x,
+  data,
   model,
   term, ...,
   reference = NULL,
   ci        = FALSE,
   time_var  = "tend") {
 
-  ind_term <- which(map_lgl(attr(x, "func_mat_names"), ~any(grepl(term, .x))))
-  tz_var   <- attr(x, "tz_vars")[[ind_term]]
-  tz_val   <- attr(x, "tz")[[ind_term]]
+  ind_term <- which(map_lgl(attr(data, "func_mat_names"), ~any(grepl(term, .x))))
+  tz_var   <- attr(data, "tz_vars")[[ind_term]]
+  tz_val   <- attr(data, "tz")[[ind_term]]
 
-  ll_df <- get_ll(x, ind_term, ..., time_var = time_var)  %>%
+  ll_df <- get_ll(data, ind_term, ..., time_var = time_var)  %>%
     add_term2(object = model, term = term, reference = reference, se.fit = ci)
 
 }

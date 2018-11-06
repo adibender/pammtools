@@ -178,28 +178,48 @@ bivariate surface or  (1D) cumulative effect.</p>
 <span class='fu'>gg_partial_ll</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>...</span>, <span class='kw'>reference</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='st'>"tend"</span>)
 
-<span class='fu'>gg_cumu_eff</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>z1</span>, <span class='kw'>z2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+<span class='fu'>get_partial_ll</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>...</span>, <span class='kw'>reference</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>time_var</span> <span class='kw'>=</span> <span class='st'>"tend"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data</th>
+      <td><p>Data used to fit the <code>model</code>.</p></td>
+    </tr>
     <tr>
       <th>model</th>
       <td><p>A suitable model object which will be used to estimate the
 partial effect of <code>term</code>.</p></td>
     </tr>
     <tr>
+      <th>term</th>
+      <td><p>A character string indicating the model term for which partial
+effects should be plotted.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Covariate specifications (expressions) that will be evaluated
-by looking for variables in <code>x</code>. Must be of the form <code>z = f(z)</code>
+by looking for variables in <code>x</code> (or <code>data</code>). Must be of the form <code>z = f(z)</code>
 where <code>z</code> is a variable in the data set <code>x</code> and <code>f</code> a known
 function that can be usefully applied to <code>z</code>. See examples below.</p></td>
     </tr>
     <tr>
       <th>reference</th>
       <td><p>If specified, should be a list with covariate value pairs,
-e.g. <code>list(x1 = 1, x=50)</code>. The calculated partial effect will be relative
+e.g. <code>list(x1 = 1, x2=50)</code>. The calculated partial effect will be relative
 to an observation specified in <code>reference</code>.</p></td>
+    </tr>
+    <tr>
+      <th>ci</th>
+      <td><p>Logical. Indicates if confidence intervals for the <code>term</code>
+of interest should be calculated. Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>time_var</th>
+      <td><p>The name of the variable that was used in <code>model</code> to
+represent follow-up time.</p></td>
     </tr>
     </table>
     

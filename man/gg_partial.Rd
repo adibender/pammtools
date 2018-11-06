@@ -3,7 +3,7 @@
 \name{gg_partial}
 \alias{gg_partial}
 \alias{gg_partial_ll}
-\alias{gg_cumu_eff}
+\alias{get_partial_ll}
 \title{Visualize effect estimates for specific covariate combinations}
 \usage{
 gg_partial(data, model, term, ..., reference = NULL, ci = TRUE)
@@ -11,20 +11,32 @@ gg_partial(data, model, term, ..., reference = NULL, ci = TRUE)
 gg_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE,
   time_var = "tend")
 
-gg_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2)
+get_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE,
+  time_var = "tend")
 }
 \arguments{
+\item{data}{Data used to fit the \code{model}.}
+
 \item{model}{A suitable model object which will be used to estimate the
 partial effect of \code{term}.}
 
+\item{term}{A character string indicating the model term for which partial
+effects should be plotted.}
+
 \item{...}{Covariate specifications (expressions) that will be evaluated
-by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
 where \code{z} is a variable in the data set \code{x} and \code{f} a known
 function that can be usefully applied to \code{z}. See examples below.}
 
 \item{reference}{If specified, should be a list with covariate value pairs,
-e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
+e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
 to an observation specified in \code{reference}.}
+
+\item{ci}{Logical. Indicates if confidence intervals for the \code{term}
+of interest should be calculated. Defaults to \code{TRUE}.}
+
+\item{time_var}{The name of the variable that was used in \code{model} to
+represent follow-up time.}
 }
 \description{
 Depending on the plot function and input, creates either a 1-dimensional slices,

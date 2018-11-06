@@ -6,6 +6,24 @@
 \usage{
 gg_slice(data, model, term, ..., reference = NULL)
 }
+\arguments{
+\item{data}{Data used to fit the \code{model}.}
+
+\item{model}{A suitable model object which will be used to estimate the
+partial effect of \code{term}.}
+
+\item{term}{A character string indicating the model term for which partial
+effects should be plotted.}
+
+\item{...}{Covariate specifications (expressions) that will be evaluated
+by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
+where \code{z} is a variable in the data set \code{x} and \code{f} a known
+function that can be usefully applied to \code{z}. See examples below.}
+
+\item{reference}{If specified, should be a list with covariate value pairs,
+e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
+to an observation specified in \code{reference}.}
+}
 \description{
 Flexible, high-level plotting function for (non-linear) effects conditional
 on further covariate specifications and potentially relative to

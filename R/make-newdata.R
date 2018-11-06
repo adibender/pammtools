@@ -123,7 +123,7 @@ combine_df <- function(...) {
 #' @aliases make_newdata
 #' @inheritParams sample_info
 #' @param ... Covariate specifications (expressions) that will be evaluated
-#' by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+#' by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
 #' where \code{z} is a variable in the data set \code{x} and \code{f} a known
 #' function that can be usefully applied to \code{z}. See examples below.
 #' @import dplyr
