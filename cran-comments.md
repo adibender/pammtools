@@ -8,7 +8,10 @@
 
 0 errors | 0 warnings | 0 notes
 
-* This is a new release.
+* This is a resubmission of a new release.
+    - Byte-Comile field was removed
+    - Removed "This package..." from description
+    - Added Reference + DOI in description
 
 ## Reverse dependencies
 

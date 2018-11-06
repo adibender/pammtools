@@ -18,7 +18,8 @@ reference:
       - int_info
       - ped_info
       - make_newdata
-      - get_partial_ll
+      - gg_slice
+      - gg_partial
       - get_cumu_eff
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,

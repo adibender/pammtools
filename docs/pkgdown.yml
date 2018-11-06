@@ -1,6 +1,6 @@
-pandoc: 2.2.1
-pkgdown: 1.1.0
-pkgdown_sha: ~
+pandoc: 2.3.1
+pkgdown: 1.1.0.9000
+pkgdown_sha: 36bedb20e8d68ee91d33834c76f0e3dd03d5086a
 articles:
   baseline: baseline.html
   basics: basics.html

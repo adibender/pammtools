@@ -206,6 +206,7 @@ sim_pexp <- function(formula, data, cut) {
 #' @importFrom purrr map
 #' @export
 add_tdc <- function(data, tz, rng_fun, ...) {
+
   tz      <- enquo(tz)
   nz      <- length(eval_tidy(tz))
   name_tz <- quo_name(tz)

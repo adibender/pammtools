@@ -6,7 +6,7 @@ Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
 Description: Functions that facilitate fitting
-    piece-wise exponential (additive mixed) models.
+    piece-wise exponential (additive mixed) models (Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>).
     This includes restructuring the data to the needed format and various
     convenience functions, e.g., for plotting the results.
 Depends:
@@ -42,5 +42,4 @@ LazyData: true
 URL: https://github.com/adibender/pammtools
 BugReports: https://github.com/adibender/pammtools/issues
 RoxygenNote: 6.1.0
-Byte-Compile: yes
 Encoding: UTF-8

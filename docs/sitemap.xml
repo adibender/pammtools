@@ -82,9 +82,6 @@
     <loc>https://adibender.github.io/pammtools/reference/get_laglead.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/get_partial_ll.html</loc>
-  </url>
-  <url>
     <loc>https://adibender.github.io/pammtools/reference/get_ped_form.html</loc>
   </url>
   <url>
@@ -122,6 +119,9 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/gg_re.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/reference/gg_slice.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/gg_smooth.html</loc>
