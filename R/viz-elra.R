@@ -13,15 +13,6 @@
 #' e.g. \code{list(x1 = 1, x=50)}. The calculated partial effect will be relative
 #' to an observation specified in \code{reference}.
 #' @export
-#' @examples
-#' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status)~.)
-#' model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
-#'   family = poisson(), offset=offset)
-#' make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
-#' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
-#' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
-#'   reference=list(age = 50))
-#' @keywords internal
 gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
   expressions <- quos(...)
@@ -111,9 +102,22 @@ gg_partial_ll <- function(
 
 }
 
-#' @rdname gg_partial
+#' Plot 1D (smooth) effects
+#'
+#' Flexible, high-level plotting function for (non-linear) effects conditional
+#' on further covariate specifications and potentially relative to
+#' a comparison specification.
+#'
 #' @importFrom purrr map_int
 #' @importFrom rlang quos
+#' @examples
+#' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status)~.)
+#' model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
+#'   family = poisson(), offset=offset)
+#' make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
+#' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
+#' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
+#'   reference=list(age = 50))
 #' @export
 gg_slice <- function(data, model, term, ..., reference=NULL) {
 

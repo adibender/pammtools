@@ -24,13 +24,4 @@ to an observation specified in \code{reference}.}
 Depending on the plot function and input, creates either a 1-dimensional slices,
 bivariate surface or  (1D) cumulative effect.
 }
-\examples{
-ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status)~.)
-model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
-  family = poisson(), offset=offset)
-make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
-gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
-gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
-  reference=list(age = 50))
-}
 \keyword{internal}
