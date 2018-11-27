@@ -36,7 +36,7 @@ using specials \code{concurrent} and \code{cumulative}.}
 }
 \description{
 This is the general data transformation function provided by the
-\code{pammtools} package. Two main applications must be differentiated:
+\code{pammtools} package. Two main applications must be distinguished:
 (1) Transformation of standard time-to-event data.
 (2) Transformation of time-to-event data with time-dependent covariates (TDC).
 For the latter, the type of effect one wants to estimate is also

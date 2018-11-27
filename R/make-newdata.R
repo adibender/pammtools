@@ -80,7 +80,7 @@ sample_info.fped <- function(x) {
 }
 
 
-#' Combines multiple data frames
+#' Create a data frame from all combinations of data frames
 #'
 #' Works like \code{\link[base]{expand.grid}} but for data frames.
 #'
@@ -95,6 +95,7 @@ sample_info.fped <- function(x) {
 #'   data.frame(x1=c("a", "b"), x2=c("c", "d")),
 #'   data.frame(z=c(0, 1)))
 #' @export
+#' @keywords internal
 combine_df <- function(...) {
 
   dots <- list(...)

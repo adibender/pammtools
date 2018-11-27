@@ -4,7 +4,7 @@
 \alias{get_laglead}
 \alias{get_laglead.default}
 \alias{get_laglead.data.frame}
-\title{Construct data that represents a lag-lead window}
+\title{Construct or extract data that represents a lag-lead window}
 \usage{
 get_laglead(x, ...)
 
@@ -25,7 +25,8 @@ second argument is the time of exposure.}
 }
 \description{
 Constructs lag-lead window data set from raw inputs or from data objects
-with suitable information stored in attributes.
+with suitable information stored in attributes, e.g., objects created
+by \code{\link{as_ped}}.
 }
 \examples{
 get_laglead(0:10, tz=-5:5, ll_fun=function(t, tz) { t >= tz + 2 & t <= tz + 2 + 3})

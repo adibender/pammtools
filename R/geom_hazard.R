@@ -1,10 +1,9 @@
-# Stolen from the \code{RmcdrPlugin.KMggplot2} (slightly modified)
-
-#' PAMM (Cumulative) (Step-)Hazard Plots.
+#' (Cumulative) (Step-) Hazard Plots.
 #'
 #' \code{geom_hazard} is an extension of the \code{geom_line}, and
-#' is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
-#' row to the data, if not already the case.
+#' is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
+#' row to the data, if not already the case. Stolen from the
+#' \code{RmcdrPlugin.KMggplot2} (slightly modified).
 #'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_line}},

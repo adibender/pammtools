@@ -7,7 +7,7 @@
 get_terms(data, fit, terms, ...)
 }
 \arguments{
-\item{data}{Any data frame containing variables used to fit the model. Only
+\item{data}{A data frame containing variables used to fit the model. Only
 first row will be used.}
 
 \item{fit}{A fitted object of class \code{\link[mgcv]{gam}}.}
