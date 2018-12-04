@@ -133,7 +133,7 @@ ped_df_sex <- ped %>%
 ggplot(ped_df_sex, aes(x = tend, y = surv_prob, group = age)) +
 	geom_ribbon(aes(ymin = surv_lower, ymax = surv_upper, fill = age), alpha = 0.3) +
   geom_surv(aes(col = age)) +
-  ylab(expression(hat(Lambda)(t))) + xlab(expression(t)) +
+  ylab(expression(hat(S)(t))) + xlab(expression(t)) +
   facet_wrap(~complications, labeller = label_both)
 ```
 
