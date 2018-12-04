@@ -1,4 +1,7 @@
-# pammtools 0.1.7
+# pammtools 0.1.x
+
+
+## pammtools 0.1.7
 
 * Futher improved support for cumulative effects
 * Added vignette on estimation and visualization of cumulative effect
@@ -7,29 +10,34 @@
 * Updates homepage (via pkgdown)
 
 
-# pamtools 0.1.3
+## pamtools 0.1.3
 
-## Minor changes
+### Minor changes
 
 * Update documentation
 * More tests/improved coverage
 * Lag-lead column is adjusted in `make-newdata.fped`
 
-## Bug fixes
+### Bug fixes
 - visualization functions `gg_laglead` and `gg_partial_ll` did not
 calculate the lag-lead-window correctly when applied to `ped` data
 
-# pammtools 0.1.0
+## pammtools 0.1.0
 
-## Features
+### Features
 * Better support for cumulative effects
 * Lag-Lead matrix now contains quadrature weights
 * Better support for visualization of cumulative effects
 
 
-# pammtools 0.0.9
 
-## Breaking changes
+
+# pammtools 0.0.x
+
+
+## pammtools 0.0.9
+
+### Breaking changes
 
 *  `make_newdata` loses arguments `expand` and `n` and
 gains `...` where arbitrary covariate specifications can be placed, i.e.
@@ -46,7 +54,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 (e.g., `gg_laglead`)
 
 
-## Updates and new features
+### Updates and new features
 
 * Overall better support for cumulative effects
 
@@ -68,7 +76,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
     - `geom_surv` add row (x = 0, y = 1) before plotting
 
 
-# pammtools 0.0.8
+## pammtools 0.0.8
 
 * All data transformation is now handled using `as_ped` (see
 [data transformation vignette](../articles/data-transformation.html))
@@ -90,21 +98,21 @@ see `?cumulative_coefficient`
     `max_time` when no custom interval split points are provided
 
 
-# pammtools 0.0.3
+## pammtools 0.0.3
 
-## pammtools 0.0.3.2
+### pammtools 0.0.3.2
 * More `tidyeval` adaptations
 * consistent handling of "no visible global binding" NOTEs
 * Release used in <br>
 A. Bender, Groll A., Scheipl F., "A generalized additive model approach to
 time-to-event analysis" (2017). Statistical Modelling (*to appear*)
 
-## pammtools 0.0.3.1
+### pammtools 0.0.3.1
 * some adaptations to `tidyeval`
 * Minor bug fixes
 
 
-# pammtools 0.0.2
+## pammtools 0.0.2
 
 * Ported `pamm` package to `pammtools` due to naming conflicts with `PAMM`
 package on CRAN

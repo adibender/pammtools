@@ -1,5 +1,5 @@
-citHeader("Citation information for 1) the Software 2) the Tutorial on PAMMs 3) Paper on cumulative effects:")
-
+citHeader("Citation information for 1) the Software 2) the tutorial on PAMMs 3)
+paper on cumulative effects/exposure-lag-response associations:")
 
 
 citEntry(entry = "Article",
