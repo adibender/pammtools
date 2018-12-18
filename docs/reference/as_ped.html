@@ -41,9 +41,9 @@
 <meta property="og:title" content="Transform data to Piece-wise Exponential Data (PED) — as_ped" />
 
 <meta property="og:description" content="This is the general data transformation function provided by the
-pammtools package. Two main applications must be differentiated:
-(1) Transformation of standard time-to-event data.
-(2) Transformation of time-to-event data with time-dependent covariates (TDC).
+pammtools package. Two main applications must be distinguished:
+Transformation of standard time-to-event data.
+Transformation of time-to-event data with time-dependent covariates (TDC).
 For the latter, the type of effect one wants to estimate is also
 important for the data transformation step.
 In any case, the data transformation is specified by a two sided formula.
@@ -92,7 +92,7 @@ vignette for details." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -178,10 +178,10 @@ vignette for details." />
     <div class="ref-description">
     
     <p>This is the general data transformation function provided by the
-<code>pammtools</code> package. Two main applications must be differentiated:
-(1) Transformation of standard time-to-event data.
-(2) Transformation of time-to-event data with time-dependent covariates (TDC).
-For the latter, the type of effect one wants to estimate is also
+<code>pammtools</code> package. Two main applications must be distinguished:</p><ol>
+<li><p>Transformation of standard time-to-event data.</p></li>
+<li><p>Transformation of time-to-event data with time-dependent covariates (TDC).</p></li>
+</ol><p>For the latter, the type of effect one wants to estimate is also
 important for the data transformation step.
 In any case, the data transformation is specified by a two sided formula.
 In case of TDCs, the right-hand-side of the formula can contain formula specials
@@ -194,7 +194,8 @@ vignette for details.</p>
     <pre class="usage"><span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for data.frame</span>
-<span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
+<span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_time</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>)
 
 <span class='co'># S3 method for nested_fdf</span>
 <span class='fu'>as_ped</span>(<span class='no'>data</span>, <span class='no'>formula</span>, <span class='no'>...</span>)
@@ -224,7 +225,19 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Further arguments passed to <code>split_data</code>.</p></td>
+      <td><p>Further arguments passed to the <code>data.frame</code> method and
+eventually to <code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>Break points, used to partition the follow up into intervals.
+If unspecified, all unique event times will be used.</p></td>
+    </tr>
+    <tr>
+      <th>max_time</th>
+      <td><p>If <code>cut</code> is unspecified, this will be the last
+possible event time. All event times after <code>max_time</code>
+will be administratively censored at <code>max_time</code>.</p></td>
     </tr>
     <tr>
       <th>x</th>
@@ -232,15 +245,19 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A data frame class <code>ped</code> in piece-wise exponential data format.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, ]</div><div class='output co'>#&gt; [90m# A tibble: 3 x 9[39m
+    <pre class="examples"><div class='input'><span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, ]</div><div class='output co'>#&gt; # A tibble: 3 x 9
 #&gt;    days status charlson_score   age sex   transfusion complications metastases
-#&gt;   [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;int&gt;[39m[23m          [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;fct&gt;[39m[23m       [3m[90m&lt;fct&gt;[39m[23m         [3m[90m&lt;fct&gt;[39m[23m     
-#&gt; [90m1[39m   579      0              2    58 fema… yes         no            yes       
-#&gt; [90m2[39m  [4m1[24m192      0              2    52 male  no          yes           yes       
-#&gt; [90m3[39m   308      1              2    74 fema… yes         no            yes       
-#&gt; [90m# ... with 1 more variable: resection [3m[90m&lt;fct&gt;[90m[23m[39m</div><div class='input'><span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, ] <span class='kw'>%&gt;%</span> <span class='fu'>as_ped</span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>age</span> + <span class='no'>sex</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>))</div><div class='output co'>#&gt;   id tstart tend   interval   offset ped_status age    sex
+#&gt;   &lt;dbl&gt;  &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
+#&gt; 1   579      0              2    58 fema… yes         no            yes       
+#&gt; 2  1192      0              2    52 male  no          yes           yes       
+#&gt; 3   308      1              2    74 fema… yes         no            yes       
+#&gt; # ... with 1 more variable: resection &lt;fct&gt;</div><div class='input'><span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>3</span>, ] <span class='kw'>%&gt;%</span> <span class='fu'>as_ped</span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>age</span> + <span class='no'>sex</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>))</div><div class='output co'>#&gt;   id tstart tend   interval   offset ped_status age    sex
 #&gt; 1  1      0  500    (0,500] 6.214608          0  58 female
 #&gt; 2  1    500 1000 (500,1000] 4.369448          0  58 female
 #&gt; 3  2      0  500    (0,500] 6.214608          0  52   male
@@ -254,7 +271,9 @@ using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#value">Value</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

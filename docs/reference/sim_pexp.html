@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -219,15 +219,15 @@ below.</p></td>
 <span class='no'>form</span> <span class='kw'>&lt;-</span> ~ -<span class='fl'>3.5</span> + <span class='fu'>f0</span>(<span class='no'>t</span>) -<span class='fl'>0.5</span>*<span class='no'>x1</span> + <span class='fu'>sqrt</span>(<span class='no'>x2</span>)
 <span class='fu'>set.seed</span>(<span class='fl'>24032018</span>)
 <span class='no'>sim_df</span> <span class='kw'>&lt;-</span> <span class='fu'>sim_pexp</span>(<span class='no'>form</span>, <span class='no'>df</span>, <span class='fl'>1</span>:<span class='fl'>10</span>)
-<span class='fu'>head</span>(<span class='no'>sim_df</span>)</div><div class='output co'>#&gt; [90m# A tibble: 6 x 5[39m
+<span class='fu'>head</span>(<span class='no'>sim_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 5
 #&gt;      id  time status     x1    x2
-#&gt;   [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;int&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m1[39m     1 1.000      1 -[31m2[39m[31m.[39m[31m87[39m   4.14
-#&gt; [90m2[39m     2 4.20       1  1.20   5.61
-#&gt; [90m3[39m     3 4.53       1 -[31m0[39m[31m.[39m[31m951[39m  2.46
-#&gt; [90m4[39m     4 2.07       1  0.331  3.71
-#&gt; [90m5[39m     5 3.02       1  2.98   4.98
-#&gt; [90m6[39m     6 2.32       1 -[31m1[39m[31m.[39m[31m91[39m   1.43</div><div class='input'><span class='fu'>plot</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/survfit'>survfit</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>sim_df</span> ))</div><div class='img'><img src='sim_pexp-1.png' alt='' width='700' height='433' /></div><div class='input'>
+#&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1 1.000      1 -2.87   4.14
+#&gt; 2     2 4.20       1  1.20   5.61
+#&gt; 3     3 4.53       1 -0.951  2.46
+#&gt; 4     4 2.07       1  0.331  3.71
+#&gt; 5     5 3.02       1  2.98   4.98
+#&gt; 6     6 2.32       1 -1.91   1.43</div><div class='input'><span class='fu'>plot</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/survfit'>survfit</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>)~<span class='fl'>1</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>sim_df</span> ))</div><div class='img'><img src='sim_pexp-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># for control, estimate with Cox PH</span>
 <span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/coxph'>coxph</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>) ~ <span class='no'>x1</span> + <span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/pspline'>pspline</a></span>(<span class='no'>x2</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>sim_df</span>)
 <span class='fu'>coef</span>(<span class='no'>mod</span>)[<span class='fl'>1</span>]</div><div class='output co'>#&gt;         x1 
@@ -241,9 +241,10 @@ below.</p></td>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    collapse</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:pammtools’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    collapse</span></div><div class='output co'>#&gt; <span class='message'>This is mgcv 1.8-23. For overview type 'help("mgcv-package")'.</span></div><div class='input'><span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>tend</span>) + <span class='no'>x1</span> + <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>x2</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='no'>poisson</span>, <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
+#&gt; <span class='message'>    collapse</span></div><div class='output co'>#&gt; <span class='message'>This is mgcv 1.8-26. For overview type 'help("mgcv-package")'.</span></div><div class='input'><span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>tend</span>) + <span class='no'>x1</span> + <span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/s'>s</a></span>(<span class='no'>x2</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='no'>poisson</span>, <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
 <span class='fu'>coef</span>(<span class='no'>pam</span>)[<span class='fl'>2</span>]</div><div class='output co'>#&gt;         x1 
 #&gt; -0.5534093 </div><div class='input'><span class='fu'>plot</span>(<span class='no'>pam</span>, <span class='kw'>page</span><span class='kw'>=</span><span class='fl'>1</span>)</div><div class='img'><img src='sim_pexp-3.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><span class='co'># NOT RUN {</span>
 <span class='co'># Example 2: Functional covariates/cumulative coefficients</span>
 <span class='co'># function to generate one exposure profile, tz is a vector of time points</span>
 <span class='co'># at which TDC z was observed</span>
@@ -257,20 +258,8 @@ below.</p></td>
 <span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='no'>df</span> <span class='kw'>%&gt;%</span>
   <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>tz1</span>, <span class='no'>rng_z</span>) <span class='kw'>%&gt;%</span>
   <span class='fu'><a href='add_tdc.html'>add_tdc</a></span>(<span class='no'>tz2</span>, <span class='no'>rng_z</span>)
-<span class='no'>df</span></div><div class='output co'>#&gt; [90m# A tibble: 250 x 6[39m
-#&gt;        x1    x2 tz1        z.tz1      tz2        z.tz2     
-#&gt;     [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;list&gt;[39m[23m     [3m[90m&lt;list&gt;[39m[23m     [3m[90m&lt;list&gt;[39m[23m     [3m[90m&lt;list&gt;[39m[23m    
-#&gt; [90m 1[39m -[31m2[39m[31m.[39m[31m87[39m  4.14  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 2[39m  1.20  5.61  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 3[39m -[31m0[39m[31m.[39m[31m951[39m 2.46  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 4[39m  0.331 3.71  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 5[39m  2.98  4.98  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 6[39m -[31m1[39m[31m.[39m[31m91[39m  1.43  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 7[39m  1.71  1.19  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 8[39m -[31m2[39m[31m.[39m[31m87[39m  2.11  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m 9[39m  0.274 0.767 [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m10[39m -[31m0[39m[31m.[39m[31m813[39m 5.91  [90m&lt;int [10]&gt;[39m [90m&lt;dbl [10]&gt;[39m [90m&lt;int [11]&gt;[39m [90m&lt;dbl [11]&gt;[39m
-#&gt; [90m# ... with 240 more rows[39m</div><div class='input'>
+<span class='no'>df</span>
+
 <span class='co'># define tri-variate function of time, exposure time and exposure z</span>
 <span class='no'>ft</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tmax</span>) {
   -<span class='fl'>1</span>*<span class='fu'>cos</span>(<span class='no'>t</span>/<span class='no'>tmax</span>*<span class='no'>pi</span>)
@@ -294,7 +283,8 @@ below.</p></td>
      <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz1</span>, <span class='no'>z.tz1</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz1</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun</span>) +
      <span class='fu'><a href='fcumu.html'>fcumu</a></span>(<span class='no'>t</span>, <span class='no'>tz2</span>, <span class='no'>z.tz2</span>, <span class='kw'>f_xyz</span><span class='kw'>=</span><span class='no'>f_xyz2</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='no'>ll_fun2</span>),
   <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>df</span>,
-  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)</div><div class='output co'>#&gt; <span class='error'>Error in fcumu(t, tz1, z.tz1, f_xyz = f_xyz1, ll_fun = ll_fun): object 'f_xyz1' not found</span></div></pre>
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>10</span>)
+<span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

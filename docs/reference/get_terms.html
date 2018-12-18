@@ -85,7 +85,7 @@ stacked to a tidy data frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -184,7 +184,7 @@ stacked to a tidy data frame.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>Any data frame containing variables used to fit the model. Only
+      <td><p>A data frame containing variables used to fit the model. Only
 first row will be used.</p></td>
     </tr>
     <tr>
@@ -211,23 +211,23 @@ for which partial effects will be returned</p></td>
     <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>survival</span>)
 <span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/coxph'>coxph</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></span>(<span class='no'>time</span>, <span class='no'>status</span>) ~ <span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/pspline'>pspline</a></span>(<span class='no'>karno</span>) + <span class='fu'><a href='http://www.rdocumentation.org/packages/survival/topics/pspline'>pspline</a></span>(<span class='no'>age</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>veteran</span>)
 <span class='no'>terms_df</span> <span class='kw'>&lt;-</span> <span class='no'>veteran</span> <span class='kw'>%&gt;%</span> <span class='fu'>get_terms</span>(<span class='no'>fit</span>, <span class='kw'>terms</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"karno"</span>, <span class='st'>"age"</span>))
-<span class='fu'>head</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; [90m# A tibble: 6 x 6[39m
+<span class='fu'>head</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
 #&gt;   term      x   eff    se ci_lower ci_upper
-#&gt;   [3m[90m&lt;chr&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m    [3m[90m&lt;dbl&gt;[39m[23m    [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m1[39m karno  10    1.90 0.884    0.127     3.66
-#&gt; [90m2[39m karno  10.9  1.89 0.822    0.243     3.53
-#&gt; [90m3[39m karno  11.8  1.88 0.763    0.353     3.41
-#&gt; [90m4[39m karno  12.7  1.87 0.707    0.455     3.28
-#&gt; [90m5[39m karno  13.6  1.86 0.654    0.549     3.16
-#&gt; [90m6[39m karno  14.5  1.84 0.604    0.634     3.05</div><div class='input'><span class='fu'>tail</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; [90m# A tibble: 6 x 6[39m
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 karno  10    1.90 0.884    0.127     3.66
+#&gt; 2 karno  10.9  1.89 0.822    0.243     3.53
+#&gt; 3 karno  11.8  1.88 0.763    0.353     3.41
+#&gt; 4 karno  12.7  1.87 0.707    0.455     3.28
+#&gt; 5 karno  13.6  1.86 0.654    0.549     3.16
+#&gt; 6 karno  14.5  1.84 0.604    0.634     3.05</div><div class='input'><span class='fu'>tail</span>(<span class='no'>terms_df</span>)</div><div class='output co'>#&gt; # A tibble: 6 x 6
 #&gt;   term      x    eff    se ci_lower ci_upper
-#&gt;   [3m[90m&lt;chr&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m    [3m[90m&lt;dbl&gt;[39m[23m    [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m1[39m age    78.6 -[31m0[39m[31m.[39m[31m166[39m 0.712    -[31m1[39m[31m.[39m[31m59[39m     1.26
-#&gt; [90m2[39m age    79.1 -[31m0[39m[31m.[39m[31m192[39m 0.751    -[31m1[39m[31m.[39m[31m69[39m     1.31
-#&gt; [90m3[39m age    79.6 -[31m0[39m[31m.[39m[31m219[39m 0.793    -[31m1[39m[31m.[39m[31m80[39m     1.37
-#&gt; [90m4[39m age    80.1 -[31m0[39m[31m.[39m[31m247[39m 0.837    -[31m1[39m[31m.[39m[31m92[39m     1.43
-#&gt; [90m5[39m age    80.5 -[31m0[39m[31m.[39m[31m275[39m 0.884    -[31m2[39m[31m.[39m[31m0[39m[31m4[39m     1.49
-#&gt; [90m6[39m age    81   -[31m0[39m[31m.[39m[31m303[39m 0.933    -[31m2[39m[31m.[39m[31m17[39m     1.56</div></pre>
+#&gt;   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 age    78.6 -0.166 0.712    -1.59     1.26
+#&gt; 2 age    79.1 -0.192 0.751    -1.69     1.31
+#&gt; 3 age    79.6 -0.219 0.793    -1.80     1.37
+#&gt; 4 age    80.1 -0.247 0.837    -1.92     1.43
+#&gt; 5 age    80.5 -0.275 0.884    -2.04     1.49
+#&gt; 6 age    81   -0.303 0.933    -2.17     1.56</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

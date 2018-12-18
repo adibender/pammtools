@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -119,7 +119,7 @@
     <div class="page-header toc-ignore">
       <h1>Cumulative Effects</h1>
             
-            <h4 class="date">2018-11-06</h4>
+            <h4 class="date">2018-12-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/cumulative-effects.Rmd"><code>vignettes/cumulative-effects.Rmd</code></a></small>
       <div class="hidden name"><code>cumulative-effects.Rmd</code></div>
@@ -133,7 +133,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(tidyr)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="kw"><a href="ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>())</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>())</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># devtools::install_github("thomasp85/patchwork")</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(patchwork)</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(mgcv)</a>
@@ -181,7 +181,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t, t_z, z(t_z))\mathrm{d}t_z,
 <span class="math inline">\(\mathcal{T}(t)\)</span>: the integration limits (lag-lead window) that control how many past observations of <span class="math inline">\(\mathbf{z}\)</span> contribute to the cumulative effect at time <span class="math inline">\(t\)</span>. The minimal requirement is <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z \leq t\}\)</span>, i.e., only past observations of the TDC can contribute to the cumulative effect at time <span class="math inline">\(t\)</span>.</li>
 </ul>
 <p>A visual representation of exemplary lag-lead windows is depicted below:</p>
-<details><p><summary><em>R-Code lag-lead windows</em> </summary></p>
+<details><p><summary> R-Code lag-lead windows </summary></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">p_ll1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gg_laglead.html">gg_laglead</a></span>(<span class="dv">0</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">ll_fun =</span> <span class="cf">function</span>(t, tz) t <span class="op">&gt;=</span><span class="st"> </span>tz)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">my_ll_fun &lt;-<span class="st"> </span><span class="cf">function</span>(t, tz, <span class="dt">tlag =</span> <span class="dv">2</span>, <span class="dt">tlead =</span> <span class="dv">5</span>) {</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">  t <span class="op">&gt;=</span><span class="st"> </span>tz <span class="op">+</span><span class="st"> </span>tlag <span class="op">&amp;</span><span class="st"> </span>t <span class="op">&lt;</span><span class="st"> </span>tz <span class="op">+</span><span class="st"> </span>tlag <span class="op">+</span><span class="st"> </span>tlead</a>
@@ -300,7 +300,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
 ##  $ tend         : int  1 2 3 4 5 1 2 3 4 5 ...
 ##  $ SAPSadmission: int  50 50 50 50 50 34 34 34 34 34 ...
 ##  $ day_latency  : num [1:1514, 1:50] 0 1 2 3 4 0 1 2 3 4 ...
-##  $ SOFA         : int [1:1514, 1:50] 9 9 9 9 9 10 10 10 10 10 ...
+##  $ SOFA         : num [1:1514, 1:50] 9 9 9 9 9 10 10 10 10 10 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ...</code></pre>
 <div class="figure" style="text-align: center">
@@ -326,19 +326,23 @@ Lag-lead window for the first 10 days of the follow-up.
 ##     SOFA, by = LL)
 ## 
 ## Parametric coefficients:
-##                 Estimate Std. Error z value Pr(&gt;|z|)
-## (Intercept)   -4.130e+01  7.312e+07       0        1
-## typeSurgical   6.916e-14  2.397e+07       0        1
-## gender1       -4.157e-14  1.268e+07       0        1
-## SAPSadmission -1.123e-14  5.968e+05       0        1
+##                 Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   -1.423e+01  4.304e+00  -3.307 0.000943 ***
+## typeSurgical  -6.229e-01  2.751e-01  -2.264 0.023551 *  
+## gender1       -2.211e-01  2.354e-01  -0.939 0.347707    
+## SAPSadmission -3.738e-04  7.893e-03  -0.047 0.962226    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Approximate significance of smooth terms:
-##                         edf Ref.df Chi.sq p-value
-## s(tend)                   1      1      0       1
-## te(day_latency,SOFA):LL   4      4      0       1
+##                           edf Ref.df Chi.sq  p-value    
+## s(tend)                 1.000  1.000  2.269    0.132    
+## te(day_latency,SOFA):LL 5.395  6.046 65.433 3.52e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## R-sq.(adj) =    NaN   Deviance explained = -Inf%
-## -REML = -154.05  Scale est. = 1         n = 196</code></pre>
+## R-sq.(adj) =  0.121   Deviance explained = 22.5%
+## -REML =  258.2  Scale est. = 1         n = 1514</code></pre>
 </div>
 <div id="interpretation" class="section level3">
 <h3 class="hasAnchor">
@@ -361,8 +365,8 @@ Lag-lead window for the first 10 days of the follow-up.
 <h4 class="hasAnchor">
 <a href="#d-partial-effect-surface" class="anchor"></a>2D partial effect surface</h4>
 <p>The code below visualizes the estimated 2D partial effect <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each combination of latency and SOFA score (including confidence intervals). The gray areas indicate combinations that did not occur in the data.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="../reference/gg_tensor.html">gg_tensor</a></span>(mod, <span class="dt">ci =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"SOFA"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"latency (day)"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="../reference/gg_tensor.html">gg_tensor</a></span>(mod, <span class="dt">ci =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">"SOFA"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="st">"latency (day)"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"bottom"</span>)</a></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-12-1.png" width="650px" style="display: block; margin: auto;"></p>
 <p>This illustrates that a low SOFA score substantially increases the log-hazard if it was observed recently (latency <span class="math inline">\(&lt;\)</span> 2 days), while partial effects of the SOFA score observed further in the past (latency <span class="math inline">\(&gt;\)</span> 3 days) go towards zero (the event of interest is “extubation”, therefore increased (log-)hazards imply increased probabilities of extubation). Note that for this graphic, the function <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> is evaluated at values of <span class="math inline">\(t-t_z\)</span> (<code>day_latency</code>) that are not present in the data.</p>
 <p>Alternatively, the function <code>gg_partial</code> can be used to produce similar visualizations and allows more control over the inputs. For example, the following code produces the partial effect surface plot evaluated only at latencies 0 through 5 and calculates the partial effects relative to a patient with SOFA score 10 (everything else being equal):</p>
@@ -378,9 +382,6 @@ Lag-lead window for the first 10 days of the follow-up.
 <a class="sourceLine" id="cb15-3" data-line-number="3">p_slice_sofa &lt;-<span class="st"> </span><span class="kw"><a href="../reference/gg_slice.html">gg_slice</a></span>(ped, mod, <span class="dt">term =</span> <span class="st">"SOFA"</span>,</a>
 <a class="sourceLine" id="cb15-4" data-line-number="4">  <span class="dt">day_latency =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>), <span class="dt">SOFA =</span> <span class="kw">unique</span>(SOFA))</a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">p_slice_latency <span class="op">+</span><span class="st"> </span>p_slice_sofa</a></code></pre></div>
-<pre><code>## Warning: Removed 11946 rows containing missing values (geom_path).
-
-## Warning: Removed 11946 rows containing missing values (geom_path).</code></pre>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-14-1.png" width="650px" style="display: block; margin: auto;"></p>
 <p>These plots contain essentially the same information as the 2D surface, but focus on isolating the effects of the individual variables. This can be especially useful for three-dimensional partial effects which are hard to visualize otherwise.</p>
 </div>
@@ -393,14 +394,14 @@ Lag-lead window for the first 10 days of the follow-up.
 <li>On the left hand side, a patient with SOFA scores continuously decreasing throughout the follow-up is compared to a patient with constant SOFA score of 10</li>
 <li>On the right hand side, a patient with SOFA scores increasing throughout the follow-up is compared to a patient with SOFA score 0 on the first 10 days, score 20 on the following 20 days and score 5 on the last 20 days of the follow-up.</li>
 </ul>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">p_cumu1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span>(ped, mod, <span class="dt">term =</span> <span class="st">"SOFA"</span>,</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">z1 =</span> <span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dt">length.out =</span> <span class="dv">50</span>), <span class="dt">z2 =</span> <span class="dv">10</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="kw"><a href="ggplot2.tidyverse.org/reference/element.html">rel</a></span>(.<span class="dv">5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">25</span>), <span class="dt">lty =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">p_cumu2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span>(ped, mod, <span class="dt">term =</span> <span class="st">"SOFA"</span>,</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">    <span class="dt">z1 =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dt">length.out =</span> <span class="dv">50</span>),</a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">    <span class="dt">z2 =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="kw">rep</span>(<span class="dv">20</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="dv">5</span>, <span class="dv">20</span>))) <span class="op">+</span></a>
-<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="kw"><a href="ggplot2.tidyverse.org/reference/element.html">rel</a></span>(.<span class="dv">5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">30</span>), <span class="dt">lty =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb17-8" data-line-number="8">p_cumu1 <span class="op">+</span><span class="st"> </span>p_cumu2</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">p_cumu1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span>(ped, mod, <span class="dt">term =</span> <span class="st">"SOFA"</span>,</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">  <span class="dt">z1 =</span> <span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dt">length.out =</span> <span class="dv">50</span>), <span class="dt">z2 =</span> <span class="dv">10</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/element.html">rel</a></span>(.<span class="dv">5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">25</span>), <span class="dt">lty =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">p_cumu2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span>(ped, mod, <span class="dt">term =</span> <span class="st">"SOFA"</span>,</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">    <span class="dt">z1 =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dt">length.out =</span> <span class="dv">50</span>),</a>
+<a class="sourceLine" id="cb16-6" data-line-number="6">    <span class="dt">z2 =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="kw">rep</span>(<span class="dv">20</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="dv">5</span>, <span class="dv">20</span>))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>(<span class="dt">size =</span> <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/element.html">rel</a></span>(.<span class="dv">5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">30</span>), <span class="dt">lty =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb16-8" data-line-number="8">p_cumu1 <span class="op">+</span><span class="st"> </span>p_cumu2</a></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-15-1.png" width="650px" style="display: block; margin: auto;"></p>
 </div>
 </div>

@@ -13,10 +13,16 @@
 <script src="pkgdown.js"></script><!-- docsearch --><script src="docsearch.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css">
 <link href="docsearch.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Piece-Wise Exponential Additive Mixed Modeling Tools">
-<meta property="og:description" content="Functions that facilitate fitting
-    piece-wise exponential (additive mixed) models (Bender and Scheipl (2018) &lt;doi: 10.1177/1471082X17748083&gt;).
-    This includes restructuring the data to the needed format and various
-    convenience functions, e.g., for plotting the results.">
+<meta property="og:description" content="The Piece-wise exponential (Additive Mixed) Model
+    (PAMM; Bender and Scheipl (2018) &lt;doi: 10.1177/1471082X17748083&gt;) is a
+    powerful model class for survival analysis, based on Generalized Additive
+    (Mixed) Models (GA(M)Ms). It offers intuitive specification and robust
+    estimation of complex survival models with stratified baseline hazards,
+    random effects, time-varying effects, time-dependent covariates and
+    cumulative effects (Bender et. al. (2018) &lt;doi:10.1093/biostatistics/kxy003&gt;.
+    pammtools provides tidy workflow for survival analysis with PAMMs,
+    including data transformation and other pre- and post-processing
+    functions as well as visualization.">
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -43,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -163,6 +169,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=pammtools">https://​cloud.r-project.org/​package=pammtools</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/adibender/pammtools">https://​github.com/​adibender/​pammtools</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/adibender/pammtools/issues">https://​github.com/​adibender/​pammtools/​issues</a>
@@ -193,11 +201,11 @@
       <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="lifecycle"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="lifecycle"></a></li>
 <li><a href="https://travis-ci.org/adibender/pammtools"><img src="https://travis-ci.org/adibender/pammtools.svg?branch=master" alt="Build Status"></a></li>
 <li><a href="https://ci.appveyor.com/project/adibender/pammtools/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&amp;svg=true" alt="Build Status"></a></li>
 <li><a href="https://codecov.io/github/adibender/pammtools/branch/master"><img src="https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master" alt="codecov.io"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.1048832"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1048832.svg" alt="DOI"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.1490043"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1490043.svg" alt="DOI"></a></li>
 <li><a href="https://cran.r-project.org/package=pammtools"><img src="https://www.r-pkg.org/badges/version/pammtools" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://cran.r-project.org/package=pammtools"><img src="https://cranlogs.r-pkg.org/badges/grand-total/pammtools"></a></li>
 <li><a href="http://opensource.org/licenses/MIT"><img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT license"></a></li>

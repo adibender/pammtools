@@ -85,7 +85,7 @@ exponential data format" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -183,31 +183,36 @@ exponential data format</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>formula</th>
-      <td><p>a model formula</p></td>
+      <td><p>A two sided formula with a <code><a href='http://www.rdocumentation.org/packages/survival/topics/Surv'>Surv</a></code> object
+on the left-hand-side and covariate specification on the right-hand-side (RHS).
+The RHS can be an extended formula, which specifies how TDCs should be transformed
+using specials <code>concurrent</code> and <code>cumulative</code>.</p></td>
     </tr>
     <tr>
       <th>data</th>
-      <td><p>a data frame</p></td>
+      <td><p>Either an object inheriting from data frame or in case of
+time-dependent covariates a list of data frames, where the first data frame
+contains the time-to-event information and static covariates while the second
+(and potentially further data frames) contain information on time-dependent
+covariates and the times at which they have been observed.</p></td>
     </tr>
     <tr>
       <th>cut</th>
-      <td><p>the vector of timepoints to cut at</p></td>
+      <td><p>Break points, used to partition the follow up into intervals.
+If unspecified, all unique event times will be used.</p></td>
     </tr>
     <tr>
       <th>max_time</th>
-      <td><p>If <code>cut</code> is unspecified, a maximum time to be considered
-can be specified through this argument. Then, all event times after <code>max_time</code>
+      <td><p>If <code>cut</code> is unspecified, this will be the last
+possible event time. All event times after <code>max_time</code>
 will be administratively censored at <code>max_time</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Further arguments passed to <code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p></td>
+      <td><p>Further arguments passed to the <code>data.frame</code> method and
+eventually to <code><a href='http://www.rdocumentation.org/packages/survival/topics/survSplit'>survSplit</a></code></p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A data frame class <code>ped</code> in piece-wise exponential data format.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -237,8 +242,6 @@ will be administratively censored at <code>max_time</code>.</p></td>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
-
       <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
