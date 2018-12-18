@@ -1,6 +1,6 @@
 #' Extract partial effects for specified model terms
 #'
-#' @param data Any data frame containing variables used to fit the model. Only
+#' @param data A data frame containing variables used to fit the model. Only
 #' first row will be used.
 #' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param term The (non-linear) model term of interest.

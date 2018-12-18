@@ -46,6 +46,4 @@ get_intervals(brks, x)
 }
 \seealso{
 \code{\link[base]{findInterval}} \code{\link{int_info}}
-
-\code{\link[base]{findInterval}}
 }

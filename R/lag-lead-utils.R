@@ -1,7 +1,8 @@
-#' Construct data that represents a lag-lead window
+#' Construct or extract data that represents a lag-lead window
 #'
 #' Constructs lag-lead window data set from raw inputs or from data objects
-#' with suitable information stored in attributes.
+#' with suitable information stored in attributes, e.g., objects created
+#' by \code{\link{as_ped}}.
 #'
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.

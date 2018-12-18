@@ -23,9 +23,9 @@
 "patient"
 
 
-#' Time-depedent covariates of the \code{\link{patient}} data set.
+#' Time-dependent covariates of the \code{\link{patient}} data set.
 #'
-#' This data set containt the time-dependent covariates (TDCs) for the \code{\link{patient}}
+#' This data set contains the time-dependent covariates (TDCs) for the \code{\link{patient}}
 #' data set. Note that nutrition was protocoled for at most 12 days after
 #' ICU admission. The data set includes:
 #' \describe{
@@ -45,14 +45,14 @@
 #' This is data simulated using the \code{\link[pammtools]{sim_pexp}} function.
 #' It contains two time-constant and two time-dependent covariates (observed
 #' on different exposure time grids). The code used for simulation is
-#' contained in the exmaples of \code{?sim_pexp}.
+#' contained in the examples of \code{?sim_pexp}.
 #'
 "simdf_elra"
 
 
 #' Stomach area tumor data
 #'
-#' Information on patients treated for a cancer desease
+#' Information on patients treated for a cancer disease
 #' located in the stomach area.
 #' The data set includes:
 #' \describe{

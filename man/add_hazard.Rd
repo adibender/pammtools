@@ -70,8 +70,9 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 }
 \description{
 Add (cumulative) hazard based on the provided data set and model.
-If \code{ci=TRUE} confidence intervals are also returned. Their width can
-be controlled via the \code{se_mult} argument.
+If \code{ci=TRUE} confidence intervals are also added. Their width can
+be controlled via the \code{se_mult} argument. This is a wrapper around
+\code{\link[mgcv]{predict.gam}}.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
@@ -81,5 +82,6 @@ ped_info(ped) \%>\% add_hazard(pam, type = "response")
 ped_info(ped) \%>\% add_cumu_hazard(pam)
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
+\code{\link[mgcv]{predict.gam}},
+\code{\link[pammtools]{add_surv_prob}}
 }

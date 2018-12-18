@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Construct data that represents a lag-lead window — get_laglead • pammtools</title>
+<title>Construct or extract data that represents a lag-lead window — get_laglead • pammtools</title>
 
 <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
 
@@ -38,10 +38,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="Construct data that represents a lag-lead window — get_laglead" />
+<meta property="og:title" content="Construct or extract data that represents a lag-lead window — get_laglead" />
 
 <meta property="og:description" content="Constructs lag-lead window data set from raw inputs or from data objects
-with suitable information stored in attributes." />
+with suitable information stored in attributes, e.g., objects created
+by as_ped." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -83,7 +84,7 @@ with suitable information stored in attributes." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -161,7 +162,7 @@ with suitable information stored in attributes." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Construct data that represents a lag-lead window</h1>
+    <h1>Construct or extract data that represents a lag-lead window</h1>
     <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/lag-lead-utils.R'><code>R/lag-lead-utils.R</code></a></small>
     <div class="hidden name"><code>get_laglead.Rd</code></div>
     </div>
@@ -169,7 +170,8 @@ with suitable information stored in attributes." />
     <div class="ref-description">
     
     <p>Constructs lag-lead window data set from raw inputs or from data objects
-with suitable information stored in attributes.</p>
+with suitable information stored in attributes, e.g., objects created
+by <code><a href='as_ped.html'>as_ped</a></code>.</p>
     
     </div>
 
@@ -206,20 +208,20 @@ second argument is the time of exposure.</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; [90m# A tibble: 121 x 3[39m
+    <pre class="examples"><div class='input'><span class='fu'>get_laglead</span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='output co'>#&gt; # A tibble: 121 x 3
 #&gt;        t    tz    LL
-#&gt;    [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m 1[39m     0    -[31m5[39m     0
-#&gt; [90m 2[39m     0    -[31m4[39m     0
-#&gt; [90m 3[39m     0    -[31m3[39m     0
-#&gt; [90m 4[39m     0    -[31m2[39m     0
-#&gt; [90m 5[39m     0    -[31m1[39m     0
-#&gt; [90m 6[39m     0     0     0
-#&gt; [90m 7[39m     0     1     0
-#&gt; [90m 8[39m     0     2     0
-#&gt; [90m 9[39m     0     3     0
-#&gt; [90m10[39m     0     4     0
-#&gt; [90m# ... with 111 more rows[39m</div><div class='input'><span class='fu'><a href='gg_laglead.html'>gg_laglead</a></span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='img'><img src='get_laglead-1.png' alt='' width='700' height='433' /></div></pre>
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt;  1     0    -5     0
+#&gt;  2     0    -4     0
+#&gt;  3     0    -3     0
+#&gt;  4     0    -2     0
+#&gt;  5     0    -1     0
+#&gt;  6     0     0     0
+#&gt;  7     0     1     0
+#&gt;  8     0     2     0
+#&gt;  9     0     3     0
+#&gt; 10     0     4     0
+#&gt; # ... with 111 more rows</div><div class='input'><span class='fu'><a href='gg_laglead.html'>gg_laglead</a></span>(<span class='fl'>0</span>:<span class='fl'>10</span>, <span class='kw'>tz</span><span class='kw'>=</span>-<span class='fl'>5</span>:<span class='fl'>5</span>, <span class='kw'>ll_fun</span><span class='kw'>=</span><span class='kw'>function</span>(<span class='no'>t</span>, <span class='no'>tz</span>) { <span class='no'>t</span> <span class='kw'>&gt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>t</span> <span class='kw'>&lt;=</span> <span class='no'>tz</span> + <span class='fl'>2</span> + <span class='fl'>3</span>})</div><div class='img'><img src='get_laglead-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

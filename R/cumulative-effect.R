@@ -1,4 +1,4 @@
-#' Calculate cumulative effect for all time-points
+#' Calculate (or plot) cumulative effect for all time-points of the follow-up
 #'
 #' @inheritParams gg_partial
 #' @param z1 The exposure profile for which to calculate the cumulative effect.

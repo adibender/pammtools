@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_functions.R
 \name{add_term}
 \alias{add_term}
-\title{Add info about term effects to data set}
+\title{Add the contribution of a term to the linear predictor to data set}
 \usage{
 add_term(newdata, object, term, se.fit = TRUE, type = "terms",
   se_mult = 2, relative = FALSE, ...)

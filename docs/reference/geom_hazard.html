@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PAMM (Cumulative) (Step-)Hazard Plots. — geom_hazard • pammtools</title>
+<title>(Cumulative) (Step-) Hazard Plots. — geom_hazard • pammtools</title>
 
 <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
 
@@ -38,11 +38,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="PAMM (Cumulative) (Step-)Hazard Plots. — geom_hazard" />
+<meta property="og:title" content="(Cumulative) (Step-) Hazard Plots. — geom_hazard" />
 
 <meta property="og:description" content="geom_hazard is an extension of the geom_line, and
-is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
-row to the data, if not already the case." />
+is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
+row to the data, if not already the case. Stolen from the
+RmcdrPlugin.KMggplot2 (slightly modified)." />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -84,7 +85,7 @@ row to the data, if not already the case." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -162,7 +163,7 @@ row to the data, if not already the case." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>PAMM (Cumulative) (Step-)Hazard Plots.</h1>
+    <h1>(Cumulative) (Step-) Hazard Plots.</h1>
     <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/geom_hazard.R'><code>R/geom_hazard.R</code></a></small>
     <div class="hidden name"><code>geom_hazard.Rd</code></div>
     </div>
@@ -170,8 +171,9 @@ row to the data, if not already the case." />
     <div class="ref-description">
     
     <p><code>geom_hazard</code> is an extension of the <code>geom_line</code>, and
-is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
-row to the data, if not already the case.</p>
+is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
+row to the data, if not already the case. Stolen from the
+<code>RmcdrPlugin.KMggplot2</code> (slightly modified).</p>
     
     </div>
 
@@ -256,8 +258,8 @@ to the paired geom/stat.</p></td>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></code>,
-  <code><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></code>.</p></div>
+    <div class='dont-index'><p><code><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></code>,
+  <code><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></code>.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -267,22 +269,22 @@ to the paired geom/stat.</p></td>
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>poisson</span>(), <span class='kw'>offset</span> <span class='kw'>=</span> <span class='no'>offset</span>)
 <span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='newdata.html'>make_newdata</a></span>(<span class='no'>ped</span>, <span class='kw'>tend</span> <span class='kw'>=</span> <span class='fu'>unique</span>(<span class='no'>tend</span>)) <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_hazard.html'>add_hazard</a></span>(<span class='no'>pam</span>)
 <span class='co'># piece-wise constant hazards</span>
-<span class='fu'><a href='ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>hazard</span>)) +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span>(<span class='kw'>xintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='no'>ndf</span>$<span class='no'>tend</span>[<span class='fu'>c</span>(<span class='fl'>1</span>, (<span class='fu'>nrow</span>(<span class='no'>ndf</span>)-<span class='fl'>2</span>):<span class='fu'>nrow</span>(<span class='no'>ndf</span>))]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_abline.html'>geom_hline</a></span>(<span class='kw'>yintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fl'>1</span>:<span class='fl'>3</span>], <span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fu'>nrow</span>(<span class='no'>ndf</span>)]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>hazard</span>)) +
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span>(<span class='kw'>xintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='no'>ndf</span>$<span class='no'>tend</span>[<span class='fu'>c</span>(<span class='fl'>1</span>, (<span class='fu'>nrow</span>(<span class='no'>ndf</span>)-<span class='fl'>2</span>):<span class='fu'>nrow</span>(<span class='no'>ndf</span>))]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_hline</a></span>(<span class='kw'>yintercept</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fl'>1</span>:<span class='fl'>3</span>], <span class='no'>ndf</span>$<span class='no'>hazard</span>[<span class='fu'>nrow</span>(<span class='no'>ndf</span>)]), <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>3</span>) +
  <span class='fu'>geom_stephazard</span>() +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>direction</span><span class='kw'>=</span><span class='st'>"vh"</span>)</div><div class='img'><img src='geom_hazard-1.png' alt='' width='700' height='433' /></div><div class='input'>
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) +
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_step</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>direction</span><span class='kw'>=</span><span class='st'>"vh"</span>)</div><div class='img'><img src='geom_hazard-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># comulative hazard</span>
 <span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='no'>ndf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_hazard.html'>add_cumu_hazard</a></span>(<span class='no'>pam</span>)
-<span class='fu'><a href='ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>cumu_hazard</span>)) +
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>cumu_hazard</span>)) +
  <span class='fu'>geom_hazard</span>() +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at (0, 0)</span></div><div class='img'><img src='geom_hazard-2.png' alt='' width='700' height='433' /></div><div class='input'>
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at (0, 0)</span></div><div class='img'><img src='geom_hazard-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># survival probability</span>
 <span class='no'>ndf</span> <span class='kw'>&lt;-</span> <span class='no'>ndf</span> <span class='kw'>%&gt;%</span> <span class='fu'><a href='add_surv_prob.html'>add_surv_prob</a></span>(<span class='no'>pam</span>)
-<span class='fu'><a href='ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>surv_prob</span>)) +
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>(<span class='no'>ndf</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tend</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>surv_prob</span>)) +
  <span class='fu'>geom_surv</span>() +
- <span class='fu'><a href='ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at c(0,1)</span></div><div class='img'><img src='geom_hazard-3.png' alt='' width='700' height='433' /></div></pre>
+ <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span>(<span class='kw'>col</span><span class='kw'>=</span><span class='fl'>2</span>) <span class='co'># doesn't start at c(0,1)</span></div><div class='img'><img src='geom_hazard-3.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

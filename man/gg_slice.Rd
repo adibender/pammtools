@@ -4,7 +4,7 @@
 \alias{gg_slice}
 \title{Plot 1D (smooth) effects}
 \usage{
-gg_slice(data, model, term, ..., reference = NULL)
+gg_slice(data, model, term, ..., reference = NULL, ci = TRUE)
 }
 \arguments{
 \item{data}{Data used to fit the \code{model}.}
@@ -23,6 +23,9 @@ function that can be usefully applied to \code{z}. See examples below.}
 \item{reference}{If specified, should be a list with covariate value pairs,
 e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
 to an observation specified in \code{reference}.}
+
+\item{ci}{Logical. Indicates if confidence intervals for the \code{term}
+of interest should be calculated/plotted. Defaults to \code{TRUE}.}
 }
 \description{
 Flexible, high-level plotting function for (non-linear) effects conditional
@@ -30,11 +33,13 @@ on further covariate specifications and potentially relative to
 a comparison specification.
 }
 \examples{
-ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status)~.)
+ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status) ~ . )
 model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
   family = poisson(), offset=offset)
 make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
 gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
+gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
+ ci = FALSE)
 gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
   reference=list(age = 50))
 }

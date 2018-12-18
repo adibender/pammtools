@@ -16,7 +16,7 @@
 #' e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
 #' to an observation specified in \code{reference}.
 #' @param ci Logical. Indicates if confidence intervals for the \code{term}
-#' of interest should be calculated. Defaults to \code{TRUE}.
+#' of interest should be calculated/plotted. Defaults to \code{TRUE}.
 #' @export
 gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
@@ -119,20 +119,22 @@ gg_partial_ll <- function(
 #' @importFrom purrr map_int
 #' @importFrom rlang quos
 #' @examples
-#' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status)~.)
+#' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status) ~ . )
 #' model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
 #'   family = poisson(), offset=offset)
 #' make_newdata(ped, age = seq_range(age, 20), complications = levels(complications))
 #' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications))
 #' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
+#'  ci = FALSE)
+#' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
 #'   reference=list(age = 50))
 #' @export
-gg_slice <- function(data, model, term, ..., reference=NULL) {
+gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
   expressions <- quos(...)
   vars        <- names(expressions)
   ndf         <- make_newdata(data, ...) %>%
-    add_term2(model, term, reference = reference)
+    add_term2(model, term, reference = reference, se.fit = ci)
 
   n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
   vars     <- vars[rev(order(n_unique))]
@@ -140,12 +142,20 @@ gg_slice <- function(data, model, term, ..., reference=NULL) {
   ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
-  gg_out <- ggplot(ndf, aes_string(x = vars[1], y = "fit")) +
-    geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3) +
-    geom_line()
+  gg_out <- ggplot(ndf, aes_string(x = vars[1], y = "fit"))
+  if (ci) {
+    gg_out <- gg_out +
+      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3)
+  }
+  gg_out <- gg_out + geom_line()
   if (n_vars > 1) {
-    gg_out <- gg_out + aes_string(group = vars[2], fill = vars[2]) +
+    if(ci) {
+      gg_out <- gg_out + aes_string(group = vars[2], fill = vars[2]) +
       geom_line(aes_string(col = vars[2]))
+    } else {
+      gg_out <- gg_out + aes_string(group = vars[2]) +
+        geom_line(aes_string(col = vars[2]))
+    }
     if (n_vars > 2) {
       form   <- as.formula(paste0("~", vars[-1:-2], collapse = "+"))
       gg_out <- gg_out + facet_wrap(form, labeller = label_both)
@@ -160,16 +170,20 @@ gg_slice <- function(data, model, term, ..., reference=NULL) {
 #' @rdname get_cumu_eff
 #' @inherit get_cumu_eff
 #' @inheritParams get_cumu_eff
+#' @inheritParams gg_partial
 #' @export
-gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2) {
+gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2, ci = TRUE) {
 
   cumu_eff_df <- get_cumu_eff(data, model, term, z1, z2, se_mult)
 
-  ggplot(cumu_eff_df, aes_string(x = "tend", y = "cumu_eff")) +
-    geom_ribbon(aes_string(ymin = "cumu_eff_lower", ymax = "cumu_eff_upper"),
-      alpha = 0.3) +
-    geom_line() +
-    xlab("time") + ylab("cumulative effect")
+  gg_out <- ggplot(cumu_eff_df, aes_string(x = "tend", y = "cumu_eff"))
+  if (ci) {
+    gg_out <- gg_out +
+      geom_ribbon(aes_string(ymin = "cumu_eff_lower", ymax = "cumu_eff_upper"),
+        alpha = 0.3)
+  }
+
+  gg_out + geom_line() + xlab("time") + ylab("cumulative effect")
 
 }
 

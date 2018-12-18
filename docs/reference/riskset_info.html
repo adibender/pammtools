@@ -84,7 +84,7 @@ of events and censorings that occurred in the interval, respectively." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -198,11 +198,11 @@ of events and censorings that occurred in the interval, respectively.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>4</span>,] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>.</span>)
-<span class='fu'>riskset_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt; [90m# A tibble: 2 x 4[39m
+<span class='fu'>riskset_info</span>(<span class='no'>ped</span>)</div><div class='output co'>#&gt; # A tibble: 2 x 4
 #&gt;   interval ped_riskset ped_events ped_censored
-#&gt; [90m*[39m [3m[90m&lt;fct&gt;[39m[23m          [3m[90m&lt;int&gt;[39m[23m      [3m[90m&lt;dbl&gt;[39m[23m        [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m1[39m (0,33]             4          1            0
-#&gt; [90m2[39m (33,308]           3          1            2</div></pre>
+#&gt; * &lt;fct&gt;          &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;
+#&gt; 1 (0,33]             4          1            0
+#&gt; 2 (33,308]           3          1            2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

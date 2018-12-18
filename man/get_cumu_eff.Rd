@@ -3,11 +3,11 @@
 \name{get_cumu_eff}
 \alias{get_cumu_eff}
 \alias{gg_cumu_eff}
-\title{Calculate cumulative effect for all time-points}
+\title{Calculate (or plot) cumulative effect for all time-points of the follow-up}
 \usage{
 get_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2)
 
-gg_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2)
+gg_cumu_eff(data, model, term, z1, z2 = NULL, se_mult = 2, ci = TRUE)
 }
 \arguments{
 \item{data}{Data used to fit the \code{model}.}
@@ -27,7 +27,10 @@ between the two exposure profiles (g(z1,t)-g(z2,t)).}
 
 \item{se_mult}{Multiplicative factor used to calculate confidence intervals
 (e.g., lower = fit - 2*se).}
+
+\item{ci}{Logical. Indicates if confidence intervals for the \code{term}
+of interest should be calculated/plotted. Defaults to \code{TRUE}.}
 }
 \description{
-Calculate cumulative effect for all time-points
+Calculate (or plot) cumulative effect for all time-points of the follow-up
 }

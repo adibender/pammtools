@@ -116,7 +116,6 @@ get_intervals <- function(x, times, ...) {
 
 #' @inherit get_intervals
 #' @inheritParams base::findInterval
-#' @seealso \code{\link[base]{findInterval}}
 #' @rdname get_intervals
 #' @export
 get_intervals.default <- function(

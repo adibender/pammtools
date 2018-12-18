@@ -51,5 +51,6 @@ pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=of
 ped_info(ped) \%>\% add_surv_prob(pam, ci=TRUE)
 }
 \seealso{
-\code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
+\code{\link[mgcv]{predict.gam}},
+\code{\link[pammtools]{add_surv_prob}}
 }

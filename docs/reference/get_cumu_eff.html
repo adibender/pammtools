@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate cumulative effect for all time-points — get_cumu_eff • pammtools</title>
+<title>Calculate (or plot) cumulative effect for all time-points of the follow-up — get_cumu_eff • pammtools</title>
 
 <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
 
@@ -38,9 +38,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
-<meta property="og:title" content="Calculate cumulative effect for all time-points — get_cumu_eff" />
+<meta property="og:title" content="Calculate (or plot) cumulative effect for all time-points of the follow-up — get_cumu_eff" />
 
-<meta property="og:description" content="Calculate cumulative effect for all time-points" />
+<meta property="og:description" content="Calculate (or plot) cumulative effect for all time-points of the follow-up" />
 
 <meta property="og:image" content="https://adibender.github.io/pammtools/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -160,20 +160,20 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate cumulative effect for all time-points</h1>
+    <h1>Calculate (or plot) cumulative effect for all time-points of the follow-up</h1>
     <small class="dont-index">Source: <a href='https://github.com/adibender/pammtools/blob/master/R/cumulative-effect.R'><code>R/cumulative-effect.R</code></a>, <a href='https://github.com/adibender/pammtools/blob/master/R/viz-elra.R'><code>R/viz-elra.R</code></a></small>
     <div class="hidden name"><code>get_cumu_eff.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Calculate cumulative effect for all time-points</p>
+    <p>Calculate (or plot) cumulative effect for all time-points of the follow-up</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>get_cumu_eff</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>z1</span>, <span class='kw'>z2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 
-<span class='fu'>gg_cumu_eff</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>z1</span>, <span class='kw'>z2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>)</pre>
+<span class='fu'>gg_cumu_eff</span>(<span class='no'>data</span>, <span class='no'>model</span>, <span class='no'>term</span>, <span class='no'>z1</span>, <span class='kw'>z2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_mult</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ci</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,6 +207,11 @@ between the two exposure profiles (g(z1,t)-g(z2,t)).</p></td>
       <th>se_mult</th>
       <td><p>Multiplicative factor used to calculate confidence intervals
 (e.g., lower = fit - 2*se).</p></td>
+    </tr>
+    <tr>
+      <th>ci</th>
+      <td><p>Logical. Indicates if confidence intervals for the <code>term</code>
+of interest should be calculated/plotted. Defaults to <code>TRUE</code>.</p></td>
     </tr>
     </table>
     

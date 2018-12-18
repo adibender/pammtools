@@ -85,7 +85,7 @@ surv_lower, surv_upper if ci=TRUE)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -233,26 +233,27 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>, <code><a href='add_hazard.html'>add_hazard</a></code></p></div>
+    <div class='dont-index'><p><code><a href='http://www.rdocumentation.org/packages/mgcv/topics/predict.gam'>predict.gam</a></code>,
+<code>add_surv_prob</code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>ped</span> <span class='kw'>&lt;-</span> <span class='no'>tumor</span>[<span class='fl'>1</span>:<span class='fl'>50</span>,] <span class='kw'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span>(<span class='fu'>Surv</span>(<span class='no'>days</span>, <span class='no'>status</span>)~ <span class='no'>age</span>)
 <span class='no'>pam</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>mgcv</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/mgcv/topics/gam'>gam</a></span>(<span class='no'>ped_status</span> ~ <span class='fu'>s</span>(<span class='no'>tend</span>)+<span class='no'>age</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>ped</span>, <span class='kw'>family</span><span class='kw'>=</span><span class='fu'>poisson</span>(), <span class='kw'>offset</span><span class='kw'>=</span><span class='no'>offset</span>)
-<span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_surv_prob</span>(<span class='no'>pam</span>, <span class='kw'>ci</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [90m# A tibble: 22 x 9[39m
+<span class='fu'><a href='ped_info.html'>ped_info</a></span>(<span class='no'>ped</span>) <span class='kw'>%&gt;%</span> <span class='fu'>add_surv_prob</span>(<span class='no'>pam</span>, <span class='kw'>ci</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; # A tibble: 22 x 9
 #&gt;    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower
-#&gt;     [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m  [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;fct&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m      [3m[90m&lt;dbl&gt;[39m[23m      [3m[90m&lt;dbl&gt;[39m[23m
-#&gt; [90m 1[39m      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950
-#&gt; [90m 2[39m     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939
-#&gt; [90m 3[39m     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904
-#&gt; [90m 4[39m     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893
-#&gt; [90m 5[39m     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803
-#&gt; [90m 6[39m    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739
-#&gt; [90m 7[39m    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734
-#&gt; [90m 8[39m    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700
-#&gt; [90m 9[39m    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667
-#&gt; [90m10[39m    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665
-#&gt; [90m# ... with 12 more rows[39m</div></pre>
+#&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+#&gt;  1      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950
+#&gt;  2     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939
+#&gt;  3     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904
+#&gt;  4     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893
+#&gt;  5     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803
+#&gt;  6    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739
+#&gt;  7    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734
+#&gt;  8    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700
+#&gt;  9    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667
+#&gt; 10    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665
+#&gt; # ... with 12 more rows</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

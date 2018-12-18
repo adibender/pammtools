@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.7</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.8</span>
       </span>
     </div>
 
@@ -119,7 +119,7 @@
     <div class="page-header toc-ignore">
       <h1>Data Transformation</h1>
             
-            <h4 class="date">2018-11-06</h4>
+            <h4 class="date">2018-12-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/data-transformation.Rmd"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -263,9 +263,6 @@
 <a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(pbc, pbcseq),</a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span><span class="st"> </span><span class="kw"><a href="../reference/specials.html">concurrent</a></span>(bili, protime, <span class="dt">tz_var =</span> <span class="st">"day"</span>),</a>
 <a class="sourceLine" id="cb11-4" data-line-number="4">  <span class="dt">id      =</span> <span class="st">"id"</span>)</a></code></pre></div>
-<pre><code>## Joining, by = "id"
-## Joining, by = "id"
-## Joining, by = "id"</code></pre>
 <p>Multiple data sets can be provided within the list and multiple <code>concurrent</code> terms with different <code>tz_var</code> arguments can be specified. If different <code>tz_var</code> arguments are provided, the union of both will be used as cut points in addition to usual cut points.</p>
 <p><strong>Warning</strong>: For time-points on the follow up that have no observation of the TDC, the last observation will be carried forward until the next update is available.</p>
 </div>
@@ -338,19 +335,22 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#one-time-dependent-covariate" class="anchor"></a>One time-dependent covariate</h3>
 <p>For illustration we use the ICU patients data sets <code>patient</code> and <code>daily</code> provided in the <strong><code>pammtools</code></strong> package, with follow-up time <code>survhosp</code> (<span class="math inline">\(t\)</span>), exposure time <code>Study_Day</code> (<span class="math inline">\(t_z\)</span>) and TDCs <code>caloriesPercentage</code> <span class="math inline">\(\mathbf{z}_1\)</span> and <code>proteinGproKG</code> (<span class="math inline">\(\mathbf{z}_2\)</span>):</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">head</span>(patient)</a></code></pre></div>
-<pre><code>## # A tibble: 6 x 12
-##   Year  CombinedicuID CombinedID Survdays PatientDied survhosp Gender   Age
-##   &lt;fct&gt; &lt;fct&gt;              &lt;int&gt;    &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;  &lt;int&gt;
-## 1 2007  1114                1110     30.1           0     30.1 Male      68
-## 2 2007  1114                1111     30.1           0     30.1 Female    57
-## 3 2007  1114                1116      9.8           1      9.8 Female    68
-## 4 2007  598                 1316     30.1           0     30.1 Male      47
-## 5 2007  365                 1410     30.1           0     30.1 Male      69
-## 6 2007  365                 1414     30.1           0      5.4 Male      47
-## # ... with 4 more variables: AdmCatID &lt;fct&gt;, ApacheIIScore &lt;int&gt;,
-## #   BMI &lt;dbl&gt;, DiagID2 &lt;fct&gt;</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">head</span>(daily)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">head</span>(patient)</a></code></pre></div>
+<pre><code>##   Year CombinedicuID CombinedID Survdays PatientDied survhosp Gender Age
+## 1 2007          1114       1110     30.1           0     30.1   Male  68
+## 2 2007          1114       1111     30.1           0     30.1 Female  57
+## 3 2007          1114       1116      9.8           1      9.8 Female  68
+## 4 2007           598       1316     30.1           0     30.1   Male  47
+## 5 2007           365       1410     30.1           0     30.1   Male  69
+## 6 2007           365       1414     30.1           0      5.4   Male  47
+##            AdmCatID ApacheIIScore      BMI           DiagID2
+## 1 Surgical Elective            20 31.60321   Cardio-Vascular
+## 2           Medical            22 24.34176       Respiratory
+## 3 Surgical Elective            25 17.99308   Cardio-Vascular
+## 4           Medical            16 33.74653 Orthopedic/Trauma
+## 5 Surgical Elective            20 38.75433       Respiratory
+## 6           Medical            21 45.00622       Respiratory</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">head</span>(daily)</a></code></pre></div>
 <pre><code>## # A tibble: 6 x 4
 ##   CombinedID Study_Day caloriesPercentage proteinGproKG
 ##        &lt;int&gt;     &lt;int&gt;              &lt;dbl&gt;         &lt;dbl&gt;
@@ -361,15 +361,13 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ## 5       1110         5              77.2          0.647
 ## 6       1110         6              17.3          0</code></pre>
 <p>Below we illustrate the usage of <code>as_ped</code> and <code>cumulative</code> to obtain covariate matrices for the latency matrix of follow up time and exposure time and a matrix of the TDC (<code>caloriesPercentage</code>). The follow up will be split in 30 intervals with interval breaks points <code>0:30</code>. By default, the exposure time provided to <code>tz_var</code> will be used as a suffix for the names of the new matrix columns to indicate the exposure they refer to, however, you can override the suffix by specifying the <code>suffix</code> argument to <code>cumulative</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(patient, daily),</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(Study_Day), caloriesPercentage, <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">  <span class="dt">cut     =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
-<pre><code>## Joining, by = "CombinedID"
-## Joining, by = "CombinedID"</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">  <span class="dt">data    =</span> <span class="kw">list</span>(patient, daily),</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(Study_Day), caloriesPercentage, <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">  <span class="dt">cut     =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb16-6" data-line-number="6">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  18 variables:
 ##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
 ##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
@@ -406,17 +404,14 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#two-time-dependent-covariates-observed-on-the-same-exposure-time-grid" class="anchor"></a>Two time-dependent covariates observed on the same exposure time grid</h3>
 <p>Using the same data, we show a slightly more complex example with two functional covariate terms with partial effects <span class="math inline">\(h(t, t-t_z, z_1(t_z))\)</span> and <span class="math inline">\(h(t-t_z, z_2(t_z))\)</span>. As in the case of ICU patient data, both TDCs were observed on the same exposure time grid, we want to use the same lag-lead window and the latency term <span class="math inline">\(t-t_z\)</span> occurs in both partial effects, we only need to specify one <code>cumulative</code> term.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">  <span class="dt">data =</span> <span class="kw">list</span>(patient, daily),</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
-<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(survhosp, <span class="kw">latency</span>(Study_Day), caloriesPercentage, proteinGproKG,</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">      <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
-<a class="sourceLine" id="cb21-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
-<a class="sourceLine" id="cb21-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a></code></pre></div>
-<pre><code>## Joining, by = "CombinedID"
-## Joining, by = "CombinedID"
-## Joining, by = "CombinedID"</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">ped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">data =</span> <span class="kw">list</span>(patient, daily),</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(survhosp, PatientDied) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(survhosp, <span class="kw">latency</span>(Study_Day), caloriesPercentage, proteinGproKG,</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">      <span class="dt">tz_var =</span> <span class="st">"Study_Day"</span>),</a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb18-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"CombinedID"</span>)</a>
+<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="kw">str</span>(ped, <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  20 variables:
 ##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...
 ##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...
@@ -455,22 +450,22 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <h3 class="hasAnchor">
 <a href="#multiple-tdcs-observed-at-different-exposure-time-grids" class="anchor"></a>Multiple TDCs observed at different exposure time grids</h3>
 <p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">simdf_elra</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">simdf_elra</a></code></pre></div>
 <pre><code>## # A tibble: 250 x 9
-##       id   time status      x1    x2 tz1       z.tz1     tz2      z.tz2   
-##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;    &lt;list&gt;   &lt;list&gt;  
-##  1     1  3.22       1  1.59   4.61  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  2     2 10          0 -0.530  0.178 &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  3     3  0.808      1 -2.43   3.25  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  4     4  3.04       1  0.696  1.26  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  5     5  3.36       1  2.54   3.71  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  6     6  4.07       1 -0.0231 0.607 &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  7     7  0.534      1  1.68   1.74  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  8     8  1.57       1 -1.89   2.51  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-##  9     9  2.39       1  0.126  3.38  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
-## 10    10  6.61       1  1.79   1.06  &lt;int [10… &lt;dbl [10… &lt;int [1… &lt;dbl [1…
+##       id   time status      x1    x2 tz1       z.tz1     tz2       z.tz2   
+##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;    &lt;list&gt;    &lt;list&gt;  
+##  1     1  3.22       1  1.59   4.61  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  2     2 10          0 -0.530  0.178 &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  3     3  0.808      1 -2.43   3.25  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  4     4  3.04       1  0.696  1.26  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  5     5  3.36       1  2.54   3.71  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  6     6  4.07       1 -0.0231 0.607 &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  7     7  0.534      1  1.68   1.74  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  8     8  1.57       1 -1.89   2.51  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+##  9     9  2.39       1  0.126  3.38  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
+## 10    10  6.61       1  1.79   1.06  &lt;int [10… &lt;dbl [10… &lt;int [11… &lt;dbl [1…
 ## # ... with 240 more rows</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
 <pre><code>## # A tibble: 10 x 2
 ##       id   tz1
 ##    &lt;int&gt; &lt;int&gt;
@@ -484,7 +479,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  8     1     8
 ##  9     1     9
 ## 10     1    10</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">simdf_elra <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">slice</a></span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/dplyr_verbs.html">select</a></span>(id, tz2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span>()</a></code></pre></div>
 <pre><code>## # A tibble: 11 x 2
 ##       id   tz2
 ##    &lt;int&gt; &lt;int&gt;
@@ -507,14 +502,14 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <li><span class="math inline">\(g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))\)</span></li>
 </ul>
 <p>with <span class="math inline">\(\mathcal{T}_1(t) = \{t_z: t \geq t_z + 2\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_z: t \geq s_z\}\)</span> the data transformation function must reflect the different exposure times as well as different lag-lead window specifications as illustrated below:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">ped_sim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2">  <span class="dt">data =</span> simdf_elra,</a>
-<a class="sourceLine" id="cb31-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
-<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(time, <span class="kw">latency</span>(tz1), z.tz1, <span class="dt">tz_var =</span> <span class="st">"tz1"</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(tz2), z.tz2, <span class="dt">tz_var =</span> <span class="st">"tz2"</span>),</a>
-<a class="sourceLine" id="cb31-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb31-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"id"</span>)</a>
-<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="kw">str</span>(ped_sim, <span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">ped_sim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_ped.html">as_ped</a></span>(</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">  <span class="dt">data =</span> simdf_elra,</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">  <span class="dt">formula =</span> <span class="kw">Surv</span>(time, status) <span class="op">~</span><span class="st"> </span>. <span class="op">|</span></a>
+<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(time, <span class="kw">latency</span>(tz1), z.tz1, <span class="dt">tz_var =</span> <span class="st">"tz1"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="../reference/specials.html">cumulative</a></span>(<span class="kw">latency</span>(tz2), z.tz2, <span class="dt">tz_var =</span> <span class="st">"tz2"</span>),</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">  <span class="dt">cut =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">  <span class="dt">id =</span> <span class="st">"id"</span>)</a>
+<a class="sourceLine" id="cb26-8" data-line-number="8"><span class="kw">str</span>(ped_sim, <span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## Classes 'fped', 'ped' and 'data.frame':  1004 obs. of  15 variables:
 ##  $ id          : int  1 1 1 1 2 2 2 2 2 2 ...
 ##  $ tstart      : num  0 1 2 3 0 1 2 3 4 5 ...
@@ -527,9 +522,11 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  $ time_tz1_mat: int [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...
 ##  $ tz1_latency : num [1:1004, 1:10] 0 0 1 2 0 0 1 2 3 4 ...
 ##  $ z.tz1_tz1   : num [1:1004, 1:10] -2.014 -2.014 -2.014 -2.014 -0.978 ...
+##   ..- attr(*, "dimnames")=List of 2
 ##  $ LL_tz1      : num [1:1004, 1:10] 0 1 1 1 0 1 1 1 1 1 ...
 ##  $ tz2_latency : num [1:1004, 1:11] 5 6 7 8 5 6 7 8 9 10 ...
 ##  $ z.tz2_tz2   : num [1:1004, 1:11] -0.689 -0.689 -0.689 -0.689 0.693 ...
+##   ..- attr(*, "dimnames")=List of 2
 ##  $ LL_tz2      : num [1:1004, 1:11] 1 1 1 1 1 1 1 1 1 1 ...
 ##  - attr(*, "breaks")= int  0 1 2 3 4 5 6 7 8 9 ...
 ##  - attr(*, "id_var")= chr "id"
@@ -542,7 +539,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  - attr(*, "ll_weights")=List of 2
 ##  - attr(*, "func_mat_names")=List of 2</code></pre>
 <p>Note how the matrix covariates associated with <code>tz1</code> have 10 columns while matrix covariates associated with <code>tz2</code> have 11 columns. Note also that the lag-lead matrices differ</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="../reference/gg_laglead.html">gg_laglead</a></span>(ped_sim)</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="../reference/gg_laglead.html">gg_laglead</a></span>(ped_sim)</a></code></pre></div>
 <p><img src="data-transformation_files/figure-html/unnamed-chunk-14-1.png" width="600px" style="display: block; margin: auto;"></p>
 </div>
 </div>
