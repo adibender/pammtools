@@ -6,13 +6,19 @@ r:
   - devel
   - release
 
+r_packages:
+  - pammtools # for building pkgdown vignettes via travis
+  - TBFmultinomial
+
 r_github_packages:
   - jimhester/covr
+  - thomasp85/patchwork
 
 # whitelist
 branches:
   only:
     - master
+    - devel
 
 after_success:
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
@@ -22,7 +28,7 @@ deploy:
   provider: pages
   skip-cleanup: true
   github-token: $GITHUB_PAT
-  keep-history: true
+  keep-history: false
   local-dir: docs
   on:
     branch: master
