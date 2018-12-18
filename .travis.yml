@@ -26,4 +26,4 @@ deploy:
   local-dir: docs
   on:
     branch: master
-    branch: dev
+    branch: devel
