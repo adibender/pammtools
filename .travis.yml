@@ -6,6 +6,9 @@ r:
   - devel
   - release
 
+r_packages:
+  - adibender/pammtools # for building pkgdown vignettes via travis
+
 r_github_packages:
   - jimhester/covr
 
