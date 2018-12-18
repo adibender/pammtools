@@ -19,7 +19,8 @@ contains the time-to-event information and static covariates while the second
 (and potentially further data frames) contain information on time-dependent
 covariates and the times at which they have been observed.}
 
-\item{cut}{the vector of timepoints to cut at}
+\item{cut}{Break points, used to partition the follow up into intervals.
+If unspecified, all unique event times will be used.}
 
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}

@@ -2,8 +2,10 @@
 #'
 #' This is the general data transformation function provided by the
 #' \code{pammtools} package. Two main applications must be distinguished:
-#' (1) Transformation of standard time-to-event data.
-#' (2) Transformation of time-to-event data with time-dependent covariates (TDC).
+#' \enumerate{
+#'  \item Transformation of standard time-to-event data.
+#'  \item Transformation of time-to-event data with time-dependent covariates (TDC).
+#' }
 #' For the latter, the type of effect one wants to estimate is also
 #' important for the data transformation step.
 #' In any case, the data transformation is specified by a two sided formula.
@@ -24,6 +26,8 @@
 #' The RHS can be an extended formula, which specifies how TDCs should be transformed
 #' using specials \code{concurrent} and \code{cumulative}.
 #' @inheritParams survival::survSplit
+#' @param cut Break points, used to partition the follow up into intervals.
+#' If unspecified, all unique event times will be used.
 #' @param max_time If \code{cut} is unspecified, this will be the last
 #' possible event time. All event times after \code{max_time}
 #' will be administratively censored at \code{max_time}.

@@ -34,7 +34,8 @@ using specials \code{concurrent} and \code{cumulative}.}
 \item{...}{Further arguments passed to the \code{data.frame} method and
 eventually to \code{\link[survival]{survSplit}}}
 
-\item{cut}{the vector of timepoints to cut at}
+\item{cut}{Break points, used to partition the follow up into intervals.
+If unspecified, all unique event times will be used.}
 
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}
@@ -48,8 +49,10 @@ A data frame class \code{ped} in piece-wise exponential data format.
 \description{
 This is the general data transformation function provided by the
 \code{pammtools} package. Two main applications must be distinguished:
-(1) Transformation of standard time-to-event data.
-(2) Transformation of time-to-event data with time-dependent covariates (TDC).
+\enumerate{
+ \item Transformation of standard time-to-event data.
+ \item Transformation of time-to-event data with time-dependent covariates (TDC).
+}
 For the latter, the type of effect one wants to estimate is also
 important for the data transformation step.
 In any case, the data transformation is specified by a two sided formula.
