@@ -25,7 +25,7 @@ e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative
 to an observation specified in \code{reference}.}
 
 \item{ci}{Logical. Indicates if confidence intervals for the \code{term}
-of interest should be calculated. Defaults to \code{TRUE}.}
+of interest should be calculated/plotted. Defaults to \code{TRUE}.}
 }
 \description{
 Flexible, high-level plotting function for (non-linear) effects conditional

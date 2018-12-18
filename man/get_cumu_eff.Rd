@@ -29,7 +29,7 @@ between the two exposure profiles (g(z1,t)-g(z2,t)).}
 (e.g., lower = fit - 2*se).}
 
 \item{ci}{Logical. Indicates if confidence intervals for the \code{term}
-of interest should be calculated. Defaults to \code{TRUE}.}
+of interest should be calculated/plotted. Defaults to \code{TRUE}.}
 }
 \description{
 Calculate (or plot) cumulative effect for all time-points of the follow-up
