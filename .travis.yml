@@ -23,7 +23,7 @@ deploy:
   provider: pages
   skip-cleanup: true
   github-token: $GITHUB_PAT
-  keep-history: true
+  keep-history: false
   local-dir: docs
   on:
     branch: master
