@@ -8,6 +8,7 @@ r:
 
 r_packages:
   - pammtools # for building pkgdown vignettes via travis
+  - TBFmultinomial
 
 r_github_packages:
   - jimhester/covr
