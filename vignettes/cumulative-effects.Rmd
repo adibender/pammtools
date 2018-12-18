@@ -133,7 +133,7 @@ A visual representation of exemplary lag-lead windows is depicted below:
 <details>
 
 <summary>
-  *R-Code lag-lead windows*
+  R-Code lag-lead windows
 </summary>
 
 ```{r}
