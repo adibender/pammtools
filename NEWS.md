@@ -2,7 +2,8 @@
 
 * Updates to cummulative effect vignette
 * Fixed bug caused by changes in **`checkmate`** [#73](https://github.com/adibender/pammtools/issues/73)
-* Bug Fixes [#76](https://github.com/adibender/pammtools/issues/76)
+* Bug Fixes [#76](https://github.com/adibender/pammtools/issues/76), [#63](https://github.com/adibender/pammtools/issues/63), [#77](https://github.com/adibender/pammtools/issues/77)
+* Update CITATIONS
 
 
 # pammtools 0.1.7
