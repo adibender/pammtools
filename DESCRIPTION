@@ -5,17 +5,16 @@ Date: 2018-11-02
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
-Description: The piece-wise exponential (additive mixed) model
+Description: The Piece-wise exponential (Additive Mixed) Model
     (PAMM; Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>) is a
-    powerful model class for survival analysis, based on generalized additive
-    (mixed) models (GA(M)Ms). It offers intuitive specification and robust
+    powerful model class for survival analysis, based on Generalized Additive
+    (Mixed) Models (GA(M)Ms). It offers intuitive specification and robust
     estimation of complex survival models with stratified baseline hazards,
     random effects, time-varying effects, time-dependent covariates and
     cumulative effects (Bender et. al. (2018) <doi:10.1093/biostatistics/kxy003>.
-    pammtools provides functions and utilities that facilitate fitting Piece-wise
-    Exponential Additive Mixed Models (PAMMs), including data transformation and
-    other convenience functions for pre and post-processing as well as
-    visualization.
+    pammtools provides tidy workflow for survival analysis with PAMMs,
+    including data transformation and other pre- and post-processing
+    functions as well as visualization.
 Depends:
     R (>= 3.3.0)
 Imports:

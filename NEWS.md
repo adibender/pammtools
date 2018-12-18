@@ -1,3 +1,10 @@
+# pammtools 0.1.8
+
+* Updates to cummulative effect vignette
+* Fixed bug caused by changes in **`checkmate`** [#73](https://github.com/adibender/pammtools/issues/73)
+* Bug Fixes [#76](https://github.com/adibender/pammtools/issues/76)
+
+
 # pammtools 0.1.7
 
 * Futher improved support for cumulative effects
@@ -5,8 +12,6 @@
 * Updated vignette on convenience functions (now "Workflow and convenience functions")
 * Other (minor) upgrades/updates to documentation/vignettes
 * Updates homepage (via pkgdown)
-* Fixed bug caused by changes in **`checkmate`** [#73](https://github.com/adibender/pammtools/issues/73)
-* Bug Fixes [#76](https://github.com/adibender/pammtools/issues/76)
 
 
 # pamtools 0.1.3
