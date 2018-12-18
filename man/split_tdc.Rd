@@ -9,7 +9,10 @@ split_tdc(formula, event_df, tdc_df, tz_var, id_var = "id",
   entry_time = 0, ...)
 }
 \arguments{
-\item{formula}{a model formula}
+\item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
+on the left-hand-side and covariate specification on the right-hand-side (RHS).
+The RHS can be an extended formula, which specifies how TDCs should be transformed
+using specials \code{concurrent} and \code{cumulative}.}
 
 \item{event_df}{Data frame (or similar) containing survival information.}
 
@@ -36,7 +39,8 @@ event indicator. Can be missing in the \code{tdc_df}.}
 observation unit begins. (Eventually, support for subject specific
 entry time could be supported through this argument).}
 
-\item{...}{Further arguments passed to \code{\link[survival]{survSplit}}}
+\item{...}{Further arguments passed to the \code{data.frame} method and
+eventually to \code{\link[survival]{survSplit}}}
 }
 \description{
 Given to data frames, one containing event time information (one row per subject)

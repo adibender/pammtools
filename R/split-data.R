@@ -1,16 +1,10 @@
 #' Function to transform data without time-dependent covariates into piece-wise
 #' exponential data format
 #'
-#' @inheritParams survival::survSplit
-#' @param ... Further arguments passed to \code{\link[survival]{survSplit}}
-#' @param max_time If \code{cut} is unspecified, a maximum time to be considered
-#' can be specified through this argument. Then, all event times after \code{max_time}
-#' will be administratively censored at \code{max_time}.
+#' @inheritParams as_ped
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
-#' @importFrom rlang UQS
-#' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @examples
 #' data("veteran", package="survival")
 #' head(veteran)

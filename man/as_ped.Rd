@@ -10,7 +10,8 @@
 \usage{
 as_ped(data, formula, ...)
 
-\method{as_ped}{data.frame}(data, formula, ...)
+\method{as_ped}{data.frame}(data, formula, cut = NULL, max_time = NULL,
+  ...)
 
 \method{as_ped}{nested_fdf}(data, formula, ...)
 
@@ -30,9 +31,19 @@ on the left-hand-side and covariate specification on the right-hand-side (RHS).
 The RHS can be an extended formula, which specifies how TDCs should be transformed
 using specials \code{concurrent} and \code{cumulative}.}
 
-\item{...}{Further arguments passed to \code{split_data}.}
+\item{...}{Further arguments passed to the \code{data.frame} method and
+eventually to \code{\link[survival]{survSplit}}}
+
+\item{cut}{the vector of timepoints to cut at}
+
+\item{max_time}{If \code{cut} is unspecified, this will be the last
+possible event time. All event times after \code{max_time}
+will be administratively censored at \code{max_time}.}
 
 \item{x}{any R object.}
+}
+\value{
+A data frame class \code{ped} in piece-wise exponential data format.
 }
 \description{
 This is the general data transformation function provided by the

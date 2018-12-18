@@ -23,12 +23,18 @@
 #' on the left-hand-side and covariate specification on the right-hand-side (RHS).
 #' The RHS can be an extended formula, which specifies how TDCs should be transformed
 #' using specials \code{concurrent} and \code{cumulative}.
-#' @param ... Further arguments passed to \code{split_data}.
+#' @inheritParams survival::survSplit
+#' @param max_time If \code{cut} is unspecified, this will be the last
+#' possible event time. All event times after \code{max_time}
+#' will be administratively censored at \code{max_time}.
+#' @param ... Further arguments passed to the \code{data.frame} method and
+#' eventually to \code{\link[survival]{survSplit}}
 #' @importFrom Formula Formula
 #' @examples
 #' tumor[1:3, ]
 #' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
 #' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex)
+#' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @export
 as_ped <- function(data, formula, ...) {
   UseMethod("as_ped", data)
@@ -37,13 +43,20 @@ as_ped <- function(data, formula, ...) {
 #' @rdname as_ped
 #' @inherit as_ped
 #' @export
-as_ped.data.frame <- function(data, formula, ...) {
+as_ped.data.frame <- function(
+  data,
+  formula,
+  cut      = NULL,
+  max_time = NULL,
+  ...) {
 
   status_error(data, formula)
 
-  dots         <- list(...)
-  dots$data    <- data
-  dots$formula <- formula(Formula(formula), lhs = 1, rhs = 1)
+  dots          <- list(...)
+  dots$data     <- data
+  dots$formula  <- formula(Formula(formula), lhs = 1, rhs = 1)
+  dots$cut      <- cut
+  dots$max_time <- max_time
   ped <- do.call(split_data, dots)
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   ped
@@ -58,7 +71,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   status_error(data, formula)
 
   dots <- list(...)
-  # update interval break points (if neccessary)
+  # update interval break points (if necessary)
   cut <- dots$cut
   if (is.null(cut)) {
     cut <- attr(data, "breaks")
@@ -80,7 +93,8 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
   attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
     transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)), times = attr(data, "id_n"))
+  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
+    times = attr(data, "id_n"))
 
   if (has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data = data, id_var = dots$id)
@@ -93,7 +107,10 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
-  attr(ped, "func_mat_names") <- make_mat_names(attr(ped, "func"), attr(ped, "time_var"))
+  attr(ped, "func_mat_names") <- make_mat_names(
+    attr(ped, "func"),
+    attr(ped, "time_var"))
+
   ped
 
 }
