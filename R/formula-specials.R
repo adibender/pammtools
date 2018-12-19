@@ -246,24 +246,33 @@ get_tz <- function(data, tz_var) {
 }
 
 #' @keywords internal
+#' @importFrom purrr map2
 add_concurrent <- function(ped, data, id_var) {
 
   ccr <- attr(data, "ccr")
+
+  ped_split <- split(ped$tend, f = ped[[id_var]])
 
   for (ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
     tz_var_i   <- ccr_i[["tz_var"]]
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
-    ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
+    ccr_i_df   <- data %>%
+      select(one_of(c(id_var, ccr_vars_i))) %>%
       unnest()
-    ped <- ped %>%
-      left_join(ccr_i_df, by = c(id_var, "tstart" = tz_var_i)) %>%
-      group_by(!!sym(id_var)) %>%
-      fill(tdc_vars_i)
 
-    attr(ped, "ccr") <- ccr
+    li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
+      function(.x, .y) {
+        ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
+        ccr_i_df[ll_ind, tdc_vars_i]
+      }) %>% bind_rows() %>% ungroup()
+
+    ped <- ped %>% bind_cols(li)
 
   }
+
+
+  attr(ped, "ccr") <- ccr
 
   ped
 
