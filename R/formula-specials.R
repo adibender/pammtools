@@ -264,13 +264,12 @@ add_concurrent <- function(ped, data, id_var) {
     li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
       function(.x, .y) {
         ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
-        ccr_i_df[ll_ind, tdc_vars_i]
+        .y[ll_ind, tdc_vars_i]
       }) %>% bind_rows() %>% ungroup()
 
     ped <- ped %>% bind_cols(li)
 
   }
-
 
   attr(ped, "ccr") <- ccr
 
