@@ -57,7 +57,7 @@ cumulative <- function(...,
 #' @keywords internal
 concurrent <- function(...,
   tz_var,
-  ll_fun = function(t) t == t,
+  ll_fun = function(t, tz) {t >= tz},
   suffix = NULL) {
 
   vars     <- as.list(substitute(list(...)))[-1]
