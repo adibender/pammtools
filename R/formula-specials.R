@@ -22,10 +22,10 @@
 #' @param tz_var The name of the variable that stores information on the
 #' times at which the TDCs specified in this term where observed.
 #' @param lag a single positive number giving the time lag between for
-#' a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag} 
-#' affects the hazard in the interval containing follow-up time \code{t}). 
+#' a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag}
+#' affects the hazard in the interval containing follow-up time \code{t}).
 #' Defaults to 0.
-#'    
+#'
 #' @inheritParams get_laglead
 #'
 #' @export
@@ -64,7 +64,7 @@ concurrent <- function(...,
   tz_var,
   lag = 0,
   suffix = NULL) {
-  
+
   assert_number(lag, lower = 0)
   ll_fun = function(t, tz) {t > tz + lag}
   vars     <- as.list(substitute(list(...)))[-1]
@@ -75,7 +75,7 @@ concurrent <- function(...,
     col_vars    = vars_chr,
     tz_var      = tz_var,
     suffix      = suffix,
-    ll_fun      = ll_fun, 
+    ll_fun      = ll_fun,
     lag         = lag)
 
 }
@@ -233,13 +233,14 @@ prep_concurrent.list <- function(x, formula, ...) {
     ccr_list    <- eval_special(formula, special = "concurrent")
     ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
     ccr_time    <- map2(ccr_tz_vars, x, ~get_tz(.y, .x)) %>%
-      map2(ccr_list, 
+      keep(~ !is.null(.x)) %>%
+      map2(ccr_list,
            ~ if(is.null(.x)) {
              .x
            } else {
              ifelse(.x == min(.x), .x, .x + .y$lag)
-           }) %>% 
-      # leave time origin unchanged by lag 
+           }) %>%
+      # leave time origin unchanged by lag
       # should just start modeling the hazard at t = lag?!?
       reduce(union) %>% sort()
   }

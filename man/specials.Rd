@@ -30,8 +30,8 @@ should be constructed. First argument is the follow up time
 second argument is the time of exposure.}
 
 \item{lag}{a single positive number giving the time lag between for
-a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag} 
-affects the hazard in the interval containing follow-up time \code{t}). 
+a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag}
+affects the hazard in the interval containing follow-up time \code{t}).
 Defaults to 0.}
 
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
