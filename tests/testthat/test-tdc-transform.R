@@ -12,28 +12,30 @@ test_that("Concurrent TDC are transformed correctly", {
   event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status == 2)
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. | concurrent(bili, protime, tz_var = "day",
-      ll_fun = function(t, tz) {t > tz}), id = "id")
+    formula = Surv(time, status) ~. | 
+      concurrent(bili, protime, tz_var = "day"), id = "id")
   expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 400, 743))
   expect_equal(ped$bili,
-    c(14.5, 14.5, 14.5, 21.3, 21.3, 21.3, 1.1, 1.1, 0.8, 0.8, 0.8, 1, 1, 1,
-      1.9, 1.9, 2.6, 3.6, 4.2, 3.6, 1.4, 1.1, 1.1, 1.1, 1.5, 1.5, 1.5, 1.8, 1.8))
+    c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
+      rep(1.9, 2), 2.6, 3.6, 4.2, 3.6, 1.4, rep(1.1, 3), rep(1.5, 3),
+      rep(1.8, 2)))
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. | concurrent(bili, protime, tz_var = "day",
-      ll_fun = function(t, tz) {t >= tz}), id = "id")
+    formula = 
+      Surv(time, status) ~. | concurrent(bili, protime, tz_var = "day", lag = 10),
+    id = "id")
+  expect_equal(unique(ped$tend)[1:7], c(176 + 10, 182 + 10, 192 + 10, 364 + 10, 
+                                        365 + 10, 400, 743 + 10))
   expect_equal(ped$bili,
-    c(14.5, 14.5, 21.3, 21.3, 21.3, 21.3, 1.1, 0.8, 0.8, 0.8, 1, 1, 1, 1.9, 1.9,
-      2.6, 3.6, 4.2, 3.6, 4.6, 1.1, 1.1, 1.1, 1.5, 1.5, 1.5, 1.8, 1.8, 1.8)
-)
+               c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
+                 rep(1.9, 2), 2.6, 3.6, 4.2, 3.6, 1.4, rep(1.1, 3), rep(1.5, 3),
+                 rep(1.8, 2)))
   ped <- as_ped(
     data    = list(event_df, tdc_df),
     formula = Surv(time, status)~. | concurrent(bili, protime, tz_var = "day"),
     id      = "id",
     cut = c(0, 3000))
   expect_equal(unique(ped$tend)[1:7], c(176, 182, 192, 364, 365, 743, 768))
-
-
 })
 
 test_that("Covariate matrices are created correctly", {
