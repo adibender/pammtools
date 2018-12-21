@@ -81,7 +81,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     cut <- attr(data, "breaks")
   }
   ccr_breaks <- attr(data, "ccr_breaks")
-  cut <- union(cut, ccr_breaks) %>% sort()
+  cut <- union(cut, ccr_breaks[ccr_breaks <= max(cut)]) %>% sort()
 
   ped <- data %>%
     select_if (is.atomic) %>%
