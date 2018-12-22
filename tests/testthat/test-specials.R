@@ -16,10 +16,11 @@ test_that("Formula special 'concurrent' works as expected", {
   ## time + latency + covar (DLNM approach)
   ccr1 <- eval_special(~.|concurrent(x1, x2, tz_var = "te"), 
                        special = "concurrent")[[1]]
-  expect_list(ccr1, any.missing = TRUE, len = 4)
+  expect_list(ccr1, any.missing = TRUE, len = 5)
   expect_identical(ccr1$tz_var, "te")
   expect_identical(ccr1$col_vars, c("x1", "x2"))
   expect_function(ccr1$ll_fun, args = c("t"))
+  expect_identical(ccr1$lag, 0)
   expect_identical(ccr1$suffix, NULL)
 
   data("pbc", package = "survival")
