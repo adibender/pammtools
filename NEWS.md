@@ -1,9 +1,17 @@
 # pammtools 0.1.8
 
+## documentation
 * Updates to cummulative effect vignette
+* Updates to time-dependent covariate vignette (+ data transformation)
+* Update citation information
+
+## Features
+* `concurrent` now has a `lag = 0` argument, can be set to positive integer values
+* `as_ped` accepts multiple `concurrent` specials with different `lag` specifications
+
+## Bug/Issue fixes
 * Fixed bug caused by changes in **`checkmate`** [#73](https://github.com/adibender/pammtools/issues/73)
-* Bug Fixes [#76](https://github.com/adibender/pammtools/issues/76), [#63](https://github.com/adibender/pammtools/issues/63), [#77](https://github.com/adibender/pammtools/issues/77)
-* Update CITATIONS
+* Bug Fixes [#42](https://github.com/adibender/pammtools/issues/42), [#76](https://github.com/adibender/pammtools/issues/76), [#63](https://github.com/adibender/pammtools/issues/63), [#77](https://github.com/adibender/pammtools/issues/77)
 
 
 # pammtools 0.1.7
