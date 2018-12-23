@@ -1,3 +1,4 @@
+^paper$
 ^CRAN-RELEASE$
 ^.*\.Rproj$
 ^\.Rproj\.user$
