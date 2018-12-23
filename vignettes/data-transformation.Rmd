@@ -214,7 +214,7 @@ Here
   which means that all exposures that were observed prior to $t$ or at $t$ are
   eligible.
 
- As before we use the function `as_ped` to transform the data and additionally
+As before we use the function `as_ped` to transform the data and additionally
 use the  formula special `cumulative` (for **fun**ctional **c**ovariate) to
 specify the partial effect structure on the right-hand side of the formula.
 
