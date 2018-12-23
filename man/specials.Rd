@@ -9,7 +9,7 @@
 cumulative(..., tz_var, ll_fun = function(t, tz) t >= tz,
   suffix = NULL)
 
-concurrent(..., tz_var, ll_fun = function(t) t == t, suffix = NULL)
+concurrent(..., tz_var, lag = 0, suffix = NULL)
 
 has_special(formula, special = "cumulative")
 }
@@ -28,6 +28,11 @@ times at which the TDCs specified in this term where observed.}
 \item{ll_fun}{Function that specifies how the lag-lead matrix
 should be constructed. First argument is the follow up time
 second argument is the time of exposure.}
+
+\item{lag}{a single positive number giving the time lag between for
+a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag}
+affects the hazard in the interval containing follow-up time \code{t}).
+Defaults to 0.}
 
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).

@@ -167,15 +167,22 @@ ped_pbc <- as_ped(
 ```
 
 Multiple data sets can be provided within the list and multiple `concurrent`
-terms with different `tz_var` arguments can be specified. If different
-`tz_var` arguments are provided, the union of both will be used as cut points
-in addition to usual cut points.
+terms with different `tz_var` arguments can be specified with different
+lags. This will increase the data set, as an (additional) split point will be generated for each (lagged) time-point at which the TDC was observed:
+
+```{r, eval = FALSE}
+pbc_ped <- as_ped(data = list(pbc, pbcseq),
+  formula = Surv(time, status) ~ . | concurrent(bili, tz_var = "day") +
+    concurrent(protime, tz_var = "day", lag = 10),
+    id = "id")
+```
+
+If different `tz_var` arguments are provided, the union of both will be used as
+cut points in addition to usual cut points.
 
 **Warning**: For time-points on the follow up that have no observation of the
 TDC, the last observation will be carried forward until the next update
 is available.
-
-
 
 
 ## Data with time-dependent covariates (with cumulative effects)
@@ -207,7 +214,7 @@ Here
   which means that all exposures that were observed prior to $t$ or at $t$ are
   eligible.
 
- As before we use the function `as_ped` to transform the data and additionally
+As before we use the function `as_ped` to transform the data and additionally
 use the  formula special `cumulative` (for **fun**ctional **c**ovariate) to
 specify the partial effect structure on the right-hand side of the formula.
 

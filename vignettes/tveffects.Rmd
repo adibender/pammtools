@@ -179,7 +179,7 @@ gg_tv_karno
 The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.
 
 
-### PAM with smooth, smoothly time-varying effect of the Karnosky Score
+### PAM with smooth, smoothly time-varying effect of the Karnofsky Score
 
 To fit a non-linear, non-linearly time-varying effect we can specify a
 two-dimensional interaction between the covariate of interest (here
@@ -213,7 +213,7 @@ summary(pam3)
 ```
 
 The 3D perspective plot can aid interpretation, where y- and x-axes depict
-the Karnosky-Score and the time respectively and the z-axis displays the
+the Karnofsky-Score and the time respectively and the z-axis displays the
 contribution of the effect to the log-hazard for each combination of
 $x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
 
@@ -225,7 +225,7 @@ a heat-/contourplot (left panel) with respective slices for fixed
 values of the Karnofsky-Score (middle panel) and fixed time-points/intervals
 (right panel) below.
 
-The left panel again depicts the Karnosky-Score on the y-axis and the
+The left panel again depicts the Karnofsky-Score on the y-axis and the
 time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using
 a color gradient, where blue colors indicate log-hazard decrease and
 red colors a log-hazard increase. The grayed out areas depict combinations

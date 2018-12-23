@@ -25,3 +25,4 @@ riskset_info(ped)
 \seealso{
 \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 }
+\keyword{internal}

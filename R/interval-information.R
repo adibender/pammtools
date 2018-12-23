@@ -171,7 +171,7 @@ ped_info <- function(ped) {
     bind_cols(
       int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
       sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
-      grouped_df(vars = groups(sdf))
+      grouped_df(vars = group_vars(sdf))
   }
 
 }
@@ -187,6 +187,7 @@ ped_info <- function(ped) {
 #' @examples
 #' ped <- tumor[1:4,] %>% as_ped(Surv(days, status)~ .)
 #' riskset_info(ped)
+#' @keywords internal
 #' @export
 #' @return A data frame with one row for each interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
@@ -197,10 +198,10 @@ riskset_info <- function(ped) {
   censored <- ped %>% group_by(id, add = TRUE) %>%
     arrange(.data$tend) %>% slice(n()) %>%
     filter(.data$ped_status == 0) %>% ungroup(id) %>%
-    grouped_df(vars = c(groups(ped), as.symbol("interval"))) %>%
+    grouped_df(vars = c(group_vars(ped), "interval")) %>%
     summarize(ped_censored = n())
 
-  join_vars <- unlist(c(sapply(groups(ped), deparse), "interval"))
+  join_vars <- c(group_vars(ped), "interval")
   ped %>% group_by(.data$interval, add = TRUE) %>%
     summarize(
       ped_riskset = n(),

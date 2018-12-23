@@ -206,8 +206,8 @@ pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites),
     bili = tdc(day, bili), albumin = tdc(day, albumin),
     protime = tdc(day, protime), alk.phos = tdc(day, alk.phos))
 
-fit1 <- coxph(Surv(time, status==2) ~ log(bili) + log(protime), pbc)
-fit2 <- coxph(Surv(tstart, tstop, death==2) ~ log(bili) + log(protime), pbc2)
+fit1 <- coxph(Surv(time, status == 2) ~ log(bili) + log(protime), pbc)
+fit2 <- coxph(Surv(tstart, tstop, death == 2) ~ log(bili) + log(protime), pbc2)
 rbind("baseline fit" = coef(fit1), "time dependent" = coef(fit2))
 ```
 
@@ -217,17 +217,22 @@ baseline values of TDCs are used for the analysis instead of their complete traj
 
 ### PAM analysis of the `pbc` data
 
-Data transformation as usual is performed using the `as_ped` function
-as described in the [data-transformation vignette](data-transformation.html)
+Data transformation is performed using the `as_ped` function with the
+`concurrent` special as described in the
+[data-transformation vignette](data-transformation.html).
+Note that a covariate value observed at day 192 will by default affect the
+hazard starting from interval $(192, \ldots]$. This can be modified using
+the `lag` argument, which defaults to zero, but can be set to any positive
+integer value.
 
 
 ```{r}
 pbc <- pbc %>% filter(id <= 312) %>%
   select(id:sex, bili, protime) %>%
-  mutate(status = 1L*(status == 2))
+  mutate(status = 1L * (status == 2))
 pbc_ped <- as_ped(
   data = list(pbc, pbcseq),
-  formula = Surv(time, status)~.|concurrent(bili, protime, tz_var="day"),
+  formula = Surv(time, status) ~ . | concurrent(bili, protime, tz_var = "day"),
   id = "id")
 ```
 
