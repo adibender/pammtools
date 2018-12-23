@@ -79,10 +79,10 @@
 \method{filter}{ped}(.data, ...)
 
 \method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL)
+  .env = NULL, ...)
 
 \method{sample_frac}{ped}(tbl, size = 1, replace = FALSE,
-  weight = NULL, .env = NULL)
+  weight = NULL, .env = NULL, ...)
 
 \method{slice}{ped}(.data, ...)
 
@@ -127,10 +127,10 @@
 \method{filter}{nested_fdf}(.data, ...)
 
 \method{sample_n}{nested_fdf}(tbl, size, replace = FALSE,
-  weight = NULL, .env = NULL)
+  weight = NULL, .env = NULL, ...)
 
 \method{sample_frac}{nested_fdf}(tbl, size = 1, replace = FALSE,
-  weight = NULL, .env = NULL)
+  weight = NULL, .env = NULL, ...)
 
 \method{slice}{nested_fdf}(.data, ...)
 

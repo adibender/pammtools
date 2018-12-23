@@ -98,8 +98,8 @@ filter.ped <- function(.data, ...) {
 #' @inheritParams dplyr::sample_n
 #' @rdname dplyr_verbs
 sample_n.ped <- function(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL) {
-  reped(sample_n(unped(tbl), size, replace, weight, .env))
+  .env = NULL, ...) {
+  reped(sample_n(unped(tbl), size, replace, weight, .env, ...))
 }
 
 #' @export
@@ -107,8 +107,8 @@ sample_n.ped <- function(tbl, size, replace = FALSE, weight = NULL,
 #' @inheritParams dplyr::sample_frac
 #' @rdname dplyr_verbs
 sample_frac.ped <- function(tbl, size = 1, replace = FALSE, weight = NULL,
-  .env = NULL) {
-  reped(sample_frac(unped(tbl), size, replace, weight, .env))
+  .env = NULL, ...) {
+  reped(sample_frac(unped(tbl), size, replace, weight, .env, ...))
 }
 
 #' @export
@@ -359,8 +359,8 @@ filter.nested_fdf <- function(.data, ...) {
 #' @inheritParams dplyr::sample_n
 #' @rdname dplyr_verbs
 sample_n.nested_fdf <- function(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL) {
-  re_nested_df(sample_n(un_nested_df(tbl), size, replace, weight, .env))
+  .env = NULL, ...) {
+  re_nested_df(sample_n(un_nested_df(tbl), size, replace, weight, .env, ...))
 }
 
 #' @export
@@ -368,8 +368,8 @@ sample_n.nested_fdf <- function(tbl, size, replace = FALSE, weight = NULL,
 #' @inheritParams dplyr::sample_frac
 #' @rdname dplyr_verbs
 sample_frac.nested_fdf <- function(tbl, size = 1, replace = FALSE, weight = NULL,
-  .env = NULL) {
-  re_nested_df(sample_frac(un_nested_df(tbl), size, replace, weight, .env))
+  .env = NULL, ...) {
+  re_nested_df(sample_frac(un_nested_df(tbl), size, replace, weight, .env, ...))
 }
 
 #' @export
