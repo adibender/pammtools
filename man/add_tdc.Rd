@@ -23,7 +23,7 @@ to \code{length(tz)}.}
 \description{
 Given a data set in standard format (with one row per subject/observation),
 this function adds a column with the specified exposure time points
-and a column with respective exposures, created from \code{rng.fun}.
+and a column with respective exposures, created from \code{rng_fun}.
 This function should usually only be used to create data sets passed
 to \code{\link[pammtools]{sim_pexp}}.
 }

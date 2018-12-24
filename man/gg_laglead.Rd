@@ -24,7 +24,7 @@ gg_laglead(x, ...)
 \item{tz}{A vector of exposure times}
 
 \item{ll_fun}{Function that specifies how the lag-lead matrix
-should be contructed. First argument is the follow up time
+should be constructed. First argument is the follow up time
 second argument is the time of exposure.}
 
 \item{high_col}{Color used to highlight exposure times within the lag-lead window.}

@@ -48,6 +48,7 @@
 #' coef(pam)[2]
 #' plot(pam, page=1)
 #'
+#' \dontrun{
 #' # Example 2: Functional covariates/cumulative coefficients
 #' # function to generate one exposure profile, tz is a vector of time points
 #' # at which TDC z was observed
@@ -87,6 +88,7 @@
 #'      fcumu(t, tz2, z.tz2, f_xyz=f_xyz2, ll_fun=ll_fun2),
 #'   data = df,
 #'   cut = 0:10)
+#' }
 #' @export
 sim_pexp <- function(formula, data, cut) {
 
@@ -188,7 +190,7 @@ sim_pexp <- function(formula, data, cut) {
 #'
 #' Given a data set in standard format (with one row per subject/observation),
 #' this function adds a column with the specified exposure time points
-#' and a column with respective exposures, created from \code{rng.fun}.
+#' and a column with respective exposures, created from \code{rng_fun}.
 #' This function should usually only be used to create data sets passed
 #' to \code{\link[pammtools]{sim_pexp}}.
 #'
@@ -206,6 +208,7 @@ sim_pexp <- function(formula, data, cut) {
 #' @importFrom purrr map
 #' @export
 add_tdc <- function(data, tz, rng_fun, ...) {
+
   tz      <- enquo(tz)
   nz      <- length(eval_tidy(tz))
   name_tz <- quo_name(tz)

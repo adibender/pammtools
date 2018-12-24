@@ -2,7 +2,7 @@
 % Please edit documentation in R/make-newdata.R
 \name{combine_df}
 \alias{combine_df}
-\title{Combines multiple data frames}
+\title{Create a data frame from all combinations of data frames}
 \usage{
 combine_df(...)
 }
@@ -19,3 +19,4 @@ combine_df(
   data.frame(x1=c("a", "b"), x2=c("c", "d")),
   data.frame(z=c(0, 1)))
 }
+\keyword{internal}

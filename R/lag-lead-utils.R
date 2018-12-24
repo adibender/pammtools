@@ -1,7 +1,8 @@
-#' Construct data that represents a lag-lead window
+#' Construct or extract data that represents a lag-lead window
 #'
 #' Constructs lag-lead window data set from raw inputs or from data objects
-#' with suitable information stored in attributes.
+#' with suitable information stored in attributes, e.g., objects created
+#' by \code{\link{as_ped}}.
 #'
 #' @param x Either a numeric vector of follow-up cut points or a suitable object.
 #' @param ... Further arguments passed to methods.
@@ -17,7 +18,7 @@ get_laglead <- function(x, ...) {
 #' @inherit get_laglead
 #' @param tz A vector of exposure times
 #' @param ll_fun Function that specifies how the lag-lead matrix
-#' should be contructed. First argument is the follow up time
+#' should be constructed. First argument is the follow up time
 #' second argument is the time of exposure.
 #' @importFrom dplyr mutate
 #' @importFrom tidyr crossing

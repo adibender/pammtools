@@ -1,6 +1,5 @@
 ---
 title: "Cumulative Effects"
-author: ["Andreas Bender", "Fabian Scheipl"]
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -17,8 +16,7 @@ opts_chunk$set(
   fig.width  = 4,
   fig.height = 4,
   crop       = TRUE,
-  cache      = TRUE,
-  dpi        = 1200)
+  cache      = TRUE)
 ## output hooks, e.g., to truncate rows of output
 hook_output <- knit_hooks$get("output")
 knit_hooks$set(output = function(x, options) {
@@ -135,7 +133,7 @@ A visual representation of exemplary lag-lead windows is depicted below:
 <details>
 
 <summary>
-  *R-Code lag-lead windows*
+  R-Code lag-lead windows
 </summary>
 
 ```{r}

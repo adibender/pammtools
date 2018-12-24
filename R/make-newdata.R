@@ -80,7 +80,7 @@ sample_info.fped <- function(x) {
 }
 
 
-#' Combines multiple data frames
+#' Create a data frame from all combinations of data frames
 #'
 #' Works like \code{\link[base]{expand.grid}} but for data frames.
 #'
@@ -95,6 +95,7 @@ sample_info.fped <- function(x) {
 #'   data.frame(x1=c("a", "b"), x2=c("c", "d")),
 #'   data.frame(z=c(0, 1)))
 #' @export
+#' @keywords internal
 combine_df <- function(...) {
 
   dots <- list(...)
@@ -123,7 +124,7 @@ combine_df <- function(...) {
 #' @aliases make_newdata
 #' @inheritParams sample_info
 #' @param ... Covariate specifications (expressions) that will be evaluated
-#' by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+#' by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
 #' where \code{z} is a variable in the data set \code{x} and \code{f} a known
 #' function that can be usefully applied to \code{z}. See examples below.
 #' @import dplyr

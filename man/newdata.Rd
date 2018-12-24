@@ -19,7 +19,7 @@ make_newdata(x, ...)
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}
 
 \item{...}{Covariate specifications (expressions) that will be evaluated
-by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
 where \code{z} is a variable in the data set \code{x} and \code{f} a known
 function that can be usefully applied to \code{z}. See examples below.}
 }

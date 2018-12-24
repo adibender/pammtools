@@ -9,7 +9,7 @@
 tumor
 }
 \description{
-Information on patients treated for a cancer desease
+Information on patients treated for a cancer disease
 located in the stomach area.
 The data set includes:
 \describe{

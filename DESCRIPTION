@@ -1,14 +1,20 @@
 Package: pammtools
-Title: Piece-Wise exponential Additive Mixed Modeling Tools
-Version: 0.1.6
-Date: 2018-04-20
+Title: Piece-Wise Exponential Additive Mixed Modeling Tools
+Version: 0.1.8
+Date: 2018-12-23
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
-Description: This package provides functions that facilitate fitting
-    piece-wise exponential (additive mixed) models.
-    This includes restructuring the data to the needed format and various
-    convenience functions, e.g., for plotting the results.
+Description: The Piece-wise exponential (Additive Mixed) Model
+    (PAMM; Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>) is a
+    powerful model class for survival analysis, based on Generalized Additive
+    (Mixed) Models (GA(M)Ms). It offers intuitive specification and robust
+    estimation of complex survival models with stratified baseline hazards,
+    random effects, time-varying effects, time-dependent covariates and
+    cumulative effects (Bender et. al. (2018) <doi:10.1093/biostatistics/kxy003>.
+    pammtools provides tidy workflow for survival analysis with PAMMs,
+    including data transformation and other pre- and post-processing
+    functions as well as visualization.
 Depends:
     R (>= 3.3.0)
 Imports:
@@ -36,11 +42,11 @@ Suggests:
     rmarkdown,
     grid,
     gridExtra,
-    covr
+    covr,
+    pkgdown
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/adibender/pammtools
 BugReports: https://github.com/adibender/pammtools/issues
-RoxygenNote: 6.1.0
-Byte-Compile: yes
+RoxygenNote: 6.1.1
 Encoding: UTF-8

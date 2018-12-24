@@ -8,7 +8,7 @@
 \alias{GeomStepHazard}
 \alias{geom_surv}
 \alias{GeomSurv}
-\title{PAMM (Cumulative) (Step-)Hazard Plots.}
+\title{(Cumulative) (Step-) Hazard Plots.}
 \usage{
 geom_hazard(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", na.rm = FALSE, show.legend = NA,
@@ -72,14 +72,15 @@ to the paired geom/stat.}
 }
 \description{
 \code{geom_hazard} is an extension of the \code{geom_line}, and
-is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
-row to the data, if not already the case.
+is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
+row to the data, if not already the case. Stolen from the
+\code{RmcdrPlugin.KMggplot2} (slightly modified).
 }
 \examples{
 library(ggplot2)
 library(pammtools)
 ped <- tumor[10:50,] \%>\% as_ped(Surv(days, status)~1)
-pam <- pamm(ped_status ~ s(tend), data=ped)
+pam <- mgcv::gam(ped_status ~ s(tend), data=ped, family = poisson(), offset = offset)
 ndf <- make_newdata(ped, tend = unique(tend)) \%>\% add_hazard(pam)
 # piece-wise constant hazards
 ggplot(ndf, aes(x = tend, y = hazard)) +

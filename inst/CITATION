@@ -1,13 +1,15 @@
-citHeader("Citation information for 1) the Software 2) the Tutorial on PAMMs 3) Paper on cumulative effects:")
+citHeader("Citation information for 1) the Software 2) the tutorial on PAMMs 3)
+paper on cumulative effects/exposure-lag-response associations:")
 
-citEntry(entry = "manual",
+
+citEntry(entry = "Article",
   author = "Andreas Bender and Fabian Scheipl",
-  title = "pammtools:  Piece-wise Exponential Additive Mixed Modeling tools",
-  year = "2017",
-  note = "R package version 0.0.3.2",
-  textVersion = "Andreas Bender and Fabian Scheipl. (2017, November 14). adibender/pammtools: v0.0.3.2 (Version v0.0.3.2). Zenodo. http://doi.org/10.5281/zenodo.1048832",
-  url = "https://github.com/adibender/pammtools"
-)
+  title = "pammtools: Piece-wise exponential Additive Mixed Modeling tools",
+  year = "2018",
+  journal = "arXiv:1806.01042 [stat]",
+  textVersion = "Bender, A. and Scheipl, F. (2018b). pammtools: Piece-wise
+  exponential additive mixed modeling tools. arXiv:1806.01042 [stat]",
+  url = "http://arxiv.org/abs/1806.01042")
 
 citEntry(
   entry = "Article",

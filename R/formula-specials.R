@@ -21,6 +21,11 @@
 #' the TDCs that share the same \code{tz} and Lag-lead window (\code{ll_fun}).
 #' @param tz_var The name of the variable that stores information on the
 #' times at which the TDCs specified in this term where observed.
+#' @param lag a single positive number giving the time lag between for
+#' a concurrent effect to occur (i.e., the TDC at time of exposure \code{t-lag}
+#' affects the hazard in the interval containing follow-up time \code{t}).
+#' Defaults to 0.
+#'
 #' @inheritParams get_laglead
 #'
 #' @export
@@ -57,9 +62,11 @@ cumulative <- function(...,
 #' @keywords internal
 concurrent <- function(...,
   tz_var,
-  ll_fun = function(t) t == t,
+  lag = 0,
   suffix = NULL) {
 
+  assert_number(lag, lower = 0)
+  ll_fun = function(t, tz) {t > tz + lag}
   vars     <- as.list(substitute(list(...)))[-1]
   vars_chr <- vars %>% map(~as.character(.)) %>% unlist()
 
@@ -68,7 +75,8 @@ concurrent <- function(...,
     col_vars    = vars_chr,
     tz_var      = tz_var,
     suffix      = suffix,
-    ll_fun      = ll_fun)
+    ll_fun      = ll_fun,
+    lag         = lag)
 
 }
 
@@ -225,6 +233,15 @@ prep_concurrent.list <- function(x, formula, ...) {
     ccr_list    <- eval_special(formula, special = "concurrent")
     ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
     ccr_time    <- map2(ccr_tz_vars, x, ~get_tz(.y, .x)) %>%
+      keep(~ !is.null(.x)) %>%
+      map2(ccr_list,
+           ~ if(is.null(.x)) {
+             .x
+           } else {
+             ifelse(.x == min(.x), .x, .x + .y$lag)
+           }) %>%
+      # leave time origin unchanged by lag
+      # should just start modeling the hazard at t = lag?!?
       reduce(union) %>% sort()
   }
 
@@ -246,24 +263,32 @@ get_tz <- function(data, tz_var) {
 }
 
 #' @keywords internal
+#' @importFrom purrr map2
 add_concurrent <- function(ped, data, id_var) {
 
   ccr <- attr(data, "ccr")
+
+  ped_split <- split(ped$tend, f = ped[[id_var]])
 
   for (ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
     tz_var_i   <- ccr_i[["tz_var"]]
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
-    ccr_i_df   <- data %>% select(one_of(c(id_var, ccr_vars_i))) %>%
+    ccr_i_df   <- data %>%
+      select(one_of(c(id_var, ccr_vars_i))) %>%
       unnest()
-    ped <- ped %>%
-      left_join(ccr_i_df, by = c(id_var, "tstart" = tz_var_i)) %>%
-      group_by(!!sym(id_var)) %>%
-      fill(tdc_vars_i)
 
-    attr(ped, "ccr") <- ccr
+    li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
+      function(.x, .y) {
+        ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
+        .y[ll_ind, tdc_vars_i]
+      }) %>% bind_rows() %>% ungroup()
+
+    ped <- ped %>% bind_cols(li)
 
   }
+
+  attr(ped, "ccr") <- ccr
 
   ped
 

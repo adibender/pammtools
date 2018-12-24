@@ -1,4 +1,4 @@
-#' Add info about term effects to data set
+#' Add the contribution of a term to the linear predictor to data set
 #'
 #' Adds the contribution of a specific term to the
 #' linear predictor to the data specified by \code{newdata}.
@@ -139,8 +139,9 @@ add_term2 <- function(
 #' Add predicted (cumulative) hazard to data set
 #'
 #' Add (cumulative) hazard based on the provided data set and model.
-#' If \code{ci=TRUE} confidence intervals are also returned. Their width can
-#' be controlled via the \code{se_mult} argument.
+#' If \code{ci=TRUE} confidence intervals are also added. Their width can
+#' be controlled via the \code{se_mult} argument. This is a wrapper around
+#' \code{\link[mgcv]{predict.gam}}.
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
@@ -259,7 +260,8 @@ get_hazard <- function(
 #' @param interval_length The variable in newdata containing the interval lengths.
 #' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
 #' @importFrom dplyr bind_cols
-#' @seealso \code{\link[mgcv]{predict.gam}}, \code{\link[pammtools]{add_hazard}}
+#' @seealso \code{\link[mgcv]{predict.gam}},
+#' \code{\link[pammtools]{add_surv_prob}}
 #' @export
 add_cumu_hazard <- function(
   newdata,

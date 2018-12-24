@@ -1,12 +1,12 @@
 ---
-title: "Basic Modeling "
-author: "Andreas Bender"
+title: "Basic Modeling"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basics}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
+link-citations: yes
 ---
 
 ```{r, echo = FALSE}
@@ -20,9 +20,9 @@ opts_chunk$set(
 )
 ```
 
-In this tutorial we present basic examples for the usage of this package and
-compare results to the ones obtained with classical approaches, namely using
-the `coxph` function from the `survival` package.
+In this article we present basic examples for the estimation of PAMs using
+**`pammtools`** and compare the results to estimates obtained using
+the `coxph` function from the **`survival`** package.
 
 In the following two sections, we first describe the classical piece-wise
 exponential model (PEM) and after that the extension to piece-wise exponential
@@ -31,7 +31,8 @@ additive models (PAM).
 ## Piece-wise exponential model (PEM)
 The strength of the PEM is that analysis of time-to-event data can be performed
 using algorithms designed to fit Generalized Linear Models. This approach yields
-equivalent coefficient estimates as Cox Proportional Hazards models if
+coefficient estimates that are equivalent to the estimates obtained from
+*Cox Proportional Hazards* models if
 
 (1) there are no ties (i.e., simultaneous events) in the data and
 
@@ -39,9 +40,9 @@ equivalent coefficient estimates as Cox Proportional Hazards models if
 order to transform the data into the format suitable for PEMs
 (see `?as_ped` and the [vignette on data transformation](data-transformation.html)).
 
-Estimates between the two approaches can differ due to a more crude
+Estimates can differ between the two approaches due to a more crude
 handling of ties in the PEM approach [@whitehead1980].
-In practice these differences are not very large (see examples below).
+In practice these differences are usually negligible (see examples below).
 
 
 ### Subset with unique event times
@@ -89,7 +90,7 @@ cbind(
 
 ## Piece-wise exponential additive model
 
-PAMs have two main advantages over PEMs:
+PAMs have two main advantages over PEMs [@Bender2018a]:
 
 - PAM estimation scales better when the number of intervals becomes large:
 	PEMs need to estimate one parameter per interval for the baseline hazard,
@@ -104,9 +105,9 @@ PAMs have two main advantages over PEMs:
 
 Note that coefficient estimates in PAMs are no longer equivalent to those from
 Cox PH models, since the estimation of the baseline hazard is performed
-semi-parametrically. In our experience the differences are very small.
+semi-parametrically. In our experience the differences are negligible.
 
-Using the example above we get:
+Using the example above (data without ties) we get:
 
 ```{r}
 ## compare to PAM

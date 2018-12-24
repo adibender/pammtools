@@ -3,13 +3,13 @@
 \docType{data}
 \name{daily}
 \alias{daily}
-\title{Time-depedent covariates of the \code{\link{patient}} data set.}
+\title{Time-dependent covariates of the \code{\link{patient}} data set.}
 \format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 18797 rows and 4 columns.}
 \usage{
 daily
 }
 \description{
-This data set containt the time-dependent covariates (TDCs) for the \code{\link{patient}}
+This data set contains the time-dependent covariates (TDCs) for the \code{\link{patient}}
 data set. Note that nutrition was protocoled for at most 12 days after
 ICU admission. The data set includes:
 \describe{

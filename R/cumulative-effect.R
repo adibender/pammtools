@@ -1,13 +1,14 @@
-#' Calculate cumulative effect for all time-points
+#' Calculate (or plot) cumulative effect for all time-points of the follow-up
 #'
 #' @inheritParams gg_partial
-#' @param z1 The expoure profile for which to calculate the cumulative effect.
-#' Can be either a singel number or a vector of same length as unique observation
+#' @param z1 The exposure profile for which to calculate the cumulative effect.
+#' Can be either a single number or a vector of same length as unique observation
 #' time points.
 #' @param z2 If provided, calculated cumulative effect is for the difference
 #' between the two exposure profiles (g(z1,t)-g(z2,t)).
+#' @param se_mult Multiplicative factor used to calculate confidence intervals
+#' (e.g., lower = fit - 2*se).
 #' @export
-#' @keywords internal
 get_cumu_eff <- function(data, model, term, z1, z2 = NULL, se_mult = 2) {
 
   assert_class(data, "fped")

@@ -1,10 +1,9 @@
-# Stolen from the \code{RmcdrPlugin.KMggplot2} (slightly modified)
-
-#' PAMM (Cumulative) (Step-)Hazard Plots.
+#' (Cumulative) (Step-) Hazard Plots.
 #'
 #' \code{geom_hazard} is an extension of the \code{geom_line}, and
-#' is optimized for (cumulative) hazard plots. Essentially, it add a (0,0)
-#' row to the data, if not already the case.
+#' is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
+#' row to the data, if not already the case. Stolen from the
+#' \code{RmcdrPlugin.KMggplot2} (slightly modified).
 #'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_line}},
@@ -16,7 +15,7 @@
 #' library(ggplot2)
 #' library(pammtools)
 #' ped <- tumor[10:50,] %>% as_ped(Surv(days, status)~1)
-#' pam <- pamm(ped_status ~ s(tend), data=ped)
+#' pam <- mgcv::gam(ped_status ~ s(tend), data=ped, family = poisson(), offset = offset)
 #' ndf <- make_newdata(ped, tend = unique(tend)) %>% add_hazard(pam)
 #' # piece-wise constant hazards
 #' ggplot(ndf, aes(x = tend, y = hazard)) +

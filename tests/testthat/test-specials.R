@@ -2,29 +2,31 @@ context("Test formula special.")
 
 test_that("Formula special 'func' works as expected", {
   ## time + latency + covar (DLNM approach)
-  cumu1 <- eval_special(~.|cumulative(t, latency(te), x, tz_var="te"))[[1]]
-  expect_list(cumu1, any.missing = FALSE, len = 5)
+  cumu1 <- eval_special(~.|cumulative(t, latency(te), x, tz_var = "te"))[[1]]
+  expect_list(cumu1, any.missing = TRUE, len = 5)
   expect_identical(cumu1$latency_var, "te")
   expect_identical(cumu1$tz_var, "te")
   expect_identical(cumu1$col_vars, c("t", "te", "x"))
-  expect_function(cumu1$ll_fun, args=c("t", "tz"))
+  expect_function(cumu1$ll_fun, args = c("t", "tz"))
   expect_identical(cumu1$suffix, NULL)
 
 })
 
 test_that("Formula special 'concurrent' works as expected", {
   ## time + latency + covar (DLNM approach)
-  ccr1 <- eval_special(~.|concurrent(x1, x2, tz_var="te"), special="concurrent")[[1]]
-  expect_list(ccr1, any.missing = FALSE, len = 4)
+  ccr1 <- eval_special(~.|concurrent(x1, x2, tz_var = "te"), 
+                       special = "concurrent")[[1]]
+  expect_list(ccr1, any.missing = TRUE, len = 5)
   expect_identical(ccr1$tz_var, "te")
   expect_identical(ccr1$col_vars, c("x1", "x2"))
-  expect_function(ccr1$ll_fun, args=c("t"))
+  expect_function(ccr1$ll_fun, args = c("t"))
+  expect_identical(ccr1$lag, 0)
   expect_identical(ccr1$suffix, NULL)
 
-  data("pbc", package="survival")
+  data("pbc", package = "survival")
   event_df <- pbc %>%
     filter(id <= 5) %>%
-    mutate(event = 1L*(status==2)) %>%
+    mutate(event = 1L*(status == 2)) %>%
     select(id, time, event, sex, bili, protime, albumin)
   tdc_df <- pbcseq %>%
     filter(id <= 5) %>%

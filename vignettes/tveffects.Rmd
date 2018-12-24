@@ -1,6 +1,5 @@
 ---
 title: "Time-varying effects"
-author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,20 +10,20 @@ vignette: >
 ```{r, echo = FALSE}
 library(knitr)
 opts_chunk$set(
-  fig.align = "center",
-  fig.width = 4,
+  fig.align  = "center",
+  fig.width  = 4,
   fig.height = 4,
-  crop=TRUE)
+  crop       = TRUE)
 ```
 
 ```{r, message = FALSE}
-library(ggplot2)
-theme_set(theme_bw())
 library(tidyr)
 library(dplyr)
-library(pammtools)
+library(ggplot2)
+theme_set(theme_bw())
 library(survival)
 library(mgcv)
+library(pammtools)
 Set1    <- RColorBrewer::brewer.pal(9, "Set1")
 Greens  <- RColorBrewer::brewer.pal(9, "Greens")
 Purples <- RColorBrewer::brewer.pal(9, "Purples")
@@ -72,11 +71,11 @@ Karnofsky performance scores `karno` (the higher the better), `age` and whether
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
-data("veteran", package="survival")
+data("veteran", package = "survival")
 veteran <- veteran %>%
   mutate(
-    trt   = 1*(trt == 2),
-    prior = 1*(prior==10)) %>%
+    trt   = 1L * (trt == 2),
+    prior = 1L * (prior == 10)) %>%
   filter(time < 400) # restriction for illustration
 head(veteran)
 ```
@@ -108,8 +107,9 @@ $\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20) = `r ttcoef[1]` + `r
 
 ```{r}
 t <- seq(0, 400, by = 10)
-plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
-  type = "l", ylab = "Beta(t) for karno", las = 1, ylim=c(-.1, .05), col=Set1[1])
+plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"] * log(t + 20),
+  type = "l", ylab = "Beta(t) for karno", las = 1, ylim = c(-.1, .05),
+  col = Set1[1])
 ```
 
 ### PAM (with known shape of time-variation function)
@@ -120,7 +120,7 @@ we can use
 ```{r}
 # data transformation
 ped <- veteran %>% as_ped(Surv(time, status)~., id = "id") %>%
-    mutate(logt20 = log(tstart+(tstart-tend)/2 + 20))
+    mutate(logt20 = log(tstart + (tstart - tend) / 2 + 20))
 head(ped) %>% select(interval, ped_status, trt, karno, age, prior, logt20)
 
 # fit model
@@ -130,11 +130,11 @@ cbind(
   pam = coef(pam)[2:5],
   cox = coef(vfit))
 # compare fits
-plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(t + 20),
+plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"] * log(t + 20),
   type = "l", ylab = "Beta(t) for karno", ylim = c(-.1, .05), las = 1,
   col = Set1[1])
 t_pem <- int_info(ped)$tend
-lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(t_pem + 20),
+lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"] * log(t_pem + 20),
   col = Set1[2], type = "s")
 ```
 Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
@@ -158,28 +158,28 @@ for all three models
   <summary>*Expand here to see R-Code*</summary>
 ```{r gg_tv_karno, dependson="pam_tv_karno"}
 term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
-    mutate_at(c("fit", "ci_lower", "ci_upper"), funs(./.data$karno)) %>%
+    mutate_at(c("fit", "ci_lower", "ci_upper"), funs(. / .data$karno)) %>%
     mutate(
-        cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"]*log(tend + 20),
-        pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"]*log(tend + 20))
+        cox.fit = coef(vfit)["karno"] + coef(vfit)["tt(karno)"] * log(tend + 20),
+        pam.fit = coef(pam)["karno"] + coef(pam)["karno:logt20"] * log(tend + 20))
 gg_tv_karno <- ggplot(term.df, aes(x = tend, y = fit)) +
     geom_step(aes(col = "PAM with penalized spline")) +
     geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) +
     geom_step(aes(y = pam.fit, col = "PAM with log-transform")) +
-    scale_color_manual(name="Method", values = c(Set1[1:2], 1)) +
+    scale_color_manual(name = "Method", values = c(Set1[1:2], 1)) +
     xlab("t") + ylab(expression(hat(f)(t)))
 ```
 </details>
 
-```{r, dependson="gg_tv_karno", echo=FALSE, fig.width=6.5}
+```{r, dependson = "gg_tv_karno", echo = FALSE, fig.width = 6.5}
 gg_tv_karno
 ```
 
 The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.
 
 
-### PAM with smooth, smoothly time-varying effect of the Karnosky Score
+### PAM with smooth, smoothly time-varying effect of the Karnofsky Score
 
 To fit a non-linear, non-linearly time-varying effect we can specify a
 two-dimensional interaction between the covariate of interest (here
@@ -197,7 +197,7 @@ in the `te` term, thus the effect `te(tend, karno)` also includes the *shape* of
 as well. The *level* of the baseline log hazard is given by the intercept of the model.
 
 ```{r}
-## Non-linear, non-linearly time-varying effects
+# Non-linear, non-linearly time-varying effects
 pam3 <- gam(
   formula = ped_status ~ trt + prior + s(age) + te(tend, karno),
   data   = ped,
@@ -213,7 +213,7 @@ summary(pam3)
 ```
 
 The 3D perspective plot can aid interpretation, where y- and x-axes depict
-the Karnosky-Score and the time respectively and the z-axis displays the
+the Karnofsky-Score and the time respectively and the z-axis displays the
 contribution of the effect to the log-hazard for each combination of
 $x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
 
@@ -225,7 +225,7 @@ a heat-/contourplot (left panel) with respective slices for fixed
 values of the Karnofsky-Score (middle panel) and fixed time-points/intervals
 (right panel) below.
 
-The left panel again depicts the Karnosky-Score on the y-axis and the
+The left panel again depicts the Karnofsky-Score on the y-axis and the
 time on the x-axis. The value of $\hat{f}(x_{\text{karno}}, t)$ is visualized using
 a color gradient, where blue colors indicate log-hazard decrease and
 red colors a log-hazard increase. The grayed out areas depict combinations
@@ -256,57 +256,59 @@ time-points (green line middle panel).
   <summary>*Expand here to see R-Code*</summary>
 
 ```{r warning=FALSE, fig.width=7, fig.height=3}
-## heat map/contour plot
+# heat map/contour plot
 te_gg <- gg_tensor(pam3) +
   geom_vline(xintercept = c(1, 51, 200), lty = 3) +
   geom_hline(yintercept = c(40, 75, 95), lty = 3) +
   scale_fill_gradient2(
-    name = expression(hat(f)(list(x[plain(karno)],t))),
+    name = expression(hat(f)(list(x[plain(karno)], t))),
     low  = "steelblue", high = "firebrick2") +
-  geom_contour(col="grey30") +
+  geom_contour(col = "grey30") +
   xlab("t") + ylab(expression(x[plain(karno)])) +
   theme(legend.position  = "bottom")
 
 
 
-## plot f(karno, t) for specific slices
+# plot f(karno, t) for specific slices
 karno_df <- combine_df(
   int_info(ped),
   select(sample_info(ped), -karno),
   data.frame(karno = c(40, 75, 95)))
 
-karno_df <- karno_df %>% add_term(pam3, term="karno")
+karno_df <- karno_df %>% add_term(pam3, term = "karno")
 
-karno_gg <- ggplot(karno_df, aes(x=tend, y=fit)) +
-  geom_step(aes(col=factor(karno)), lwd=1.1) +
-  geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper, fill=factor(karno)), alpha=.2) +
+karno_gg <- ggplot(karno_df, aes(x = tend, y = fit)) +
+  geom_step(aes(col = factor(karno)), lwd = 1.1) +
+  geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = factor(karno)),
+    alpha = .2) +
   scale_color_manual(
     name   = expression(x[plain(karno)]),
     values = Greens[c(4, 7, 9)]) +
   scale_fill_manual(
     name   = expression(x[plain(karno)]),
     values = Greens[c(4, 7, 9)]) +
-  ylab(expression(hat(f)(list(x[plain(karno)],t)))) +
-  xlab("t")+  coord_cartesian(ylim= c(-4, 3))+
+  ylab(expression(hat(f)(list(x[plain(karno)], t)))) +
+  xlab("t") +  coord_cartesian(ylim = c(-4, 3)) +
   theme(legend.position  = "bottom")
 
-time_df <-ped %>%
-  make_newdata(tend=c(1, 51, 200), karno=seq(20, 100, by=5)) %>%
-  add_term(pam3, term="karno")
+time_df <- ped %>%
+  make_newdata(tend = c(1, 51, 200), karno = seq(20, 100, by = 5)) %>%
+  add_term(pam3, term = "karno")
 
-time_gg <- ggplot(time_df, aes(x=karno)) +
-  geom_line(aes(y=fit, col=factor(tend)), lwd=1.1) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill=factor(tend)), alpha=.2) +
-  scale_color_manual(name="t", values=Purples[c(4, 6, 8)]) +
-  scale_fill_manual(name="t", values=Purples[c(4, 6, 8)]) +
-  ylab(expression(hat(f)(list(x[plain(karno)],t)))) +
-  xlab(expression(x[plain(karno)])) + coord_cartesian(ylim= c(-4, 3))+
+time_gg <- ggplot(time_df, aes(x = karno)) +
+  geom_line(aes(y = fit, col = factor(tend)), lwd = 1.1) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = factor(tend)),
+    alpha = .2) +
+  scale_color_manual(name = "t", values = Purples[c(4, 6, 8)]) +
+  scale_fill_manual(name = "t", values = Purples[c(4, 6, 8)]) +
+  ylab(expression(hat(f)(list(x[plain(karno)], t)))) +
+  xlab(expression(x[plain(karno)])) + coord_cartesian(ylim = c(-4, 3)) +
   theme(legend.position  = "bottom")
 ```
 </details>
 
-```{r, fig.width=7, fig.height=3, warning=FALSE, echo=FALSE}
-gridExtra::grid.arrange(te_gg, karno_gg, time_gg, nrow=1)
+```{r, fig.width = 7, fig.height = 3, warning = FALSE, echo = FALSE}
+gridExtra::grid.arrange(te_gg, karno_gg, time_gg, nrow = 1)
 ```
 
 
@@ -319,7 +321,7 @@ time-constant log-hazard
 (`coefficients(pam3)["(Intercept)"]=``r round(coefficients(pam3)["(Intercept)"], 3)`)
 and its uncertainty:
 
-```{r, fig.width=7, fig.height=3, warning=FALSE}
-gg_tensor(pam3, ci=TRUE) +
+```{r, fig.width = 7, fig.height = 3, warning = FALSE}
+gg_tensor(pam3, ci = TRUE) +
   xlab("t") + ylab(expression(x[plain(karno)]))
 ```
