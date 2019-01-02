@@ -11,7 +11,9 @@
 
 * Fixed some issues
 * Fixed reverse dependency issue in checkmate
+* Fixed reverse dependency issue in dplyr
 * Feature + documentation updates
+
 ## Reverse dependencies
 
 Tehre are no reverse dependencies.
