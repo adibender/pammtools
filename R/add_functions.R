@@ -81,6 +81,8 @@ add_term <- function(
 
 }
 
+#' @export
+#' @keywords internal
 add_term2 <- function(
   newdata,
   object,
