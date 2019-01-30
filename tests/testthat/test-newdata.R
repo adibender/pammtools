@@ -33,16 +33,16 @@ test_that("creating newdata fails on ungrouped data", {
 
 test_that("make_newdata works for PED data", {
   ped <- simdf_elra %>% slice(1:6) %>% as_ped(Surv(time, status)~x1 + x2,
-    cut = seq(0, 10, by=5))
+    cut = seq(0, 10, by = 5))
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2))
-  expect_data_frame(mdf, nrows = 2L, ncols=9L)
+  expect_data_frame(mdf, nrows = 2L, ncols = 9L)
   expect_equal(mdf$tend, c(5, 5))
   expect_equal(mdf$x1, c(-2.43, 2.54), tolerance = 1e-2)
   mdf <- ped %>% make_newdata(tend = c(10), x1 = seq_range(x1, 2))
   expect_data_frame(mdf, nrows = 2L, ncols = 9L)
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2), x2 = seq_range(x2, 2))
-  expect_data_frame(mdf, nrows=4L, ncols = 9L)
-  mdf <- ped %>% make_newdata(tend=unique(tend), x2 = seq_range(x2, 2))
+  expect_data_frame(mdf, nrows = 4L, ncols = 9L)
+  mdf <- ped %>% make_newdata(tend = unique(tend), x2 = seq_range(x2, 2))
   expect_data_frame(mdf, nrows = 4L, ncols = 9L)
 
 })

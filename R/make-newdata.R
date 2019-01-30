@@ -174,13 +174,13 @@ make_newdata.default <- function(x, ...) {
 
   # construct data parts depending on input type
   lgl_atomic <- map_lgl(expr_evaluated, is_atomic)
-  part1  <- expr_evaluated[lgl_atomic] %>% cross_df()
+  part1 <- expr_evaluated[lgl_atomic] %>% cross_df()
   part2 <- do.call(combine_df, expr_evaluated[!lgl_atomic])
 
-  ndf    <- combine_df(part1, part2)
-  rest   <- x %>% select(-one_of(c(colnames(ndf))))
+  ndf  <- combine_df(part1, part2)
+  rest <- x %>% select(-one_of(c(colnames(ndf))))
   if (ncol(rest) > 0) {
-    si     <- sample_info(rest) %>% ungroup()
+    si  <- sample_info(rest) %>% ungroup()
     ndf <- combine_df(si, ndf)
 
   }
@@ -205,11 +205,14 @@ make_newdata.ped <- function(x, ...) {
   expressions <- quos(...)
   dot_names   <- names(expressions)
   int_names   <- names(int_df)
-  x <- select(x, -one_of(setdiff(int_names, c(dot_names, "intlen", "intmid"))))
-
-  ndf <- make_newdata(unped(x), ...)
+  # x <- select(x, -one_of(setdiff(int_names, c(dot_names, "intlen", "intmid"))))
+  ndf <- x %>%
+    select(-one_of(setdiff(int_names, c(dot_names, "intlen", "intmid")))) %>%
+    unped() %>%
+    make_newdata(...)
 
   if (any(names(int_df) %in% names(ndf))) {
+    ndf$tend <- get_intervals(x, ndf$tend)$tend
     suppressMessages(
       ndf <- right_join(int_df, ndf)
       )
@@ -246,7 +249,8 @@ make_newdata.fped <- function(x, ...) {
   int_names   <- attr(x, "intvars")
   ndf <- x %>%
     select(one_of(setdiff(names(x), cumu_vars))) %>%
-    unfped() %>% make_newdata(...)
+    unfped() %>%
+    make_newdata(...)
 
   out_df <- do.call(combine_df, compact(list(cumu_smry, ndf)))
   int_df <- int_info(attr(x, "breaks"))
