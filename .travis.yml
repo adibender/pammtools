@@ -23,11 +23,9 @@ after_success:
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
   - Rscript -e 'pkgdown::build_site()'
 
+before_deploy: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:
-  provider: pages
-  skip-cleanup: true
   github-token: $GITHUB_PAT
-  keep-history: false
-  local-dir: docs
-  on:
-    branch: master
+  provider: script
+  script: Rscript -e 'pkgdown::deploy_site_github()'
+  skip_cleanup: true
