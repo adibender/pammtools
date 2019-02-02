@@ -5,6 +5,8 @@ ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
   cut = c(0, 50, 100, 200, 300, 400), id = "id")
 pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)
+pam2 <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt + s(age), data = ped,
+  family = poisson(), offset = offset)
 bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset, method = "fREML", discrete = TRUE)
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
@@ -114,23 +116,27 @@ test_that("cumulative hazard functions work for PEM", {
 })
 
 test_that("adding terms works for PAM", {
-  expect_data_frame(term <- add_term(ped_info(ped), bam, term = "trt"),
-    nrows = 5L, ncols = 10L)
-  expect_data_frame(term <- add_term(ped_info(ped), pam, term = "trt"),
-    nrows = 5L, ncols = 10L)
-  expect_data_frame(add_term(ped_info(ped), pam, term = "trt", relative = TRUE),
-    nrows = 5L, ncols = 10L)
-  pam$model <- NULL
-  expect_error(add_term(ped_info(ped), pam, term = "trt", relative = TRUE))
+
+  # add_term
+  ndf2  <- make_newdata(ped, age = seq_range(age, 3))
+  pred2 <- ndf2 %>% add_term(pam2, term = "age")
+  expect_data_frame(pred2, nrows = 3L, ncols = 12L)
+  pred2 <- ndf2 %>% add_term(pam2, term = "age",
+    reference = list(age = mean(.$age)))
+  expect_data_frame(pred2, nrows = 3L, ncols = 12L)
+  expect_equal(pred2$fit[2], 0)
+  pred3 <- ndf2 %>% add_term(pam2, term = "age", reference = identity(.))
+  expect_data_frame(pred3, nrows = 3L, ncols = 12L)
+  expect_equal(pred3$fit, rep(0, 3))
+
 })
 
 test_that("adding terms works for PEM", {
 expect_data_frame(term <- add_term(ped_info(ped), pem, term = "trt"),
     nrows = 5L, ncols = 10L)
-  expect_data_frame(add_term(ped_info(ped), pem, term = "trt", relative = TRUE),
-    nrows = 5L, ncols = 10L)
-  pem$model <- NULL
-  expect_error(add_term(ped_info(ped), pem, term = "trt", relative = TRUE))
+  expect_data_frame(ped_info(ped) %>%
+      add_term(pem, term = "trt", reference = list(trt = mean(.$trt))),
+      nrows = 5L, ncols = 10L)
 })
 
 test_that("warns about / aborts for unknown intervals", {

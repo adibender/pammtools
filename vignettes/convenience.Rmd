@@ -155,7 +155,7 @@ Using `make_newdata` and `add_term` we obtain:
 ```{r, fig.width = 4, fig.height = 4}
 term_charlson <- ped %>%
   make_newdata(age = seq_range(age, n = 25)) %>%
-  add_term(pam, term = "age", relative = TRUE)
+  add_term(pam, term = "age", reference = list(age = mean(.$age)))
 ggplot(term_charlson, aes(x = age, y = fit)) +
   geom_line() +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2)

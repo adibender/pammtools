@@ -1,98 +1,39 @@
-#' Add the contribution of a term to the linear predictor to data set
+#' Embeds the data set with the specified (relative) term contribution
 #'
 #' Adds the contribution of a specific term to the
 #' linear predictor to the data specified by \code{newdata}.
 #' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
 #' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
-#'
 #'
 #' @inheritParams mgcv::predict.gam
 #' @param term A character (vector) or regular expression indicating for
 #' which term(s) information should be extracted and added to data set.
 #' @param se_mult The factor by which standard errors are multiplied to form
 #' confidence intervals.
-#' @param relative If \code{TRUE}, calculates relative risk contribution,
-#' that is \eqn{(X-\bar{X})'\beta} and respective confidence intervals
-#' if \code{se.fit = TRUE}. Defaults to \code{FALSE}.
+#' @param reference A data frame with number of rows equal to \code{newdata} or
+#' one, or a named list with (partial) covariate specifications. See examples.
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @importFrom purrr map
-#' @examples
-#' ped <- tumor[1:50,] %>% as_ped(Surv(days, status)~ age)
-#' pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
-#' ped_info(ped) %>% add_term(pam, term="tend")
-#' @export
 #' @importFrom stats model.matrix vcov
-add_term <- function(
-  newdata,
-  object,
-  term,
-  se.fit   = TRUE,
-  type     = "terms",
-  se_mult  = 2,
-  relative = FALSE,
-  ...) {
-
-  assert_data_frame(newdata, all.missing = FALSE)
-  assert_character(term, min.chars = 1, any.missing = FALSE, min.len = 1)
-
-  col_ind <- map(term, grep, x = names(object$coefficients)) %>%
-    unlist() %>% unique() %>% sort()
-  is_gam <- inherits(object, "gam")
-
-  X <- if (is_gam) {
-    predict.gam(object, newdata = newdata,
-      type = "lpmatrix", ...)[, col_ind, drop = FALSE]
-  } else  {
-    model.matrix(object$formula[-2], data = newdata)[, col_ind, drop = FALSE]
-  }
-  if (relative) {
-    if (is.null(object$model)) {
-      stop("Relative risk can only be calculated when original data is present in 'object'!")
-    }
-    data_bar <- sample_info(object$model)[rep(1, nrow(newdata)), ]
-    X_bar <- if (is_gam) {
-      predict.gam(
-        object,
-        newdata = data_bar,
-        type    = "lpmatrix")[, col_ind, drop = FALSE]
-    } else {
-      model.matrix(object$formula[-2], data = data_bar)[, col_ind, drop = FALSE]
-    }
-    X <- X - X_bar
-  }
-
-  newdata[["fit"]] <- drop(X %*% object$coefficients[col_ind])
-  if (se.fit) {
-    cov.coefs <- if (is_gam) {
-      object$Vp[col_ind, col_ind]
-    } else {
-      vcov(object)[col_ind, col_ind]
-    }
-    se <- sqrt(rowSums( (X %*% cov.coefs) * X ))
-    newdata <- newdata %>%
-      mutate(
-        ci_lower = .data$fit - se_mult * se,
-        ci_upper = .data$fit + se_mult * se)
-  }
-
-  return(newdata)
-
-}
-
-#' Add the contribution of a term to the linear predictor to data set
-#'
-#' Adds the contribution of a specific term to the
-#' linear predictor to the data specified by \code{newdata}.
-#' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
-#' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
-#' This function will eventually replace add_term.
-#'
-#' @inheritParams add_term
+#' @examples
+#' library(ggplot2)
+#' ped <- as_ped(tumor, Surv(days, status)~ age, cut = seq(0, 2000, by =20))
+#' pam <- mgcv::gam(ped_status ~ s(tend) + s(age), family = poisson(),
+#'   offset = offset, data = ped)
+#' #term contribution for sequence of ages
+#' s_age <- ped %>% make_newdata(age = seq_range(age, 100)) %>%
+#'   add_term(pam, term = "age")
+#' ggplot(s_age, aes(x = age, y = fit)) + geom_line() +
+#'   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = .3)
+#' # term contribution relative to mean age
+#' s_age2 <- ped %>% make_newdata(age = seq_range(age, 100)) %>%
+#'   add_term(pam, term = "age", reference = list(age = mean(.$age)))
+#' ggplot(s_age2, aes(x = age, y = fit)) + geom_line() +
+#'   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = .3)
 #' @export
-#' @keywords internal
-add_term2 <- function(
+add_term <- function(
   newdata,
   object,
   term,
@@ -116,6 +57,7 @@ add_term2 <- function(
     model.matrix(object$formula[-2], data = newdata)[, col_ind, drop = FALSE]
   }
   if (!is.null(reference)) {
+    reference <- preproc_reference(reference, colnames(newdata), nrow(newdata))
     reference <- newdata %>% mutate(!!!reference)
     X_ref <- if (is_gam) {
       predict.gam(
@@ -146,6 +88,28 @@ add_term2 <- function(
 
 }
 
+
+preproc_reference <- function(reference, cnames, n_rows) {
+
+  # check that provided variables contained in newdata
+  names_ref <- names(reference)
+  if (!check_subset(names_ref, cnames)) {
+    stop(paste0("Columns in 'reference' but not in 'newdata':",
+      paste0(setdiff(names_ref, cnames), collapse = ",")))
+  }
+  # transform to list if inherits from data frame, so it can be processed
+  # in mutate via !!!
+  if (inherits(reference, "data.frame")) {
+    if (!(nrow(reference) == n_rows | nrow(reference) == 1)) {
+      stop("If reference is provided as data frame, number of rows must be
+        either 1 or the number of rows in newdata.")
+    }
+    reference <- as.list(reference)
+  }
+
+  reference
+
+}
 
 #' Add predicted (cumulative) hazard to data set
 #'
