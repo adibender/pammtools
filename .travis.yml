@@ -18,6 +18,7 @@ r_github_packages:
 branches:
   only:
     - master
+    - devel
 
 after_success:
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
@@ -29,7 +30,3 @@ deploy:
   provider: script
   script: Rscript -e 'pkgdown::deploy_site_github()'
   skip_cleanup: true
-  on:
-    branch:
-      - master
-      - devel
