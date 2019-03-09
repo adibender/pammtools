@@ -16,7 +16,7 @@ Description: The Piece-wise exponential (Additive Mixed) Model
     including data transformation and other pre- and post-processing
     functions as well as visualization.
 Depends:
-    R (>= 3.3.1)
+    R (>= 3.3.0)
 Imports:
     mgcv,
     survival (>= 2.39-5),
