@@ -58,8 +58,9 @@ test_that("LL helpers and as_ped produce equivalent LL windows", {
 })
 
 test_that("Cumulative effects are calculated correctly", {
-  # tz grid with differences different than 1
 
+  suppressWarnings(RNGversion("3.5.0"))
+  # tz grid with differences different than 1
   # generate exposures and add to data set
   n <- 250
   set.seed(123)

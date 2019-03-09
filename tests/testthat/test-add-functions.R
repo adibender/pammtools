@@ -87,6 +87,7 @@ test_that("cumulative hazard functions work for PAM", {
   expect_equal(round(haz2$cumu_upper, 2), c(.58, 1.09, 1.94, 2.72, 3.48))
   expect_equal(round(haz2$cumu_lower, 2), c(.36, .71, 1.34, 1.82, 2.14))
 
+  suppressWarnings(RNGversion("3.5.0"))
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
@@ -172,6 +173,8 @@ test_that("works for nonstandard baseline arguments", {
 
 ## test surv_prob
 test_that("survival probabilities functions work for PAM", {
+
+  suppressWarnings(RNGversion("3.5.0"))
 
   expect_data_frame(add_surv_prob(ped_info(ped), bam, ci = FALSE),
     nrows = 5L, ncols = 8L)
