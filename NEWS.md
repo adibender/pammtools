@@ -1,3 +1,6 @@
+# pammtools 0.1.9
+* maintainance update: fixes CRAN issues due to new RNG
+
 # pammtools 0.1.8
 
 ## documentation

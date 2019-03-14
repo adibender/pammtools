@@ -58,8 +58,9 @@ test_that("LL helpers and as_ped produce equivalent LL windows", {
 })
 
 test_that("Cumulative effects are calculated correctly", {
-  # tz grid with differences different than 1
 
+  suppressWarnings(RNGversion("3.5.0"))
+  # tz grid with differences different than 1
   # generate exposures and add to data set
   n <- 250
   set.seed(123)
@@ -105,11 +106,12 @@ test_that("Cumulative effects are calculated correctly", {
   partial <- gg_partial(ped, pam, "z.tz3", tend = seq(0, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial, c("gg", "ggplot"))
-  expect_data_frame(partial$data, nrows = 143L, ncols = 15)
+  expect_data_frame(partial$data, nrows = 143L, ncols = 15L)
   partial_ll <- gg_partial_ll(ped, pam, "z.tz3", tend = seq(0, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial_ll, c("gg", "ggplot"))
-  expect_data_frame(partial_ll$data, nrows = 55, ncols = 8)
+  # expect_data_frame(partial_ll$data, nrows = 55, ncols = 8)
+  expect_data_frame(partial_ll$data, nrows = 55L, ncols = 8L)
 
   ## cumulative effect visualization helpers:
   cumu_eff <- get_cumu_eff(ped, pam, term = "z.tz3",
