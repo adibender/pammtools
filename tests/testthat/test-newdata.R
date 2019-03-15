@@ -13,13 +13,13 @@ test_that("creating newdata works on ungrouped data", {
   expect_equal(make_newdata(iris2, Sepal.Length = c(5))$Sepal.Length, 5)
   expect_data_frame(
     make_newdata(iris2, Sepal.Length = c(5, 6)),
-		any.missing = FALSE, nrows = 2L, ncols = 5L)
+    any.missing = FALSE, nrows = 2L, ncols = 5L)
   expect_data_frame(
     make_newdata(iris2, Sepal.Length = seq_range(Sepal.Length, 2)),
     any.missing = FALSE, nrows = 2L, ncols = 5L)
   expect_equal(
     make_newdata(iris2, Sepal.Length = seq_range(Sepal.Length, 2))$Sepal.Length,
-		c(4.9, 7.0))
+    c(4.9, 7.0))
 })
 
 
@@ -28,9 +28,9 @@ test_that("creating newdata fails on ungrouped data", {
   iris2 <- iris %>% group_by(Species) %>% slice(2) %>% ungroup()
 
   expect_warning(make_newdata(iris2, Sepal.length = c(5)))
-	expect_error(make_newdata(iris2, Sepal.Length = 5))
+  expect_error(make_newdata(iris2, Sepal.Length = 5))
   expect_error(make_newdata(iris2, Sepal.Length = seq_range(Sepal.length, 2)))
-	expect_warning(make_newdata(iris2, Sepal.length = seq_range(Sepal.Length, 2)))
+  expect_warning(make_newdata(iris2, Sepal.length = seq_range(Sepal.Length, 2)))
 
 })
 

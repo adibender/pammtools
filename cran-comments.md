@@ -1,5 +1,4 @@
 ## Test environments
-* local ubuntu 18.04 install, R 3.5.2
 * R release and devel with Travis CI
 * R 3.5.2 patched with appveyor
 * win-builder (devel and release)
@@ -9,10 +8,7 @@
 
 0 errors | 0 warnings | 0 notes
 
-* Fixed some issues
-* Fixed reverse dependency issue in checkmate
-* Fixed reverse dependency issue in dplyr
-* Feature + documentation updates
+* maintainance update: fixes CRAN issues due to new RNG
 
 ## Reverse dependencies
 
