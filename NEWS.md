@@ -26,7 +26,7 @@
 * Updates homepage (via pkgdown)
 
 
-# pamtools 0.1.3
+# pammtools 0.1.3
 
 ## Minor changes
 
