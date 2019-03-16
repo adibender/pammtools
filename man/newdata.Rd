@@ -23,14 +23,12 @@ by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
 where \code{z} is a variable in the data set and \code{f} a known
 function that can be usefully applied to \code{z}. Note that this is also
 necessary for single value specifications (e.g. \code{age = c(50)}).
-For data in PED (piece-wise exponential data) format, you can also specify
-the time argument like this (e.g. for prediction of time-varying effects or
-survival probabilities over time), but see Details.
-See examples below.}
+For data in PED (piece-wise exponential data) format, one can also specify
+the time argument, but see "Details" an "Examples" below.}
 }
 \description{
-This functions provides a flexible interfact to create a data set that
-can be plugged in \code{newdata} argument to a suitable  \code{predict}
+This functions provides a flexible interface to create a data set that
+can be plugged in as \code{newdata} argument to a suitable  \code{predict}
 function (or similar).
 The function is particularly useful in combination with one of the
 \code{add_*} functions, e.g., \code{\link[pammtools]{add_term}},
@@ -47,12 +45,12 @@ calculate survival probabilities over time (\code{\link[pammtools]{add_surv_prob
 or to calculate a time-varying covariate effects (\code{\link[pammtools]{add_term}}).
 To do so, the time variable has to be specified in \code{...}, e.g.,
 \code{tend = seq_range(tend, 20)}. The problem with this specification is that
-not all values produced by code{seq_range(tend, 20)} will be actual values
+not all values produced by \code{seq_range(tend, 20)} will be actual values
 of \code{tend} used at the stage of estimation (and in general, it will
-often be tedious to specify exact \code{tend} values. \code{make_newdata}
+often be tedious to specify exact \code{tend} values). \code{make_newdata}
 therefore finds the correct interval and sets \code{tend} to the respective
-interval end point. For example, if the intervals of the PED object are
-\eqn{(0,1], (1,2]} then \code{tend = 1.37} will be set to \code{2} and the
+interval endpoint. For example, if the intervals of the PED object are
+\eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2} and the
 remaining time-varying information (e.g. offset) completed accordingly.
 See examples below.
 }
