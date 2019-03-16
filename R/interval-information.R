@@ -138,7 +138,7 @@ get_intervals.default <- function(
   int_df %>%
     slice(int) %>%
     mutate(times = times) %>%
-    arrange(times) %>%
+    # arrange(times) %>%
     select(times, everything())
 
 }
