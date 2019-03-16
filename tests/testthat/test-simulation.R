@@ -2,6 +2,8 @@ context("Test simulation functions")
 
 test_that("Simulation function works", {
 
+  suppressWarnings(RNGversion("3.5.0"))
+
   set.seed(24032018)
   # standard data
   df     <- cbind.data.frame(x1 = runif (3, -3, 3), x2 = runif (3, 0, 6))
