@@ -73,6 +73,7 @@ articles:
     - tdcovar
     - cumulative-effects
     - convenience
+    - smj-tutorial
 
 navbar:
   type: default
@@ -101,6 +102,8 @@ navbar:
       href: articles/tdcovar.html
     - text: Cumulative effects/Exposure-Lag-Response Associations
       href: articles/cumulative-effects.html
+    - text: 'Paper: A generalized additive model approach to time-to-event analysis'
+      href: articles/smj-tutorial.html
   - text: News
     href: news/index.html
   right:
