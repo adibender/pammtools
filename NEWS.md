@@ -1,7 +1,7 @@
 # pammtools 0.1.11
 
 ## bugs
-* fixes bug in **`dplyr` reverse dependency (see #101)
+* fixes bug in **`dplyr`** reverse dependency (see #101)
 * fixes bug in tidiers for Aalen models (see #99)
 
 ## documentation
