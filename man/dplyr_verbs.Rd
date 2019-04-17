@@ -26,16 +26,13 @@
 \alias{group_by.ped}
 \alias{group_by_.ped}
 \alias{ungroup.ped}
-\alias{distinct_.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
 \alias{sample_frac.ped}
 \alias{slice.ped}
 \alias{select.ped}
-\alias{select_.ped}
 \alias{mutate.ped}
 \alias{rename.ped}
-\alias{rename_.ped}
 \alias{summarise.ped}
 \alias{summarize.ped}
 \alias{transmute.ped}
@@ -45,18 +42,14 @@
 \alias{right_join.ped}
 \alias{arrange.nested_fdf}
 \alias{group_by.nested_fdf}
-\alias{group_by_.nested_fdf}
 \alias{ungroup.nested_fdf}
-\alias{distinct_.nested_fdf}
 \alias{filter.nested_fdf}
 \alias{sample_n.nested_fdf}
 \alias{sample_frac.nested_fdf}
 \alias{slice.nested_fdf}
 \alias{select.nested_fdf}
-\alias{select_.nested_fdf}
 \alias{mutate.nested_fdf}
 \alias{rename.nested_fdf}
-\alias{rename_.nested_fdf}
 \alias{summarise.nested_fdf}
 \alias{summarize.nested_fdf}
 \alias{transmute.nested_fdf}
@@ -74,8 +67,6 @@
 
 \method{ungroup}{ped}(x, ...)
 
-\method{distinct_}{ped}(.data, ..., .dots = list())
-
 \method{filter}{ped}(.data, ...)
 
 \method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
@@ -88,13 +79,9 @@
 
 \method{select}{ped}(.data, ...)
 
-\method{select_}{ped}(.data, ..., .dots = list())
-
 \method{mutate}{ped}(.data, ..., keep_attributes = TRUE)
 
 \method{rename}{ped}(.data, ...)
-
-\method{rename_}{ped}(.data, ..., .dots = list())
 
 \method{summarise}{ped}(.data, ...)
 
@@ -118,11 +105,7 @@
 
 \method{group_by}{nested_fdf}(.data, ..., add = FALSE)
 
-\method{group_by_}{nested_fdf}(.data, ..., .dots = list(), add = FALSE)
-
 \method{ungroup}{nested_fdf}(x, ...)
-
-\method{distinct_}{nested_fdf}(.data, ..., .dots = list())
 
 \method{filter}{nested_fdf}(.data, ...)
 
@@ -136,13 +119,9 @@
 
 \method{select}{nested_fdf}(.data, ...)
 
-\method{select_}{nested_fdf}(.data, ..., .dots = list())
-
 \method{mutate}{nested_fdf}(.data, ..., keep_attributes = TRUE)
 
 \method{rename}{nested_fdf}(.data, ...)
-
-\method{rename_}{nested_fdf}(.data, ..., .dots = list())
 
 \method{summarise}{nested_fdf}(.data, ...)
 
