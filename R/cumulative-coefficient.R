@@ -128,10 +128,14 @@ cumu_coef <- function(data, model, term, ...) {
 #' @inherit get_cumu_coef
 #' @keywords internal
 get_cumu_coef_baseline <- function(data, model, ...) {
+
+  vars_modify <- colnames(data)[map_lgl(data, is.numeric)] %>%
+    setdiff(c("tstart", "tend", "intlen", "intmid"))
+
   data %>%
     mutate_at(
-      .vars = vars(-one_of(c("tstart", "tend", "intlen", "intmid", "interval"))),
-      .funs = ~0) %>%
+      .vars = vars(one_of(vars_modify)),
+      .funs = ~c(0)) %>%
     add_cumu_hazard(model) %>%
     mutate(
       method      = class(model)[1],
