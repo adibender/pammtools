@@ -24,9 +24,12 @@ partial effect of \code{term}.}
 effects should be plotted.}
 
 \item{...}{Covariate specifications (expressions) that will be evaluated
-by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
-where \code{z} is a variable in the data set \code{x} and \code{f} a known
-function that can be usefully applied to \code{z}. See examples below.}
+by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+where \code{z} is a variable in the data set and \code{f} a known
+function that can be usefully applied to \code{z}. Note that this is also
+necessary for single value specifications (e.g. \code{age = c(50)}).
+For data in PED (piece-wise exponential data) format, one can also specify
+the time argument, but see "Details" an "Examples" below.}
 
 \item{reference}{If specified, should be a list with covariate value pairs,
 e.g. \code{list(x1 = 1, x2=50)}. The calculated partial effect will be relative

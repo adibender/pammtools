@@ -44,6 +44,7 @@ test_that("make_newdata works for PED data", {
   expect_data_frame(mdf, nrows = 2L, ncols = 9L)
   expect_equal(mdf$tend, c(5, 5))
   expect_equal(mdf$x1, c(-2.43, 2.54), tolerance = 1e-2)
+  expect_message(make_newdata(ped, tend = c(2.5)))
   mdf <- ped %>% make_newdata(tend = c(10), x1 = seq_range(x1, 2))
   expect_data_frame(mdf, nrows = 2L, ncols = 9L)
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2), x2 = seq_range(x2, 2))
@@ -55,7 +56,7 @@ test_that("make_newdata works for PED data", {
 
 
 test_that("make_newdata works for PED with matrix columns", {
-  # library(mgcv)
+
   ped_simdf <- simdf_elra %>% as_ped(
     Surv(time, status)~ x1 + x2 |
       cumulative(time, latency(tz1), z.tz1, tz_var = "tz1",
@@ -80,7 +81,7 @@ test_that("make_newdata works for PED with matrix columns", {
   expect_equal(nd1$tstart, 0)
   expect_equal(nd1$tend, 1)
   expect_equal(nd1$x1, 0.05)
-  expect_equal(nd1$x2, 2.65, tolerance=1e-3)
+  expect_equal(nd1$x2, 2.65, tolerance = 1e-3)
   expect_equal(nd1$z.tz1_tz1, -0.370, 1e-3)
 
   nd2 <- ped_simdf %>% make_newdata(x1 = seq_range(x1, 2))

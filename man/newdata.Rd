@@ -19,24 +19,43 @@ make_newdata(x, ...)
 \item{x}{A data frame (or object that inherits from \code{data.frame}).}
 
 \item{...}{Covariate specifications (expressions) that will be evaluated
-by looking for variables in \code{x} (or \code{data}). Must be of the form \code{z = f(z)}
-where \code{z} is a variable in the data set \code{x} and \code{f} a known
-function that can be usefully applied to \code{z}. See examples below.}
+by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
+where \code{z} is a variable in the data set and \code{f} a known
+function that can be usefully applied to \code{z}. Note that this is also
+necessary for single value specifications (e.g. \code{age = c(50)}).
+For data in PED (piece-wise exponential data) format, one can also specify
+the time argument, but see "Details" an "Examples" below.}
 }
 \description{
-Given a data set, returns a data set that can be used
-as \code{newdata} argument in a call to \code{predict} and similar functions.
+This functions provides a flexible interface to create a data set that
+can be plugged in as \code{newdata} argument to a suitable  \code{predict}
+function (or similar).
 The function is particularly useful in combination with one of the
-\code{add_*} functions, e.g., \code{\link{add_term}}, \code{\link{add_hazard}},
-etc.
+\code{add_*} functions, e.g., \code{\link[pammtools]{add_term}},
+\code{\link[pammtools]{add_hazard}}, etc.
 }
 \details{
-Depending on the class of \code{x}, mean or modus values will be
-used for variables not specified in ellipsis. If x is an object that inherits
-from class \code{ped}, useful data set completion will be attempted depending
-on variables specified in ellipsis.
+Depending on the type of variables in \code{x}, mean or modus values
+will be used for variables not specified in ellipsis
+(see also \code{\link[pammtools]{sample_info}}). If \code{x} is an object
+that inherits from class \code{ped}, useful data set completion will be
+attempted depending on variables specified in ellipsis. This is especially
+useful, when creating a data set with different time points, e.g. to
+calculate survival probabilities over time (\code{\link[pammtools]{add_surv_prob}})
+or to calculate a time-varying covariate effects (\code{\link[pammtools]{add_term}}).
+To do so, the time variable has to be specified in \code{...}, e.g.,
+\code{tend = seq_range(tend, 20)}. The problem with this specification is that
+not all values produced by \code{seq_range(tend, 20)} will be actual values
+of \code{tend} used at the stage of estimation (and in general, it will
+often be tedious to specify exact \code{tend} values). \code{make_newdata}
+therefore finds the correct interval and sets \code{tend} to the respective
+interval endpoint. For example, if the intervals of the PED object are
+\eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2} and the
+remaining time-varying information (e.g. offset) completed accordingly.
+See examples below.
 }
 \examples{
+# General functionality
 tumor \%>\% make_newdata()
 tumor \%>\% make_newdata(age=c(50))
 tumor \%>\% make_newdata(days=seq_range(days, 3), age=c(50, 55))
@@ -51,9 +70,15 @@ purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) \%>\%
 # Examples for PED data
 ped <- tumor \%>\% slice(1:3) \%>\% as_ped(Surv(days, status)~., cut = c(0, 500, 1000))
 ped \%>\% make_newdata(age=c(50, 55))
+
 # if time information is specified, other time variables will be specified
 # accordingly and offset calculated correctly
 ped \%>\% make_newdata(tend = c(1000), age = c(50, 55))
 ped \%>\% make_newdata(tend = unique(tend))
 ped \%>\% group_by(sex) \%>\% make_newdata(tend = unique(tend))
+
+# tend is set to the end point of respective interval:
+ped <- tumor \%>\% as_ped(Surv(days, status)~.)
+seq_range(ped$tend, 3)
+make_newdata(ped, tend = seq_range(tend, 3))
 }

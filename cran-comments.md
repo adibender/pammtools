@@ -8,7 +8,7 @@
 
 0 errors | 0 warnings | 0 notes
 
-* maintainance update: fixes CRAN issues due to new RNG
+* Fixes dplyr reverse dependency bug + documentation updates
 
 ## Reverse dependencies
 
