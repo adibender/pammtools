@@ -17,10 +17,18 @@ test_that("Cumulative coefficients work", {
 
   ## pam
   ped <- as_ped(df, formula = Surv(days, status)~ x1 + age)
-  pam <- mgcv::gam(ped_status ~ x1 + age, data = ped, family = poisson(),
-    offset = offset)
+  pam <- mgcv::gam(ped_status ~ s(tend) + x1 + age, data = ped,
+    family = poisson(), offset = offset)
   cumu_coef_pam <- get_cumu_coef(pam, ped, terms = c("age", "x1"), nsim = 20L)
   expect_data_frame(cumu_coef_pam, nrows = 36L, ncols = 6L)
   expect_equal(unique(cumu_coef_pam$variable), c("age", "x1 (b)", "x1 (c)"))
+  cumu_coef_pam <- get_cumu_coef(pam, ped, terms = c("(Intercept)", "age"))
+  expect_data_frame(cumu_coef_pam, nrows = 24L, ncols = 6L)
+  # ggplot(
+  #   filter(cc2, variable == "(Intercept)"),
+  #   aes(x = time, y = cumu_hazard)) +
+  # geom_step() +
+  # geom_step(data = filter(cumu_coef_aalen, variable == "(Intercept)"), col = 2)
+
 
 })

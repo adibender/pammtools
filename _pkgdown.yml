@@ -18,9 +18,6 @@ reference:
       - int_info
       - ped_info
       - make_newdata
-      - gg_slice
-      - gg_partial
-      - get_cumu_eff
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
     e.g., smooth effects for plotting"
@@ -44,6 +41,7 @@ reference:
       - gg_smooth
       - gg_tensor
       - gg_re
+      - gg_slice
       - gg_partial
       - gg_partial_ll
       - gg_laglead
