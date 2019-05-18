@@ -5,7 +5,7 @@
 #' different smooth are faceted.
 #'
 #' @inheritParams get_term
-#' @param x A data frame or object of class \code{pamm}.
+#' @param x A data frame or object of class \code{ped}.
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2
 #' @return A \code{\link[ggplot2]{ggplot}} object.
