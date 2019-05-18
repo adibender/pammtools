@@ -15,6 +15,7 @@ Install from CRAN or GitHub using:
 ```r
 # CRAN
 install.packages("pammtools")
+
 # GitHub
 devtools::install_github("adibender/pammtools")
 ```
@@ -23,12 +24,17 @@ devtools::install_github("adibender/pammtools")
 
 ### Overview
 
-`pammtools` offers various utilities and convenience functions that
-facilitate working with Piece-wise exponential Additive Mixed Models (PAMMs).
+**`pammtools`** facilitates the estimation of Piece-wise exponential Additive
+Mixed Models (PAMMs) for time-to-event data.
+PAMMs can be represeted as generalized additive models and can therefore
+be estimated using GAM software (e.g. **`mgcv`**), which, compared to other packages for survival analysis, often offers
+more flexibility w.r.t. to the specification of covariate effects
+(e.g. non-linear, time-varying effects, cumulative effects, etc.).
 
 To get started, see the [Articles](https://adibender.github.io/pammtools/articles/) section.
 
-An overview over the packages functionality is given in
+
+<!-- An overview over the packages functionality is given in
 
 - Andreas Bender and Fabian Scheipl, 2018: "pammtools: Piece-wise exponential
 Additive Mixed Modeling tools", arXiv eprint, 2018, https://arxiv.org/abs/1806.01042
@@ -42,3 +48,4 @@ A general framework for the representation and estimation of cumulative effects
 (or exposure-lag-response associations) is described in:
 
 - Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff; "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003
+ -->
