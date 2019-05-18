@@ -80,13 +80,6 @@ ungroup.ped <- function(x, ...) {
 # single table: row ops
 
 #' @export
-#' @export distinct_
-#' @rdname dplyr_verbs
-distinct_.ped <- function(.data, ..., .dots = list()) {
-  reped(distinct_(unped(.data), ..., .dots = .dots))
-}
-
-#' @export
 #' @export filter
 #' @rdname dplyr_verbs
 filter.ped <- function(.data, ...) {
@@ -128,13 +121,6 @@ select.ped <- function(.data, ...) {
   reped(select(unped(.data), ...))
 }
 
-#' @export
-#' @export select_
-#' @rdname dplyr_verbs
-select_.ped <- function(.data, ..., .dots = list()) {
-  reped(select_(unped(.data), ..., .dots = .dots))
-}
-
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}
 #' @export
 #' @export mutate
@@ -155,13 +141,6 @@ mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
 #' @rdname dplyr_verbs
 rename.ped <- function(.data, ...) {
   reped(rename(unped(.data), ...))
-}
-
-#' @export
-#' @export rename_
-#' @rdname dplyr_verbs
-rename_.ped <- function(.data, ..., .dots = list()) {
-  reped(rename_(unped(.data), ..., .dots = .dots))
 }
 
 #' @export
@@ -275,21 +254,6 @@ fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE
 
 }
 
-# #' @inheritParams tidyr::fill_
-# #' @export fill_
-# #' @export
-# #' @rdname tidyr_verbs
-# fill_.ped <- function(data, fill_cols, .direction=c("down", "up")) {
-
-#   data_attr   <- ped_attr(data)
-#   tbl <- reped(fill_(unped(data), fill_cols, .direction))
-#   attributes(tbl) <- c(attributes(tbl), data_attr)
-
-#   return(tbl)
-
-# }
-
-
 #' @importFrom purrr discard
 un_nested_df <- function(nested_fdf) {
   class(nested_fdf) <- class(nested_fdf) %>% discard(~.=="nested_fdf")
@@ -322,14 +286,6 @@ group_by.nested_fdf <- function(.data, ..., add = FALSE) {
   re_nested_df(group_by(un_nested_df(.data), ..., add = add))
 }
 
-#' @inheritParams dplyr::group_by_
-#' @export
-#' @export group_by_
-#' @rdname dplyr_verbs
-group_by_.nested_fdf <- function(.data, ..., .dots = list(), add = FALSE) {
-  re_nested_df(group_by_(un_nested_df(.data), ..., .dots = .dots, add = add))
-}
-
 #' @export
 #' @export ungroup
 #' @rdname dplyr_verbs
@@ -339,13 +295,6 @@ ungroup.nested_fdf <- function(x, ...) {
 
 #-------------------------------------------------------------------------------
 # single table: row ops
-
-#' @export
-#' @export distinct_
-#' @rdname dplyr_verbs
-distinct_.nested_fdf <- function(.data, ..., .dots = list()) {
-  re_nested_df(distinct_(un_nested_df(.data), ..., .dots = .dots))
-}
 
 #' @export
 #' @export filter
@@ -389,12 +338,6 @@ select.nested_fdf <- function(.data, ...) {
   re_nested_df(select(un_nested_df(.data), ...))
 }
 
-#' @export
-#' @export select_
-#' @rdname dplyr_verbs
-select_.nested_fdf <- function(.data, ..., .dots = list()) {
-  re_nested_df(select_(un_nested_df(.data), ..., .dots = .dots))
-}
 
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}
 #' @export
@@ -418,12 +361,6 @@ rename.nested_fdf <- function(.data, ...) {
   re_nested_df(rename(un_nested_df(.data), ...))
 }
 
-#' @export
-#' @export rename_
-#' @rdname dplyr_verbs
-rename_.nested_fdf <- function(.data, ..., .dots = list()) {
-  re_nested_df(rename_(un_nested_df(.data), ..., .dots = .dots))
-}
 
 #' @export
 #' @export summarise
@@ -515,11 +452,15 @@ right_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x"
 #' @export fill
 #' @rdname tidyr_verbs
 #' @keywords internal
-fill.nested_fdf <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE) {
+fill.nested_fdf <- function(
+  data,
+  ...,
+  .direction = c("down", "up"),
+  keep_attributes = TRUE) {
   if (keep_attributes) {
     data_attr   <- nested_fdf_attr(data)
   }
-  tbl <- re_nested_df(fill(un_nested_df(data), ..., .direction=.direction))
+  tbl <- re_nested_df(fill(un_nested_df(data), ..., .direction = .direction))
   if (keep_attributes) {
     attributes(tbl) <- c(attributes(tbl), data_attr)
   }

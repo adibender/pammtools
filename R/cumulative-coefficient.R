@@ -40,14 +40,17 @@ get_cumu_coef.gam <- function(model, data, terms, ...) {
 #' @export
 get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
 
-    cumu_coef <- model$cum %>% as_tibble() %>%
-      select(map_int(c("time", terms),
-        ~which(grepl(., colnames(model$cum))))) %>%
-      gather("variable", "cumu_hazard", -.data$time)
-    cumu_var <- model[["var.cum"]] %>% as_tibble() %>%
-     select(map_int(c("time", terms),
-        ~which(grepl(., colnames(model$cum))))) %>%
-      gather("variable", "cumu_var", -.data$time)
+  terms <- map(c("time", terms),
+      ~grep(.x, colnames(model$cum), value = TRUE)) %>%
+    reduce(union)
+  cumu_coef <- model[["cum"]] %>%
+    as_tibble() %>%
+    select(one_of(terms)) %>%
+    gather("variable", "cumu_hazard", -.data$time)
+  cumu_var <- model[["var.cum"]] %>%
+    as_tibble() %>%
+    select(terms) %>%
+    gather("variable", "cumu_var", -.data$time)
 
     suppressMessages(
       left_join(cumu_coef, cumu_var) %>%
@@ -82,7 +85,7 @@ get_cumu_diff <- function(d1, d2, model, nsim = 100L) {
 
 #' @inheritParams get_cumu_coef
 #' @import dplyr purrr
-#' @importFrom rlang sym
+#' @importFrom rlang sym enquo quo_name
 #' @keywords internal
 cumu_coef <- function(data, model, term, ...) {
 
@@ -125,10 +128,14 @@ cumu_coef <- function(data, model, term, ...) {
 #' @inherit get_cumu_coef
 #' @keywords internal
 get_cumu_coef_baseline <- function(data, model, ...) {
+
+  vars_modify <- colnames(data)[map_lgl(data, is.numeric)] %>%
+    setdiff(c("tstart", "tend", "intlen", "intmid"))
+
   data %>%
     mutate_at(
-      .vars = vars(-one_of(c("tstart", "tend", "intlen", "intmid", "interval"))),
-      .funs = ~0) %>%
+      .vars = vars(one_of(vars_modify)),
+      .funs = ~c(0)) %>%
     add_cumu_hazard(model) %>%
     mutate(
       method      = class(model)[1],

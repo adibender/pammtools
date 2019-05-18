@@ -81,6 +81,17 @@ add_term <- function(
 
 }
 
+#' Add the contribution of a term to the linear predictor to data set
+#'
+#' Adds the contribution of a specific term to the
+#' linear predictor to the data specified by \code{newdata}.
+#' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
+#' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
+#' This function will eventually replace add_term.
+#'
+#' @inheritParams add_term
+#' @export
+#' @keywords internal
 add_term2 <- function(
   newdata,
   object,
