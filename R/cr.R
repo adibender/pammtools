@@ -18,6 +18,11 @@
 #' @return a list of glms - one entry for a single competing risk.
 #' @export
 glm_cr <- function(formula, family = poisson, data, offset, ...) {
+  assert_formula(formula)
+  assert_data_frame(data)
+  if (family != "poisson" | family != poisson) {
+    stop("Family must be poisson.")
+  }
   if (is.null(offset)) stop("You need to specifiy an offset.")
   crs <- unique(data$ped_status)
   crs <- crs[!(crs == 0)]
@@ -84,15 +89,13 @@ print.pem_cr <- function(summary_list) {
 #' @param ... additional arguments passed to the gam function.
 #' @return a list of gams - one entry for a single competing risk.
 #' @export
-gam_cr <- function(formula, family = gaussian(), data = list(),
-                   weights = NULL, subset = NULL, na.action = na.omit, 
-                   offset = NULL, method = "GCV.Cp",
-                   optimizer = c("outer", "newton"), control = list(),
-                   scale = 0, select = FALSE, knots = NULL, sp = NULL,
-                   min.sp = NULL, H = NULL, gamma = 1, fit = TRUE,
-                   paraPen = NULL, G = NULL, in.out, drop.unused.levels = TRUE,
-                   drop.intercept = NULL, ...) {
-  if (is.null(weights)) weights <- NULL
+gam_cr <- function(formula, family = gaussian(), 
+                   data = list(), offset = NULL, ...) {
+  assert_formula(formula)
+  assert_data_frame(data)
+  if (family != "poisson" | family != poisson) {
+    stop("Family must be poisson.")
+  }
   if (is.null(offset)) stop("You need to specifiy an offset.")
   crs <- unique(data$ped_status)
   crs <- crs[!(crs == 0)]
@@ -154,6 +157,8 @@ print.pam_cr <- function(summary_list) {
 #' @return 
 #' @export
 as_ped_cr <- function(data, formula, ...) {
+  assert_data_frame(data)
+  assert_formula(formula)
   status_str <- all.vars(formula)[2]
   true_status <- data[[status_str]]
   data[[status_str]][data[[status_str]] > 1] <- 0 
