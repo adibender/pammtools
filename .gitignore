@@ -5,6 +5,7 @@ sandbox/
 # RStudio
 .Rproj.user
 pam.Rproj
+*.Rproj
 .Rhistory
 *.Rhistory
 # vignette by-products
