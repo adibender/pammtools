@@ -28,4 +28,3 @@ test_that("Works for competing risks.", {
     cut     = c(0, 100, 400))
   expect_equal(sum(ped_cr != ped), 1)
 })
-

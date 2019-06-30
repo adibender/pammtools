@@ -16,13 +16,12 @@
 #' @param offset The offset for each observation. Contained in data.
 #' @param ... additional arguments passed to the glm function.
 #' @return a list of glms - one entry for a single competing risk.
+#' @import checkmate
+#' @importFrom stats glm
 #' @export
 glm_cr <- function(formula, family = poisson, data, offset, ...) {
   assert_formula(formula)
   assert_data_frame(data)
-  if (family != "poisson" | family != poisson) {
-    stop("Family must be poisson.")
-  }
   if (is.null(offset)) stop("You need to specifiy an offset.")
   crs <- unique(data$ped_status)
   crs <- crs[!(crs == 0)]
@@ -34,7 +33,7 @@ glm_cr <- function(formula, family = poisson, data, offset, ...) {
     # where we only investiagte one of the competing risks
     current_data <- modify_cr_data(data, cr = crs[i])
     res[[i]] <- glm(formula = formula, family = family, 
-                    data = current_data, offset = offset, ...)
+                    data = current_data, offset = offset)#, ...)
   }
   class(res) <- "pem_cr"
   #for methods
@@ -88,14 +87,13 @@ print.pem_cr <- function(summary_list) {
 #' @param offset The offset for each observation. Contained in data.
 #' @param ... additional arguments passed to the gam function.
 #' @return a list of gams - one entry for a single competing risk.
+#' @import checkmate
+#' @importFrom mgcv gam
 #' @export
 gam_cr <- function(formula, family = gaussian(), 
                    data = list(), offset = NULL, ...) {
   assert_formula(formula)
   assert_data_frame(data)
-  if (family != "poisson" | family != poisson) {
-    stop("Family must be poisson.")
-  }
   if (is.null(offset)) stop("You need to specifiy an offset.")
   crs <- unique(data$ped_status)
   crs <- crs[!(crs == 0)]
@@ -163,14 +161,24 @@ as_ped_cr <- function(data, formula, ...) {
   status_str <- all.vars(formula)[2]
   true_time <- data[[time_str]]
   true_status <- data[[status_str]]
-  data[[status_str]][data[[status_str]] > 1] <- 0 
-  ped <- as_ped(data, formula, ...)
-  for (i in 1:nrow(ped)) {
-    if ((ped$id[i + 1] != ped$id[i]) && (i != nrow(ped)) && 
-        (ped$tend > true_time[ped$id[i]])) {
-      ped$ped_status[i] <- true_status[ped$id[i]]
-    }
+  stati <- unique(true_status)
+  stati <- stati[stati != 0]
+  ped_stati <- vector(mode = "list", length = length(stati))
+  for (i in 1:length(stati)) {
+    current_data <- data
+    current_data[[status_str]][data[[status_str]] != stati[i]] <- 0
+    current_data[[status_str]][data[[status_str]] == stati[i]] <- 1
+    current_status <- as_ped(current_data, formula, ...)$ped_status
+    ped_stati[[i]] <- current_status * stati[i]
   }
+  ped <- as_ped(current_data, formula, ...)
+  ped$ped_status <- Reduce("+", ped_stati)
+  #for (i in 1:nrow(ped)) {
+   # if ((ped$id[i + 1] != ped$id[i]) && (i != nrow(ped)) && 
+    #    (ped$tend <= true_time[ped$id[i]])) {
+     # ped$ped_status[i] <- true_status[ped$id[i]]
+    #}
+  #}
   class(ped) <- c("ped_cr", "ped", "data.frame")
   ped
 }
@@ -183,6 +191,6 @@ as_ped_cr <- function(data, formula, ...) {
 #' @return a ped data.frame object for a single competing risk. 
 #' (All other risks are treated as censoring.)
 modify_cr_data <- function(data, cr) {
-  ped$ped_status <- ifelse(data$ped_status == cr, 1, 0)
-  ped
+  data$ped_status <- ifelse(data$ped_status == cr, 1, 0)
+  data
 }
