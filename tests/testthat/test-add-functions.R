@@ -226,7 +226,7 @@ test_that("hazards and CI positive for type response", {
   pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt,
     data = ped, family = poisson(), offset = offset)
   haz_test <- add_hazard(ped_info(ped), pam) %>%
-    summarize_at(c("hazard", "ci_lower", "ci_upper"), funs(any(. < 0)))
+    summarize_at(c("hazard", "ci_lower", "ci_upper"), list(~any(. < 0)))
   expect_equal(any(unlist(haz_test)), FALSE)
 
 })
