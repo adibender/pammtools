@@ -159,12 +159,15 @@ print.pam_cr <- function(summary_list) {
 as_ped_cr <- function(data, formula, ...) {
   assert_data_frame(data)
   assert_formula(formula)
+  time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
   true_status <- data[[status_str]]
   data[[status_str]][data[[status_str]] > 1] <- 0 
   ped <- as_ped(data, formula, ...)
   for (i in 1:nrow(ped)) {
-    if ((ped$id[i + 1] != ped$id[i]) && (i != nrow(ped))) {
+    if ((ped$id[i + 1] != ped$id[i]) && (i != nrow(ped)) && 
+        (ped$tend > true_time[ped$id[i]])) {
       ped$ped_status[i] <- true_status[ped$id[i]]
     }
   }
