@@ -18,8 +18,8 @@ get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default",
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{ci}{Logical indicating whether to include confidence intervals. Defaults
-to \code{TRUE}}
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
 
 \item{ci_type}{The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at

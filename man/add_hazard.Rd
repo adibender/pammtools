@@ -5,9 +5,9 @@
 \alias{add_cumu_hazard}
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
-add_hazard(newdata, object, type = c("response", "link"), ci = TRUE,
-  se_mult = 2, ci_type = c("default", "delta", "sim"),
-  overwrite = FALSE, time_var = NULL, ...)
+add_hazard(newdata, object, reference = NULL, type = c("response",
+  "link"), ci = TRUE, se_mult = 2, ci_type = c("default", "delta",
+  "sim"), overwrite = FALSE, time_var = NULL, ...)
 
 add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
   overwrite = FALSE, time_var = NULL, interval_length = "intlen",
@@ -23,25 +23,14 @@ add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{type}{ When this has the value \code{"link"} (default) the linear predictor (possibly with
-associated standard errors) is returned. When \code{type="terms"} each component of the 
-linear predictor is returned seperately (possibly with standard errors): this includes 
-parametric model components, followed by each smooth component, but excludes
-any offset and any intercept. \code{type="iterms"} is the same, except that any standard errors 
-returned for smooth components will include the uncertainty about the intercept/overall mean.  When 
-\code{type="response"} predictions 
-on the scale of the response are returned (possibly with approximate
-standard errors). When \code{type="lpmatrix"} then a matrix is returned
-which yields the values of the linear predictor (minus any offset) when
-postmultiplied by the
-parameter vector (in this case \code{se.fit} is ignored). The latter
-option is most useful for getting variance estimates for quantities derived from
-the model: for example integrated quantities, or derivatives of smooths. A
-linear predictor matrix can also be used to implement approximate prediction
-outside \code{R} (see example code, below). }
+\item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
+one, or a named list with (partial) covariate specifications. See examples.}
 
-\item{ci}{Logical indicating whether to include confidence intervals. Defaults
-to \code{TRUE}}
+\item{type}{Either \code{"response"} or \code{"link"}. The former calculates
+hazard, the latter the log-hazard.}
+
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
 
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
@@ -72,7 +61,8 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 Add (cumulative) hazard based on the provided data set and model.
 If \code{ci=TRUE} confidence intervals are also added. Their width can
 be controlled via the \code{se_mult} argument. This is a wrapper around
-\code{\link[mgcv]{predict.gam}}.
+\code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
+(log-)hazard ratio is calculated.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)

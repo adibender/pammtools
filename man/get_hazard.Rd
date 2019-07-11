@@ -4,9 +4,9 @@
 \alias{get_hazard}
 \title{Calculate predicted hazard}
 \usage{
-get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
-  ci_type = c("default", "delta", "sim"), time_var = NULL,
-  se_mult = 2, ...)
+get_hazard(newdata, object, reference = NULL, ci = TRUE,
+  type = c("response", "link"), ci_type = c("default", "delta", "sim"),
+  time_var = NULL, se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -18,25 +18,14 @@ get_hazard(newdata, object, ci = TRUE, type = c("response", "link"),
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{ci}{Logical indicating whether to include confidence intervals. Defaults
-to \code{TRUE}}
+\item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
+one, or a named list with (partial) covariate specifications. See examples.}
 
-\item{type}{ When this has the value \code{"link"} (default) the linear predictor (possibly with
-associated standard errors) is returned. When \code{type="terms"} each component of the 
-linear predictor is returned seperately (possibly with standard errors): this includes 
-parametric model components, followed by each smooth component, but excludes
-any offset and any intercept. \code{type="iterms"} is the same, except that any standard errors 
-returned for smooth components will include the uncertainty about the intercept/overall mean.  When 
-\code{type="response"} predictions 
-on the scale of the response are returned (possibly with approximate
-standard errors). When \code{type="lpmatrix"} then a matrix is returned
-which yields the values of the linear predictor (minus any offset) when
-postmultiplied by the
-parameter vector (in this case \code{se.fit} is ignored). The latter
-option is most useful for getting variance estimates for quantities derived from
-the model: for example integrated quantities, or derivatives of smooths. A
-linear predictor matrix can also be used to implement approximate prediction
-outside \code{R} (see example code, below). }
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
+
+\item{type}{Either \code{"response"} or \code{"link"}. The former calculates
+hazard, the latter the log-hazard.}
 
 \item{ci_type}{The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at
