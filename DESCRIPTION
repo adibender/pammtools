@@ -1,5 +1,5 @@
 Package: pammtools
-Title: Piece-Wise Exponential Additive Mixed Modeling Tools
+Title: Piece-Wise Exponential Additive Mixed Modeling Tools for survival analysis
 Version: 0.1.12.9010
 Date: 2019-07-11
 Authors@R: c(

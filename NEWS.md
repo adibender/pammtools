@@ -1,3 +1,9 @@
+# pammtools 0.1.12
+* Introduces breaking changes to `add_term` function. Argument `relative` is replaced by `reference`, makes calculation of relative (log-)hazards, i.e. hazard ratios, more flexible. Argument `se.fit` is replaced by `ci`.
+
+* Functions `get_hazard` and `add_hazard` also gain `reference` argument.
+Allows to calculate (log-)hazard ratios.
+
 # pammtools 0.1.11
 
 ## bugs
