@@ -1,3 +1,13 @@
+# pammtools 0.1.11
+
+## bugs
+* fixes bug in **`dplyr`** reverse dependency (see #101)
+* fixes bug in tidiers for Aalen models (see #99)
+
+## documentation
+* Better documentation and functionality for `make_newdata`
+* Added new vignette linking to tutorial paper (online only)
+
 # pammtools 0.1.9
 * maintainance update: fixes CRAN issues due to new RNG
 
@@ -26,7 +36,7 @@
 * Updates homepage (via pkgdown)
 
 
-# pamtools 0.1.3
+# pammtools 0.1.3
 
 ## Minor changes
 
