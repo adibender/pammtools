@@ -104,10 +104,10 @@ argument:
 
 ```{r}
 # the code below gives hazard reatio of a 30 year old relative to a 58 year old (cp)
-ped %>%
-  make_newdata(age = c(30)) %>%
-  add_hazard(pam, reference = list(age = c(58))) %>%
-  select(hazard, ci_lower, ci_upper)
+# ped %>%
+#   make_newdata(age = c(30)) %>%
+#   add_hazard(pam, reference = list(age = c(58))) %>%
+#   select(hazard, ci_lower, ci_upper)
 # -> 30 year old has about half the risk of a 58 year old
 ```
 
