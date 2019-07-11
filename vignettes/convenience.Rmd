@@ -79,7 +79,9 @@ ped_df <- ped %>% make_newdata(tend = unique(tend), age = seq_range(age, n = 3))
 ```
 
 Calling the respective functions, we can add the (predicted) hazard to the newly
-created data:
+created data.
+
+### Hazard
 
 ```{r}
 ped_df <- ped_df %>% add_hazard(pam)
@@ -96,6 +98,25 @@ ggplot(ped_df, aes(x = tend, group = age)) +
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
 ```
 
+### Hazard Ratio
+The hazard ratio can be calculated by specifying the `reference`
+argument:
+
+```{r}
+# the code below gives hazard reatio of a 30 year old relative to a 58 year old (cp)
+ped %>%
+  make_newdata(age = c(30)) %>%
+  add_hazard(pam, reference = list(age = c(58))) %>%
+  select(hazard, ci_lower, ci_upper)
+# -> 30 year old has about half the risk of a 58 year old
+```
+
+This might seem a little convoluted, but can be easily generalized to situations
+with complex covariate specifications for the two data sets being compared as
+well as in case of time-varying effects, time-dependent covariates, etc.
+
+
+### Cumulative hazard
 Analogously, we can obtain the cumulative hazard (piece-wise linear function).
 Note that for the cumulative hazard and survival probability it is **important to
 group the data** accordingly, such that the cumulative hazard is cumulated
@@ -112,7 +133,7 @@ ped_df %>%
 	 ylab(expression(hat(Lambda)(t))) + xlab(expression(t))
 ```
 
-or the survival probabilities
+### Survival probability
 
 ```{r, fig.width=4, fig.height=3}
 ped_df %>% group_by(age) %>% add_surv_prob(pam) %>%
@@ -167,7 +188,7 @@ age of 30, respectively:
 
 ```{r, fig.width = 4, fig.height = 4}
 gg_slice(ped, pam, "age", age = seq_range(age, n = 25),
-  reference = list(age = quo(mean(age))))
+  reference = list(age = mean(ped$age)))
 gg_slice(ped, pam, "age", age = seq_range(age, n = 25),
   reference = list(age = c(30)))
 ```
