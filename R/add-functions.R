@@ -128,7 +128,8 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' Add (cumulative) hazard based on the provided data set and model.
 #' If \code{ci=TRUE} confidence intervals are also added. Their width can
 #' be controlled via the \code{se_mult} argument. This is a wrapper around
-#' \code{\link[mgcv]{predict.gam}}. When re
+#' \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
+#' (log-)hazard ratio is calculated.
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam

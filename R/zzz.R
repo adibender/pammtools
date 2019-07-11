@@ -4,7 +4,7 @@
     utils::globalVariables(".")
   }
 
-  message(
+  packageStartupMessage(
     "The add_term function has changed in pammtools 0.1.12.
     The argument `relative` is deprecated and replaced by `reference`.
     See help page for details.")

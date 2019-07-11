@@ -61,7 +61,8 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 Add (cumulative) hazard based on the provided data set and model.
 If \code{ci=TRUE} confidence intervals are also added. Their width can
 be controlled via the \code{se_mult} argument. This is a wrapper around
-\code{\link[mgcv]{predict.gam}}. When re
+\code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
+(log-)hazard ratio is calculated.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
