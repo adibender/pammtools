@@ -45,6 +45,14 @@ test_that("hazard functions work for PAM", {
   ## simulation based ci (0.95)
   haz4 <- add_hazard(ped_info(ped), pam, ci_type = "sim")
 
+  ## hazard with reference (i.e. hazard ratio)
+  hr <- add_hazard(ped_info(ped), pam2, reference = list(age = c(30)))
+  # hazard ratio is constant as age effect not time-varying
+  expect_equal(round(hr$hazard, 3), rep(0.524, 5))
+  # hr = 1 if reference = data
+  hr2 <- ped_info(ped) %>%  add_hazard(pam2, reference = list(age = mean(.$age)))
+  expect_equal(hr2$hazard, rep(1, 5))
+
 })
 
 test_that("hazard functions work for PEM", {
@@ -118,17 +126,26 @@ test_that("cumulative hazard functions work for PEM", {
 
 test_that("adding terms works for PAM", {
 
-  # add_term
+  # standard
   ndf2  <- make_newdata(ped, age = seq_range(age, 3))
   pred2 <- ndf2 %>% add_term(pam2, term = "age")
+  expect_equal(round(pred2$fit, 3), c(0.328, -.174, .775))
   expect_data_frame(pred2, nrows = 3L, ncols = 12L)
-  pred2 <- ndf2 %>% add_term(pam2, term = "age",
-    reference = list(age = mean(.$age)))
+  # with custom reference
+  pred2 <- ndf2 %>%
+    add_term(pam2, term = "age", reference = list(age = mean(.$age)))
+  expect_equal(round(pred2$fit, 3), c(.501, 0, .948))
   expect_data_frame(pred2, nrows = 3L, ncols = 12L)
   expect_equal(pred2$fit[2], 0)
+  # with overall function application
   pred3 <- ndf2 %>% add_term(pam2, term = "age", reference = identity(.))
+  expect_equal(pred3$fit, rep(0, 3))
   expect_data_frame(pred3, nrows = 3L, ncols = 12L)
   expect_equal(pred3$fit, rep(0, 3))
+  # with separately created data frame
+  df_mean <- sample_info(ndf2)
+  pred4 <- ndf2 %>% add_term(pam2, term = "age", reference = df_mean)
+  expect_equal(pred4$fit, pred2$fit)
 
 })
 

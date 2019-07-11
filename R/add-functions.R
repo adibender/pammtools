@@ -8,9 +8,11 @@
 #' @inheritParams mgcv::predict.gam
 #' @param term A character (vector) or regular expression indicating for
 #' which term(s) information should be extracted and added to data set.
+#' @param ci \code{logical}. Indicates if confidence intervals should be
+#' calculated. Defaults to \code{TRUE}.
 #' @param se_mult The factor by which standard errors are multiplied to form
 #' confidence intervals.
-#' @param reference A data frame with number of rows equal to \code{newdata} or
+#' @param reference A data frame with number of rows equal to \code{nrow(newdata)} or
 #' one, or a named list with (partial) covariate specifications. See examples.
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}}
 #' @import checkmate dplyr mgcv
@@ -37,10 +39,9 @@ add_term <- function(
   newdata,
   object,
   term,
-  se.fit    = TRUE,
-  type      = "terms",
-  se_mult   = 2,
   reference = NULL,
+  ci        = TRUE,
+  se_mult   = 2,
   ...) {
 
   assert_data_frame(newdata, all.missing = FALSE)
@@ -50,28 +51,10 @@ add_term <- function(
     unlist() %>% unique() %>% sort()
   is_gam <- inherits(object, "gam")
 
-  X <- if (is_gam) {
-    predict.gam(object, newdata = newdata,
-      type = "lpmatrix", ...)[, col_ind, drop = FALSE]
-  } else  {
-    model.matrix(object$formula[-2], data = newdata)[, col_ind, drop = FALSE]
-  }
-  if (!is.null(reference)) {
-    reference <- preproc_reference(reference, colnames(newdata), nrow(newdata))
-    reference <- newdata %>% mutate(!!!reference)
-    X_ref <- if (is_gam) {
-      predict.gam(
-        object,
-        newdata = reference,
-        type    = "lpmatrix")[, col_ind, drop = FALSE]
-    } else {
-      model.matrix(object$formula[-2], data = reference)[, col_ind, drop = FALSE]
-    }
-    X <- X - X_ref
-  }
+  X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
 
   newdata[["fit"]] <- drop(X %*% object$coefficients[col_ind])
-  if (se.fit) {
+  if (ci) {
     cov.coefs <- if (is_gam) {
       object$Vp[col_ind, col_ind]
     } else {
@@ -86,6 +69,35 @@ add_term <- function(
 
   return(newdata)
 
+}
+
+make_X <- function(object, ...) {
+  UseMethod("make_X", object)
+}
+
+make_X.default <- function(object, newdata, ...) {
+  X <- model.matrix(object$formula[-2], data = newdata, ...)
+
+}
+
+make_X.gam <- function(object, newdata, ...) {
+
+  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+
+}
+
+prep_X <- function(object, newdata, reference = NULL, ...) {
+
+  X <- make_X(object, newdata, ...)
+
+  if (!is.null(reference)) {
+    reference <- preproc_reference(reference, colnames(newdata), nrow(newdata))
+    reference <- newdata %>% mutate(!!!reference)
+    X_ref <- make_X(object, reference, ...)
+    X <- X - X_ref
+  }
+
+  X
 }
 
 
@@ -116,14 +128,15 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' Add (cumulative) hazard based on the provided data set and model.
 #' If \code{ci=TRUE} confidence intervals are also added. Their width can
 #' be controlled via the \code{se_mult} argument. This is a wrapper around
-#' \code{\link[mgcv]{predict.gam}}.
+#' \code{\link[mgcv]{predict.gam}}. When re
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
+#' @inheritParams add_term
+#' @param type Either \code{"response"} or \code{"link"}. The former calculates
+#' hazard, the latter the log-hazard.
 #' @param ... Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 #'   \code{\link{get_hazard}}
-#' @param ci Logical indicating whether to include confidence intervals. Defaults
-#' to \code{TRUE}
 #' @param ci_type The method by which standard errors/confidence intervals
 #' will be calculated. Default transforms the linear predictor at
 #' respective intervals. \code{"delta"} calculates CIs based on the standard
@@ -151,12 +164,13 @@ preproc_reference <- function(reference, cnames, n_rows) {
 add_hazard <- function(
   newdata,
   object,
-  type          = c("response", "link"),
-  ci            = TRUE,
-  se_mult       = 2,
-  ci_type       = c("default", "delta", "sim"),
-  overwrite     = FALSE,
-  time_var = NULL,
+  reference = NULL,
+  type      = c("response", "link"),
+  ci        = TRUE,
+  se_mult   = 2,
+  ci_type   = c("default", "delta", "sim"),
+  overwrite = FALSE,
+  time_var  = NULL,
   ...)  {
 
   if (!overwrite) {
@@ -171,8 +185,9 @@ add_hazard <- function(
       newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  get_hazard(newdata, object, ci = ci, type = type, se_mult = se_mult,
-    ci_type = ci_type, time_var = time_var, ...)
+  get_hazard(newdata, object, reference = reference,
+    ci = ci, type = type, se_mult = se_mult, ci_type = ci_type,
+    time_var = time_var, ...)
 
 }
 
@@ -185,11 +200,12 @@ add_hazard <- function(
 get_hazard <- function(
   newdata,
   object,
-  ci            = TRUE,
-  type          = c("response", "link"),
-  ci_type       = c("default", "delta", "sim"),
-  time_var = NULL,
-  se_mult        = 2,
+  reference = NULL,
+  ci        = TRUE,
+  type      = c("response", "link"),
+  ci_type   = c("default", "delta", "sim"),
+  time_var  = NULL,
+  se_mult   = 2,
   ...)  {
 
   assert_data_frame(newdata, all.missing = FALSE)
@@ -210,16 +226,12 @@ get_hazard <- function(
   # estimation
   warn_about_new_time_points(newdata, object, time_var)
 
-  if (is_gam) {
-    X <- predict.gam(object, newdata, type = "lpmatrix")
-  } else {
-    X <- model.matrix(object$formula[-2], data = newdata)
-  }
+  X <- prep_X(object, newdata, reference, ...)
   coefs <- coef(object)
   newdata$hazard <- unname(drop(X %*% coefs))
   if (ci) {
-    newdata <- newdata %>% add_ci(object, X, type = type, ci_type = ci_type,
-      se_mult = se_mult, ...)
+    newdata <- newdata %>%
+      add_ci(object, X, type = type, ci_type = ci_type, se_mult = se_mult)
   }
   if (type == "response") {
     newdata <- newdata %>% mutate(hazard = exp(.data$hazard))

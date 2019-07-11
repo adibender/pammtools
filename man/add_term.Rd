@@ -4,8 +4,8 @@
 \alias{add_term}
 \title{Embeds the data set with the specified (relative) term contribution}
 \usage{
-add_term(newdata, object, term, se.fit = TRUE, type = "terms",
-  se_mult = 2, reference = NULL, ...)
+add_term(newdata, object, term, reference = NULL, ci = TRUE,
+  se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -20,30 +20,14 @@ add_term(newdata, object, term, se.fit = TRUE, type = "terms",
 \item{term}{A character (vector) or regular expression indicating for
 which term(s) information should be extracted and added to data set.}
 
-\item{se.fit}{ when this is TRUE (not default) standard error estimates are returned for each prediction.}
+\item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
+one, or a named list with (partial) covariate specifications. See examples.}
 
-\item{type}{ When this has the value \code{"link"} (default) the linear predictor (possibly with
-associated standard errors) is returned. When \code{type="terms"} each component of the 
-linear predictor is returned seperately (possibly with standard errors): this includes 
-parametric model components, followed by each smooth component, but excludes
-any offset and any intercept. \code{type="iterms"} is the same, except that any standard errors 
-returned for smooth components will include the uncertainty about the intercept/overall mean.  When 
-\code{type="response"} predictions 
-on the scale of the response are returned (possibly with approximate
-standard errors). When \code{type="lpmatrix"} then a matrix is returned
-which yields the values of the linear predictor (minus any offset) when
-postmultiplied by the
-parameter vector (in this case \code{se.fit} is ignored). The latter
-option is most useful for getting variance estimates for quantities derived from
-the model: for example integrated quantities, or derivatives of smooths. A
-linear predictor matrix can also be used to implement approximate prediction
-outside \code{R} (see example code, below). }
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
 
 \item{se_mult}{The factor by which standard errors are multiplied to form
 confidence intervals.}
-
-\item{reference}{A data frame with number of rows equal to \code{newdata} or
-one, or a named list with (partial) covariate specifications. See examples.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}}}
 }
