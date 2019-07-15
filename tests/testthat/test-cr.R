@@ -5,7 +5,7 @@ test_that("For single risk result is identical to as_ped.", {
   veteran <- veteran[c(1:3, 135:137), ]
   ped <- as_ped(
     data    = veteran,
-    formula = Surv(time, status)~ trt + age,
+    formula = Surv(time, status) ~ trt + age,
     cut     = c(0, 100, 400))
   ped_cr <- as_ped_cr(
     data    = veteran,
@@ -19,7 +19,7 @@ test_that("Works for competing risks.", {
   veteran <- veteran[c(1:3, 135:137), ]
   ped <- as_ped(
     data    = veteran,
-    formula = Surv(time, status)~ trt + age,
+    formula = Surv(time, status) ~ trt + age,
     cut     = c(0, 100, 400))
   veteran$status[1] <- 2
   ped_cr <- as_ped_cr(

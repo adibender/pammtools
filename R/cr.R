@@ -20,22 +20,10 @@
 #' @importFrom stats glm
 #' @export
 glm_cr <- function(formula, family = poisson, data, offset, ...) {
-  assert_formula(formula)
-  assert_data_frame(data)
-  if (is.null(offset)) stop("You need to specifiy an offset.")
-  crs <- unique(data$ped_status)
-  crs <- crs[!(crs == 0)]
-  n_crs <- length(crs)
-  res <- vector(mode = "list", length = n_crs)
-  names(res) <- crs
-  for (i in 1:n_crs) {
-    # this function is supposed to make a ped_cr object to a ped object
-    # where we only investiagte one of the competing risks
-    current_data <- modify_cr_data(data, cr = crs[i])
-    res[[i]] <- glm(formula = formula, family = family, 
-                    data = current_data, offset = offset)#, ...)
-  }
+  check_input(formula, data, offset)
+  res <- fit_cr(formula, family, data, offset, type = "glm", ...)
   class(res) <- "pem_cr"
+  attr(res, "risks") <- attr(data, "risks")
   #for methods
   return(res)
 }
@@ -55,6 +43,7 @@ summary.pem_cr <- function(pem_cr) {
   for (i in 1:length(pem_cr)) {
     summary_list[[i]] <- summary(pem_cr[[i]])
   }
+  names(summary_list) <- attr(pem_cr, "risks")
   summary_list
 }
 
@@ -92,22 +81,10 @@ print.pem_cr <- function(summary_list) {
 #' @export
 gam_cr <- function(formula, family = gaussian(), 
                    data = list(), offset = NULL, ...) {
-  assert_formula(formula)
-  assert_data_frame(data)
-  if (is.null(offset)) stop("You need to specifiy an offset.")
-  crs <- unique(data$ped_status)
-  crs <- crs[!(crs == 0)]
-  n_crs <- length(crs)
-  res <- vector(mode = "list", length = n_crs)
-  names(res) <- crs
-  for (i in 1:n_crs) {
-    # this function is supposed to make a ped_cr object to a ped object
-    # where we only investiagte one of the competing risks
-    current_data <- modify_cr_data(data, cr = crs[i])
-    res[[i]] <- gam(formula = formula, family = family, data = data,
-                    offset = offset, ...)
-  }
+  check_input(formula, data, offset)
+  res <- fit_cr(formula, family, data, offset, type = "gam", ...)
   class(res) <- "pem_cr"
+  attr(res, "risks") <- attr(data, "risks")
   #for methods
   return(res)
 }
@@ -135,8 +112,10 @@ print.pam_cr <- function(summary_list) {
 }
 
 #' This is a wrapper for the general data transformation function provided by 
-#' the pammtools package (as_ped). The usage is identical to as_ped. For 
-#' details use ?as_ped.
+#' the pammtools package (as_ped). The usage is identical to as_ped (except of 
+#' one issue: the status can be a character or factor. It will be memorised and 
+#' used later on in the methods. This is helpful when interpreting result.
+#' For more details use ?as_ped. 
 #' @param data Either an object inheriting from data frame or in case of 
 #' time-dependent covariates a list of data frames, where the first data frame
 #' contains the time-to-event information and static covariates while the 
@@ -154,15 +133,16 @@ print.pam_cr <- function(summary_list) {
 #' All event times after max_time will be administratively censored at max_time.
 #' @return 
 #' @export
-as_ped_cr <- function(data, formula, ...) {
+as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
   true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
   true_status <- data[[status_str]]
   stati <- unique(true_status)
-  stati <- stati[stati != 0]
+  stati <- stati[stati != censor_code]
   ped_stati <- vector(mode = "list", length = length(stati))
   for (i in 1:length(stati)) {
     current_data <- data
@@ -173,13 +153,8 @@ as_ped_cr <- function(data, formula, ...) {
   }
   ped <- as_ped(current_data, formula, ...)
   ped$ped_status <- Reduce("+", ped_stati)
-  #for (i in 1:nrow(ped)) {
-   # if ((ped$id[i + 1] != ped$id[i]) && (i != nrow(ped)) && 
-    #    (ped$tend <= true_time[ped$id[i]])) {
-     # ped$ped_status[i] <- true_status[ped$id[i]]
-    #}
-  #}
   class(ped) <- c("ped_cr", "ped", "data.frame")
+  attr(ped, "risks") <- attr(data, "risks")
   ped
 }
 
@@ -193,4 +168,118 @@ as_ped_cr <- function(data, formula, ...) {
 modify_cr_data <- function(data, cr) {
   data$ped_status <- ifelse(data$ped_status == cr, 1, 0)
   data
+}
+
+#' Fitting of cr PEMs / PAMMs
+#' 
+#' This function fits a gams/glms depending on the input for a cr framework.
+#' It is the operative sub-routine of glm_cr and gam_cr.
+#' @param formula an object of class formula or a string convertible to it.
+#' The model formula corresponding to a gam or glm.
+#' @param family the family of the gam to be modelled. Only poisson is
+#'  reasonable. Hence, any other input will not be accepted.
+#' @param data A data.frame of class ped_cr that features time-to-event data
+#' and convariates. (see https://adibender.github.io/pammtools/)
+#' @param offset The offset for each observation. Contained in data.
+#' @param m_type A character indicating the type of model to be fit: either 
+#' "glm" or "gam".
+#' @param ... additional arguments passed to the gam/glm function.
+#' @return a list of gams or glms - one entry for a single competing risk.
+#' @importFrom mgcv gam
+#' @importFrom stats glm
+fit_cr <- function(formula, family, data, offset, m_type, ...) {
+  crs <- unique(data$ped_status)
+  crs <- crs[!(crs == 0)]
+  n_crs <- length(crs)
+  res <- vector(mode = "list", length = n_crs)
+  names(res) <- crs
+  for (i in 1:n_crs) {
+    # this function is supposed to make a ped_cr object to a ped object
+    # where we only investiagte one of the competing risks
+    current_data <- modify_cr_data(data, cr = crs[i])
+    command <- paste(m_type, "(formula = formula, family = family, ", 
+                    "data = current_data, offset = offset, ...)", sep = "")
+    res[[i]] <- eval(parse(text = command))
+  }
+  return(res)
+}
+
+#' Input checking for cr PEMs / PAMMs
+#' 
+#' This function fits a gams/glms depending on the input for a cr framework.
+#' It is the operative sub-routine of glm_cr and gam_cr.
+#' @param formula an object of class formula or a string convertible to it.
+#' The model formula corresponding to a gam or glm.
+#' @param data A data.frame of class ped_cr that features time-to-event data
+#' and convariates. (see https://adibender.github.io/pammtools/)
+#' @param offset The offset for each observation. Contained in data.
+#' @return An assertion if there is false input.
+#' @import checkmate
+check_input <- function(formula, data, offset) {
+  assert_formula(formula)
+  assert_data_frame(data)
+  if (is.null(offset)) stop("You need to specifiy an offset.")
+}
+
+
+make_numeric <- function(data, status_str, censor_code = 0) {
+  risks <- unique(data[[status_str]])
+  risks <- risks[risks != censor_code]
+  data[data[[status_str]] == censor_code, status_str] <- 0
+  for (i in 1:length(risks)) {
+    data[data[[status_str]] == risks[i], status_str] <- i
+  }
+  data[[status_str]] <- as.numeric(data[[status_str]])
+  attr(data, "risks") <- risks
+  data
+}
+
+hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
+                            ci_type, overwrite, time_var, ...) {
+  new_cols <- as.data.frame(matrix(0, nrow = nrow(newdata), 
+                                   ncol = length(object) + 
+                                     length(object) * ci * 2))
+  j <- 1
+  for (i in 1:length(object)) {
+    if (ci) {
+      new_object <- hazard_function(newdata, object[[i]], ci = ci, 
+                                    se_mult = se_mult, 
+                                    ci_type = ci_type, 
+                                    overwrite = overwrite, 
+                                    time_var = time_var, ...)
+      where <- which(colnames(new_object) == "cumu_hazard")
+      new_cols[, j:(j + 2)] <- new_object[, where:(where + 2)]
+      colnames(new_cols)[j:(j + 2)] <- paste(attr(object, "risks")[i], 
+                                             colnames(new_object)
+                                             [where:(where + 2)], sep = "_")
+      j <- j + 3
+    } else {
+      new_object <- hazard_function(newdata, object[[i]], ci = ci, 
+                                    se_mult = se_mult, 
+                                    ci_type = ci_type, 
+                                    overwrite = overwrite, 
+                                    time_var = time_var, ...)
+      where <- which(colnames(new_object) == "cumu_hazard")
+      new_cols[, i] <- new_object[, where]
+      colnames(new_cols)[i] <- paste(attr(object, "risks")[i], 
+                                     colnames(new_object)[where], sep = "_")
+    }
+  }
+  return(cbind(newdata, new_cols))
+}
+
+add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"), 
+                               ci = TRUE, se_mult = 2, 
+                               ci_type = c("default", "delta", "sim"),
+                               overwrite = FALSE, time_var = NULL, ...) {
+  hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, ...)
+}
+
+add_hazard_cr <- function(newdata, object, type = c("link", "response"), 
+                               ci = TRUE, se_mult = 2, 
+                               ci_type = c("default", "delta", "sim"),
+                               overwrite = FALSE, time_var = NULL, ...) {
+  hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, ...)
 }
