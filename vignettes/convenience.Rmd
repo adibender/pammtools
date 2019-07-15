@@ -111,9 +111,7 @@ argument:
 # -> 30 year old has about half the risk of a 58 year old
 ```
 
-This might seem a little convoluted, but can be easily generalized to situations
-with complex covariate specifications for the two data sets being compared as
-well as in case of time-varying effects, time-dependent covariates, etc.
+This might seem a little convoluted, but can be easily generalized in case of time-varying effects, time-dependent covariates, cumulative effects, etc.
 
 
 ### Cumulative hazard
