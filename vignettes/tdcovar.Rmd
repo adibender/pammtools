@@ -191,8 +191,11 @@ Primary Biliary Cirrhosis Data (`pbc`) from the `survival` package (see
 `?pbc` for documentation).
 
 ```{r}
+data("pbc", package = "survival")
 head(pbc)[, c(1:5, 11, 12)]
 head(pbcseq)[, c(1, 4:5, 7, 12, 13)]
+pbc <- pbc %>% mutate(bili = log(bili), protime = log(protime))
+pbcseq <- pbcseq %>% mutate(bili = log(bili), protime = log(protime))
 ```
 
 ### Extended Cox analysis of the `pbc` data
@@ -200,14 +203,13 @@ We first replicate the analysis from `vignette("timedep", package="survival")`:
 
 ```{r}
 # below code copied from survival vignette "timedep"
-temp <- subset(pbc, id <= 312, select=c(id:sex)) # baseline
-pbc2 <- tmerge(temp, temp, id=id, death = event(time, status)) #set range
-pbc2 <- tmerge(pbc2, pbcseq, id=id, ascites = tdc(day, ascites),
-    bili = tdc(day, bili), albumin = tdc(day, albumin),
-    protime = tdc(day, protime), alk.phos = tdc(day, alk.phos))
+temp <- subset(pbc, id <= 312, select = c(id:sex)) # baseline
+pbc2 <- tmerge(temp, temp, id = id, death = event(time, status)) #set range
+pbc2 <- tmerge(pbc2, pbcseq, id = id, bili = tdc(day, bili),
+  protime = tdc(day, protime))
 
-fit1 <- coxph(Surv(time, status == 2) ~ log(bili) + log(protime), pbc)
-fit2 <- coxph(Surv(tstart, tstop, death == 2) ~ log(bili) + log(protime), pbc2)
+fit1 <- coxph(Surv(time, status == 2) ~ bili + protime, pbc)
+fit2 <- coxph(Surv(tstart, tstop, death == 2) ~ bili + protime, pbc2)
 rbind("baseline fit" = coef(fit1), "time dependent" = coef(fit2))
 ```
 
@@ -240,9 +242,9 @@ pbc_ped <- as_ped(
 Now we can fit the model with `mgcv::gam`:
 
 ```{r}
-pbc_pam <- gam(ped_status ~ s(tend) + log(bili) + log(protime), data=pbc_ped,
-  family=poisson(), offset=offset)
-cbind(pam=coef(pbc_pam)[2:3], cox=coef(fit2))
+pbc_pam <- gam(ped_status ~ s(tend) + bili + protime, data = pbc_ped,
+  family = poisson(), offset = offset)
+cbind(pam = coef(pbc_pam)[2:3], cox = coef(fit2))
 ```
 
 Coefficient estimates are very similar for both models, especially for the
@@ -253,39 +255,39 @@ effect of `bili`. A graphical comparison yields similar results:
 
 ```{r, fig.keep="none"}
 ## Effect of bilirubin
-## note that we use relative = TRUE in the call to add_term, which calculates
-## the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
-## (see also Details section in ?predict.coxph)
+# note that we use the reference argument to calculate
+# the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph
+# (see also Details section in ?predict.coxph)
+reference = sample_info(pbc_ped)
 bili_df <- pbc_ped %>% ungroup() %>%
   make_newdata(bili = seq_range(bili, n = 100)) %>%
-  add_term(pbc_pam, term="bili", relative=TRUE) %>%
-  mutate(cox = predict(fit2, ., type="term")[, "log(bili)"])
-
-bili_gg <- ggplot(bili_df, aes(x=bili, y=fit)) +
-    geom_line(aes(col="PAM")) +
-    geom_ribbon(aes(ymin=ci_lower, ymax=ci_upper), alpha=0.2) +
-    geom_line(aes(y=cox, col="Cox")) +
-    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000"))
+  add_term(pbc_pam, term = "bili", reference = reference) %>%
+  mutate(cox = predict(fit2, ., type = "term")[, "bili"])
 
 ## Effect of protime
 protime_df <- pbc_ped %>% ungroup() %>%
   make_newdata(protime = seq_range(protime, n=100)) %>%
-  add_term(pbc_pam, term="protime", relative=TRUE) %>%
-  mutate(cox = predict(fit2, ., type="term")[, "log(protime)"])
+  add_term(pbc_pam, term = "protime", reference = reference) %>%
+  mutate(cox = predict(fit2, ., type = "term")[, "protime"])
 
-protime_gg <- ggplot(protime_df, aes(x=protime, y=fit)) +
-    geom_line(aes(col="PAM")) +
-    geom_ribbon(aes(ymin=ci_lower, ymax=ci_upper), alpha=0.2) +
-    geom_line(aes(y=cox, col="Cox")) +
-    scale_colour_manual(name="Method", values=c("#E41A1C", "#000000"))
-
-## combine figures
-gridExtra::grid.arrange(bili_gg, protime_gg, nrow = 1L)
+# visualization
+# remember that bili and protime are log transformed
+p_term <- ggplot(data = NULL, aes(y = fit)) + geom_line(aes(col = "PAM")) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+  geom_line(aes(y = cox, col = "Cox")) +
+  scale_colour_manual(name = "Method", values = c("#E41A1C", "#000000"))
+gridExtra::grid.arrange(
+  p_term %+% bili_df + aes(x = exp(bili)),
+  p_term %+% protime_df + aes(x = exp(protime)),
+  nrow = 1L)
 ```
 </details>
 
-```{r, echo=FALSE, fig.width=6, fig.height=3}
-gridExtra::grid.arrange(bili_gg, protime_gg, nrow = 1L)
+```{r, echo = FALSE, fig.width = 6, fig.height = 3}
+gridExtra::grid.arrange(
+  p_term %+% bili_df + aes(x = exp(bili)),
+  p_term %+% protime_df + aes(x = exp(protime)),
+  nrow = 1L)
 ```
 
 
