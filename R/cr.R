@@ -268,6 +268,8 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
   return(cbind(newdata, new_cols))
 }
 
+#' Add predicted (cumulative) hazard to data set for competing risks
+
 add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"), 
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
