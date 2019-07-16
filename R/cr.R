@@ -19,6 +19,7 @@
 #' @import checkmate
 #' @importFrom stats glm
 #' @export
+#' @author Philipp Kopper
 glm_cr <- function(formula, family = poisson, data, offset, ...) {
   check_input(formula, data, offset)
   res <- fit_cr(formula, family, data, offset, type = "glm", ...)
@@ -37,6 +38,7 @@ glm_cr <- function(formula, family = poisson, data, offset, ...) {
 #' glm object. Each element should correspond to one partial competing risks
 #' model of a PEM.
 #' @return A list of summaries.
+#' @author Philipp Kopper
 summary.pem_cr <- function(pem_cr) {
   summary_list <- vector(mode = "list", length = length(pem_cr))
   names(summary_list) <- names(pem_cr)
@@ -52,6 +54,7 @@ summary.pem_cr <- function(pem_cr) {
 #' for a glm. Each element should correspond to one partial competing risks
 #' model of a PEM.
 #' @return A (printed) list of summaries.
+#' @author Philipp Kopper
 print.pem_cr <- function(summary_list) {
   for (i in 1:length(summary_list)) {
     print(summary_list[[i]])
@@ -79,6 +82,7 @@ print.pem_cr <- function(summary_list) {
 #' @import checkmate
 #' @importFrom mgcv gam
 #' @export
+#' @author Philipp Kopper
 gam_cr <- function(formula, family = gaussian(), 
                    data = list(), offset = NULL, ...) {
   check_input(formula, data, offset)
@@ -98,6 +102,7 @@ gam_cr <- function(formula, family = gaussian(),
 #' glm object. Each element should correspond to one partial competing risks
 #' model of a PEM.
 #' @return A list of summaries.
+#' @author Philipp Kopper
 summary.pam_cr <- function(pam_cr) {
   summary.pem_cr(pam_cr)
 }
@@ -107,6 +112,7 @@ summary.pam_cr <- function(pam_cr) {
 #' for a gam. Each element should correspond to one partial competing risks
 #' model of a PAM.
 #' @return A (printed) list of summaries.
+#' @author Philipp Kopper
 print.pam_cr <- function(summary_list) {
   print.pem_cr(summary_list)
 }
@@ -133,6 +139,7 @@ print.pam_cr <- function(summary_list) {
 #' All event times after max_time will be administratively censored at max_time.
 #' @return 
 #' @export
+#' @author Philipp Kopper
 as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   assert_data_frame(data)
   assert_formula(formula)
@@ -165,6 +172,7 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
 #' Needs to have the same name / number as in data.
 #' @return a ped data.frame object for a single competing risk. 
 #' (All other risks are treated as censoring.)
+#' @author Philipp Kopper
 modify_cr_data <- function(data, cr) {
   data$ped_status <- ifelse(data$ped_status == cr, 1, 0)
   data
@@ -187,6 +195,7 @@ modify_cr_data <- function(data, cr) {
 #' @return a list of gams or glms - one entry for a single competing risk.
 #' @importFrom mgcv gam
 #' @importFrom stats glm
+#' @author Philipp Kopper
 fit_cr <- function(formula, family, data, offset, m_type, ...) {
   crs <- unique(data$ped_status)
   crs <- crs[!(crs == 0)]
@@ -215,14 +224,24 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
 #' @param offset The offset for each observation. Contained in data.
 #' @return An assertion if there is false input.
 #' @import checkmate
+#' @author Philipp Kopper
 check_input <- function(formula, data, offset) {
   assert_formula(formula)
   assert_data_frame(data)
   if (is.null(offset)) stop("You need to specifiy an offset.")
 }
 
-
-make_numeric <- function(data, status_str, censor_code = 0) {
+#' Conversion to numeric risks
+#' 
+#' This function converts character or factor status into numeric ones.
+#' This is necessary for further processing.
+#' @param data A data.frame of class ped_cr that features time-to-event data
+#' and convariates. (see https://adibender.github.io/pammtools/)
+#' @param status_str A character indicating the colname of the status variable.
+#' @param censor_code A value (character/numeric/factor) indicating as what
+#' censoring has been coded.
+#' @return data with (converted) numeric status column
+make_numeric <- function(data, status_str, censor_code) {
   risks <- unique(data[[status_str]])
   risks <- risks[risks != censor_code]
   data[data[[status_str]] == censor_code, status_str] <- 0
@@ -234,6 +253,12 @@ make_numeric <- function(data, status_str, censor_code = 0) {
   data
 }
 
+#' Add (cumulative) hazards / survival probabilities for competing risks
+#' 
+#' This function is the main subroutine of add_cumu_hazard_cr(),
+#' add_hazard_cr() and add_surv_prob().
+#' For details see add_cumu_hazard_cr() and add_hazard_cr().
+#' @author Philipp Kopper
 hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
                             ci_type, overwrite, time_var, ...) {
   new_cols <- as.data.frame(matrix(0, nrow = nrow(newdata), 
@@ -269,7 +294,63 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
 }
 
 #' Add predicted (cumulative) hazard to data set for competing risks
-
+#' 
+#' Add (cumulative) hazard based on the provided data set and model for 
+#' competing risks. 
+#' If ci=TRUE confidence intervals are also added. Their width can be 
+#' controlled via the se_mult argument. This is a wrapper around predict.gam.
+#' Additionally, it is a wrapper for the non cr functions predicting the 
+#' (cumulative) hazard rate.
+#' @param newdata A data frame or list containing the values of the model
+#'  covariates at which predictions are required. If this is not provided then 
+#'  predictions corresponding to the original data are returned. If newdata is
+#'  provided then it should contain all the variables needed for prediction: a
+#'  warning is generated if not. See details for use with 
+#'  link{linear.functional.terms}.
+#' @param object a fitted pem_cr or pam_cr object as produced by gam_cr() or 
+#' glm_cr().
+#' @param type When this has the value "link" (default) the linear predictor
+#'  (possibly with associated standard errors) is returned. When type="terms"
+#'  each component of the linear predictor is returned seperately 
+#'  (possibly with standard errors): this includes parametric model components, 
+#'  followed by each smooth component, but excludes any offset and any 
+#'  intercept. type="iterms" is the same, except that any standard errors 
+#'  returned for smooth components will include the uncertainty about the 
+#'  intercept/overall mean. When type="response" predictions on the scale of 
+#'  the response are returned (possibly with approximate standard errors). 
+#'  When type="lpmatrix" then a matrix is returned which yields the values of 
+#'  the linear predictor (minus any offset) when postmultiplied by the 
+#'  parameter vector (in this case se.fit is ignored). The latter option is 
+#'  most useful for getting variance estimates for quantities derived from 
+#'  the model: for example integrated quantities, or derivatives of smooths. A 
+#'  linear predictor matrix can also be used to implement approximate 
+#'  prediction outside R (see example code, below).
+#' @param ci Logical indicating whether to include confidence intervals. 
+#'  Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @ci_type The method by which standard errors/confidence intervals will be
+#'  calculated. Default transforms the linear predictor at respective intervals.
+#'  "delta" calculates CIs based on the standard error calculated by the Delta 
+#'  method. "sim" draws the property of interest from its posterior based on 
+#'  the normal distribution of the estimated coefficients. CIs are given by 
+#'  respective quantiles.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#'  the data set? Defaults to FALSE. If TRUE, columns with names 
+#'  c("hazard", "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#'  given, defaults to "tend" for gam fits, else "interval". The latter is 
+#'  assumed to be a factor, the former numeric.
+#' @param ... Further arguments passed to add_hazard / add_cumu_hazard, 
+#' predict.gam and get_hazard.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the (cumulative) hazard (and if ci = TRUE the respective 
+#' confidence intervals) for all risks.
+#' @export
+#' @author Philipp Kopper
 add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"), 
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
@@ -278,10 +359,110 @@ add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"),
                   se_mult, ci_type, overwrite, time_var, ...)
 }
 
+#' Add predicted (cumulative) hazard to data set for competing risks
+#' 
+#' Add (cumulative) hazard based on the provided data set and model for 
+#' competing risks. 
+#' If ci=TRUE confidence intervals are also added. Their width can be 
+#' controlled via the se_mult argument. This is a wrapper around predict.gam.
+#' Additionally, it is a wrapper for the non cr functions predicting the 
+#' (cumulative) hazard rate.
+#' @param newdata A data frame or list containing the values of the model
+#'  covariates at which predictions are required. If this is not provided then 
+#'  predictions corresponding to the original data are returned. If newdata is
+#'  provided then it should contain all the variables needed for prediction: a
+#'  warning is generated if not. See details for use with 
+#'  link{linear.functional.terms}.
+#' @param object a fitted pem_cr or pam_cr object as produced by gam_cr() or 
+#' glm_cr().
+#' @param type When this has the value "link" (default) the linear predictor
+#'  (possibly with associated standard errors) is returned. When type="terms"
+#'  each component of the linear predictor is returned seperately 
+#'  (possibly with standard errors): this includes parametric model components, 
+#'  followed by each smooth component, but excludes any offset and any 
+#'  intercept. type="iterms" is the same, except that any standard errors 
+#'  returned for smooth components will include the uncertainty about the 
+#'  intercept/overall mean. When type="response" predictions on the scale of 
+#'  the response are returned (possibly with approximate standard errors). 
+#'  When type="lpmatrix" then a matrix is returned which yields the values of 
+#'  the linear predictor (minus any offset) when postmultiplied by the 
+#'  parameter vector (in this case se.fit is ignored). The latter option is 
+#'  most useful for getting variance estimates for quantities derived from 
+#'  the model: for example integrated quantities, or derivatives of smooths. A 
+#'  linear predictor matrix can also be used to implement approximate 
+#'  prediction outside R (see example code, below).
+#' @param ci Logical indicating whether to include confidence intervals. 
+#'  Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @ci_type The method by which standard errors/confidence intervals will be
+#'  calculated. Default transforms the linear predictor at respective intervals.
+#'  "delta" calculates CIs based on the standard error calculated by the Delta 
+#'  method. "sim" draws the property of interest from its posterior based on 
+#'  the normal distribution of the estimated coefficients. CIs are given by 
+#'  respective quantiles.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#'  the data set? Defaults to FALSE. If TRUE, columns with names 
+#'  c("hazard", "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#'  given, defaults to "tend" for gam fits, else "interval". The latter is 
+#'  assumed to be a factor, the former numeric.
+#' @param ... Further arguments passed to add_hazard / add_cumu_hazard, 
+#' predict.gam and get_hazard.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the (cumulative) hazard (and if ci = TRUE the respective 
+#' confidence intervals) for all risks.
+#' @export
+#' @author Philipp Kopper
 add_hazard_cr <- function(newdata, object, type = c("link", "response"), 
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
   hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, ...)
+}
+
+#' Add survival probability estimates for competing risks
+#' 
+#' Given suitable data (i.e. data with all columns used for estimation of 
+#' the model), this functions adds a column surv_prob containing survival 
+#' probabilities for the specified covariate and follow-up information (and 
+#' CIs surv_lower, surv_upper if ci=TRUE).
+#' @param newdata A data frame or list containing the values of the model 
+#' covariates at which predictions are required. If this is not provided 
+#' then predictions corresponding to the original data are returned. If 
+#' newdata is provided then it should contain all the variables needed 
+#' for prediction: a warning is generated if not. See details for use 
+#' with link{linear.functional.terms}.
+#' @param object 	a fitted pem_cr / pam_cr object as produced by gam_cr() 
+#' or glm_cr().
+#' @param ci Logical indicating whether to include confidence intervals. 
+#' Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#' the data set? Defaults to FALSE. If TRUE, columns with names c("hazard", 
+#' "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#' given, defaults to "tend" for gam fits, else "interval". The latter is 
+#' assumed to be a factor, the former numeric.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @param ... Further arguments passed to add_surv_prob, predict.gam and 
+#' get_hazard
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the predicted survival probability (and if ci = TRUE the 
+#' respective confidence intervals) for all risks.
+#' @export
+#' @author Philipp Kopper
+add_surv_prob_cr <- function(newdata, object, type = c("link", "response"), 
+                             ci = TRUE, se_mult = 2, 
+                             ci_type = c("default", "delta", "sim"),
+                             overwrite = FALSE, time_var = NULL, ...) {
+  hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
