@@ -22,7 +22,7 @@
 #' @author Philipp Kopper
 glm_cr <- function(formula, family = poisson, data, offset, ...) {
   check_input(formula, data, offset)
-  res <- fit_cr(formula, family, data, offset, type = "glm", ...)
+  res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
   #for methods
@@ -44,6 +44,7 @@ summary.pem_cr <- function(pem_cr) {
   names(summary_list) <- names(pem_cr)
   for (i in 1:length(pem_cr)) {
     summary_list[[i]] <- summary(pem_cr[[i]])
+    summary_list[[i]]$call <- ""
   }
   names(summary_list) <- attr(pem_cr, "risks")
   summary_list
@@ -57,6 +58,7 @@ summary.pem_cr <- function(pem_cr) {
 #' @author Philipp Kopper
 print.pem_cr <- function(summary_list) {
   for (i in 1:length(summary_list)) {
+    cat(paste("Risk:", names(summary_list)[i]))
     print(summary_list[[i]])
   }
 }
@@ -86,7 +88,7 @@ print.pem_cr <- function(summary_list) {
 gam_cr <- function(formula, family = gaussian(), 
                    data = list(), offset = NULL, ...) {
   check_input(formula, data, offset)
-  res <- fit_cr(formula, family, data, offset, type = "gam", ...)
+  res <- fit_cr(formula, family, data, offset, m_type = "gam", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
   #for methods
