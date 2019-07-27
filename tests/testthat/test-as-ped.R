@@ -37,7 +37,7 @@ test_that("Trafo works for list objects (with TDCs)", {
   ## check nesting
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(survhosp, PatientDied) ~ . |
+    formula = Surv(survhosp, PatientDied) ~ . +
       cumulative(survhosp, Study_Day, caloriesPercentage, tz_var = "Study_Day") +
         cumulative(proteinGproKG, tz_var = "Study_Day"),
     cut     = 0:30,
@@ -48,7 +48,7 @@ test_that("Trafo works for list objects (with TDCs)", {
   expect_identical(colnames(ped$Study_Day), paste0("Study_Day", 1:12))
   ped <- as_ped(
       data    = list(event_df, tdc_df),
-      formula = Surv(survhosp, PatientDied) ~ . |
+      formula = Surv(survhosp, PatientDied) ~ . +
         cumulative(Study_Day, caloriesPercentage, tz_var = "Study_Day") +
           cumulative(proteinGproKG, tz_var = "Study_Day"),
       id  = "CombinedID")

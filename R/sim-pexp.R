@@ -114,7 +114,7 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-constant part
   ped  <- split_data(
       formula = Surv(time, status)~.,
-      data    = select_if (data, is_atomic),
+      data    = select_if(data, is_atomic),
       cut     = cut,
       id      = "id") %>%
     rename("t" = "tstart") %>%

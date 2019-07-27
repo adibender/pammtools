@@ -4,7 +4,7 @@
 \alias{get_tdc_vars}
 \title{Extract variables from the left-hand-side of a formula}
 \usage{
-get_tdc_vars(formula, specials = "cumulative")
+get_tdc_vars(formula, specials = "cumulative", data = NULL)
 }
 \arguments{
 \item{formula}{A \code{\link{formula}} object.}

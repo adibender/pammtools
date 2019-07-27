@@ -41,7 +41,7 @@ nest_tdc.default <- function(data, formula, ...) {
     outcome_vars <- get_lhs_vars(formula)
   }
 
-  tdc_vars     <- setdiff(tdc_vars, outcome_vars)
+  tdc_vars <- setdiff(tdc_vars, outcome_vars)
 
   if (!any(colnames(data) %in% tdc_vars) | !has_tdc(data, id)) {
     vars_to_exclude <- intersect(colnames(data), tdc_vars)
@@ -69,14 +69,18 @@ nest_tdc.list <- function(data, formula, ...) {
   dots <- list(...)
   cut  <- dots[["cut"]]
 
+  data_dummy <- suppressMessages(
+    map(data, ~.x[1,]) %>% do.call(what = left_join))
+
   # preprocess information on time-dependent covariates
   lgl_concurrent <- has_special(formula, special = "concurrent")
   lgl_cumulative <- has_special(formula)
   tdc_vars <- character(0)
+  form_tdc <- get_tdc_form(formula, data = data_dummy)
 
   if (lgl_concurrent) {
     # obtain information on concurrent effects
-    ccr <- prep_concurrent(data, formula)
+    ccr <- prep_concurrent(data, form_tdc)
     # update cut points
     ccr_time <- ccr[["ccr_time"]]
     # update vector of TDCs
@@ -90,7 +94,7 @@ nest_tdc.list <- function(data, formula, ...) {
   }
 
   if (lgl_cumulative) {
-    func_list    <- eval_special(formula)
+    func_list    <- eval_special(form_tdc, data = data[[2]])
     func_vars    <- map(func_list, ~.x[["col_vars"]]) %>% unlist()
     func_tz_vars <- map_chr(func_list, ~.x[["tz_var"]]) %>% unique()
     tdc_vars     <- c(tdc_vars, func_vars, func_tz_vars) %>% unique()
@@ -110,7 +114,8 @@ nest_tdc.list <- function(data, formula, ...) {
   ## add atrributes
   cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
 
-  id_n <- nested_df %>% pull(time_var) %>%
+  id_n <- nested_df %>%
+    pull(time_var) %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec = cut, left.open = TRUE, rightmost.closed = TRUE)
 

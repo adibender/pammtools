@@ -75,7 +75,7 @@ sample_info.ped <- function(x) {
 #' @export
 sample_info.fped <- function(x) {
 
-  x %>% select_if (~!is.matrix(.x)) %>% sample_info.ped()
+  x %>% select_if(~!is.matrix(.x)) %>% sample_info.ped()
 
 }
 

@@ -35,7 +35,7 @@ test_that("LL helpers and as_ped produce equivalent LL windows", {
   sim_df$time <- 10
 
   ped <- sim_df %>% as_ped(
-    Surv(time, status) ~ . | cumulative(time, z.tz1, tz_var = "tz1") +
+    Surv(time, status) ~ .  + cumulative(time, z.tz1, tz_var = "tz1") +
       cumulative(time, z.tz2, tz_var = "tz2",
         ll_fun = function(t, tz) (t >= tz + 2) & (t <= tz + 2 + 5)),
     id = "id")
@@ -87,7 +87,7 @@ test_that("Cumulative effects are calculated correctly", {
   data = df,
   cut = 0:10)
 
-  ped <- as_ped(sim_df, Surv(time, status)~ x1 + x2 |
+  ped <- as_ped(sim_df, Surv(time, status)~ x1 + x2 +
       cumulative(latency(tz3), z.tz3, tz_var = "tz3"),
     cut = 0:10)
   ped5 <- subset(ped, id == 5)

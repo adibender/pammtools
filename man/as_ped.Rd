@@ -11,11 +11,12 @@
 as_ped(data, formula, ...)
 
 \method{as_ped}{data.frame}(data, formula, cut = NULL, max_time = NULL,
-  ...)
+  tdc_specials = c("concurrent", "cumulative"), ...)
 
 \method{as_ped}{nested_fdf}(data, formula, ...)
 
-\method{as_ped}{list}(data, formula, ...)
+\method{as_ped}{list}(data, formula, tdc_specials = c("concurrent",
+  "cumulative"), ...)
 
 is.ped(x)
 }
@@ -40,6 +41,9 @@ If unspecified, all unique event times will be used.}
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}
 will be administratively censored at \code{max_time}.}
+
+\item{tdc_specials}{A character vector. Names of potential specials in
+\code{formula} for concurrent and or cumulative effects.}
 
 \item{x}{any R object.}
 }
