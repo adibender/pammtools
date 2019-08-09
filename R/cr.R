@@ -43,8 +43,8 @@ summary.pem_cr <- function(pem_cr) {
   summary_list <- vector(mode = "list", length = length(pem_cr))
   names(summary_list) <- names(pem_cr)
   for (i in 1:length(pem_cr)) {
+    pem_cr[[i]]$call <- ""
     summary_list[[i]] <- summary(pem_cr[[i]])
-    summary_list[[i]]$call <- ""
   }
   names(summary_list) <- attr(pem_cr, "risks")
   summary_list
@@ -210,7 +210,7 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
     current_data <- modify_cr_data(data, cr = crs[i])
     command <- paste(m_type, "(formula = formula, family = family, ", 
                     "data = current_data, offset = offset, ...)", sep = "")
-    res[[i]] <- eval(parse(text = command))
+    res[[i]] <- eval(parse(text = command)) # verpönt
   }
   return(res)
 }
