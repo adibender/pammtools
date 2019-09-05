@@ -38,8 +38,7 @@ fped_attr <- function(fped) {
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
 #' @import dplyr
-#' @aliases arrange filter distinct_ full_join group_by group_by_ inner_join left_join mutate rename rename_ right_join sample_frac sample_n select select_ slice summarise transmute ungroup
-# FIXME: replace deprecated "underscore" verbs
+#' @aliases arrange filter distinct full_join group_by group_by inner_join left_join mutate rename right_join sample_frac sample_n select slice summarise transmute ungroup
 #' @keywords internal
 NULL
 
@@ -59,14 +58,6 @@ arrange.ped <- function(.data, ...) {
 #' @rdname dplyr_verbs
 group_by.ped <- function(.data, ..., add = FALSE) {
   reped(group_by(unped(.data), ..., add = add))
-}
-
-#' @inheritParams dplyr::group_by_
-#' @export
-#' @export group_by_
-#' @rdname dplyr_verbs
-group_by_.ped <- function(.data, ..., .dots = list(), add = FALSE) {
-  reped(group_by_(unped(.data), ..., .dots = .dots, add = add))
 }
 
 #' @export
@@ -241,11 +232,17 @@ NULL
 #' @export
 #' @export fill
 #' @rdname tidyr_verbs
-fill.ped <- function(data, ..., .direction=c("down", "up"), keep_attributes=TRUE) {
+fill.ped <- function(
+  data,
+  ...,
+  .direction = c("down", "up", "downup", "updown"),
+  keep_attributes = TRUE) {
+
   if (keep_attributes) {
     data_attr   <- ped_attr(data)
   }
-  tbl <- reped(fill(unped(data), ..., .direction=.direction))
+  .direction = match.arg(.direction)
+  tbl <- reped(fill(unped(data), ..., .direction = .direction))
   if (keep_attributes) {
     attributes(tbl) <- c(attributes(tbl), data_attr)
   }

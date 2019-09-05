@@ -7,9 +7,9 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 notes
+0 errors | 0 warnings | 0 notes
 
-* I changed the maintainer email as the institutional email is about to expire
+* A simple maintainance release to support upcoming version of tidyr
 
 ## Reverse dependencies
 

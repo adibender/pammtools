@@ -4,27 +4,23 @@
 \alias{dplyr_verbs}
 \alias{arrange}
 \alias{filter}
-\alias{distinct_}
+\alias{distinct}
 \alias{full_join}
 \alias{group_by}
-\alias{group_by_}
 \alias{inner_join}
 \alias{left_join}
 \alias{mutate}
 \alias{rename}
-\alias{rename_}
 \alias{right_join}
 \alias{sample_frac}
 \alias{sample_n}
 \alias{select}
-\alias{select_}
 \alias{slice}
 \alias{summarise}
 \alias{transmute}
 \alias{ungroup}
 \alias{arrange.ped}
 \alias{group_by.ped}
-\alias{group_by_.ped}
 \alias{ungroup.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
@@ -62,8 +58,6 @@
 \method{arrange}{ped}(.data, ...)
 
 \method{group_by}{ped}(.data, ..., add = FALSE)
-
-\method{group_by_}{ped}(.data, ..., .dots = list(), add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
 
@@ -150,8 +144,6 @@
 override existing groups. To add to the existing groups, use
 \code{add = TRUE}.}
 
-\item{.dots}{see \code{dplyr} documentation}
-
 \item{x}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{tbl}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
@@ -199,6 +191,8 @@ it is a potentially expensive operation so you must opt into it.}
 Should be a character vector of length 2.}
 
 \item{funs}{see \code{\link[dplyr]{summarize_all}}}
+
+\item{.dots}{see \code{dplyr} documentation}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 }

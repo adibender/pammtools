@@ -2,9 +2,13 @@ language: r
 sudo: false
 cache: packages
 
-r:
-  - devel
-  - release
+matrix:
+  include:
+  - r: devel
+  - r: release
+  - r: release
+    name: tidyr-dev
+    before_script: Rscript -e "remotes::install_github('tidyverse/tidyr')"
 
 r_packages:
   - pammtools # for building pkgdown vignettes via travis

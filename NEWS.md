@@ -1,3 +1,7 @@
+# pammtools 0.1.14
+
+* Support for new interface to tidyr
+
 # pammtools 0.1.13
 
 * Functions `get_hazard` and `add_hazard` also gain `reference` argument.

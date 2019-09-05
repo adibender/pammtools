@@ -275,8 +275,12 @@ add_concurrent <- function(ped, data, id_var) {
     tz_var_i   <- ccr_i[["tz_var"]]
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
     ccr_i_df   <- data %>%
-      select(one_of(c(id_var, ccr_vars_i))) %>%
-      unnest()
+      select(one_of(c(id_var, ccr_vars_i)))
+    if(tidyr_new_interface()) {
+      ccr_i_df <- ccr_i_df %>% unnest(cols = -one_of(id_var))
+    } else {
+      ccr_i_df <- ccr_i_df %>% unnest()
+    }
 
     li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
       function(.x, .y) {
