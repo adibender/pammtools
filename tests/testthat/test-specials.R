@@ -14,7 +14,7 @@ test_that("Formula special 'func' works as expected", {
 
 test_that("Formula special 'concurrent' works as expected", {
   ## time + latency + covar (DLNM approach)
-  ccr1 <- eval_special(~.|concurrent(x1, x2, tz_var = "te"), 
+  ccr1 <- eval_special(~ . | concurrent(x1, x2, tz_var = "te"),
                        special = "concurrent")[[1]]
   expect_list(ccr1, any.missing = TRUE, len = 5)
   expect_identical(ccr1$tz_var, "te")

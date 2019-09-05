@@ -257,7 +257,7 @@ eta_cumu <- function(data, fcumu, cut, ...) {
   combine_df(
     data.frame(t = cut),
     select(data, one_of("id", vars))) %>%
-  unnest() %>%
+  unnest(cols = -one_of("id")) %>%
   group_by(.data$id, .data$t) %>%
   mutate(
     LL = ll_fun(t, !!sym(vars[1])) * 1,

@@ -1,6 +1,7 @@
 context("Tidyverse methods for specific classes")
 
 test_that("ped class is preserved after dplyr operations", {
+
   data("veteran", package = "survival")
   veteran <- dplyr::slice(veteran, 1:2)
   ped <- as_ped(
@@ -20,6 +21,7 @@ test_that("ped class is preserved after dplyr operations", {
   expect_is(sample_n(ped, 1), "ped")
   expect_is(sample_frac(ped, 0.5), "ped")
   expect_is(right_join(distinct(ped, id, interval), ped), "ped")
+
 })
 
 
@@ -49,7 +51,6 @@ test_that("nested_fdf class is preserved after tidyr operations", {
   expect_is(sim_df <- filter(simdf_elra, id %in% c(1:2)), "nested_fdf")
   expect_is(arrange(sim_df, id), "nested_fdf")
   expect_is(group_by(sim_df, id), "nested_fdf")
-  expect_is(group_by_(sim_df, "id"), "nested_fdf")
   expect_is(distinct(sim_df, id), "nested_fdf")
   expect_is(sample_n(sim_df, 2), "nested_fdf")
   expect_is(sample_frac(sim_df, .1), "nested_fdf")
