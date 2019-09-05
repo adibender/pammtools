@@ -10,7 +10,6 @@ test_that("ped class is preserved after dplyr operations", {
     cut     = c(0, 100, 400),
     id      = "id")
 
-  expect_is(group_by_(ped, "interval"), "ped")
   expect_is(filter(ped, id == 1), "ped")
   expect_is(slice(ped, 1), "ped")
   expect_is(arrange(ped, desc(id)), "ped")

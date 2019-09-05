@@ -20,7 +20,7 @@ Imports:
     checkmate,
     magrittr,
     rlang,
-    tidyr (>= 0.8.4),
+    tidyr (>= 0.8.3),
     ggplot2,
     dplyr (>= 0.7.0),
     purrr (>= 0.2.3),
