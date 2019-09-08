@@ -39,16 +39,16 @@ Thus most arguments and their documentation below is from \code{\link[mgcv]{pred
 }
 \examples{
 library(ggplot2)
-ped <- as_ped(tumor, Surv(days, status)~ age, cut = seq(0, 2000, by =20))
+ped <- as_ped(tumor, Surv(days, status)~ age, cut = seq(0, 2000, by = 100))
 pam <- mgcv::gam(ped_status ~ s(tend) + s(age), family = poisson(),
   offset = offset, data = ped)
 #term contribution for sequence of ages
-s_age <- ped \%>\% make_newdata(age = seq_range(age, 100)) \%>\%
+s_age <- ped \%>\% make_newdata(age = seq_range(age, 50)) \%>\%
   add_term(pam, term = "age")
 ggplot(s_age, aes(x = age, y = fit)) + geom_line() +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = .3)
 # term contribution relative to mean age
-s_age2 <- ped \%>\% make_newdata(age = seq_range(age, 100)) \%>\%
+s_age2 <- ped \%>\% make_newdata(age = seq_range(age, 50)) \%>\%
   add_term(pam, term = "age", reference = list(age = mean(.$age)))
 ggplot(s_age2, aes(x = age, y = fit)) + geom_line() +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = .3)

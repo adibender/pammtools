@@ -10,6 +10,8 @@
 0 errors | 0 warnings | 0 notes
 
 * A simple maintainance release to support upcoming version of tidyr
+* Fixed relative link in NEWS.md
+* Reduced run length of add_term example
 
 ## Reverse dependencies
 
