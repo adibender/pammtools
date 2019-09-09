@@ -337,7 +337,7 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
     new_cols <- Reduce(cbind, measure)
     return(cbind(newdata, new_cols))
   } else {
-    return(list(newdata = newdata, measure = mesure))
+    return(list(newdata = newdata, measure = measure))
   }
 }
 
@@ -519,11 +519,51 @@ add_cif <- function(newdata, object, type = c("link", "response"),
                     ci = TRUE, se_mult = 2, 
                     ci_type = c("default", "delta", "sim"),
                     overwrite = FALSE, time_var = NULL, ...) {
-  hazards <- add_hazard_cr(new_data, pem_cr, type, ci, 
-                                se_mult, overwrite, time_var, ...)
-  cumu_hazards <- add_cumu_hazard_cr(new_data, pem_cr, type, ci, 
-                                     se_mult, overwrite, time_var, ...)
+  cif <- get_cif(newdata, object, type = c("link", "response"), 
+                 ci = TRUE, se_mult = 2, 
+                 ci_type = c("default", "delta", "sim"),
+                 overwrite = FALSE, time_var = NULL, ...)
+  return(cbind(newdata, cif))
+}
+
+get_cif <- function(newdata, object, type = c("link", "response"), 
+                    ci = TRUE, se_mult = 2, 
+                    ci_type = c("default", "delta", "sim"),
+                    overwrite = FALSE, time_var = NULL, ...) {
+  hazards <- add_hazard_cr(newdata, object, type, ci, 
+                           se_mult, overwrite = FALSE, time_var,
+                           result = "list", ...)$measure
+  total_survival <- compute_total_survival(newdata, object, type, ci, 
+                                           se_mult, overwrite = FALSE, 
+                                           time_var, ...)
+  n_risks <- length(object)
+  cif <- vector(mode = "list", length = n_risks)
   for (i in 1:n_risks) {
-    hazards$XXX * exp(- (cumu_hazards$XXX + cumu_hazards$XXY))
+    cif[[i]] <- cumsum(hazards[[i]][, 1] * total_survival * newdata$intlen)
   }
+  cif <- Reduce(cbind, cif)
+  colnames(cif) <- paste(attr(object, "risks"), "cif", sep = "_")
+  return(cif)
+}
+
+add_total_survival <- function(newdata, object, type = c("link", "response"), 
+                               ci = TRUE, se_mult = 2, 
+                               ci_type = c("default", "delta", "sim"),
+                               overwrite = FALSE, time_var = NULL, ...) {
+  total_survival <- compute_total_survival(newdata, object, type, ci, 
+                                           se_mult, overwrite = FALSE, 
+                                           time_var, ...)
+  return(cbind(newdata, total_survival))
+}
+
+compute_total_survival <- function(newdata, object, 
+                                   type = c("link", "response"), 
+                                   ci = TRUE, se_mult = 2, 
+                                   ci_type = c("default", "delta", "sim"),
+                                   overwrite = FALSE, time_var = NULL, ...)  {
+  cumu_hazards <- add_cumu_hazard_cr(newdata, object, type, ci, 
+                                     se_mult, overwrite = FALSE, time_var, 
+                                     result = "list", ...)$measure
+  total_survival <- exp( - Reduce("+", cumu_hazards)[, 1])
+  return(total_survival)
 }
