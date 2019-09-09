@@ -180,6 +180,7 @@ print.pam_cr <- function(summary_list) {
 #' All event times after max_time will be administratively censored at max_time.
 #' @return 
 #' @export
+#' @import pammtools
 #' @author Philipp Kopper
 #' library(pammtools)
 #' set.seed(31072019)
@@ -196,8 +197,8 @@ print.pam_cr <- function(summary_list) {
 #'    type = status * type)
 #' df <- df[, - c(5, 6)]
 #' colnames(df)[7] <- "obs_times"
-#' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., id = "id",
-#' cut = seq(0, max(df$obs_times), 0.25))
+#' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., 
+#' id = "id", cut = seq(0, max(df$obs_times), 0.25))
 as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   assert_data_frame(data)
   assert_formula(formula)
@@ -206,18 +207,18 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   true_time <- data[[time_str]]
   data <- make_numeric(data, status_str, censor_code)
   true_status <- data[[status_str]]
-  stati <- unique(true_status)
-  stati <- stati[stati != censor_code]
-  ped_stati <- vector(mode = "list", length = length(stati))
-  for (i in 1:length(stati)) {
+  status <- unique(true_status)
+  status <- status[status != censor_code]
+  ped_status <- vector(mode = "list", length = length(status))
+  for (i in 1:length(status)) {
     current_data <- data
-    current_data[[status_str]][data[[status_str]] != stati[i]] <- 0
-    current_data[[status_str]][data[[status_str]] == stati[i]] <- 1
+    current_data[[status_str]][data[[status_str]] != status[i]] <- 0
+    current_data[[status_str]][data[[status_str]] == status[i]] <- 1
     current_status <- as_ped(current_data, formula, ...)$ped_status
-    ped_stati[[i]] <- current_status * stati[i]
+    ped_status[[i]] <- current_status * status[i]
   }
   ped <- as_ped(current_data, formula, ...)
-  ped$ped_status <- Reduce("+", ped_stati)
+  ped$ped_status <- Reduce("+", ped_status)
   class(ped) <- c("ped_cr", "ped", "data.frame")
   attr(ped, "risks") <- attr(data, "risks")
   ped
@@ -318,37 +319,26 @@ make_numeric <- function(data, status_str, censor_code) {
 #' For details see add_cumu_hazard_cr() and add_hazard_cr().
 #' @author Philipp Kopper
 hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
-                            ci_type, overwrite, time_var, ...) {
-  new_cols <- as.data.frame(matrix(0, nrow = nrow(newdata), 
-                                   ncol = length(object) + 
-                                     length(object) * ci * 2))
-  j <- 1
+                            ci_type, overwrite, time_var, result = "df", ...) {
+  measure <- vector(mode = "list", length = length(object))
   for (i in 1:length(object)) {
-    if (ci) {
-      new_object <- hazard_function(newdata, object[[i]], ci = ci, 
-                                    se_mult = se_mult, 
-                                    ci_type = ci_type, 
-                                    overwrite = overwrite, 
-                                    time_var = time_var, ...)
-      where <- which(colnames(new_object) == "cumu_hazard")
-      new_cols[, j:(j + 2)] <- new_object[, where:(where + 2)]
-      colnames(new_cols)[j:(j + 2)] <- paste(attr(object, "risks")[i], 
-                                             colnames(new_object)
-                                             [where:(where + 2)], sep = "_")
-      j <- j + 3
-    } else {
-      new_object <- hazard_function(newdata, object[[i]], ci = ci, 
-                                    se_mult = se_mult, 
-                                    ci_type = ci_type, 
-                                    overwrite = overwrite, 
-                                    time_var = time_var, ...)
-      where <- which(colnames(new_object) == "cumu_hazard")
-      new_cols[, i] <- new_object[, where]
-      colnames(new_cols)[i] <- paste(attr(object, "risks")[i], 
-                                     colnames(new_object)[where], sep = "_")
-    }
+    measure[[i]] <- hazard_function(newdata, object[[i]], ci = ci, 
+                                  se_mult = se_mult, 
+                                  ci_type = ci_type, 
+                                  overwrite = overwrite, 
+                                  time_var = time_var, ...)
+    added_cols <- !(colnames(measure[[i]]) %in% colnames(newdata))
+    measure[[i]] <- measure[[i]][ , added_cols]
+    attr(measure, "risks")[i] <- attr(object, "risks")[i]
+    colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
+                                   colnames(measure[[i]]), sep = "_")
   }
-  return(cbind(newdata, new_cols))
+  if (result == "df") {
+    new_cols <- Reduce(cbind, measure)
+    return(cbind(newdata, new_cols))
+  } else {
+    return(list(newdata = newdata, measure = mesure))
+  }
 }
 
 #' Add predicted (cumulative) hazard to data set for competing risks
@@ -523,4 +513,17 @@ add_surv_prob_cr <- function(newdata, object, type = c("link", "response"),
                              overwrite = FALSE, time_var = NULL, ...) {
   hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
+}
+
+add_cif <- function(newdata, object, type = c("link", "response"), 
+                    ci = TRUE, se_mult = 2, 
+                    ci_type = c("default", "delta", "sim"),
+                    overwrite = FALSE, time_var = NULL, ...) {
+  hazards <- add_hazard_cr(new_data, pem_cr, type, ci, 
+                                se_mult, overwrite, time_var, ...)
+  cumu_hazards <- add_cumu_hazard_cr(new_data, pem_cr, type, ci, 
+                                     se_mult, overwrite, time_var, ...)
+  for (i in 1:n_risks) {
+    hazards$XXX * exp(- (cumu_hazards$XXX + cumu_hazards$XXY))
+  }
 }

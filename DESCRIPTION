@@ -1,12 +1,13 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools
 
-Version: 0.1.12
-Date: 2019-04-27
+Version: 0.1.2
+Date: 2019-08-15
 
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
+    person("Philipp" "Kopper", , "philipp.kopper@live.de", role = ("ctb"))
 Description: The Piece-wise exponential (Additive Mixed) Model
     (PAMM; Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>) is a
     powerful model class for survival analysis, based on Generalized Additive
