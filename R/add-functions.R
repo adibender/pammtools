@@ -396,7 +396,7 @@ add_surv_prob <- function(
   ci              = TRUE,
   se_mult         = 2,
   overwrite       = FALSE,
-  time_var   = NULL,
+  time_var        = NULL,
   interval_length = "intlen",
   ...)  {
 
@@ -430,7 +430,7 @@ get_surv_prob <- function(
   ci              = TRUE,
   ci_type         = c("default", "delta", "sim"),
   se_mult         = 2L,
-  time_var   = NULL,
+  time_var        = NULL,
   interval_length = "intlen",
   nsim            = 100L,
   ...) {
@@ -499,7 +499,7 @@ add_ci <- function(
   type    = c("response", "link"),
   se_mult = 2,
   ci_type = c("default", "delta", "sim"),
-  nsim = 100) {
+  nsim    = 100) {
 
   ci_type <- match.arg(ci_type)
 

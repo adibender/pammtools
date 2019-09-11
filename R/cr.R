@@ -45,6 +45,7 @@ glm_cr <- function(formula, family = poisson, data, offset, ...) {
   res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
+  attr(res, "type") <- attr(data, "type")
   #for methods
   return(res)
 }
@@ -130,6 +131,7 @@ gam_cr <- function(formula, family = gaussian(),
   res <- fit_cr(formula, family, data, offset, m_type = "gam", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
+  attr(res, "type") <- attr(data, "type")
   #for methods
   return(res)
 }
@@ -199,28 +201,48 @@ print.pam_cr <- function(summary_list) {
 #' colnames(df)[7] <- "obs_times"
 #' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., 
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
-as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
+as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
+                      type = c("subhaz: random", "subhaz: endpoint", 
+                               "c-haz", "o-haz"), ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
   true_time <- data[[time_str]]
   data <- make_numeric(data, status_str, censor_code)
+  if (type == "o-haz") {
+    data[[status_str]][data[[status_str]] != 0] <- 1
+    ped <- as_ped(data, formula, ...)
+    class(ped[[i]]) <- c("ped", "data.frame")
+    attr(ped, "type") <- type
+  }
   true_status <- data[[status_str]]
   status <- unique(true_status)
   status <- status[status != censor_code]
   ped_status <- vector(mode = "list", length = length(status))
+  ped <- vector(mode = "list", length = length(status))
   for (i in 1:length(status)) {
     current_data <- data
+    if (type == "subhaz: random") {
+      current_data[[time_str]][data[[status_str]] != status[i]] <- 
+        runif(length(current_data[[time_str]][data[[status_str]] != status[i]]), 
+              current_data[[time_str]][data[[status_str]] != status[i]], 
+              max(current_data[[time_str]]))
+    } else if (type == "subhaz: endpoint") {
+      current_data[[time_str]][data[[status_str]] != status[i]] <- 
+              max(current_data[[time_str]])
+    }
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    current_status <- as_ped(current_data, formula, ...)$ped_status
+    current_status <- as_ped(current_data, formula)$ped_status
     ped_status[[i]] <- current_status * status[i]
+    ped[[i]] <- as_ped(current_data, formula, ...)
+    class(ped[[i]]) <- c("ped", "data.frame")
   }
-  ped <- as_ped(current_data, formula, ...)
-  ped$ped_status <- Reduce("+", ped_status)
-  class(ped) <- c("ped_cr", "ped", "data.frame")
-  attr(ped, "risks") <- attr(data, "risks")
+  class(ped) <- "ped_cr"
+  attr(ped, "risks") <- status
+  attr(ped, "show") <- ped_show
+  attr(ped, "type") <- type
   ped
 }
 
@@ -256,15 +278,14 @@ modify_cr_data <- function(data, cr) {
 #' @importFrom stats glm
 #' @author Philipp Kopper
 fit_cr <- function(formula, family, data, offset, m_type, ...) {
-  crs <- unique(data$ped_status)
-  crs <- crs[!(crs == 0)]
+  crs <- attr(data, "risks")
   n_crs <- length(crs)
   res <- vector(mode = "list", length = n_crs)
   names(res) <- crs
   for (i in 1:n_crs) {
     # this function is supposed to make a ped_cr object to a ped object
     # where we only investiagte one of the competing risks
-    current_data <- modify_cr_data(data, cr = crs[i])
+    current_data <- data[[i]] #modify_cr_data(data, cr = crs[i])
     command <- paste(m_type, "(formula = formula, family = family, ", 
                     "data = current_data, offset = offset, ...)", sep = "")
     res[[i]] <- eval(parse(text = command)) # verpönt
@@ -286,7 +307,7 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
 #' @author Philipp Kopper
 check_input <- function(formula, data, offset) {
   assert_formula(formula)
-  assert_data_frame(data)
+  lapply(data, assert_data_frame)
   if (is.null(offset)) stop("You need to specifiy an offset.")
 }
 
@@ -323,12 +344,12 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
   measure <- vector(mode = "list", length = length(object))
   for (i in 1:length(object)) {
     measure[[i]] <- hazard_function(newdata, object[[i]], ci = ci, 
-                                  se_mult = se_mult, 
-                                  ci_type = ci_type, 
-                                  overwrite = overwrite, 
-                                  time_var = time_var, ...)
+                                    se_mult = se_mult, 
+                                    ci_type = ci_type, 
+                                    overwrite = overwrite, 
+                                    time_var = time_var, ...)
     added_cols <- !(colnames(measure[[i]]) %in% colnames(newdata))
-    measure[[i]] <- measure[[i]][ , added_cols]
+    measure[[i]] <- measure[[i]][ , added_cols, drop = FALSE]
     attr(measure, "risks")[i] <- attr(object, "risks")[i]
     colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
                                    colnames(measure[[i]]), sep = "_")
@@ -403,6 +424,9 @@ add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"),
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
+  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
+    stop("Cum. hazard function only meaningful for hazard-specific model.")
+  }
   hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
@@ -469,6 +493,9 @@ add_hazard_cr <- function(newdata, object, type = c("link", "response"),
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
+  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
+    stop("Hazard function only meaningful for hazard-specific model.")
+  }
   hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
@@ -511,7 +538,22 @@ add_surv_prob_cr <- function(newdata, object, type = c("link", "response"),
                              ci = TRUE, se_mult = 2, 
                              ci_type = c("default", "delta", "sim"),
                              overwrite = FALSE, time_var = NULL, ...) {
+  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
+    stop("Survival function only meaningful for hazard-specific model.")
+  }
   hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, ...)
+}
+
+add_if <- function(newdata, object, type = c("link", "response"), 
+                    ci = TRUE, se_mult = 2, 
+                    ci_type = c("default", "delta", "sim"),
+                    overwrite = FALSE, time_var = NULL, ...) {
+  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
+    stop("IF only meaningful for subdistr. hazard model.")
+  }
+  check_hazards(add_hazard, object)
+  hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
 
@@ -519,51 +561,9 @@ add_cif <- function(newdata, object, type = c("link", "response"),
                     ci = TRUE, se_mult = 2, 
                     ci_type = c("default", "delta", "sim"),
                     overwrite = FALSE, time_var = NULL, ...) {
-  cif <- get_cif(newdata, object, type = c("link", "response"), 
-                 ci = TRUE, se_mult = 2, 
-                 ci_type = c("default", "delta", "sim"),
-                 overwrite = FALSE, time_var = NULL, ...)
-  return(cbind(newdata, cif))
-}
-
-get_cif <- function(newdata, object, type = c("link", "response"), 
-                    ci = TRUE, se_mult = 2, 
-                    ci_type = c("default", "delta", "sim"),
-                    overwrite = FALSE, time_var = NULL, ...) {
-  hazards <- add_hazard_cr(newdata, object, type, ci, 
-                           se_mult, overwrite = FALSE, time_var,
-                           result = "list", ...)$measure
-  total_survival <- compute_total_survival(newdata, object, type, ci, 
-                                           se_mult, overwrite = FALSE, 
-                                           time_var, ...)
-  n_risks <- length(object)
-  cif <- vector(mode = "list", length = n_risks)
-  for (i in 1:n_risks) {
-    cif[[i]] <- cumsum(hazards[[i]][, 1] * total_survival * newdata$intlen)
+  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
+    stop("CIF only meaningful for subdistr. hazard model.")
   }
-  cif <- Reduce(cbind, cif)
-  colnames(cif) <- paste(attr(object, "risks"), "cif", sep = "_")
-  return(cif)
-}
-
-add_total_survival <- function(newdata, object, type = c("link", "response"), 
-                               ci = TRUE, se_mult = 2, 
-                               ci_type = c("default", "delta", "sim"),
-                               overwrite = FALSE, time_var = NULL, ...) {
-  total_survival <- compute_total_survival(newdata, object, type, ci, 
-                                           se_mult, overwrite = FALSE, 
-                                           time_var, ...)
-  return(cbind(newdata, total_survival))
-}
-
-compute_total_survival <- function(newdata, object, 
-                                   type = c("link", "response"), 
-                                   ci = TRUE, se_mult = 2, 
-                                   ci_type = c("default", "delta", "sim"),
-                                   overwrite = FALSE, time_var = NULL, ...)  {
-  cumu_hazards <- add_cumu_hazard_cr(newdata, object, type, ci, 
-                                     se_mult, overwrite = FALSE, time_var, 
-                                     result = "list", ...)$measure
-  total_survival <- exp( - Reduce("+", cumu_hazards)[, 1])
-  return(total_survival)
+  hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, ...)
 }
