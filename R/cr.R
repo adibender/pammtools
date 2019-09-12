@@ -202,7 +202,7 @@ print.pam_cr <- function(summary_list) {
 #' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., 
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
 as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
-                      type = c("subhaz: random", "subhaz: endpoint", 
+                      type = c("subhaz: endpoint", "subhaz: random", 
                                "c-haz", "o-haz"), ...) {
   assert_data_frame(data)
   assert_formula(formula)
@@ -340,7 +340,8 @@ make_numeric <- function(data, status_str, censor_code) {
 #' For details see add_cumu_hazard_cr() and add_hazard_cr().
 #' @author Philipp Kopper
 hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
-                            ci_type, overwrite, time_var, result = "df", ...) {
+                            ci_type, overwrite, time_var, result = "df", 
+                            name = NULL, ...) {
   measure <- vector(mode = "list", length = length(object))
   for (i in 1:length(object)) {
     measure[[i]] <- hazard_function(newdata, object[[i]], ci = ci, 
@@ -351,8 +352,13 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
     added_cols <- !(colnames(measure[[i]]) %in% colnames(newdata))
     measure[[i]] <- measure[[i]][ , added_cols, drop = FALSE]
     attr(measure, "risks")[i] <- attr(object, "risks")[i]
-    colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
-                                   colnames(measure[[i]]), sep = "_")
+    if (is.null(name)) {
+      colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
+                                      colnames(measure[[i]]), sep = "_")
+    } else {
+      if (ci) name <- paste(name, c("", "_lower", "_upper"), sep = "")
+      colnames(measure[[i]]) <- paste(attr(object, "risks")[i], name, sep = "_")
+    }
   }
   if (result == "df") {
     new_cols <- Reduce(cbind, measure)
@@ -545,25 +551,146 @@ add_surv_prob_cr <- function(newdata, object, type = c("link", "response"),
                   se_mult, ci_type, overwrite, time_var, ...)
 }
 
-add_if <- function(newdata, object, type = c("link", "response"), 
-                    ci = TRUE, se_mult = 2, 
-                    ci_type = c("default", "delta", "sim"),
-                    overwrite = FALSE, time_var = NULL, ...) {
+#' Add subdistribution hazard estimates for competing risks
+#' 
+#' Given suitable data (i.e. data with all columns used for estimation of 
+#' the model), this functions adds a column subdist_hazard containing sub- 
+#' distribution hazards for the specified covariate and follow-up information 
+#' (and CIs subdist_hazard_lower, subdist_hazard_upper if ci=TRUE).
+#' @param newdata A data frame or list containing the values of the model 
+#' covariates at which predictions are required. If this is not provided 
+#' then predictions corresponding to the original data are returned. If 
+#' newdata is provided then it should contain all the variables needed 
+#' for prediction: a warning is generated if not. See details for use 
+#' with link{linear.functional.terms}.
+#' @param object 	a fitted pem_cr / pam_cr object as produced by gam_cr() 
+#' or glm_cr().
+#' @param ci Logical indicating whether to include confidence intervals. 
+#' Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#' the data set? Defaults to FALSE. If TRUE, columns with names c("hazard", 
+#' "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#' given, defaults to "tend" for gam fits, else "interval". The latter is 
+#' assumed to be a factor, the former numeric.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @param ... Further arguments passed to add_hazard, predict.gam and 
+#' get_hazard
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the predicted subdistribution hazards for all risks (and if ci = 
+#' TRUE the respective confidence intervals).
+#' @export
+#' @author Philipp Kopper
+add_subdist_hazards <- function(newdata, object, type = c("link", "response"), 
+                                ci = TRUE, se_mult = 2, 
+                                ci_type = c("default", "delta", "sim"),
+                                overwrite = FALSE, time_var = NULL, ...) {
   if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
-    stop("IF only meaningful for subdistr. hazard model.")
+    stop("Subdist. function only meaningful for subdist. hazard model.")
   }
   check_hazards(add_hazard, object)
   hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
-                  se_mult, ci_type, overwrite, time_var, ...)
+                  se_mult, ci_type, overwrite, time_var, 
+                  name = "subdist_hazard", ...)
 }
 
-add_cif <- function(newdata, object, type = c("link", "response"), 
+#' Add cumulative incidence estimates for competing risks
+#' 
+#' Given suitable data (i.e. data with all columns used for estimation of 
+#' the model), this functions adds a column cif containing 
+#' cumulative subdistribution hazards for the specified covariate and follow-up 
+#' information (and CIs cif_lower, cif_upper if ci=TRUE).
+#' @param newdata A data frame or list containing the values of the model 
+#' covariates at which predictions are required. If this is not provided 
+#' then predictions corresponding to the original data are returned. If 
+#' newdata is provided then it should contain all the variables needed 
+#' for prediction: a warning is generated if not. See details for use 
+#' with link{linear.functional.terms}.
+#' @param object 	a fitted pem_cr / pam_cr object as produced by gam_cr() 
+#' or glm_cr().
+#' @param ci Logical indicating whether to include confidence intervals. 
+#' Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#' the data set? Defaults to FALSE. If TRUE, columns with names c("hazard", 
+#' "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#' given, defaults to "tend" for gam fits, else "interval". The latter is 
+#' assumed to be a factor, the former numeric.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @param ... Further arguments passed to add_cumu_hazard, predict.gam and 
+#' get_hazard
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the predicted cumulatice incidence for all risks. 
+#' (and if ci = TRUE the respective confidence intervals).
+#' @export
+#' @author Philipp Kopper
+add_cif <- function(newdata, object, 
+                    type = c("link", "response"), 
                     ci = TRUE, se_mult = 2, 
                     ci_type = c("default", "delta", "sim"),
                     overwrite = FALSE, time_var = NULL, ...) {
   if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
-    stop("CIF only meaningful for subdistr. hazard model.")
+    stop("CIF only meaningful for subdist. hazard model.")
   }
   hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
-                  se_mult, ci_type, overwrite, time_var, ...)
+                  se_mult, ci_type, overwrite, time_var, 
+                  name = "cif", ...)
 }
+
+#' Add subdsitribution survival probabilities based on CIF for competing risks
+#' 
+#' Given suitable data (i.e. data with all columns used for estimation of 
+#' the model), this functions adds a column subdist_surv_prob containing 
+#' cumulative subdistribution hazards for the specified covariate and follow-up 
+#' information (and CIs subdist_surv_prob_lower, 
+#' subdist_surv_prob_upper if ci=TRUE).
+#' @param newdata A data frame or list containing the values of the model 
+#' covariates at which predictions are required. If this is not provided 
+#' then predictions corresponding to the original data are returned. If 
+#' newdata is provided then it should contain all the variables needed 
+#' for prediction: a warning is generated if not. See details for use 
+#' with link{linear.functional.terms}.
+#' @param object 	a fitted pem_cr / pam_cr object as produced by gam_cr() 
+#' or glm_cr().
+#' @param ci Logical indicating whether to include confidence intervals. 
+#' Defaults to TRUE.
+#' @param se_mult Factor by which standard errors are multiplied for 
+#' calculating the confidence intervals.
+#' @param overwrite Should hazard columns be overwritten if already present in
+#' the data set? Defaults to FALSE. If TRUE, columns with names c("hazard", 
+#' "se", "lower", "upper") will be overwritten.
+#' @param time_var Name of the variable used for the baseline hazard. If not
+#' given, defaults to "tend" for gam fits, else "interval". The latter is 
+#' assumed to be a factor, the former numeric.
+#' @param interval_length The variable in newdata containing the interval 
+#' lengths. Can be either bare unquoted variable name or character. Defaults 
+#' to "intlen".
+#' @param ... Further arguments passed to add_surv_prob, predict.gam and 
+#' get_hazard
+#' @return a data.frame (or tibble) containing the original data and new columns
+#' featuring the predicted survival probablities (from a subhazard perspective) 
+#' for all risks. 
+#' (and if ci = TRUE the respective confidence intervals).
+#' @export
+#' @author Philipp Kopper
+add_subdist_surv_probs <- function(newdata, object, 
+                                   type = c("link", "response"), 
+                                   ci = TRUE, se_mult = 2, 
+                                   ci_type = c("default", "delta", "sim"),
+                                   overwrite = FALSE, time_var = NULL, ...) {
+  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
+    stop("Subdist. functions only meaningful for subdist. hazard model.")
+  }
+  hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
+                  se_mult, ci_type, overwrite, time_var, 
+                  name = "subdist_surv_prob", ...)
+}
+
