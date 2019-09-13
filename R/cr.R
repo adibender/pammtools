@@ -201,48 +201,28 @@ print.pam_cr <- function(summary_list) {
 #' colnames(df)[7] <- "obs_times"
 #' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., 
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
-as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
-                      type = c("subhaz: endpoint", "subhaz: random", 
-                               "c-haz", "o-haz"), ...) {
+as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
   true_time <- data[[time_str]]
   data <- make_numeric(data, status_str, censor_code)
-  if (type == "o-haz") {
-    data[[status_str]][data[[status_str]] != 0] <- 1
-    ped <- as_ped(data, formula, ...)
-    class(ped[[i]]) <- c("ped", "data.frame")
-    attr(ped, "type") <- type
-  }
   true_status <- data[[status_str]]
   status <- unique(true_status)
   status <- status[status != censor_code]
   ped_status <- vector(mode = "list", length = length(status))
-  ped <- vector(mode = "list", length = length(status))
   for (i in 1:length(status)) {
     current_data <- data
-    if (type == "subhaz: random") {
-      current_data[[time_str]][data[[status_str]] != status[i]] <- 
-        runif(length(current_data[[time_str]][data[[status_str]] != status[i]]), 
-              current_data[[time_str]][data[[status_str]] != status[i]], 
-              max(current_data[[time_str]]))
-    } else if (type == "subhaz: endpoint") {
-      current_data[[time_str]][data[[status_str]] != status[i]] <- 
-              max(current_data[[time_str]])
-    }
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    current_status <- as_ped(current_data, formula)$ped_status
+    current_status <- as_ped(current_data, formula, ...)$ped_status
     ped_status[[i]] <- current_status * status[i]
-    ped[[i]] <- as_ped(current_data, formula, ...)
-    class(ped[[i]]) <- c("ped", "data.frame")
   }
-  class(ped) <- "ped_cr"
-  attr(ped, "risks") <- status
-  attr(ped, "show") <- NULL #ped_show
-  attr(ped, "type") <- type
+  ped <- as_ped(current_data, formula, ...)
+  ped$ped_status <- Reduce("+", ped_status)
+  class(ped) <- c("ped_cr", "ped", "data.frame")
+  attr(ped, "risks") <- attr(data, "risks")
   ped
 }
 
@@ -285,7 +265,7 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
   for (i in 1:n_crs) {
     # this function is supposed to make a ped_cr object to a ped object
     # where we only investiagte one of the competing risks
-    current_data <- data[[i]] #modify_cr_data(data, cr = crs[i])
+    current_data <- modify_cr_data(data, cr = crs[i])
     command <- paste(m_type, "(formula = formula, family = family, ", 
                     "data = current_data, offset = offset, ...)", sep = "")
     res[[i]] <- eval(parse(text = command)) # verpönt
@@ -307,7 +287,7 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
 #' @author Philipp Kopper
 check_input <- function(formula, data, offset) {
   assert_formula(formula)
-  lapply(data, assert_data_frame)
+  assert_data_frame(data)
   if (is.null(offset)) stop("You need to specifiy an offset.")
 }
 
@@ -696,6 +676,11 @@ add_cif <- function(newdata, object,
   hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
                   se_mult, ci_type, overwrite, time_var, 
                   name = "cif", ...)
+}
+
+
+count_table <- function(newdata, object, data) {
+  
 }
 
 
