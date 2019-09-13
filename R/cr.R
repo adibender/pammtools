@@ -241,7 +241,7 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
   }
   class(ped) <- "ped_cr"
   attr(ped, "risks") <- status
-  attr(ped, "show") <- ped_show
+  attr(ped, "show") <- NULL #ped_show
   attr(ped, "type") <- type
   ped
 }
