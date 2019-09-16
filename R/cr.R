@@ -45,7 +45,6 @@ glm_cr <- function(formula, family = poisson, data, offset, ...) {
   res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
-  attr(res, "type") <- attr(data, "type")
   #for methods
   return(res)
 }
@@ -131,7 +130,6 @@ gam_cr <- function(formula, family = gaussian(),
   res <- fit_cr(formula, family, data, offset, m_type = "gam", ...)
   class(res) <- "pem_cr"
   attr(res, "risks") <- attr(data, "risks")
-  attr(res, "type") <- attr(data, "type")
   #for methods
   return(res)
 }
@@ -416,9 +414,6 @@ add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"),
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
-    stop("Cum. hazard function only meaningful for hazard-specific model.")
-  }
   hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
@@ -485,9 +480,6 @@ add_hazard_cr <- function(newdata, object, type = c("link", "response"),
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
-    stop("Hazard function only meaningful for hazard-specific model.")
-  }
   hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
@@ -530,9 +522,6 @@ add_surv_prob_cr <- function(newdata, object, type = c("link", "response"),
                              ci = TRUE, se_mult = 2, 
                              ci_type = c("default", "delta", "sim"),
                              overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("c-haz", "o-haz"))) {
-    stop("Survival function only meaningful for hazard-specific model.")
-  }
   hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
@@ -575,9 +564,6 @@ add_subdist_hazards <- function(newdata, object, type = c("link", "response"),
                                 ci = TRUE, se_mult = 2, 
                                 ci_type = c("default", "delta", "sim"),
                                 overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
-    stop("Subdist. function only meaningful for subdist. hazard model.")
-  }
   check_hazards(add_hazard, object)
   hazard_adder_cr(newdata, object, hazard_function = add_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, 
@@ -622,10 +608,6 @@ add_subdist_hazards <- function(newdata, object, type = c("link", "response"),
                                 ci = TRUE, se_mult = 2, 
                                 ci_type = c("default", "delta", "sim"),
                                 overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
-    stop("Subdist. function only meaningful for subdist. hazard model.")
-  }
-  check_hazards(add_hazard, object)
   hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
                   se_mult, ci_type, overwrite, time_var, 
                   name = "cumu_subdist_hazard", ...)
@@ -665,22 +647,82 @@ add_subdist_hazards <- function(newdata, object, type = c("link", "response"),
 #' (and if ci = TRUE the respective confidence intervals).
 #' @export
 #' @author Philipp Kopper
-add_cif <- function(newdata, object, 
+add_cif <- function(newdata, object, data,
                     type = c("link", "response"), 
                     ci = TRUE, se_mult = 2, 
                     ci_type = c("default", "delta", "sim"),
                     overwrite = FALSE, time_var = NULL, ...) {
-  if (!(attr(object, "type") %in% c("subhaz: random", "subhaz: endpoint"))) {
-    stop("CIF only meaningful for subdist. hazard model.")
+  hazards <- hazard_adder_cr(newdata, object, hazard_function = add_hazard, 
+                             type, ci = TRUE, se_mult, ci_type, overwrite, 
+                             time_var, ...)
+  hazards <- hazards[, (ncol(newdata) + 1): (ncol(hazards))]
+  hazard_list <- vector(mode = "list", length = length(object))
+  j <- 1
+  for (i in 1:length(hazard_list)) {
+    hazard_list[[i]] <- hazards[, j:(j + 1)]
+    j <- j + 4
   }
-  hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
-                  se_mult, ci_type, overwrite, time_var, 
-                  name = "cif", ...)
+  cumu_hazards <- hazard_adder_cr(newdata, object, hazard_function = 
+                                    add_cumu_hazard, type, ci = FALSE, se_mult, 
+                                  ci_type, overwrite, time_var, ...)
+  cumu_hazards <- cumu_hazards[, (ncol(newdata) + 1): (ncol(cumu_hazards))]
+  overall_survival <- exp( - apply(cumu_hazards, 1, sum))
+  lagged_overall_survival <- lag(overall_survival)
+  lagged_overall_survival[1] <- 1
+  cif <- vector(mode = "list", length = length(object))
+  for (i in 1:length(cif)) {
+    cif[[i]] <- cumsum(hazard_list[[i]][ , 1] * newdata$intlen * 
+                         overall_survival)
+  }
+  table_counts <- count_table(newdata, object, data)
+  increment_cif <- lapply(cif, diff)
+  d_j <- apply(table_counts[[2]], 1, sum)
+  n_j <- table_counts[[1]]
+  cif_var <- vector(mode = "list", length = length(cif))
+  for (i in 1:length(cif_var)) {
+    cif_var[[i]] <- (c(cif[[i]][1], increment_cif[[i]]) ^ 2) * 
+                              (d_j / (n_j * (n_j - d_j))) +
+                         (lagged_overall_survival ^ 2 * 
+                            ((n_j - table_counts[[2]][[i]]) / (n_j ^ 3))) +
+                         (2 * c(cif[[i]][1], increment_cif[[i]]) * 
+                            lagged_overall_survival * 
+                            (table_counts[[2]][[i]] / (n_j ^ 2)))
+    cif_var[[i]] <- cumsum(cif_var[[i]])
+  }
+  add_this <- vector(mode = "list", length = length(object))
+  for (i in 1:length(object)) {
+    if (ci) {
+      add_this[[i]] <- cbind(cif[[i]], 
+                             cif[[i]] - se_mult * sqrt(cif_var[[i]]),
+                             cif[[i]] + se_mult * sqrt(cif_var[[i]]))
+      add_name <- paste("cif", c("", "_lower", "_upper"), sep = "")
+      colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
+                                       add_name, sep = "_")
+    } else {
+      add_this[[i]] <- cif[[i]] 
+      colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
+                                       "cif", sep = "_")
+    }
+  }
+    cbind(newdata, Reduce(cbind, add_this))
 }
 
 
 count_table <- function(newdata, object, data) {
-  
+  risks <- attr(object, "risks")
+  all_tend <- unique(data$tend)
+  risk_set <- rep(0, length(all_tend))
+  cause_failures <- as.data.frame(matrix(0, nrow = length(all_tend), 
+                                         ncol = length(risks)))
+  colnames(cause_failures) <- risks
+  for (i in 1:length(all_tend)) {
+    current_data <- data[data$tend == all_tend[i], ]
+    risk_set[i] <- sum(current_data$ped_status == 0)
+    for (j in 1:length(risks)) {
+      cause_failures[i , j] <- sum(current_data$ped_status == j)
+    }
+  }
+  return(list(risk_set, cause_failures))
 }
 
 
