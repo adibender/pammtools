@@ -318,8 +318,7 @@ make_numeric <- function(data, status_str, censor_code) {
 #' For details see add_cumu_hazard_cr() and add_hazard_cr().
 #' @author Philipp Kopper
 hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
-                            ci_type, overwrite, time_var, result = "df", 
-                            name = NULL, ...) {
+                            ci_type, overwrite, time_var, result = "df", ...) {
   measure <- vector(mode = "list", length = length(object))
   for (i in 1:length(object)) {
     measure[[i]] <- hazard_function(newdata, object[[i]], ci = ci, 
@@ -330,19 +329,8 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
     added_cols <- !(colnames(measure[[i]]) %in% colnames(newdata))
     measure[[i]] <- measure[[i]][ , added_cols, drop = FALSE]
     attr(measure, "risks")[i] <- attr(object, "risks")[i]
-    if (is.null(name)) {
-      colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
-                                      colnames(measure[[i]]), sep = "_")
-    } else {
-      if (ci) add_name <- paste(name, c("", "_lower", "_upper"), sep = "")
-      colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
-                                      add_name, sep = "_")
-    }
-  }
-  if (!is.null(name)) {
-    if (name == "cif") {
-      measure <- lapply(measure, function(x) 1-x)
-    }
+    colnames(measure[[i]]) <- paste(attr(object, "risks")[i], 
+                                    colnames(measure[[i]]), sep = "_")
   }
   if (result == "df") {
     new_cols <- Reduce(cbind, measure)
