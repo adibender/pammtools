@@ -8,8 +8,8 @@
 \alias{fill.nested_fdf}
 \title{\code{tidyr} Verbs for \code{ped}-Objects}
 \usage{
-\method{fill}{ped}(data, ..., .direction = c("down", "up"),
-  keep_attributes = TRUE)
+\method{fill}{ped}(data, ..., .direction = c("down", "up", "downup",
+  "updown"), keep_attributes = TRUE)
 
 \method{fill}{nested_fdf}(data, ..., .direction = c("down", "up"),
   keep_attributes = TRUE)
@@ -23,7 +23,8 @@ with \code{x:z}, exclude \code{y} with \code{-y}. For more selection options, se
 \code{\link[dplyr:select]{dplyr::select()}} documentation.}
 
 \item{.direction}{Direction in which to fill missing values. Currently
-either "down" (the default) or "up".}
+either "down" (the default), "up", "downup" (i.e. first down and then up)
+or "updown" (first up and then down).}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}.}
 }

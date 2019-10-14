@@ -1,3 +1,7 @@
+# pammtools 0.1.14
+
+* Support for new interface to tidyr
+
 # pammtools 0.1.13
 
 * Functions `get_hazard` and `add_hazard` also gain `reference` argument.
@@ -109,7 +113,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 # pammtools 0.0.8
 
 * All data transformation is now handled using `as_ped` (see
-[data transformation vignette](../articles/data-transformation.html))
+[data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html))
 
 * Data transformation now handles
     - standard time-to-event data
