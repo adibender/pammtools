@@ -25,13 +25,13 @@ test_that("LL helpers and as_ped produce equivalent LL windows", {
   # define lag-lead window function
   ll_fun <- function(t, tz) t >= tz
   ll_fun2 <- function(t, tz) t >= tz + 2 & t <= tz + 2 + 5
-  ## define tdc functions
-  f_xyz1 <- function(t, tz, z) 1
   # simulate data with cumulative effect
   sim_df <- sim_pexp(
     formula = ~ -3.5 - 0.5 * x1 |
-      fcumu(t, tz1, z.tz1, f_xyz = f_xyz1, ll_fun = ll_fun) +
-      fcumu(t, tz2, z.tz2, f_xyz = f_xyz1, ll_fun = ll_fun2),
+      fcumu(t, tz1, z.tz1, f_xyz = function(t, tz, z) 1,
+        ll_fun = function(t, tz) t >= tz) +
+      fcumu(t, tz2, z.tz2, f_xyz = function(t, tz, z) 1,
+        ll_fun = function(t, tz) t >= tz + 2 & t <= tz + 2 + 5),
     data = df,
     cut = 0:10)
   sim_df$time <- 10
