@@ -1,3 +1,6 @@
+# pammtools 0.1.15
+* Interface for specification of data transformation in `as_ped` changed. The vertical bar `|` is no longer necessary to indicate concurrent or cumulative effects
+
 # pammtools 0.1.14
 
 * Support for new interface to tidyr
