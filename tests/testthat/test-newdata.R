@@ -58,7 +58,7 @@ test_that("make_newdata works for PED data", {
 test_that("make_newdata works for PED with matrix columns", {
 
   ped_simdf <- simdf_elra %>% as_ped(
-    Surv(time, status)~ x1 + x2 |
+    Surv(time, status)~ x1 + x2 +
       cumulative(time, latency(tz1), z.tz1, tz_var = "tz1",
         ll_fun = function(t, tz) t >= tz + 2) +
       cumulative(latency(tz2), z.tz2, tz_var = "tz2"),

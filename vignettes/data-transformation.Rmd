@@ -75,7 +75,7 @@ Using the `pammtools` package this is easily achieved with the `as_ped` function
 as follows:
 
 ```{r}
-ped <- as_ped(Surv(time, status)~., data = veteran, id = "id")
+ped <- as_ped(Surv(time, status) ~ ., data = veteran, id = "id")
 ped %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
 
@@ -114,7 +114,7 @@ $\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$,
 resulting in $J = 3$ intervals:
 
 ```{r}
-ped2 <- as_ped(Surv(time, status)~., data = veteran, cut = c(0, 50, 200, 400),
+ped2 <- as_ped(Surv(time, status) ~ ., data = veteran, cut = c(0, 50, 200, 400),
   id = "id")
 ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
 ```
@@ -162,7 +162,7 @@ updated.
 ```{r}
 ped_pbc <- as_ped(
   data    = list(pbc, pbcseq),
-  formula = Surv(time, status) ~ . | concurrent(bili, protime, tz_var = "day"),
+  formula = Surv(time, status) ~ . + concurrent(bili, protime, tz_var = "day"),
   id      = "id")
 ```
 
@@ -172,7 +172,7 @@ lags. This will increase the data set, as an (additional) split point will be ge
 
 ```{r, eval = FALSE}
 pbc_ped <- as_ped(data = list(pbc, pbcseq),
-  formula = Surv(time, status) ~ . | concurrent(bili, tz_var = "day") +
+  formula = Surv(time, status) ~ . + concurrent(bili, tz_var = "day") +
     concurrent(protime, tz_var = "day", lag = 10),
     id = "id")
 ```
@@ -292,7 +292,7 @@ however, you can override the suffix by specifying the
 ```{r}
 ped <- as_ped(
   data    = list(patient, daily),
-  formula = Surv(survhosp, PatientDied) ~ . |
+  formula = Surv(survhosp, PatientDied) ~ . +
     cumulative(latency(Study_Day), caloriesPercentage, tz_var = "Study_Day"),
   cut     = 0:30,
   id = "CombinedID")
@@ -316,7 +316,7 @@ $t-t_z$ occurs in both partial effects, we only need to specify one `cumulative`
 ```{r}
 ped <- as_ped(
   data = list(patient, daily),
-  formula = Surv(survhosp, PatientDied) ~ . |
+  formula = Surv(survhosp, PatientDied) ~ . +
     cumulative(survhosp, latency(Study_Day), caloriesPercentage, proteinGproKG,
       tz_var = "Study_Day"),
   cut = 0:30,
@@ -355,7 +355,7 @@ specifications as illustrated below:
 ```{r}
 ped_sim <- as_ped(
   data = simdf_elra,
-  formula = Surv(time, status) ~ . |
+  formula = Surv(time, status) ~ . +
     cumulative(time, latency(tz1), z.tz1, tz_var = "tz1") +
     cumulative(latency(tz2), z.tz2, tz_var = "tz2"),
   cut = 0:10,

@@ -234,7 +234,7 @@ pbc <- pbc %>% filter(id <= 312) %>%
   mutate(status = 1L * (status == 2))
 pbc_ped <- as_ped(
   data = list(pbc, pbcseq),
-  formula = Surv(time, status) ~ . | concurrent(bili, protime, tz_var = "day"),
+  formula = Surv(time, status) ~ . + concurrent(bili, protime, tz_var = "day"),
   id = "id")
 ```
 

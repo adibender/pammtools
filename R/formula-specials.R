@@ -100,7 +100,7 @@ get_cumulative <- function(data, formula) {
 
   stopifnot(has_tdc_form(formula))
 
-  func_list <- eval_special(formula)
+  func_list <- eval_special(get_tdc_form(formula, data = data), data = data)
 
   n_func <- length(func_list)
   ll_funs <- map(func_list, ~.x[["ll_fun"]])
@@ -124,13 +124,13 @@ get_cumulative <- function(data, formula) {
 }
 
 #' @keywords internal
-eval_special <- function(formula, special="cumulative") {
+eval_special <- function(formula, special="cumulative", data = NULL) {
 
-  tf  <- terms(get_tdc_form(formula), specials = special)
+  tf  <- terms(formula, specials = special, data = data)
   ind_special <- attr(tf, "specials")[[special]]
   # extract components
   if (!is.null(ind_special)) {
-    terms_vec <- attr(tf, "term.labels")[ind_special]
+    terms_vec <- attr(tf, "term.labels")
     map(terms_vec, ~eval(expr = parse(text = .x)))
   } else {
     NULL
@@ -145,17 +145,9 @@ eval_special <- function(formula, special="cumulative") {
 #' \code{formula} should be checked
 #' @keywords internal
 has_special <- function(formula, special = "cumulative") {
-  if (!has_tdc_form(formula)) {
-    return(FALSE)
-  } else {
-    formula <- formula(Formula(formula), lhs = FALSE, rhs = 2)
-    terms   <- terms(formula, specials = special)
-    if (is.null(attr(terms, "specials")[[special]])) {
-      return(FALSE)
-    } else {
-      return(TRUE)
-    }
-  }
+
+  has_tdc_form(formula, tdc_specials = special)
+
 }
 
 #' @rdname get_cumulative
@@ -230,7 +222,7 @@ prep_concurrent.list <- function(x, formula, ...) {
   lgl_concurrent <- has_special(formula, "concurrent")
 
   if (lgl_concurrent) {
-    ccr_list    <- eval_special(formula, special = "concurrent")
+    ccr_list    <- eval_special(formula, special = "concurrent", x[[2]])
     ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
     ccr_time    <- map2(ccr_tz_vars, x, ~get_tz(.y, .x)) %>%
       keep(~ !is.null(.x)) %>%

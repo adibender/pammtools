@@ -2,7 +2,7 @@ context("Test formula special.")
 
 test_that("Formula special 'func' works as expected", {
   ## time + latency + covar (DLNM approach)
-  cumu1 <- eval_special(~.|cumulative(t, latency(te), x, tz_var = "te"))[[1]]
+  cumu1 <- eval_special(~ cumulative(t, latency(te), x, tz_var = "te"))[[1]]
   expect_list(cumu1, any.missing = TRUE, len = 5)
   expect_identical(cumu1$latency_var, "te")
   expect_identical(cumu1$tz_var, "te")
@@ -14,8 +14,8 @@ test_that("Formula special 'func' works as expected", {
 
 test_that("Formula special 'concurrent' works as expected", {
   ## time + latency + covar (DLNM approach)
-  ccr1 <- eval_special(~ . | concurrent(x1, x2, tz_var = "te"),
-                       special = "concurrent")[[1]]
+  ccr1 <- eval_special(~ concurrent(x1, x2, tz_var = "te"),
+    special = "concurrent")[[1]]
   expect_list(ccr1, any.missing = TRUE, len = 5)
   expect_identical(ccr1$tz_var, "te")
   expect_identical(ccr1$col_vars, c("x1", "x2"))
@@ -31,10 +31,10 @@ test_that("Formula special 'concurrent' works as expected", {
   tdc_df <- pbcseq %>%
     filter(id <= 5) %>%
     select(id, day, bili, protime, albumin)
-  formula <- Surv(time, event)~. |concurrent(bili, protime, tz_var="day") +
+  formula <- Surv(time, event)~ concurrent(bili, protime, tz_var = "day") +
     concurrent(albumin, tz_var  = "day")
-  nested_fdf <- nest_tdc(list(event_df, tdc_df), formula, id="id")
-  ped_ccr <- as_ped(list(event_df, tdc_df), formula, id="id")
+  nested_fdf <- nest_tdc(list(event_df, tdc_df), formula, id = "id")
+  ped_ccr <- as_ped(list(event_df, tdc_df), formula, id = "id")
 
 })
 
@@ -48,7 +48,7 @@ test_that("Covariate to matrix Transformation works", {
   ## check nesting
   nested_df <- nest_tdc(
     data    = list(event_df, tdc_df),
-    formula = Surv(survhosp, status)~.|
+    formula = Surv(survhosp, status)~ . +
       cumulative(Study_Day, caloriesPercentage, tz_var="Study_Day") +
         cumulative(proteinGproKG, tz_var="Study_Day"),
     cut     = 0:30,
@@ -62,12 +62,12 @@ test_that("Covariate to matrix Transformation works", {
       "breaks", "func_list", "id_n", "id_tseq", "id_tz_seq"))
   ## check data trafo
   expect_error(get_cumulative(nested_df, ~cumulative(t)))
-  f1 <- get_cumulative(nested_df, ~ .|
+  f1 <- get_cumulative(nested_df, ~ . +
       cumulative(survhosp, latency(Study_Day), caloriesPercentage, tz_var = "Study_Day"))
   expect_list(f1$func_mats, types=c("numeric", "numeric", "numeric", "integer"),
     any.missing=FALSE, len=4, names="named")
   f2 <- get_cumulative(nested_df,
-      ~.|cumulative(survhosp,latency(Study_Day), caloriesPercentage, tz_var = "Study_Day") +
+      ~. + cumulative(survhosp, latency(Study_Day), caloriesPercentage, tz_var = "Study_Day") +
       cumulative(proteinGproKG, tz_var = "Study_Day"))
   expect_list(f2$func_mats, types=c(rep("numeric", 3), "integer", "numeric"),
     any.missing = FALSE, len=5, names="named")

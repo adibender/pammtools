@@ -262,7 +262,7 @@ and need to be considered at the beginning of the analysis as this information
 goes into the code for the data transformation:
 
 ```{r, message = FALSE}
-ped <- as_ped(list(event_df, tdc_df), Surv(time, outcome)~ . |
+ped <- as_ped(list(event_df, tdc_df), Surv(time, outcome)~ . +
     cumulative(latency(day), SOFA, tz_var = "day",
       ll_fun = function(t, tz) t >= tz &  t <= tz + 5),
     cut = 0:49, # administrative censoring at t = 49

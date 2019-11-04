@@ -114,7 +114,7 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-constant part
   ped  <- split_data(
       formula = Surv(time, status)~.,
-      data    = select_if (data, is_atomic),
+      data    = select_if(data, is_atomic),
       cut     = cut,
       id      = "id") %>%
     rename("t" = "tstart") %>%
@@ -123,8 +123,11 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-dependent part
   if (!is.null(f2)) {
     terms_f2  <- terms(f2, specials = "fcumu")
-    f2_ev     <- map(attr(terms_f2, "term.labels"),
-      ~ eval(expr = parse(text = .x)))
+    f2_ev     <- list()
+    f2_tl <- attr(terms_f2, "term.labels")
+    for (i in seq_along(f2_tl)) {
+      f2_ev[[i]] <- eval(expr = parse(text = f2_tl[[i]]), envir = .GlobalEnv)
+    }
     ll_funs   <- map(f2_ev, ~.x[["ll_fun"]])
     tz_vars   <- map_chr(f2_ev, ~.x[["vars"]][1])
     cumu_funs <- map(f2_ev, ~.x[["f_xyz"]])
@@ -240,7 +243,10 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
     unlist()
   vars <- vars[vars != "t"]
 
-  list(vars = vars, f_xyz = f_xyz, ll_fun = ll_fun)
+  list(
+    vars   = vars,
+    f_xyz  = f_xyz,
+    ll_fun = ll_fun)
 
 }
 
