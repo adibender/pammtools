@@ -40,7 +40,7 @@
 #' pem_cr <- glm_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
 #' @author Philipp Kopper
-glm_cr <- function(formula, family = poisson, data, offset, ...) {
+pem_cr <- function(formula, family = poisson, data, offset, ...) {
   check_input(formula, data, offset)
   res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
@@ -124,11 +124,12 @@ print.pem_cr <- function(summary_list) {
 #' cut = seq(0, max(df$obs_times), 0.25))
 #' pem_cr <- gam_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
-gam_cr <- function(formula, family = gaussian(), 
-                   data = list(), offset = NULL, ...) {
+pam_cr <- function(formula, family = gaussian(), 
+                   data = list(), offset = NULL, bam = FALSE, ...) {
   check_input(formula, data, offset)
-  res <- fit_cr(formula, family, data, offset, m_type = "gam", ...)
-  class(res) <- "pem_cr"
+  m_type <- ifelse(bam, "bam", "gam")
+  res <- fit_cr(formula, family, data, offset, m_type = m_type, ...)
+  class(res) <- c("pam_cr", "pem_cr")
   attr(res, "risks") <- attr(data, "risks")
   #for methods
   return(res)
