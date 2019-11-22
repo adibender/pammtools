@@ -4,7 +4,7 @@
 #' add_hazard_cr() and add_surv_prob().
 #' For details see add_cumu_hazard_cr() and add_hazard_cr().
 #' @author Philipp Kopper
-hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult, 
+hazard_adder_cr <- function(newdata, object, hazard_function, ci, se_mult, 
                             ci_type = c("default", "delta", "sim"), 
                             overwrite, time_var, result = "df", ...) {
   measure <- vector(mode = "list", length = length(object))
@@ -44,22 +44,6 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
 #'  link{linear.functional.terms}.
 #' @param object a fitted pem_cr or pam_cr object as produced by gam_cr() or 
 #' glm_cr().
-#' @param type When this has the value "link" (default) the linear predictor
-#'  (possibly with associated standard errors) is returned. When type="terms"
-#'  each component of the linear predictor is returned seperately 
-#'  (possibly with standard errors): this includes parametric model components, 
-#'  followed by each smooth component, but excludes any offset and any 
-#'  intercept. type="iterms" is the same, except that any standard errors 
-#'  returned for smooth components will include the uncertainty about the 
-#'  intercept/overall mean. When type="response" predictions on the scale of 
-#'  the response are returned (possibly with approximate standard errors). 
-#'  When type="lpmatrix" then a matrix is returned which yields the values of 
-#'  the linear predictor (minus any offset) when postmultiplied by the 
-#'  parameter vector (in this case se.fit is ignored). The latter option is 
-#'  most useful for getting variance estimates for quantities derived from 
-#'  the model: for example integrated quantities, or derivatives of smooths. A 
-#'  linear predictor matrix can also be used to implement approximate 
-#'  prediction outside R (see example code, below).
 #' @param ci Logical indicating whether to include confidence intervals. 
 #'  Defaults to TRUE.
 #' @param se_mult Factor by which standard errors are multiplied for 
@@ -86,11 +70,11 @@ hazard_adder_cr <- function(newdata, object, hazard_function, type, ci, se_mult,
 #' confidence intervals) for all risks.
 #' @export
 #' @author Philipp Kopper
-add_cumu_hazard_cr <- function(newdata, object, type = c("link", "response"), 
+add_cumu_hazard_cr <- function(newdata, object, 
                                ci = TRUE, se_mult = 2, 
                                ci_type = c("default", "delta", "sim"),
                                overwrite = FALSE, time_var = NULL, ...) {
-  hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, type, ci, 
+  hazard_adder_cr(newdata, object, hazard_function = add_cumu_hazard, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
 
@@ -194,11 +178,11 @@ add_hazard_cr <- function(newdata, object, type = c("link", "response"),
 #' respective confidence intervals) for all risks.
 #' @export
 #' @author Philipp Kopper
-add_surv_prob_cr <- function(newdata, object, type = c("link", "response"), 
+add_surv_prob_cr <- function(newdata, object, 
                              ci = TRUE, se_mult = 2, 
                              ci_type = c("default", "delta", "sim"),
                              overwrite = FALSE, time_var = NULL, ...) {
-  hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, type, ci, 
+  hazard_adder_cr(newdata, object, hazard_function = add_surv_prob, ci, 
                   se_mult, ci_type, overwrite, time_var, ...)
 }
 
@@ -236,22 +220,15 @@ add_surv_prob_cr <- function(newdata, object, type = c("link", "response"),
 #' (and if ci = TRUE the respective confidence intervals).
 #' @export
 #' @author Philipp Kopper
-add_cif <- function(newdata, object, data,
-                    type = c("link", "response"), 
+add_cif <- function(newdata, object, data, 
                     ci = TRUE, se_mult = 2,
-                    overwrite = FALSE, time_var = NULL, ...) {
+                    overwrite = FALSE, time_var = NULL, keep = TRUE, ...) {
   hazards <- hazard_adder_cr(newdata, object, hazard_function = add_hazard, 
-                             type, ci = TRUE, se_mult, ci_type = "default", 
-                             overwrite, time_var, ...)
+                             type = "response", ci = FALSE, overwrite = overwrite, 
+                             time_var = time_var, ...)
   hazards <- hazards[, (ncol(newdata) + 1): (ncol(hazards))]
-  hazard_list <- vector(mode = "list", length = length(object))
-  j <- 1
-  for (i in 1:length(hazard_list)) {
-    hazard_list[[i]] <- hazards[, j:(j + 1)]
-    j <- j + 4
-  }
   cumu_hazards <- hazard_adder_cr(newdata, object, hazard_function = 
-                                    add_cumu_hazard, type, ci = FALSE, 
+                                    add_cumu_hazard, ci = FALSE, 
                                   overwrite = overwrite, 
                                   time_var = time_var, ...)
   cumu_hazards <- cumu_hazards[, (ncol(newdata) + 1):(ncol(cumu_hazards))]
@@ -260,8 +237,7 @@ add_cif <- function(newdata, object, data,
   lagged_overall_survival[1] <- 1
   cif <- vector(mode = "list", length = length(object))
   for (i in 1:length(cif)) {
-    cif[[i]] <- cumsum(hazard_list[[i]][ , 1] * newdata$intlen * 
-                         overall_survival)
+    cif[[i]] <- cumsum(hazards[, i] * newdata$intlen * overall_survival)
   }
   table_counts <- count_table(newdata, object, data)
   increment_cif <- lapply(cif, diff)
@@ -272,7 +248,11 @@ add_cif <- function(newdata, object, data,
                              d_j, n_j, increment_cif,
                              table_counts)
   add_this <- add_cif_columns(object, cif, ci, se_mult, cif_var)
-  cbind(newdata, Reduce(cbind, add_this))
+  if (keep) {
+    cbind(newdata, Reduce(cbind, add_this))
+  } else {
+    Reduce(cbind, add_this)
+  }
 }
 
 #' Helper function for discrete evaluation of survival data 
@@ -335,10 +315,33 @@ add_cif_columns <- function(object, cif, ci, se_mult, cif_var = NULL) {
       colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
                                        add_name, sep = "_")
     } else {
-      add_this[[i]] <- cif[[i]] 
+      add_this[[i]] <- as.data.frame(cif[[i]])
       colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
                                        "cif", sep = "_")
     }
   }
   return(add_this)
+}
+
+
+add_overall_surv <- function(newdata, object, data, 
+                             ci = TRUE, se_mult = 2,
+                             overwrite = FALSE, time_var = NULL, ...) {
+  cif <- add_cif(newdata, object, data, ci, se_mult, overwrite, time_var, 
+                 keep = FALSE, ...)
+  
+  if (ci) {
+    add_this <- as.data.frame(matrix(0, ncol = 3, nrow = nrow(newdata)))
+    colnames(add_this) <- c("overall_surv", 
+                            "overall_surv_lower", "overall_surv_upper")
+    n_risks <- length(attr(object, "risks"))
+    for (i in 1:n_risks) {
+      add_this[, 1] <-  rowSums(cif[, seq(1, n_risks * 3, by = 3)])
+      add_this[, 2] <-  rowSums(cif[, seq(2, n_risks * 3, by = 3)])
+      add_this[, 3] <-  rowSums(cif[, seq(3, n_risks * 3, by = 3)])
+    }
+    data.frame(newdata, 1 - add_this)
+  } else {
+    data.frame(newdata, overall_surv = 1 - rowSums(cif))
+  }
 }

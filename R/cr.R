@@ -302,11 +302,15 @@ check_input <- function(formula, data, offset) {
 make_numeric <- function(data, status_str, censor_code) {
   risks <- unique(data[[status_str]])
   risks <- risks[risks != censor_code]
+  if (is.numeric(risks)) {
+    #otherwise not intuitive.
+    risks <- risks[order(risks)]
+  }
+  attr(data, "risks") <- risks
   data[data[[status_str]] == censor_code, status_str] <- 0
   for (i in 1:length(risks)) {
     data[data[[status_str]] == risks[i], status_str] <- i
   }
   data[[status_str]] <- as.numeric(data[[status_str]])
-  attr(data, "risks") <- risks
   data
 }
