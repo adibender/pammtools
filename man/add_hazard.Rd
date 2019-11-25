@@ -5,13 +5,29 @@
 \alias{add_cumu_hazard}
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
-add_hazard(newdata, object, reference = NULL, type = c("response",
-  "link"), ci = TRUE, se_mult = 2, ci_type = c("default", "delta",
-  "sim"), overwrite = FALSE, time_var = NULL, ...)
+add_hazard(
+  newdata,
+  object,
+  reference = NULL,
+  type = c("response", "link"),
+  ci = TRUE,
+  se_mult = 2,
+  ci_type = c("default", "delta", "sim"),
+  overwrite = FALSE,
+  time_var = NULL,
+  ...
+)
 
-add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
-  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
-  ...)
+add_cumu_hazard(
+  newdata,
+  object,
+  ci = TRUE,
+  se_mult = 2,
+  overwrite = FALSE,
+  time_var = NULL,
+  interval_length = "intlen",
+  ...
+)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -40,7 +56,8 @@ will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
-the estimated coefficients. CIs are given by respective quantiles.}
+the estimated coefficients. See \href{here}{https://adibender.github.io/simpamm/confidence-intervals.html}
+for details and empirical evaluation.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
@@ -59,8 +76,10 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 }
 \description{
 Add (cumulative) hazard based on the provided data set and model.
-If \code{ci=TRUE} confidence intervals are also added. Their width can
-be controlled via the \code{se_mult} argument. This is a wrapper around
+If \code{ci=TRUE} confidence intervals (CI) are also added. Their width can
+be controlled via the \code{se_mult} argument. The method by which the
+CI are calculated can be specifie by \code{ci_type}.
+This is a wrapper around
 \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
 (log-)hazard ratio is calculated.
 }

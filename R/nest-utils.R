@@ -4,8 +4,7 @@
 #' A \code{formula} must be provided where the right hand side (RHS) contains
 #' the structure of the TDCs
 #'
-#' @inheritParams tidyr::nest
-#' @inheritParams split_data
+
 #' @param data A suitable data structure (e.g. unnested data frame with
 #' concurrent TDCs or a list where each element is a data frame, potentially
 #' containing TDCs as specified in the RHS of \code{formula}).
@@ -22,7 +21,6 @@ nest_tdc <- function(data, formula, ...) {
   UseMethod("nest_tdc", data)
 }
 
-#' @inherit nest_tdc
 #' @rdname nest_tdc
 #' @param vars A character vector of TDCs that will be nested.
 #' @param id A character giving the name of the ID column.
@@ -66,8 +64,6 @@ nest_tdc.default <- function(data, formula, ...) {
 }
 
 
-
-#' @inherit nest_tdc
 #' @rdname nest_tdc
 #' @export
 nest_tdc.list <- function(data, formula, ...) {

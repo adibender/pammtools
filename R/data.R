@@ -93,6 +93,5 @@
 #' @aliases extub_tdc
 "extub_event"
 
-#' @inherit extub_event
 #' @rdname extub_event
 "extub_tdc"

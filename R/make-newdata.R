@@ -20,7 +20,6 @@ sample_info <- function(x) {
   UseMethod("sample_info", x)
 }
 
-#' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom purrr compose
 #' @export
@@ -46,7 +45,6 @@ sample_info.data.frame <- function(x) {
 }
 
 #' @rdname sample_info
-#' @inheritParams sample_info
 #' @import checkmate dplyr
 #' @importFrom rlang sym
 #' @export
@@ -71,7 +69,6 @@ sample_info.ped <- function(x) {
 }
 
 #' @rdname sample_info
-#' @inherit sample_info
 #' @export
 sample_info.fped <- function(x) {
 

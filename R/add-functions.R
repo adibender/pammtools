@@ -126,8 +126,10 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' Add predicted (cumulative) hazard to data set
 #'
 #' Add (cumulative) hazard based on the provided data set and model.
-#' If \code{ci=TRUE} confidence intervals are also added. Their width can
-#' be controlled via the \code{se_mult} argument. This is a wrapper around
+#' If \code{ci=TRUE} confidence intervals (CI) are also added. Their width can
+#' be controlled via the \code{se_mult} argument. The method by which the
+#' CI are calculated can be specifie by \code{ci_type}.
+#' This is a wrapper around
 #' \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
 #' (log-)hazard ratio is calculated.
 #'
@@ -143,7 +145,8 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' respective intervals. \code{"delta"} calculates CIs based on the standard
 #' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
-#' the estimated coefficients. CIs are given by respective quantiles.
+#' the estimated coefficients. See \href{here}{https://adibender.github.io/simpamm/confidence-intervals.html}
+#' for details and empirical evaluation.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
 #' the confidence intervals.
 #' @param overwrite Should hazard columns be overwritten if already present in

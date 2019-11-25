@@ -4,8 +4,7 @@
 \alias{add_term}
 \title{Embeds the data set with the specified (relative) term contribution}
 \usage{
-add_term(newdata, object, term, reference = NULL, ci = TRUE,
-  se_mult = 2, ...)
+add_term(newdata, object, term, reference = NULL, ci = TRUE, se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions

@@ -8,11 +8,25 @@
 \usage{
 gg_partial(data, model, term, ..., reference = NULL, ci = TRUE)
 
-gg_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE,
-  time_var = "tend")
+gg_partial_ll(
+  data,
+  model,
+  term,
+  ...,
+  reference = NULL,
+  ci = FALSE,
+  time_var = "tend"
+)
 
-get_partial_ll(data, model, term, ..., reference = NULL, ci = FALSE,
-  time_var = "tend")
+get_partial_ll(
+  data,
+  model,
+  term,
+  ...,
+  reference = NULL,
+  ci = FALSE,
+  time_var = "tend"
+)
 }
 \arguments{
 \item{data}{Data used to fit the \code{model}.}

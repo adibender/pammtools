@@ -8,11 +8,14 @@
 \alias{fill.nested_fdf}
 \title{\code{tidyr} Verbs for \code{ped}-Objects}
 \usage{
-\method{fill}{ped}(data, ..., .direction = c("down", "up", "downup",
-  "updown"), keep_attributes = TRUE)
+\method{fill}{ped}(
+  data,
+  ...,
+  .direction = c("down", "up", "downup", "updown"),
+  keep_attributes = TRUE
+)
 
-\method{fill}{nested_fdf}(data, ..., .direction = c("down", "up"),
-  keep_attributes = TRUE)
+\method{fill}{nested_fdf}(data, ..., .direction = c("down", "up"), keep_attributes = TRUE)
 }
 \arguments{
 \item{data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}

@@ -25,7 +25,6 @@
 #' on the left-hand-side and covariate specification on the right-hand-side (RHS).
 #' The RHS can be an extended formula, which specifies how TDCs should be transformed
 #' using specials \code{concurrent} and \code{cumulative}.
-#' @inheritParams survival::survSplit
 #' @param cut Break points, used to partition the follow up into intervals.
 #' If unspecified, all unique event times will be used.
 #' @param max_time If \code{cut} is unspecified, this will be the last
@@ -47,7 +46,6 @@ as_ped <- function(data, formula, ...) {
 }
 
 #' @rdname as_ped
-#' @inherit as_ped
 #' @export
 as_ped.data.frame <- function(
   data,
@@ -73,7 +71,6 @@ as_ped.data.frame <- function(
 }
 
 #' @rdname as_ped
-#' @inherit as_ped
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
 
@@ -125,7 +122,6 @@ as_ped.nested_fdf <- function(data, formula, ...) {
 }
 
 #' @rdname as_ped
-#' @inherit as_ped
 #' @export
 as_ped.list <- function(
   data,

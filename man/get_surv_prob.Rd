@@ -4,9 +4,17 @@
 \alias{get_surv_prob}
 \title{Calculate survival probabilities}
 \usage{
-get_surv_prob(newdata, object, ci = TRUE, ci_type = c("default",
-  "delta", "sim"), se_mult = 2L, time_var = NULL,
-  interval_length = "intlen", nsim = 100L, ...)
+get_surv_prob(
+  newdata,
+  object,
+  ci = TRUE,
+  ci_type = c("default", "delta", "sim"),
+  se_mult = 2L,
+  time_var = NULL,
+  interval_length = "intlen",
+  nsim = 100L,
+  ...
+)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions

@@ -6,8 +6,7 @@
 \alias{has_special}
 \title{Formula specials for defining  time-dependent covariates}
 \usage{
-cumulative(..., tz_var, ll_fun = function(t, tz) t >= tz,
-  suffix = NULL)
+cumulative(..., tz_var, ll_fun = function(t, tz) t >= tz, suffix = NULL)
 
 concurrent(..., tz_var, lag = 0, suffix = NULL)
 
