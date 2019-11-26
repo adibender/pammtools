@@ -7,8 +7,7 @@
 \usage{
 get_intervals(x, times, ...)
 
-\method{get_intervals}{default}(x, times, left.open = TRUE,
-  rightmost.closed = TRUE, ...)
+\method{get_intervals}{default}(x, times, left.open = TRUE, rightmost.closed = TRUE, ...)
 }
 \arguments{
 \item{x}{An object from which interval information can be obtained,

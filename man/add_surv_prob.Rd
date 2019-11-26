@@ -4,9 +4,16 @@
 \alias{add_surv_prob}
 \title{Add survival probability estimates}
 \usage{
-add_surv_prob(newdata, object, ci = TRUE, se_mult = 2,
-  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
-  ...)
+add_surv_prob(
+  newdata,
+  object,
+  ci = TRUE,
+  se_mult = 2,
+  overwrite = FALSE,
+  time_var = NULL,
+  interval_length = "intlen",
+  ...
+)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions

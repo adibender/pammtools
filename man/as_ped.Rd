@@ -10,13 +10,18 @@
 \usage{
 as_ped(data, formula, ...)
 
-\method{as_ped}{data.frame}(data, formula, cut = NULL, max_time = NULL,
-  tdc_specials = c("concurrent", "cumulative"), ...)
+\method{as_ped}{data.frame}(
+  data,
+  formula,
+  cut = NULL,
+  max_time = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  ...
+)
 
 \method{as_ped}{nested_fdf}(data, formula, ...)
 
-\method{as_ped}{list}(data, formula, tdc_specials = c("concurrent",
-  "cumulative"), ...)
+\method{as_ped}{list}(data, formula, tdc_specials = c("concurrent", "cumulative"), ...)
 
 is.ped(x)
 }

@@ -40,7 +40,6 @@ tidy_fixed <- function(x, ...) {
 }
 
 #' @rdname tidy_fixed
-#' @inheritParams tidy_fixed
 #' @param intercept Should intercept also be returned? Defaults to \code{FALSE}.
 #' @export
 tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
@@ -54,7 +53,6 @@ tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 }
 
 #' @rdname tidy_fixed
-#' @inheritParams tidy_fixed
 #' @importFrom tibble as_tibble
 #' @keywords internal
 #' @export

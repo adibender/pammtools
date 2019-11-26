@@ -18,7 +18,6 @@ int_info <- function(x, ...) {
 }
 
 
-#' @inheritParams int_info
 #' @param min_time Only intervals that have lower borders larger than
 #' this value will be included in the resulting data frame.
 #' @import checkmate dplyr
@@ -61,7 +60,6 @@ int_info.default <- function(
 
 }
 
-#' @inheritParams int_info
 #' @import dplyr
 #' @rdname int_info
 #' @examples
