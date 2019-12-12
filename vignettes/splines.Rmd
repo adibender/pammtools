@@ -85,7 +85,7 @@ gg_karno <- ggplot(karno_df, aes(x=karno, ymin=ci_lower, ymax=ci_upper)) +
   geom_line(aes(y=fit, col="PAM")) +
   geom_ribbon(alpha=0.2) +
   geom_line(aes(y=cox, col="Cox PH"))+
-  scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"=1)) +
+  scale_colour_manual(name="Method",values=c("Cox PH"=Set1[1],"PAM"="black")) +
   xlab(expression(x[plain(karno)])) + ylab(expression(hat(f)(x[plain(karno)])))
 # gg_karno
 ```

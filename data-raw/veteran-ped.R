@@ -8,4 +8,4 @@ sdata$event = 1
 kappa5 <- seq(0, 4, by=0.8)
 base_ped <- pammtools::split_data(Surv(time, event)~., data=sdata, cut=kappa5,
  id="id")
-devtools::use_data(base_ped)
+usethis::use_data(base_ped)

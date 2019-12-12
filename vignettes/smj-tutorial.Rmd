@@ -13,7 +13,7 @@ vignette: >
 
 **A. Bender, A. Groll and F. Scheipl. “A generalized additive model approach to time-to-event analysis”. En.
 In: Statistical Modelling 18.3-4 (Jun. 2018), pp. 299-321. ISSN: 1471-082X. DOI: 10.1177/1471082X17748083.
-<URL: https://doi.org/10.1177/1471082X17748083>**
+<URL: https://adibender.netlify.com/files/pamtutorial.pdf>**
 
 <br>&nbsp;
 
