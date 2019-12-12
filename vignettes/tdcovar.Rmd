@@ -117,7 +117,7 @@ coef_gg <- ggplot(all_eff, aes(x=variable, y=coef, ymin=ci_lower, ymax=ci_upper)
   geom_pointrange(aes(col=Method, shape=Method),
     position=position_dodge(width=0.5)) +
   scale_colour_manual(
-    values = c(1, Set1[1]),
+    values = c("black", Set1[1]),
     limits = rev(levels(all_eff$Method))) +
   scale_shape_manual(
     values = c(19, 15),

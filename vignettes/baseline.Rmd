@@ -136,7 +136,7 @@ gg_baseline <- ggplot(int_df, aes(x = tend)) +
   geom_line(aes(y = pamch,     col = "PAM")) +
   scale_color_manual(
     name   = "Method",
-    values = c("PEM" = Set1[2], "PAM" = 1, "Nelson-Aalen" = Set1[1])) +
+    values = c("PEM" = Set1[2], "PAM" = "black", "Nelson-Aalen" = Set1[1])) +
   theme(legend.position = "bottom") +
   ylab(expression(hat(Lambda)(t))) + xlab("t") +
   ggtitle(paste0("Comparison of cumulative hazards estimated by\n",
