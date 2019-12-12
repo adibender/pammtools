@@ -45,4 +45,4 @@ simdf_elra <- sim_pexp(
   data = df,
   cut = 0:10)
 
-devtools::use_data(simdf_elra, overwrite = TRUE)
+usethis::use_data(simdf_elra, overwrite = TRUE)
