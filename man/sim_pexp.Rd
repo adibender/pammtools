@@ -24,6 +24,7 @@ Simulate survival times from the piece-wise exponential distribution
 \examples{
 library(survival)
 library(dplyr)
+library(ped)
 library(pammtools)
 
 # set number of observations/subjects
@@ -36,6 +37,7 @@ f0 <- function(t) {
  dgamma(t, 8, 2) *6
 }
 form <- ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)
+
 set.seed(24032018)
 sim_df <- sim_pexp(form, df, 1:10)
 head(sim_df)

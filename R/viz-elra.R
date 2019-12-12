@@ -6,7 +6,7 @@
 #' @import ggplot2
 #' @importFrom rlang quos
 #'
-#' @inheritParams make_newdata
+#' @inheritParams ped::make_newdata
 #' @param data Data used to fit the \code{model}.
 #' @param model A suitable model object which will be used to estimate the
 #' partial effect of \code{term}.
@@ -17,6 +17,7 @@
 #' to an observation specified in \code{reference}.
 #' @param ci Logical. Indicates if confidence intervals for the \code{term}
 #' of interest should be calculated/plotted. Defaults to \code{TRUE}.
+#' @importFrom ped make_newdata
 #' @export
 gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
@@ -56,6 +57,7 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 #' @rdname gg_partial
 #' @inherit gg_partial
 #' @importFrom tidyr complete
+#' @importFrom ped int_info
 #' @param time_var The name of the variable that was used in \code{model} to
 #' represent follow-up time.
 #' @export
@@ -118,7 +120,11 @@ gg_partial_ll <- function(
 #' @inheritParams gg_partial
 #' @importFrom purrr map_int
 #' @importFrom rlang quos
+#' @importFrom stats as.formula
 #' @examples
+#' library(ped)
+#'
+#' data("tumor", package = "ped")
 #' ped <- tumor[1:200, ] %>% as_ped(Surv(days, status) ~ . )
 #' model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
 #'   family = poisson(), offset=offset)
@@ -211,6 +217,7 @@ get_partial_ll <- function(
 }
 
 
+#' @importFrom ped int_info make_mat_names
 #' @keywords internal
 get_ll <- function(x, ind_term, ..., time_var = "tend") {
 

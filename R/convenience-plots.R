@@ -82,6 +82,8 @@ gg_tensor <- function(x, ci = FALSE, ...) {
 #' @inherit tidy_re
 #' @import ggplot2
 #' @examples
+#' library(ped)
+#'
 #' data("lung", package="survival")
 #' lung$inst <- as.factor(lung$inst) # for mgcv
 #' ped <- lung %>% as_ped(Surv(time, status)~ph.ecog + inst, id="id")

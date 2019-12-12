@@ -23,6 +23,7 @@ library(ggplot2)
 theme_set(theme_bw())
 library(survival)
 library(mgcv)
+library(ped)
 library(pammtools)
 Set1    <- RColorBrewer::brewer.pal(9, "Set1")
 Greens  <- RColorBrewer::brewer.pal(9, "Greens")
@@ -156,6 +157,7 @@ The figure below visualizes the estimate of the time-varying effect of `karno`
 for all three models
 <details>
   <summary>*Expand here to see R-Code*</summary>
+
 ```{r gg_tv_karno, dependson="pam_tv_karno"}
 term.df <- ped %>% ped_info() %>% add_term(pam2, term = "karno") %>%
     mutate_at(c("fit", "ci_lower", "ci_upper"), funs(. / .data$karno)) %>%
@@ -167,7 +169,7 @@ gg_tv_karno <- ggplot(term.df, aes(x = tend, y = fit)) +
     geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
     geom_line(aes(y = cox.fit, col = "Cox with log-transform")) +
     geom_step(aes(y = pam.fit, col = "PAM with log-transform")) +
-    scale_color_manual(name = "Method", values = c(Set1[1:2], 1)) +
+    scale_color_manual(name = "Method", values = c(Set1[1:2], "black")) +
     xlab("t") + ylab(expression(hat(f)(t)))
 ```
 </details>

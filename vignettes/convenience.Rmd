@@ -20,6 +20,7 @@ opts_chunk$set(
 ```{r, message=FALSE}
 library(dplyr)
 library(mgcv)
+library(ped)
 library(pammtools)
 library(ggplot2)
 theme_set(theme_bw())

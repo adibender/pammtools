@@ -23,6 +23,7 @@ get_cumu_coef <- function(model, data = NULL, terms, ...) {
 
 
 #' @rdname cumulative_coefficient
+#' @importFrom ped ped_info
 #' @export
 get_cumu_coef.gam <- function(model, data, terms, ...) {
 

@@ -5,29 +5,13 @@
 \alias{add_cumu_hazard}
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
-add_hazard(
-  newdata,
-  object,
-  reference = NULL,
-  type = c("response", "link"),
-  ci = TRUE,
-  se_mult = 2,
-  ci_type = c("default", "delta", "sim"),
-  overwrite = FALSE,
-  time_var = NULL,
-  ...
-)
+add_hazard(newdata, object, reference = NULL, type = c("response",
+  "link"), ci = TRUE, se_mult = 2, ci_type = c("default", "delta",
+  "sim"), overwrite = FALSE, time_var = NULL, ...)
 
-add_cumu_hazard(
-  newdata,
-  object,
-  ci = TRUE,
-  se_mult = 2,
-  overwrite = FALSE,
-  time_var = NULL,
-  interval_length = "intlen",
-  ...
-)
+add_cumu_hazard(newdata, object, ci = TRUE, se_mult = 2,
+  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
+  ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -84,7 +68,9 @@ This is a wrapper around
 (log-)hazard ratio is calculated.
 }
 \examples{
-ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
+library(ped)
+data("tumor", package = "ped")
+ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status) ~ age)
 pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
 ped_info(ped) \%>\% add_hazard(pam, type="link")
 ped_info(ped) \%>\% add_hazard(pam, type = "response")

@@ -21,6 +21,7 @@ opts_chunk$set(
 library(dplyr)
 library(survival)
 library(coxme)
+library(ped)
 library(pammtools)
 library(mgcv)
 library(ggplot2)

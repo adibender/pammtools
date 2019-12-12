@@ -4,7 +4,8 @@
 \alias{add_term}
 \title{Embeds the data set with the specified (relative) term contribution}
 \usage{
-add_term(newdata, object, term, reference = NULL, ci = TRUE, se_mult = 2, ...)
+add_term(newdata, object, term, reference = NULL, ci = TRUE,
+  se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -37,7 +38,10 @@ Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms
 Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
 }
 \examples{
+library(ped)
 library(ggplot2)
+
+data("tumor", package = "ped")
 ped <- as_ped(tumor, Surv(days, status)~ age, cut = seq(0, 2000, by = 100))
 pam <- mgcv::gam(ped_status ~ s(tend) + s(age), family = poisson(),
   offset = offset, data = ped)

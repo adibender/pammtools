@@ -4,16 +4,9 @@
 \alias{add_surv_prob}
 \title{Add survival probability estimates}
 \usage{
-add_surv_prob(
-  newdata,
-  object,
-  ci = TRUE,
-  se_mult = 2,
-  overwrite = FALSE,
-  time_var = NULL,
-  interval_length = "intlen",
-  ...
-)
+add_surv_prob(newdata, object, ci = TRUE, se_mult = 2,
+  overwrite = FALSE, time_var = NULL, interval_length = "intlen",
+  ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -53,6 +46,8 @@ for the specified covariate and follow-up information (and CIs
 \code{surv_lower}, \code{surv_upper} if \code{ci=TRUE}).
 }
 \examples{
+library(ped)
+data("tumor", package = "ped")
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
 pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
 ped_info(ped) \%>\% add_surv_prob(pam, ci=TRUE)

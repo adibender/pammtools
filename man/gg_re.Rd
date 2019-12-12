@@ -15,6 +15,8 @@ gg_re(x, ...)
 Plot Normal QQ plots for random effects
 }
 \examples{
+library(ped)
+
 data("lung", package="survival")
 lung$inst <- as.factor(lung$inst) # for mgcv
 ped <- lung \%>\% as_ped(Surv(time, status)~ph.ecog + inst, id="id")

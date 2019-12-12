@@ -25,6 +25,7 @@ library(ggplot2)
 theme_set(theme_bw())
 library(mgcv)
 library(survival)
+library(ped)
 library(pammtools)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
@@ -99,7 +100,7 @@ baseline_gg +	aes(col="Nelson-Aalen") +
   geom_ribbon(data=pinf, aes(x=tend, ymin=cumu_lower, ymax = cumu_upper,
     group=strata), fill = "black", col = NA, alpha = .2) +
  	facet_wrap(~strata, nrow=1) +
-	scale_color_manual(name="Method", values=c(Set1[1], 1)) +
+	scale_color_manual(name="Method", values=Set1[1:2]) +
   theme(legend.position = "bottom")
 ```
 

@@ -1,7 +1,9 @@
 context("Convenience functions for calculation of hazard and similar")
 
+library(ped)
+
 data("veteran", package = "survival")
-ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
+ped <- veteran %>% as_ped(Surv(time, status) ~ trt + age,
   cut = c(0, 50, 100, 200, 300, 400), id = "id")
 pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
   family = poisson(), offset = offset)

@@ -4,17 +4,9 @@
 \alias{get_cumu_hazard}
 \title{Calculate cumulative hazard}
 \usage{
-get_cumu_hazard(
-  newdata,
-  object,
-  ci = TRUE,
-  ci_type = c("default", "delta", "sim"),
-  time_var = NULL,
-  se_mult = 2,
-  interval_length = "intlen",
-  nsim = 100L,
-  ...
-)
+get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default",
+  "delta", "sim"), time_var = NULL, se_mult = 2,
+  interval_length = "intlen", nsim = 100L, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions

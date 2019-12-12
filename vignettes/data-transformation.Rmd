@@ -21,6 +21,7 @@ opts_chunk$set(
 ```{r echo = TRUE, message = FALSE}
 library(dplyr)
 library(tidyr)
+library(ped) # for data transformation
 library(pammtools)
 ```
 
@@ -329,13 +330,13 @@ str(ped, 1)
 To illustrate data transformation when TDCs $\mathbf{z}_1$ and $\mathbf{z}_2$
 were observed on different exposure time grids ($t_z$ and $s_z$) and
 are assumed to have different lag_lead windows $\mathcal{T}_1(t)$ and
-$\mathcal{T}_2(t)$, we use simulated data `simdf_elra` contained in
-**`pammtools`** (see example in `sim_pexp` for data generation).
+$\mathcal{T}_2(t)$, we use simulated data `sim_df3` contained in package
+**`ped`** (see example in `sim_pexp` for data generation).
 
 ```{r}
-simdf_elra
-simdf_elra %>% slice(1) %>% select(id, tz1) %>% unnest()
-simdf_elra %>% slice(1) %>% select(id, tz2) %>% unnest()
+sim_df3
+sim_df3 %>% slice(1) %>% select(id, tz1) %>% unnest()
+sim_df3 %>% slice(1) %>% select(id, tz2) %>% unnest()
 ```
 
 Note that `tz1` has a maximum length of 10, while `tz2` has a maximum length
@@ -354,7 +355,7 @@ specifications as illustrated below:
 
 ```{r}
 ped_sim <- as_ped(
-  data = simdf_elra,
+  data = sim_df3,
   formula = Surv(time, status) ~ . +
     cumulative(time, latency(tz1), z.tz1, tz_var = "tz1") +
     cumulative(latency(tz2), z.tz2, tz_var = "tz2"),

@@ -4,17 +4,9 @@
 \alias{get_hazard}
 \title{Calculate predicted hazard}
 \usage{
-get_hazard(
-  newdata,
-  object,
-  reference = NULL,
-  ci = TRUE,
-  type = c("response", "link"),
-  ci_type = c("default", "delta", "sim"),
-  time_var = NULL,
-  se_mult = 2,
-  ...
-)
+get_hazard(newdata, object, reference = NULL, ci = TRUE,
+  type = c("response", "link"), ci_type = c("default", "delta", "sim"),
+  time_var = NULL, se_mult = 2, ...)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions

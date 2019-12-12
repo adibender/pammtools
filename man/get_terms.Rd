@@ -15,7 +15,7 @@ first row will be used.}
 \item{terms}{A character vector (can be length one). Specifies the terms
 for which partial effects will be returned}
 
-\item{...}{Further arguments passed to \code{\link{seq_range}}.}
+\item{...}{Further arguments passed to \code{\link[ped]{seq_range}}.}
 }
 \value{
 A tibble with 5 columns.

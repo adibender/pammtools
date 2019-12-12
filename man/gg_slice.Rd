@@ -36,6 +36,9 @@ on further covariate specifications and potentially relative to
 a comparison specification.
 }
 \examples{
+library(ped)
+
+data("tumor", package = "ped")
 ped <- tumor[1:200, ] \%>\% as_ped(Surv(days, status) ~ . )
 model <- mgcv::gam(ped_status~s(tend) + s(age, by = complications), data=ped,
   family = poisson(), offset=offset)

@@ -12,8 +12,8 @@ r_packages:
   - TBFmultinomial
 
 r_github_packages:
+  - adibender/ped
   - jimhester/covr
-  - thomasp85/patchwork
 
 # whitelist
 branches:

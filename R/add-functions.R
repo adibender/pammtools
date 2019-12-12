@@ -20,7 +20,10 @@
 #' @importFrom purrr map
 #' @importFrom stats model.matrix vcov
 #' @examples
+#' library(ped)
 #' library(ggplot2)
+#'
+#' data("tumor", package = "ped")
 #' ped <- as_ped(tumor, Surv(days, status)~ age, cut = seq(0, 2000, by = 100))
 #' pam <- mgcv::gam(ped_status ~ s(tend) + s(age), family = poisson(),
 #'   offset = offset, data = ped)
@@ -159,7 +162,9 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @examples
-#' ped <- tumor[1:50,] %>% as_ped(Surv(days, status)~ age)
+#' library(ped)
+#' data("tumor", package = "ped")
+#' ped <- tumor[1:50,] %>% as_ped(Surv(days, status) ~ age)
 #' pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
 #' ped_info(ped) %>% add_hazard(pam, type="link")
 #' ped_info(ped) %>% add_hazard(pam, type = "response")
@@ -366,6 +371,8 @@ get_cumu_hazard <- function(
 #'
 #' @inherit add_cumu_hazard
 #' @examples
+#' library(ped)
+#' data("tumor", package = "ped")
 #' ped <- tumor[1:50,] %>% as_ped(Surv(days, status)~ age)
 #' pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
 #' ped_info(ped) %>% add_surv_prob(pam, ci=TRUE)

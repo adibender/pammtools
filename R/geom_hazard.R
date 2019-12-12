@@ -12,8 +12,11 @@
 #' @rdname geom_hazard
 #' @importFrom ggplot2 layer GeomLine
 #' @examples
+#' library(ped)
 #' library(ggplot2)
 #' library(pammtools)
+#'
+#' data("tumor", package = "ped")
 #' ped <- tumor[10:50,] %>% as_ped(Surv(days, status)~1)
 #' pam <- mgcv::gam(ped_status ~ s(tend), data=ped, family = poisson(), offset = offset)
 #' ndf <- make_newdata(ped, tend = unique(tend)) %>% add_hazard(pam)

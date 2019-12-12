@@ -4,11 +4,12 @@
 #' first row will be used.
 #' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param term The (non-linear) model term of interest.
-#' @param ... Further arguments passed to \code{\link{seq_range}}.
-#' @inheritParams seq_range
+#' @param ... Further arguments passed to \code{\link[ped]{seq_range}}.
+#' @inheritParams ped::seq_range
 #' @import dplyr
 #' @importFrom stats predict
 #' @importFrom rlang UQ
+#' @importFrom ped seq_range
 #' @keywords internal
 get_term <- function(data, fit, term, n = 100, ...) {
 
