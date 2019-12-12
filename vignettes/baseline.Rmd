@@ -123,6 +123,7 @@ PAM estimates.
 
 <details>
   <summary>Expand here for R-Code</summary>
+
 ```{r}
 # add PAM predictions to previous data
 int_df$pamhaz <- predict(pam, newdata = int_df, type = "response")
@@ -141,9 +142,11 @@ gg_baseline <- ggplot(int_df, aes(x = tend)) +
   ggtitle(paste0("Comparison of cumulative hazards estimated by\n",
     "Cox-PH (Nelson-Aalen) vs. PEM vs. PAM"))
 ```
+
 </details>
 
 ```{r, fig.width = 4.5, fig.height = 4.5, echo = FALSE}
 gg_baseline
 ```
+
 All models are in good agreement.
