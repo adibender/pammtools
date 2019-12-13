@@ -1,7 +1,8 @@
-language: r
+language: R
 sudo: false
 cache: packages
 dist: trusty
+fortran: false
 
 matrix:
   include:
