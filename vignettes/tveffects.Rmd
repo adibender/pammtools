@@ -201,14 +201,14 @@ as well. The *level* of the baseline log hazard is given by the intercept of the
 ```{r}
 # Non-linear, non-linearly time-varying effects
 pam3 <- gam(
-  formula = ped_status ~ trt + prior + s(age) + te(tend, karno),
+  formula = ped_status ~ s(tend) + trt + prior + s(age) + te(tend, karno),
   data   = ped,
   family = poisson(),
   offset = offset)
 ```
 
 The summary of the model indicates that the estimated bivariate function
-$\hat{f}(x_{\text{karno}}, t)$ is highly non-linear ($edf \approx 8.9$):
+$\hat{f}(x_{\text{karno}}, t)$ is highly non-linear ($edf \approx 6.6$):
 
 ```{r}
 summary(pam3)
@@ -217,10 +217,10 @@ summary(pam3)
 The 3D perspective plot can aid interpretation, where y- and x-axes depict
 the Karnofsky-Score and the time respectively and the z-axis displays the
 contribution of the effect to the log-hazard for each combination of
-$x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
+$x_{\text{karno}}$ and $t$.^[Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below are not exact -- these effects are actually step functions over time, with steps at the interval end points `tend`, since a PAM implies that *all* time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.]
 
 ```{r, fig.width=6, fig.height=6}
-plot(pam3, select = 2, pers = T, theta = 150, ticktype = "detailed")
+plot(pam3, select = 3, scheme = 1, theta = 120, ticktype = "detailed")
 ```
 Such 3D plots are sometimes difficult to interpret, thus we also provide
 a heat-/contourplot (left panel) with respective slices for fixed
@@ -234,25 +234,23 @@ red colors a log-hazard increase. The grayed out areas depict combinations
 of `karno` and `tend` that were not present in the data.
 Dotted horizontal and vertical lines indicate slices that are displayed
 in the middle and right panel.
-
-
 For fixed $t=0$, we obtain the effect of the Karnofsky-Score on the log-hazard
-at the beginning of the follow-up (red line left panel), which decreases strongly from low
-to high values of $x_{\text{karno}}$.
-<!-- This result is in line with the estimation
-one would obtain fitting a time-constant, non-linear effect of
-$f(x_{\text{karno}})$. ABER DAS IST ZUFALL HIER; DAS MUSS JA NICHT SO SEIN...  -->
+at the beginning of the follow-up (red line left panel), which decreases
+strongly from low to high values of $x_{\text{karno}}$.
 
-Holding the Karnofsky-Score constant, we can see how the log hazard
-changes over time for different given values of $x_{\text{karno}}$ (middle panel).
-For higher values $x_{\text{karno}} >60$ the log-hazard is smaller
-at the beginning and increases over the course of the follow-up
-(orange and blue lines middle panel). This
-is consistent with the time-varying effect of the Karnofsky-Score
-estimated in the previous section. However, the bivariate function indicates
-that the log hazard may have a parabolic shape for low $x_{\text{karno}}$ values,
-decreasing at the beginning and increasing again for later
-time-points (green line middle panel).
+The middle panel shows the log hazard ratio for fixed values of the
+Karnofsky-Score (45, 70, 90) relative to the mean Karnofsky-Score.
+One can see how the log hazard ratio changes over time.
+Relative to the mean Karnofsky Score, low values increase and high values decrease
+the hazard in the beginning of the follow-up, while the effect tends towards zero
+for later time-points. This indicates that the Karnofsky-Score is indicative
+for survival at the beginning of the follow-up and non-informative towards the end,
+regardless of the initial value.
+
+The rightmost panel is anologous to the middle panel but with fixed values of
+time and changes of the log-hazard ratio depicted for a continuum of
+Karnofsky-Score vvalues. The log-hazard ratio is again calculated relative to the
+mean Karnofsky-Score.
 
 <details>
   <summary>*Expand here to see R-Code*</summary>
@@ -269,15 +267,10 @@ te_gg <- gg_tensor(pam3) +
   xlab("t") + ylab(expression(x[plain(karno)])) +
   theme(legend.position  = "bottom")
 
-
-
 # plot f(karno, t) for specific slices
-karno_df <- combine_df(
-  int_info(ped),
-  select(sample_info(ped), -karno),
-  data.frame(karno = c(40, 75, 95)))
-
-karno_df <- karno_df %>% add_term(pam3, term = "karno")
+karno_df <- ped %>%
+  make_newdata(tend = unique(tend), karno = c(40, 75, 95)) %>%
+  add_term(pam3, term = "karno", reference = list(karno = mean(.$karno)))
 
 karno_gg <- ggplot(karno_df, aes(x = tend, y = fit)) +
   geom_step(aes(col = factor(karno)), lwd = 1.1) +
@@ -295,7 +288,7 @@ karno_gg <- ggplot(karno_df, aes(x = tend, y = fit)) +
 
 time_df <- ped %>%
   make_newdata(tend = c(1, 51, 200), karno = seq(20, 100, by = 5)) %>%
-  add_term(pam3, term = "karno")
+  add_term(pam3, term = "karno", reference = list(karno = mean(.$karno)))
 
 time_gg <- ggplot(time_df, aes(x = karno)) +
   geom_line(aes(y = fit, col = factor(tend)), lwd = 1.1) +
