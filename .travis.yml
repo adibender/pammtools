@@ -1,20 +1,16 @@
-language: r
+language: R
 sudo: false
 cache: packages
+fortran: false
+latex: false
 
-matrix:
+jobs:
   include:
-  - r: devel
   - r: release
-
-r_packages:
-  - pammtools # for building pkgdown vignettes via travis
-  - TBFmultinomial
-
-r_github_packages:
-  - jimhester/covr
-  - thomasp85/patchwork
-
+    before_cache:
+    - Rscript -e 'remotes::install_cran("pammtools", dependencies = TRUE)'
+    - Rscript -e 'remotes::install_cran("TBFmultinomial", dependencies = TRUE)'
+    - Rscript -e 'remotes::install_github("jimhester/covr")'
 # whitelist
 branches:
   only:
