@@ -180,8 +180,10 @@ sim_pexp <- function(formula, data, cut) {
     times = attr(sim_df, "id_n"))
   attr(sim_df, "sim_formula") <- formula
 
+  class(sim_df) <- c("sim_df", class(unped(sim_df)))
+
   if (any(!map_lgl(sim_df, is_atomic))) {
-    class(sim_df) <- c("nested_fdf", "sim_sdf", class(sim_df))
+    class(sim_df) <- c("nested_fdf", class(sim_df))
   }
 
   sim_df
