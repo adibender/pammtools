@@ -241,12 +241,12 @@ which decreases strongly from low to high values of $x_{\text{karno}}$.
 
 Holding the Karnofsky-Score constant, we can see how the log hazard
 changes over time for different $x_{\text{karno}}$ (middle panel).
-For higher values $x_{\text{karno}} \in \{75, 90\}$ the log-hazard is smaller
+For larger values ($x_{\text{karno}} \in \{75, 90\}$) the log-hazard is smaller
 at the beginning and increases over the course of the follow-up, while for
-small values $x_{\text{karno}} \in \{40\}$ the log-hazard is high and decreases
-toward the end of the follow-up. Altogether this indicates that the effect of
+small values ($x_{\text{karno}} \in \{40\}$) the log-hazard is positive and decreases
+toward later time points. This could indicate that the effect of
 the Karnofsky-Score tends towards 0 over time as the information collected
-at the beginning of the follow-up becomes outdated.
+at the beginning of the follow-up becomes outdated (but see uncertainty).
 
 <details>
   <summary>*Expand here to see R-Code*</summary>
@@ -268,6 +268,8 @@ karno_df <- ped %>%
   make_newdata(tend = unique(tend), karno = c(40, 75, 95)) %>%
   add_term(pam3, term = "karno")
 
+# shortcut
+# gg_slice(ped, pam3, "karno", tend = unique(tend), karno = c(40, 75, 95))
 karno_gg <- ggplot(karno_df, aes(x = tend, y = fit)) +
   geom_step(aes(col = factor(karno)), lwd = 1.1) +
   geom_stepribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = factor(karno)),
