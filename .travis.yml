@@ -27,4 +27,4 @@ deploy:
   keep-history: false
   local-dir: docs
   on:
-    branch: master
+    all_branches: true

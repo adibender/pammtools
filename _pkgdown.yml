@@ -110,3 +110,5 @@ navbar:
 
 development:
   mode: auto
+  version_label: default
+  version_tooltip: "Version"
