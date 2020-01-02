@@ -8,7 +8,7 @@
 \alias{plot.pamm}
 \title{Fit a piece-wise exponential additive model}
 \usage{
-pamm(formula, data = list(), method = "REML", ..., trafo.args = NULL)
+pamm(formula, data = list(), method = "REML", ..., trafo_args = NULL)
 
 is.pamm(x)
 

@@ -41,7 +41,6 @@ int_info(brks)
 x <- runif (3, 0, 30)
 x
 get_intervals(brks, x)
-
 }
 \seealso{
 \code{\link[base]{findInterval}} \code{\link{int_info}}

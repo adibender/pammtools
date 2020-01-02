@@ -28,7 +28,8 @@ Imports:
     msm,
     lazyeval,
     Formula,
-    mvtnorm
+    mvtnorm,
+    pec
 Suggests:
     RColorBrewer,
     scam,

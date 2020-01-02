@@ -81,7 +81,7 @@ int_info.ped <- function(x, ...) {
 #' @keywords internal
 int_info.pamm <- function(x, ...) {
 
-  int_info(x$breaks)
+  int_info(x[["trafo_args"]][["cut"]])
 
 }
 
@@ -97,6 +97,9 @@ int_info.pamm <- function(x, ...) {
 #' @import dplyr
 #' @return A \code{data.frame} containing information on intervals in which
 #' values of \code{times} fall.
+#' @seealso \code{\link[base]{findInterval}} \code{\link{int_info}}
+#' @rdname get_intervals
+#' @export
 #' @examples
 #' set.seed(111018)
 #' brks <- c(0, 4.5, 5, 10, 30)
@@ -104,17 +107,12 @@ int_info.pamm <- function(x, ...) {
 #' x <- runif (3, 0, 30)
 #' x
 #' get_intervals(brks, x)
-#'
-#' @seealso \code{\link[base]{findInterval}} \code{\link{int_info}}
-#' @rdname get_intervals
-#' @export
 get_intervals <- function(x, times, ...) {
   UseMethod("get_intervals", x)
 }
 
-#' @inherit get_intervals
-#' @inheritParams base::findInterval
 #' @rdname get_intervals
+#' @inheritParams base::findInterval
 #' @export
 get_intervals.default <- function(
   x,

@@ -41,7 +41,7 @@
 #' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex)
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @export
-as_ped <- function(data, formula, ...) {
+as_ped <- function(data, ...) {
   UseMethod("as_ped", data)
 }
 
@@ -160,3 +160,34 @@ as_ped.list <- function(
 #' @param x any R object.
 #' @export
 is.ped <- function(x) inherits(x, "ped")
+
+
+#' @rdname as_ped
+#' @param newdata A new data set (\code{data.frame}) that contains the same
+#' variables that were used to create the PED object (code{data}).
+#' @export
+as_ped.ped <- function(data, newdata, ...) {
+
+  if (is.ped(newdata)) {
+    stop("newdata already in ped format.")
+  }
+
+  trafo_args <- attr(data, "trafo_args")
+  do.call(split_data, c(data = newdata, trafo_args))
+
+}
+
+
+
+#' @rdname as_ped
+#' @export
+as_ped.pamm <- function(data, newdata, ...) {
+
+  if (is.ped(newdata)) {
+    stop("newdata already in ped format.")
+  }
+  trafo_args      <- data[["trafo_args"]]
+  trafo_args$data <- newdata
+  do.call(split_data, trafo_args)
+
+}
