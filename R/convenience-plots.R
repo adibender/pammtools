@@ -4,7 +4,6 @@
 #' smooth terms contained in the model. If more than one smooth is present, the
 #' different smooth are faceted.
 #'
-#' @inheritParams get_term
 #' @param x A data frame or object of class \code{ped}.
 #' @param ... Further arguments passed to \code{\link{get_terms}}
 #' @import ggplot2

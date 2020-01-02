@@ -19,9 +19,9 @@ is.pamm(x)
 \method{plot}{pamm}(x, ...)
 }
 \arguments{
-\item{formula}{ A GAM formula, or a list of formulae (see \code{\link{formula.gam}} and also \code{\link{gam.models}}). 
-These are exactly like the formula for a GLM except that smooth terms, \code{\link{s}}, \code{\link{te}}, \code{\link{ti}} 
-and \code{\link{t2}}, can be added to the right hand side to specify that the linear predictor depends on smooth functions of predictors (or linear functionals of these).
+\item{formula}{ A GAM formula, or a list of formulae (see \code{\link[mgcv]{formula.gam}} and also \code{\link[mgcv]{gam.models}}). 
+These are exactly like the formula for a GLM except that smooth terms, \code{\link[mgcv]{s}}, \code{\link[mgcv]{te}}, \code{\link[mgcv]{ti}} 
+and \code{\link[mgcv]{t2}}, can be added to the right hand side to specify that the linear predictor depends on smooth functions of predictors (or linear functionals of these).
 }
 
 \item{data}{ A data frame or list containing the model response variable and 

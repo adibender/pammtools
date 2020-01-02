@@ -31,7 +31,7 @@ append_ped_attr <- function(pamm, ped) {
 #' @rdname pamm
 #' @seealso \code{\link[mgcv]{gam}}
 #' @export
-pamm <- function(formula, data=list(), method="REML", ..., trafo.args=NULL) {
+pamm <- function(formula, data = list(), method = "REML", ..., trafo.args = NULL) {
 
   dots <- list(...)
   dots$formula <- formula
