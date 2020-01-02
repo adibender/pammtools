@@ -58,14 +58,16 @@ as_ped.data.frame <- function(
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
-  dots          <- list(...)
-  dots$data     <- data
+  dots <- list(...)
+  dots$data <- data
   formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
   dots$formula  <- formula
-  dots$cut      <- cut
+  dots$cut <- cut
   dots$max_time <- max_time
   ped <- do.call(split_data, dots)
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+
   ped
 
 }
@@ -152,6 +154,7 @@ as_ped.list <- function(
     }
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+  attr(ped, "status_var") <- get_lhs_vars(formula)[2]
   ped
 
 }
