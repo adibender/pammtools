@@ -6,6 +6,16 @@
 \usage{
 \method{predictSurvProb}{pamm}(object, newdata, times)
 }
+\arguments{
+\item{object}{An object of class \code{pam_xgb}}
+
+\item{newdata}{A data set containing the same covariates as used for model
+fitting. If of class \code{data.frame}, the function will transform the
+data to the PED format using the same settings as for the data used in
+estimation.}
+
+\item{times}{A vector of times for which predictions should be generated.}
+}
 \description{
 S3 method for pamm objects for compatibility with package pec
 }

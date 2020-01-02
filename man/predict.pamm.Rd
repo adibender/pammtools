@@ -10,14 +10,15 @@
 \item{object}{An object of class \code{pam_xgb}}
 
 \item{newdata}{A data set containing the same covariates as used for model
-fitting. If of class \code{data.frame}, the function will try to transform
-to the \code{xgb.DMatrix} format.}
+fitting. If of class \code{data.frame}, the function will transform the
+data to the PED format using the same settings as for the data used in
+estimation.}
 
 \item{type}{The type of prediction desired. Either hazard (\code{type = "hazard"}),
 cumulative hazard (\code{type = "cumu_hazard"}) or survival probability
 (\code{type = "surv_prob"}).}
 
-\item{times}{A vector of times for which predictions should be generated}
+\item{...}{Currently not used.}
 }
 \value{
 A matrix of predictions containing one row per
@@ -26,4 +27,7 @@ observation (row in newdata) and 1 column per  specified time in the
 }
 \description{
 Predict hazard, cumulative hazard or survival probability
+}
+\seealso{
+pamm
 }
