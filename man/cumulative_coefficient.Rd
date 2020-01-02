@@ -11,11 +11,9 @@ get_cumu_coef(model, data = NULL, terms, ...)
 
 \method{get_cumu_coef}{gam}(model, data, terms, ...)
 
-\method{get_cumu_coef}{aalen}(model, data = NULL, terms, ci = TRUE,
-  ...)
+\method{get_cumu_coef}{aalen}(model, data = NULL, terms, ci = TRUE, ...)
 
-\method{get_cumu_coef}{cox.aalen}(model, data = NULL, terms, ci = TRUE,
-  ...)
+\method{get_cumu_coef}{cox.aalen}(model, data = NULL, terms, ci = TRUE, ...)
 }
 \arguments{
 \item{model}{Object from which to extract cumulative coefficients.}

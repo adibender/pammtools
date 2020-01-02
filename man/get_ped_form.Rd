@@ -4,7 +4,11 @@
 \alias{get_ped_form}
 \title{Extract variables from the left-hand-side of a formula}
 \usage{
-get_ped_form(formula)
+get_ped_form(
+  formula,
+  data = NULL,
+  tdc_specials = c("concurrent", "cumulative")
+)
 }
 \arguments{
 \item{formula}{A \code{\link{formula}} object.}

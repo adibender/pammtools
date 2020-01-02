@@ -1,7 +1,7 @@
 ## Test environments
+* Local R 3.6.1
 * R release and devel with Travis CI
-* R 3.5.3 patched with AppVeyor
-* win-builder (R version 3.6.0 beta (2019-04-16 r76403))
+* Appveyor (patched and devel)
 * win-builder
 * R-hub
 
@@ -9,8 +9,10 @@
 
 0 errors | 0 warnings | 0 notes
 
-* Fixes dplyr reverse dependency bug + documentation updates
+* A simple maintainance release to support upcoming version of tidyr
+* Fixed relative link in NEWS.md
+* Reduced run length of add_term example
 
 ## Reverse dependencies
 
-Tehre are no reverse dependencies.
+There are no reverse dependencies.

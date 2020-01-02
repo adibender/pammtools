@@ -1,3 +1,19 @@
+# pammtools 0.1.15
+* Interface for specification of data transformation in `as_ped` changed. The vertical bar `|` is no longer necessary to indicate concurrent or cumulative effects
+
+# pammtools 0.1.14
+
+* Support for new interface to tidyr
+
+# pammtools 0.1.13
+
+* Functions `get_hazard` and `add_hazard` also gain `reference` argument.
+Allows to calculate (log-)hazard ratios.
+
+* Introduces breaking changes to `add_term` function. Argument `relative` is replaced by `reference`, makes calculation of relative (log-)hazards, i.e. hazard ratios, more flexible. Argument `se.fit` is replaced by `ci`.
+
+
+
 # pammtools 0.1.11
 
 ## bugs
@@ -100,7 +116,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 # pammtools 0.0.8
 
 * All data transformation is now handled using `as_ped` (see
-[data transformation vignette](../articles/data-transformation.html))
+[data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html))
 
 * Data transformation now handles
     - standard time-to-event data

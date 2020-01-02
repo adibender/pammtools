@@ -4,9 +4,17 @@
 \alias{get_surv_prob}
 \title{Calculate survival probabilities}
 \usage{
-get_surv_prob(newdata, object, ci = TRUE, ci_type = c("default",
-  "delta", "sim"), se_mult = 2L, time_var = NULL,
-  interval_length = "intlen", nsim = 100L, ...)
+get_surv_prob(
+  newdata,
+  object,
+  ci = TRUE,
+  ci_type = c("default", "delta", "sim"),
+  se_mult = 2L,
+  time_var = NULL,
+  interval_length = "intlen",
+  nsim = 100L,
+  ...
+)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -18,8 +26,8 @@ get_surv_prob(newdata, object, ci = TRUE, ci_type = c("default",
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{ci}{Logical indicating whether to include confidence intervals. Defaults
-to \code{TRUE}}
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
 
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}

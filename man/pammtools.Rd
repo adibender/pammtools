@@ -3,7 +3,6 @@
 \docType{package}
 \name{pammtools}
 \alias{pammtools}
-\alias{pammtools-package}
 \title{pammtools: Piece-wise exponential Additive Mixed Modeling tools.}
 \description{
 \code{pammtools} provides functions and utilities that facilitate fitting

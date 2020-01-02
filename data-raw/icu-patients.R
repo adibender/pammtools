@@ -13,6 +13,7 @@ tdc_df <- readRDS(url("https://github.com/adibender/elra-biostats/raw/master/dat
 tdc_df <- tdc_df %>%
   select(CombinedID, Study_Day, caloriesPercentage, proteinGproKG)
 
+RNGkind(sample.kind = "Rounding")
 set.seed(5032018)
 samp_id <- sample(unique(tdc_df$CombinedID), 2000)
 
@@ -22,4 +23,4 @@ patient <- filter(event_df, CombinedID %in% samp_id) %>%
 daily <- filter(tdc_df, CombinedID %in% samp_id) %>%
   arrange(CombinedID)
 
-devtools::use_data(patient, daily, overwrite = TRUE)
+usethis::use_data(patient, daily, overwrite = TRUE)

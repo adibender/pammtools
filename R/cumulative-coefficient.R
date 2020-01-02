@@ -23,7 +23,6 @@ get_cumu_coef <- function(model, data = NULL, terms, ...) {
 
 
 #' @rdname cumulative_coefficient
-#' @inherit get_cumu_coef
 #' @export
 get_cumu_coef.gam <- function(model, data, terms, ...) {
 
@@ -34,7 +33,6 @@ get_cumu_coef.gam <- function(model, data, terms, ...) {
 }
 
 #' @rdname cumulative_coefficient
-#' @inherit get_cumu_coef
 #' @param ci Logical. Indicates if confidence intervals should be returned as
 #' well.
 #' @export
@@ -65,7 +63,6 @@ get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
 }
 
 #' @rdname cumulative_coefficient
-#' @inherit get_cumu_coef
 #' @export
 get_cumu_coef.cox.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
 
@@ -83,7 +80,6 @@ get_cumu_diff <- function(d1, d2, model, nsim = 100L) {
       cumu_upper =  lp[["cumu_upper"]])
 }
 
-#' @inheritParams get_cumu_coef
 #' @import dplyr purrr
 #' @importFrom rlang sym enquo quo_name
 #' @keywords internal
@@ -125,7 +121,6 @@ cumu_coef <- function(data, model, term, ...) {
 
 }
 
-#' @inherit get_cumu_coef
 #' @keywords internal
 get_cumu_coef_baseline <- function(data, model, ...) {
 

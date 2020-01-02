@@ -6,7 +6,6 @@
 #' @keywords internal
 get_lhs_vars <- function(formula) {
 
-
   if (is.character(formula) ) formula <- as.formula(formula)
   formula(Formula(formula), lhs = TRUE, rhs = FALSE) %>% all.vars()
 
@@ -15,7 +14,6 @@ get_lhs_vars <- function(formula) {
 #' Extract variables from the right-hand side of a formula
 #'
 #' @rdname formula_helpers
-#' @inherit get_lhs_vars
 #' @keywords internal
 get_rhs_vars <- function(formula) {
 
@@ -27,37 +25,71 @@ get_rhs_vars <- function(formula) {
 
 #' @inherit get_lhs_vars
 #' @keywords internal
-get_tdc_vars <- function(formula, specials = "cumulative") {
+get_tdc_vars <- function(
+  formula,
+  specials = "cumulative",
+  data     = NULL) {
 
-  f2      <- formula(Formula(formula), lhs = FALSE, rhs = 2)
-  terms_f <- terms(f2, specials = specials)
+  f_specials <- get_tdc_form(formula, data = data, tdc_specials = specials)
+  terms_f    <- terms(f_specials, specials = specials)
   all.vars(terms_f)
 
 }
 
 #' @inherit get_lhs_vars
 #' @keywords internal
-get_tdc_form <- function(formula) {
-  formula(Formula(formula), lhs = FALSE, rhs = 2)
+get_tdc_form <- function(
+  formula,
+  data         = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  invert       = FALSE) {
+
+  terms   <- terms(formula, data = data, specials = tdc_specials)
+  labels <- attr(terms, "term.labels")
+  ind_tdc <- map(tdc_specials, ~grep(.x, labels)) %>% unlist()
+
+  if(invert) {
+    if(length(ind_tdc) > 0) {
+      formula(terms[ind_tdc * -1])
+    } else {
+      formula
+    }
+  } else {
+    formula(terms[ind_tdc])
+  }
+
+
 }
+
+
 
 #' @inherit get_lhs_vars
 #' @keywords internal
-get_ped_form <- function(formula) {
-  formula(Formula(formula), lhs = 1, rhs = 1)
+get_ped_form <- function(
+  formula,
+  data         = NULL,
+  tdc_specials = c("concurrent", "cumulative")) {
+
+  get_tdc_form(formula, data = data, tdc_specials = tdc_specials, invert = TRUE)
+
 }
 
 
 
 #' @keywords internal
-has_tdc_form <- function(formula) {
+has_tdc_form <- function(
+  formula,
+  tdc_specials = c("concurrent", "cumulative")) {
 
-  formula <- Formula(formula)
-  length_form <- length(formula)
-  length_form[2] > 1
+  form_chr <- as.character(formula) %>% paste0(collapse = "")
+
+
+  any(map_lgl(tdc_specials, ~grepl(.x, form_chr)))
 
 }
 
 has_lhs <- function(formula) {
+
   length(Formula(formula))[1] > 0
+
 }

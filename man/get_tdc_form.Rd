@@ -4,7 +4,12 @@
 \alias{get_tdc_form}
 \title{Extract variables from the left-hand-side of a formula}
 \usage{
-get_tdc_form(formula)
+get_tdc_form(
+  formula,
+  data = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  invert = FALSE
+)
 }
 \arguments{
 \item{formula}{A \code{\link{formula}} object.}

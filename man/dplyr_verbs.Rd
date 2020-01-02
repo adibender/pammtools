@@ -4,27 +4,23 @@
 \alias{dplyr_verbs}
 \alias{arrange}
 \alias{filter}
-\alias{distinct_}
+\alias{distinct}
 \alias{full_join}
 \alias{group_by}
-\alias{group_by_}
 \alias{inner_join}
 \alias{left_join}
 \alias{mutate}
 \alias{rename}
-\alias{rename_}
 \alias{right_join}
 \alias{sample_frac}
 \alias{sample_n}
 \alias{select}
-\alias{select_}
 \alias{slice}
 \alias{summarise}
 \alias{transmute}
 \alias{ungroup}
 \alias{arrange.ped}
 \alias{group_by.ped}
-\alias{group_by_.ped}
 \alias{ungroup.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
@@ -63,17 +59,13 @@
 
 \method{group_by}{ped}(.data, ..., add = FALSE)
 
-\method{group_by_}{ped}(.data, ..., .dots = list(), add = FALSE)
-
 \method{ungroup}{ped}(x, ...)
 
 \method{filter}{ped}(.data, ...)
 
-\method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL, ...)
+\method{sample_n}{ped}(tbl, size, replace = FALSE, weight = NULL, .env = NULL, ...)
 
-\method{sample_frac}{ped}(tbl, size = 1, replace = FALSE,
-  weight = NULL, .env = NULL, ...)
+\method{sample_frac}{ped}(tbl, size = 1, replace = FALSE, weight = NULL, .env = NULL, ...)
 
 \method{slice}{ped}(.data, ...)
 
@@ -89,17 +81,29 @@
 
 \method{transmute}{ped}(.data, ...)
 
-\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ...)
+\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{full_join}{ped}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ...)
+\method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{left_join}{ped}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
+\method{left_join}{ped}(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  ...,
+  keep_attributes = TRUE
+)
 
-\method{right_join}{ped}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
+\method{right_join}{ped}(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  ...,
+  keep_attributes = TRUE
+)
 
 \method{arrange}{nested_fdf}(.data, ...)
 
@@ -109,11 +113,9 @@
 
 \method{filter}{nested_fdf}(.data, ...)
 
-\method{sample_n}{nested_fdf}(tbl, size, replace = FALSE,
-  weight = NULL, .env = NULL, ...)
+\method{sample_n}{nested_fdf}(tbl, size, replace = FALSE, weight = NULL, .env = NULL, ...)
 
-\method{sample_frac}{nested_fdf}(tbl, size = 1, replace = FALSE,
-  weight = NULL, .env = NULL, ...)
+\method{sample_frac}{nested_fdf}(tbl, size = 1, replace = FALSE, weight = NULL, .env = NULL, ...)
 
 \method{slice}{nested_fdf}(.data, ...)
 
@@ -129,17 +131,29 @@
 
 \method{transmute}{nested_fdf}(.data, ...)
 
-\method{inner_join}{nested_fdf}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ...)
+\method{inner_join}{nested_fdf}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{full_join}{nested_fdf}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ...)
+\method{full_join}{nested_fdf}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{left_join}{nested_fdf}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
+\method{left_join}{nested_fdf}(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  ...,
+  keep_attributes = TRUE
+)
 
-\method{right_join}{nested_fdf}(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"), ..., keep_attributes = TRUE)
+\method{right_join}{nested_fdf}(
+  x,
+  y,
+  by = NULL,
+  copy = FALSE,
+  suffix = c(".x", ".y"),
+  ...,
+  keep_attributes = TRUE
+)
 }
 \arguments{
 \item{.data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
@@ -149,8 +163,6 @@
 \item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
 override existing groups. To add to the existing groups, use
 \code{add = TRUE}.}
-
-\item{.dots}{see \code{dplyr} documentation}
 
 \item{x}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
@@ -200,7 +212,7 @@ Should be a character vector of length 2.}
 
 \item{funs}{see \code{\link[dplyr]{summarize_all}}}
 
-\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
+\item{.dots}{see \code{dplyr} documentation}
 }
 \value{
 a modified \code{ped} object (except for \code{do})

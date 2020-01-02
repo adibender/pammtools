@@ -114,7 +114,7 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-constant part
   ped  <- split_data(
       formula = Surv(time, status)~.,
-      data    = select_if (data, is_atomic),
+      data    = select_if(data, is_atomic),
       cut     = cut,
       id      = "id") %>%
     rename("t" = "tstart") %>%
@@ -123,8 +123,11 @@ sim_pexp <- function(formula, data, cut) {
   # construct eta for time-dependent part
   if (!is.null(f2)) {
     terms_f2  <- terms(f2, specials = "fcumu")
-    f2_ev     <- map(attr(terms_f2, "term.labels"),
-      ~ eval(expr = parse(text = .x)))
+    f2_ev     <- list()
+    f2_tl <- attr(terms_f2, "term.labels")
+    for (i in seq_along(f2_tl)) {
+      f2_ev[[i]] <- eval(expr = parse(text = f2_tl[[i]]), envir = .GlobalEnv)
+    }
     ll_funs   <- map(f2_ev, ~.x[["ll_fun"]])
     tz_vars   <- map_chr(f2_ev, ~.x[["vars"]][1])
     cumu_funs <- map(f2_ev, ~.x[["f_xyz"]])
@@ -240,7 +243,10 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
     unlist()
   vars <- vars[vars != "t"]
 
-  list(vars = vars, f_xyz = f_xyz, ll_fun = ll_fun)
+  list(
+    vars   = vars,
+    f_xyz  = f_xyz,
+    ll_fun = ll_fun)
 
 }
 
@@ -254,18 +260,23 @@ eta_cumu <- function(data, fcumu, cut, ...) {
   f_xyz  <- fcumu$f_xyz
   ll_fun <- fcumu$ll_fun
   eta_name <- paste0("eta_", vars[2])
-  combine_df(
+  comb_df <- combine_df(
     data.frame(t = cut),
-    select(data, one_of("id", vars))) %>%
-  unnest() %>%
-  group_by(.data$id, .data$t) %>%
-  mutate(
-    LL = ll_fun(t, !!sym(vars[1])) * 1,
-    delta = c(mean(abs(diff(!!sym(vars[1])))), abs(diff(!!sym(vars[1]))))) %>%
-  ungroup() %>%
-  filter(.data$LL != 0) %>%
-  group_by(.data$id, .data$t) %>%
-  summarize(!!eta_name :=
-    sum(.data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
+    select(data, one_of("id", vars)))
+  if(tidyr_new_interface()) {
+    comb_df <- comb_df %>% unnest(cols = -one_of("id"))
+  } else {
+    comb_df <- comb_df %>% unnest()
+  }
+  comb_df %>%
+    group_by(.data$id, .data$t) %>%
+    mutate(
+      LL = ll_fun(t, !!sym(vars[1])) * 1,
+      delta = c(mean(abs(diff(!!sym(vars[1])))), abs(diff(!!sym(vars[1]))))) %>%
+    ungroup() %>%
+    filter(.data$LL != 0) %>%
+    group_by(.data$id, .data$t) %>%
+    summarize(!!eta_name :=
+      sum(.data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
 
 }

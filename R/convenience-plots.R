@@ -19,7 +19,6 @@ gg_smooth <- function(x, ...) {
 }
 
 #' @rdname gg_smooth
-#' @inherit gg_smooth
 #' @param fit A model object.
 #' @export
 gg_smooth.default <- function(x, fit, ...) {

@@ -4,8 +4,12 @@
 \alias{tidy_smooth2d}
 \title{Extract 2d smooth objects in tidy format.}
 \usage{
-tidy_smooth2d(x, keep = c("x", "y", "fit", "se", "xlab", "ylab", "main"),
-  ci = FALSE, ...)
+tidy_smooth2d(
+  x,
+  keep = c("x", "y", "fit", "se", "xlab", "ylab", "main"),
+  ci = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}

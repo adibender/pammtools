@@ -24,7 +24,7 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   vars        <- names(expressions)
   n_vars      <- length(expressions)
   ndf <- make_newdata(data, ...) %>%
-    add_term2(model, term, reference = reference, ci = ci)
+    add_term(model, term, reference = reference, ci = ci)
 
   n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
   vars     <- vars[n_unique > 1]
@@ -134,7 +134,7 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   expressions <- quos(...)
   vars        <- names(expressions)
   ndf         <- make_newdata(data, ...) %>%
-    add_term2(model, term, reference = reference, se.fit = ci)
+    add_term(model, term, reference = reference, ci = ci)
 
   n_unique <- map_int(vars, ~length(unique(ndf[[.x]])))
   vars     <- vars[rev(order(n_unique))]
@@ -206,7 +206,7 @@ get_partial_ll <- function(
   tz_val   <- attr(data, "tz")[[ind_term]]
 
   ll_df <- get_ll(data, ind_term, ..., time_var = time_var)  %>%
-    add_term2(object = model, term = term, reference = reference, se.fit = ci)
+    add_term(object = model, term = term, reference = reference, ci = ci)
 
 }
 
@@ -219,7 +219,7 @@ get_ll <- function(x, ind_term, ..., time_var = "tend") {
   int_df  <- int_info(x)
   tz_vars <- attr(x, "tz_vars")
   func    <- attr(x, "func")[[ind_term]]
-  tz_val      <- attr(x, "tz")[[ind_term]]
+  tz_val  <- attr(x, "tz")[[ind_term]]
   tz_var  <- attr(x, "tz_vars")[[ind_term]]
   tz_var_mat <- make_mat_names(tz_var, func$latency_var, func$tz_var,
     func$suffix, n_func)

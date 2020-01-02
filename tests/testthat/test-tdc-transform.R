@@ -11,13 +11,13 @@ test_that("Concurrent TDC are transformed correctly", {
   tz <- tz[tz <= max(time)][-1]
   expect_error(as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. | concurrent(bili, protime, tz_var = "day"),
+    formula = Surv(time, status) ~. + concurrent(bili, protime, tz_var = "day"),
     id      = "id"), "No events in data")
   event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status == 2) %>%
     select(id, time, status, trt, age, bili, spiders)
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. |
+    formula = Surv(time, status) ~. +
       concurrent(bili, protime, tz_var = "day"), id = "id")
   expect_equal(unique(ped$tend), c(176, 182, 192, 364, 365, 400, 743, 768, 1012))
   expect_equal(ped$bili,
@@ -26,7 +26,7 @@ test_that("Concurrent TDC are transformed correctly", {
   # lag != 0
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. |
+    formula = Surv(time, status) ~. +
       concurrent(bili, protime, tz_var = "day", lag = 10),
     id = "id")
   expect_equal(
@@ -38,7 +38,7 @@ test_that("Concurrent TDC are transformed correctly", {
   # unequal lags
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status) ~. |
+    formula = Surv(time, status) ~. +
       concurrent(bili, tz_var = "day", lag = 10) +
       concurrent(protime, tz_var = "day", lag = 0),
     id = "id")
@@ -54,7 +54,7 @@ test_that("Concurrent TDC are transformed correctly", {
 # when maxtime is set
   ped <- as_ped(
     data    = list(event_df, tdc_df),
-    formula = Surv(time, status)~. | concurrent(bili, protime, tz_var = "day"),
+    formula = Surv(time, status)~. + concurrent(bili, protime, tz_var = "day"),
     id      = "id",
     max_time = 1400)
   expect_equal(unique(ped$tend), sort(c(time, tz, 1400)))
@@ -91,31 +91,10 @@ test_that("Covariate matrices are created correctly", {
   expect_equal(LLmat[3, ], c(rep(0, 2), rep(1, 6), rep(0, 3)))
   expect_equal(max(Ltmat * LLmat), 5)
   ped <- as_ped(data,
-      Surv(time, status) ~ . |
+      Surv(time, status) ~ . +
       cumulative(z.tz2, latency(tz2), tz_var = "tz2",
         ll_fun = function(t, tz) (t - tz) >= 0 & (t - tz) <= 5),
       cut = 0:2)
   expect_equal(max(ped$tz2_latency * ped$LL), 5)
-
-})
-
-test_that("split_tdc works correctly", {
-  data("pbc", package = "survival")
-
-  event_df <- pbc %>%
-    filter(id <= 5) %>%
-    mutate(event = 1L * (status == 2)) %>%
-    select(id, time, event, sex, bili)
-  tdc_df <- pbcseq %>%
-    filter(id <= 5) %>%
-    select(id, day, bili)
-
-  expect_warning(pbc_ped <- split_tdc(Surv(time, event)~., event_df, tdc_df,
-    tz_var = "day", status_var = "event"), "is deprecated")
-
-
-  expect_data_frame(pbc_ped, nrows = 93L, ncols = 8L)
-  expect_is(pbc_ped, "ped")
-  expect_subset(c("breaks", "id_var", "intvars"), names(attributes(pbc_ped)))
 
 })

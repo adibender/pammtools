@@ -15,7 +15,6 @@ get_laglead <- function(x, ...) {
 }
 
 #' @rdname get_laglead
-#' @inherit get_laglead
 #' @param tz A vector of exposure times
 #' @param ll_fun Function that specifies how the lag-lead matrix
 #' should be constructed. First argument is the follow up time
@@ -37,7 +36,6 @@ get_laglead.default <- function(x, tz, ll_fun, ...) {
 }
 
 #' @rdname get_laglead
-#' @inherit get_laglead
 #' @importFrom purrr map2_dfr
 #' @export
 get_laglead.data.frame <- function(x, ...) {
@@ -82,7 +80,6 @@ gg_laglead <- function(x, ...) {
 }
 
 #' @rdname gg_laglead
-#' @inherit gg_laglead
 #' @export
 gg_laglead.default <- function(x, tz, ll_fun, ...) {
 
@@ -91,7 +88,6 @@ gg_laglead.default <- function(x, tz, ll_fun, ...) {
 
 }
 
-#' @inherit gg_laglead
 #' @rdname gg_laglead
 #' @export
 gg_laglead.LL_df <- function(

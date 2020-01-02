@@ -4,9 +4,17 @@
 \alias{get_cumu_hazard}
 \title{Calculate cumulative hazard}
 \usage{
-get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default",
-  "delta", "sim"), time_var = NULL, se_mult = 2,
-  interval_length = "intlen", nsim = 100L, ...)
+get_cumu_hazard(
+  newdata,
+  object,
+  ci = TRUE,
+  ci_type = c("default", "delta", "sim"),
+  time_var = NULL,
+  se_mult = 2,
+  interval_length = "intlen",
+  nsim = 100L,
+  ...
+)
 }
 \arguments{
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
@@ -18,15 +26,16 @@ get_cumu_hazard(newdata, object, ci = TRUE, ci_type = c("default",
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
-\item{ci}{Logical indicating whether to include confidence intervals. Defaults
-to \code{TRUE}}
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
 
 \item{ci_type}{The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
-the estimated coefficients. CIs are given by respective quantiles.}
+the estimated coefficients. See \href{here}{https://adibender.github.io/simpamm/confidence-intervals.html}
+for details and empirical evaluation.}
 
 \item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
