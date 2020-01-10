@@ -62,8 +62,8 @@ predictSurvProb.pamm <- function(
   if (!is.ped(newdata)) {
 
     trafo_args <- object[["trafo_args"]]
-    id_var    <- trafo_args[["id"]]
-    brks      <- trafo_args[["cut"]]
+    id_var     <- trafo_args[["id"]]
+    brks       <- trafo_args[["cut"]]
     if ( max(times) > max(brks) ) {
       stop("Can not predict beyond the last time point used during model estimation.
         Check the 'times' argument.")
