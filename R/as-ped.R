@@ -176,7 +176,8 @@ as_ped.ped <- function(data, newdata, ...) {
   }
 
   trafo_args <- attr(data, "trafo_args")
-  do.call(split_data, c(data = newdata, trafo_args))
+  trafo_args[["data"]] <- newdata
+  do.call(split_data,  trafo_args)
 
 }
 
