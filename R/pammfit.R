@@ -19,17 +19,31 @@ append_ped_attr <- function(pamm, ped) {
 
 #' Fit a piece-wise exponential additive model
 #'
-#' Basically a wrapper around \code{\link[mgcv]{gam}}. However, we set
-#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}
-#' by default. The first two can not be overriden. The \code{method} argument
-#' can be specified as usually, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
+#' A thin wrapper around \code{\link[mgcv]{gam}}, however, some arguments are
+#' prespecified:
+#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}.
+#' The first two can not be overriden. The \code{method} argument
+#' can be specified as usual, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
 #'
 #' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{gam}}.
+#' @param trafo_args A named list. If data is not in PED format, \code{as_ped}
+#' will be called internally with arguments provided in \code{trafo_args}.
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
 #' @seealso \code{\link[mgcv]{gam}}
+#' @examples
+#' data("veteran", package = "survival")
+#' ped <- tumor %>%
+#'  as_ped(Surv(days, status) ~ complications, cut = seq(0, 3000, by = 50))
+#' pam <- pamm(ped_status ~ s(tend) + complications, data = ped)
+#' summary(pam)
+#' ## Alternatively
+#' pamm(
+#'  ped_status ~ s(tend) + complications,
+#'  data = tumor,
+#' trafo_args = list(formula = Surv(days, status)~complications))
 #' @export
 pamm <- function(formula, data = list(), method = "REML", ..., trafo_args =NULL) {
 
