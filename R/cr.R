@@ -1,3 +1,11 @@
+pem_cr <- function(formula, family = poisson, data, offset, ...) {
+  UseMethod("pem_cr", data)
+}
+
+pem_cr.default <- function(formula, family = poisson, data, offset, ...) {
+  pem_cr.ped_cr(formula, family = poisson, data, offset, ...)
+}
+
 #' Wrapping function for PEMs with competing risks using stats::glm
 #' 
 #' This function serves as a wrapper for the glm function (stats) to be 
@@ -40,7 +48,7 @@
 #' pem_cr <- glm_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
 #' @author Philipp Kopper
-pem_cr <- function(formula, family = poisson, data, offset, ...) {
+pem_cr.ped_cr <- function(formula, family = poisson, data, offset, ...) {
   check_input(formula, data, offset)
   res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
@@ -200,7 +208,21 @@ print.pam_cr <- function(summary_list) {
 #' colnames(df)[7] <- "obs_times"
 #' ped_cr <- as_ped_cr(data = df, Surv(obs_times, status) ~ ., 
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
-as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
+as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, 
+                      type = c("cs", "sh"),
+                      censorship = c("no", "admin", "yes"),
+                      censor_independent = TRUE,
+                      censor_formula = NULL, ...) {
+  type <- match.arg(type, c("cs", "sh"))
+  if (type == "cs") {
+    as_ped_cr_cs(data, formula, keep_status, censor_code, ...)
+  } else {
+    as_ped_cr_sh(data, formula, keep_status, censor_code, censorship, 
+                 censor_independent, ...)
+  }
+}
+
+as_ped_cr_cs <- function(data, formula, keep_status, censor_code, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
@@ -222,7 +244,60 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   ped$ped_status <- Reduce("+", ped_status)
   class(ped) <- c("ped_cr", "ped", "data.frame")
   attr(ped, "risks") <- attr(data, "risks")
+  attr(ped, "type") <- "cs"
   ped
+}
+
+as_ped_cr_sh <- function(data, formula, keep_status, censor_code, 
+                         censorship, censor_independent, censor_formula, ...) {
+  assert_data_frame(data)
+  assert_formula(formula)
+  censorship <- match.arg(censorship, c("no", "admin", "yes"))
+  assert_logical(censor_independent)
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
+  true_status <- data[[status_str]]
+  status <- unique(true_status)
+  status <- status[status != censor_code]
+  ped_status <- vector(mode = "list", length = length(status))
+  if (censorship %in% c("no", "admin")) {
+    time <- max(data[[time_str]])
+  } else {
+    time <- data[[time_str]]
+  }
+    for (i in 1:length(status)) {
+      current_data <- data
+      current_data[[status_str]][data[[status_str]] != status[i]] <- 0
+      current_data[[status_str]][data[[status_str]] == status[i]] <- 1
+      current_data[[time_str]][data[[status_str]] != status[i]] <- time
+      current_status <- as_ped(current_data, formula, ...)$ped_status
+      ped_status[[i]] <- current_status * status[i]
+    }
+  ped <- as_ped(current_data, formula, ...)
+  ped$ped_status <- Reduce("+", ped_status)
+  class(ped) <- c("ped_cr", "ped", "data.frame")
+  attr(ped, "risks") <- attr(data, "risks")
+  
+  if (!censor_independent) {
+    censor_data <- ped
+    censor_data$ped_status <- ped$ped_status * 0
+    censor_data$ped_status[[ped$ped_status == 0]] <- 1
+    if (model_type == "glm") {
+      censor_model <- glm(censor_formula, offset = offset)
+    } else { 
+      censor_model <- glm(censor_formula, offset = offset)
+    }
+    ped$censor_ti <- predict_censor_time(censor_model)
+    ped$censor_t <- predict_censor_time(censor_model)
+  } else {
+    
+  }
+  
+  attr(ped, "type") <- "sh"
+  attr(ped, "censorship") <- censorship
+  attr(ped, "censor_independent") <- censor_independent
 }
 
 #' Helper function which creates the CR data frame for one specific risk.
@@ -286,7 +361,13 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
 #' @author Philipp Kopper
 check_input <- function(formula, data, offset) {
   assert_formula(formula)
-  assert_data_frame(data)
+  if (!("ped_cr_subdist" %in% class(data))) {
+    assert_data_frame(data)
+  } else {
+    for (i in 1:length(data)) {
+      assert_data_frame(data[[i]])
+    }
+  }
   if (is.null(offset)) stop("You need to specifiy an offset.")
 }
 
