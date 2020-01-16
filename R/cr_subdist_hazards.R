@@ -171,3 +171,110 @@ fit_cr_subdist <- function(formula, family, data, offset, m_type, ...) {
   }
   return(res)
 }
+
+modify_ped_cr <- function(ped, formula, data, type, censorship, censor_independent, censor_formula, ...) {
+  if (type == "cs") {
+    attr(ped, "type") <- "cs"
+    ped
+  } else {
+    ### here do the assertions
+    ped <- modify_ped_cr_sh(ped, formula, data, censorship, censor_independent, censor_formula, ...)
+    attr(ped, "type") <- "sh"
+    ped
+  }
+}
+
+modify_ped_cr_sh <- function(ped, formula, data, censorship, censor_independent, censor_formula, ...) {
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  if (censorship %in% c("none", "admin")) {
+    modify_ped_cr_sh_nocensor(ped, formula, data, censor_formula, ...)
+  } else {
+    modify_ped_cr_sh_censor(ped, formula, data, censor_independent, censor_formula, ...)
+  }
+}
+
+modify_ped_cr_sh_nocensor <- function(ped, formula, data, censor_formula = "glm", ...) {
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
+  true_status <- data[[status_str]]
+  status <- unique(true_status)
+  status <- status[status != censor_code]
+  ped_status <- vector(mode = "list", length = length(status))
+  modified_data <- data
+  modified_data[data[[status_str]] == 0, time_str] <- max(data[[time_str]])
+  for (i in 1:length(status)) {
+    current_data <- modified_data
+    current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
+    current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
+    current_status <- as_ped(current_data, formula, ...)$ped_status
+    ped_status[[i]] <- current_status * status[i]
+  }
+  ped <- as_ped(current_data, formula, ...)
+  ped$ped_status <- Reduce("+", ped_status)
+  class(ped) <- c("ped_cr", "ped", "data.frame")
+  attr(ped, "risks") <- attr(data, "risks")
+  attr(ped, "type") <- "sh_noncensor"
+  ped
+}
+
+modify_ped_cr_sh_censor <- function(ped, formula, data, censor_independent, 
+                                    censor_formula, ...) {
+  if (censor_independent) {
+    modify_ped_cr_sh_censor_independent(ped, formula, data, censor_formula, ...)
+  } else {
+    modify_ped_cr_sh_censor_dependent(ped, formula, data, censor_formula, ...)
+  }
+}
+
+modify_ped_cr_sh_censor_independent <- function(ped, formula, data, censor_formula,
+                                                threshold = 0.0001, ...) {
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
+  true_status <- data[[status_str]]
+  status <- unique(true_status)
+  status <- status[status != censor_code]
+  ped_status <- vector(mode = "list", length = length(status))
+  censor_data <- data
+  censor_data[data[[status_str]] == 0, status_str] <- 1
+  censor_data[data[[status_str]] != 0, status_str] <- 0
+  censor_ped <- as_ped(censor_data, formula, cut = cut, id = "id")
+  if (censor_formula == "glm") {
+    censor_model <- glm(ped_status ~ interval, data = censor_ped, family = "poisson", offset = offset)
+  } else {
+    censor_model <- gam(ped_status ~ s(tend), data = censor_ped, family = "poisson", offset = offset)
+  }
+  int_frame <- int_info(censor_ped)
+  int_frame <- add_surv_prob(int_frame, censor_model, ci = FALSE)
+  ped_sets <- vector(mode = "list", length = length(status))
+  for (i in 1:length(status)) {
+    modified_data <- data
+    modified_data[!(data[[status_str]] %in% c(0, status[i])), time_str] <- max(data[[time_str]])
+    current_data <- modified_data
+    current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
+    current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
+    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
+    actual_event <- as.data.frame(cbind(id = 1:nrow(data), actual_event = data[[time_str]]))
+    intervals <- unique(cbind(ped_sets[[i]]$tstart, ped_sets[[i]]$tend))
+    actual_event$actual_tend <- rep(0, nrow(actual_event))
+    for (j in 1:nrow(actual_event)) {
+      actual_event$actual_tend[j] <- intervals[(actual_event$actual_event[j] > intervals[, 1]) &
+                                            (actual_event$actual_event[j] <= intervals[, 2]), 2]
+    }
+    actual_event <- merge(actual_event, int_frame[, c("tend", "surv_prob")], by.x = "actual_tend", 
+                          by.y = "tend", all = FALSE)
+    colnames(actual_event)[4] <- "km_actual" 
+    ped_sets[[i]] <- merge(ped_sets[[i]], int_frame[, c("tend", "surv_prob")], by = "tend")
+    ped_sets[[i]] <- merge(ped_sets[[i]], actual_event[, c("id", "km_actual")] , by = "id")
+    ped_sets[[i]] <- ped_sets[[i]][order(ped_sets[[i]][["id"]], 
+                                         ped_sets[[i]][["tstart"]]), ]
+    ped_sets[[i]]$weight <- pmin(1, ped_sets[[i]]$surv_prob / ped_sets[[i]]$km_actual)
+    ped_sets[[i]] <- ped_sets[[i]][ped_sets[[i]][["weight"]] > threshold, ]
+    ped_sets[[i]] <- ped_sets[[i]][ , !(colnames(ped_sets[[i]])  %in% c("surv_prob", "km_actual"))]
+  }
+  ped_sets
+}
