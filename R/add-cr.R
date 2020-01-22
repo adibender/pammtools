@@ -230,14 +230,14 @@ add_cif <- function(newdata, object, data,
   cumu_hazards <- hazard_adder_cr(newdata, object, hazard_function = 
                                     add_cumu_hazard, ci = FALSE, 
                                   overwrite = overwrite, 
-                                  time_var = time_var, ...)
-  cumu_hazards <- cumu_hazards[, (ncol(newdata) + 1):(ncol(cumu_hazards))]
+                                  time_var = time_var, ...) 
+  cumu_hazards <- cumu_hazards[, (ncol(newdata) + 1): (ncol(cumu_hazards))]
   overall_survival <- exp( - apply(cumu_hazards, 1, sum))
   lagged_overall_survival <- lag(overall_survival)
   lagged_overall_survival[1] <- 1
   cif <- vector(mode = "list", length = length(object))
   for (i in 1:length(cif)) {
-    cif[[i]] <- cumsum(hazards[, i] * newdata$intlen * overall_survival)
+    cif[[i]] <- cumsum(hazards[, i]  * newdata$intlen * lagged_overall_survival) 
   }
   table_counts <- count_table(newdata, object, data)
   increment_cif <- lapply(cif, diff)

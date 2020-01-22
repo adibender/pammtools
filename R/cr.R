@@ -212,7 +212,8 @@ print.pam_cr <- function(summary_list) {
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
 
 
-as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
+as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, 
+                      cut = NULL, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
@@ -223,14 +224,17 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, ...) {
   status <- unique(true_status)
   status <- status[status != censor_code]
   ped_status <- vector(mode = "list", length = length(status))
+  if (is.null(cut)) {
+    cut <- unique(data[[time_str]])[order(unique(data[[time_str]]))]
+  }
   for (i in 1:length(status)) {
     current_data <- data
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    current_status <- as_ped(current_data, formula, ...)$ped_status
+    current_status <- as_ped(current_data, formula, cut = cut, ...)$ped_status
     ped_status[[i]] <- current_status * status[i]
   }
-  ped <- as_ped(current_data, formula, ...)
+  ped <- as_ped(current_data, formula, cut = cut, ...)
   ped$ped_status <- Reduce("+", ped_status)
   class(ped) <- c("ped_cr", "ped", "data.frame")
   attr(ped, "risks") <- attr(data, "risks")
@@ -279,7 +283,7 @@ fit_cr <- function(formula, family, data, offset, m_type, ...) {
     current_data <- modify_cr_data(data, cr = crs[i])
     command <- paste(m_type, "(formula = formula, family = family, ", 
                     "data = current_data, offset = offset, ...)", sep = "")
-    res[[i]] <- eval(parse(text = command)) # verpönt
+    res[[i]] <- eval(parse(text = command)) # verpönt: invoke!
   }
   return(res)
 }
@@ -333,3 +337,4 @@ make_numeric <- function(data, status_str, censor_code) {
   data[[status_str]] <- as.numeric(data[[status_str]])
   data
 }
+
