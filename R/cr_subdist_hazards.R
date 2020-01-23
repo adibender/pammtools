@@ -309,14 +309,16 @@ modify_ped_cr_sh_censor_independent <- function(ped, formula, data, censor_formu
   censor_ped <- as_ped(censor_data, formula,...)
   if (censor_formula == "gam") {
     censor_model <- gam(ped_status ~ s(tend), data = censor_ped, family = "poisson", offset = offset)
+    #censor_model <- glm(ped_status ~ interval, data = censor_ped, family = "poisson", offset = offset)
   } else {
     censor_model <- glm(ped_status ~ interval, data = censor_ped, family = "poisson", offset = offset)
+    #censor_model <- gam(censor_formula, data = censor_ped, family = "poisson", offset = offset)
   }
-  predicted_hazards <- add_hazard(censor_ped, censor_model, ci = FALSE)
-  predicted_hazards$increment <- predicted_hazards$tend - predicted_hazards$tstart
-  predicted_hazards$predicted_add_time <- rexp(nrow(predicted_hazards), 
-                                               predicted_hazards$hazard * 
-                                                 (1 / predicted_hazards$increment))
+  #predicted_hazards <- add_hazard(censor_ped, censor_model, ci = FALSE)
+  #predicted_hazards$increment <- predicted_hazards$tend - predicted_hazards$tstart
+  #predicted_hazards$predicted_add_time <- rexp(nrow(predicted_hazards), 
+   #                                            predicted_hazards$hazard * 
+    #                                             (1 / predicted_hazards$increment))
   int_frame <- int_info(censor_ped)
   new_frame <- int_frame[int_frame$interval %in% unique(censor_ped$interval), ]
   new_frame <- add_hazard(new_frame, censor_model, ci = FALSE)
@@ -329,32 +331,36 @@ modify_ped_cr_sh_censor_independent <- function(ped, formula, data, censor_formu
   actual_event <- as.data.frame(cbind(id = 1:nrow(data), 
                                       actual_event = data[[time_str]],
                                       status = data[[status_str]]))
-  actual_event$actual_event <- pmin(actual_event$actual_event, max(ped$tend))
-  actual_event$actual_tend <- rep(0, nrow(actual_event))
-  intervals <- unique(cbind(ped$tstart, ped$tend))
-  for (j in 1:nrow(actual_event)) {
-    actual_event$actual_tend[j] <- intervals[(actual_event$actual_event[j] > intervals[, 1]) &
-                                               (actual_event$actual_event[j] <= intervals[, 2]), 2]
-  }
-  actual_event <- merge(actual_event, int_frame[, c("tend", "hazard", "increment")], 
-                        by.x = "actual_tend", by.y = "tend", all.y = FALSE)
+  #actual_event$actual_event <- pmin(actual_event$actual_event, max(ped$tend))
+  #actual_event$actual_tend <- rep(0, nrow(actual_event))
+  #intervals <- unique(cbind(ped$tstart, ped$tend))
+  #for (j in 1:nrow(actual_event)) {
+  #  actual_event$actual_tend[j] <- intervals[(actual_event$actual_event[j] > intervals[, 1]) &
+  #                                             (actual_event$actual_event[j] <= intervals[, 2]), 2]
+  #}
+  #actual_event <- merge(actual_event, int_frame[, c("tend", "hazard", "increment")], 
+  #                      by.x = "actual_tend", by.y = "tend", all.y = FALSE)
   replacement <- max(data[[time_str]])
+    #actual_event$actual_event + rexp(actual_event$hazard / actual_event$increment)
   print(actual_event$id[order(actual_event$id)])
   actual_event$new_time <- ifelse(actual_event[[status_str]] != 0, 
                                   replacement, actual_event$actual_event)
   actual_event <- actual_event[order(actual_event$id), ]
+  cd <- ped_sets
   for (i in 1:length(status)) {
     modified_data <- data
     modified_data[, time_str] <- ifelse( 
       !(data[[status_str]] %in% c(0, status[i])),
       actual_event$new_time, modified_data[[time_str]])
     current_data <- modified_data
+    #duplicates <- current_data
     current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
-    #ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
-    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
+    #ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    cd[[i]] <- current_data
   }
-  attr(ped_sets, "events") <- actual_event[, c("id", "new_time", "status")]
+  attr(ped_sets, "data_base") <- cd
   ped_sets
 }
 
