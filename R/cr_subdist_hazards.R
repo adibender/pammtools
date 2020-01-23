@@ -258,20 +258,21 @@ modify_ped_cr_sh_censor_independent <- function(ped, formula, data,
   predicted_hazards$predicted_add_time <- rexp(nrow(predicted_hazards), 
                                                predicted_hazards$hazard)
   add_time <- rep(0, nrow(data))
+  tend <- rep(0, nrow(data))
   j <- 1
   for (i in 1:(nrow(predicted_hazards) - 1)) {
     if (predicted_hazards$id[i] != predicted_hazards$id[i + 1]) {
       add_time[j] <- predicted_hazards$predicted_add_time[i]
+      tend[j] <- predicted_hazards$tend[i]
       j <- j + 1
     }
   }
-  add_time[length(add_time)] <- 
+  add_time[j] <- 
     predicted_hazards$predicted_add_time[nrow(predicted_hazards)]
   actual_event <- as.data.frame(cbind(id = 1:nrow(data), 
                                       actual_event = data[[time_str]],
                                       status = data[[status_str]]))
-  replacement <- pmin(max(data[[time_str]]), 
-                      actual_event$actual_event + add_time)
+  replacement <- pmin(max(data[[time_str]]), actual_event$actual_event + add_time)
   actual_event$new_time <- ifelse(actual_event[[status_str]] != 0, 
                                   replacement, actual_event$actual_event)
   actual_event <- actual_event[order(actual_event$id), ]
@@ -285,8 +286,8 @@ modify_ped_cr_sh_censor_independent <- function(ped, formula, data,
     current_data <- modified_data
     current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
-    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
-    #ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    #ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, ...)
     cd[[i]] <- current_data
   }
   attr(ped_sets, "data_base") <- cd
