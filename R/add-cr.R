@@ -220,7 +220,7 @@ add_surv_prob_cr <- function(newdata, object,
 #' (and if ci = TRUE the respective confidence intervals).
 #' @export
 #' @author Philipp Kopper
-add_cif <- function(newdata, object, data, 
+add_cif <- function(newdata, object, ped, 
                     ci = TRUE, se_mult = 2,
                     overwrite = FALSE, time_var = NULL, keep = TRUE, ...) {
   hazards <- hazard_adder_cr(newdata, object, hazard_function = add_hazard, 
@@ -237,17 +237,21 @@ add_cif <- function(newdata, object, data,
   lagged_overall_survival[1] <- 1
   cif <- vector(mode = "list", length = length(object))
   for (i in 1:length(cif)) {
-    cif[[i]] <- cumsum(hazards[, i]  * newdata$intlen * lagged_overall_survival) 
+    cif[[i]] <- cumsum(hazards[, i]  * newdata$intlen * 
+                         apply(cbind(overall_survival, lagged_overall_survival),
+                               1, mean))
   }
-  table_counts <- count_table(newdata, object, data)
-  increment_cif <- lapply(cif, diff)
-  d_j <- apply(table_counts[[2]], 1, sum)
-  n_j <- table_counts[[1]]
-  cif_var <- compute_cif_var(cif, overall_survival, 
-                             lagged_overall_survival,
-                             d_j, n_j, increment_cif,
-                             table_counts)
-  add_this <- add_cif_columns(object, cif, ci, se_mult, cif_var)
+  #table_counts <- count_table(newdata, object, ped)
+  #increment_cif <- lapply(cif, diff)
+  #d_j <- apply(table_counts[[2]], 1, sum)
+  #n_j <- table_counts[[1]]
+  #cif_var <- compute_cif_var(cif, overall_survival, 
+  #                           lagged_overall_survival,
+  #                           d_j, n_j, increment_cif,
+  #                           table_counts)
+  #cif_var <- compute_cif_var_1(newdata, object, overall_survival)
+  #add_this <- add_cif_columns(object, cif, ci, se_mult, cif_var)
+  add_this <- add_cif_ci(cif, object, newdata, alpha = 0.05, nsim = 500L)
   if (keep) {
     cbind(newdata, Reduce(cbind, add_this))
   } else {
@@ -260,15 +264,15 @@ add_cif <- function(newdata, object, data,
 #' This function retrieves additional information from the data which is 
 #' necessary for the delta method.
 #' @author Philipp Kopper 
-count_table <- function(newdata, object, data) {
+count_table <- function(newdata, object, ped) {
   risks <- attr(object, "risks")
-  all_tend <- unique(data$tend)
+  all_tend <- unique(ped$tend)
   risk_set <- rep(0, length(all_tend))
   cause_failures <- as.data.frame(matrix(0, nrow = length(all_tend), 
                                          ncol = length(risks)))
   colnames(cause_failures) <- risks
   for (i in 1:length(all_tend)) {
-    current_data <- data[data$tend == all_tend[i], ]
+    current_data <- ped[ped$tend == all_tend[i], ]
     risk_set[i] <- sum(current_data$ped_status == 0)
     for (j in 1:length(risks)) {
       cause_failures[i , j] <- sum(current_data$ped_status == j)
@@ -299,6 +303,87 @@ compute_cif_var <- function(cif, overall_survival,
   }
   return(cif_var)
 }
+
+compute_cif_var_1 <- function(cif, newdata, object, data, rp = 500) {
+  new_newdata <- hazards
+  for (i in 1:length(object)) {
+    hazards <- c(diff(-log(1 - cif[[i]]))[1], diff(-log(1 - cif[[i]])))
+    new_newdata <- data.frame(cbind(newdata, hazard = hazards))
+    new_rows <- rep(1:nrow(newdata), rp)
+    new_newdata <- new_newdata[new_rows, ]
+    if (is.null(new_newdata$id)) {
+      new_newdata$id <- rep(1:rp, each = nrow(newdata))
+    }
+    new_newdata$add_time <- rexp(new_newdata$hazard)
+    new_newdata$ped_status <- ifelse(new_newdata$add_time > new_newdata$intlen, 0, 1)
+    new_newdata$keep <- TRUE
+    for (j in 2:nrow(new_newdata)) {
+      if (new_newdata$ped_status[j - 1] == 1) {
+        repeat {
+          new_newdata$keep[j] <- FALSE
+          if (new_newdata$id[j] != new_newdata$id[j - 1]) { 
+            break
+          }
+          if (j == nrow(new_newdata)) { 
+            break
+          }
+          j = j + 1
+        }
+      }
+    }
+    new_newdata <- new_newdata[new_newdata$keep, ]
+    new_newdata$offset <- log(new_newdata$tend - new_newdata$tstart)
+    new_newdata <- new_newdata[, c("tend", "interval", "ped_status", "offset")] ## better
+    new_model <- gam(ped_status ~ s(tend), data = new_newdata, offset = offset, family = "poisson")
+    add_surv_p
+  }
+}
+
+add_cif_ci <- function(cif, objects, newdata, alpha = 0.05, nsim = 500L) {
+  hazards <- vector(mode = "list", length = length(objects))
+  cumu_hazards <- hazards
+  ci_lower <- hazards
+  ci_upper <- hazards
+  for (i in 1:length(objects)) {
+    X     <- predict.gam(objects[[i]], newdata = newdata, type = "lpmatrix")
+    V     <- objects[[i]]$Vp
+    coefs <- coef(objects[[i]])
+    sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+    hazards[[i]] <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+    cumu_hazards[[i]] <- apply(hazards[[i]], 2, function(z) cumsum(z) * 
+                                 (newdata$tend - newdata$tstart))
+  }
+  overall_survival <- exp( - Reduce("+", cumu_hazards))
+  lagged_overall_survival <- apply(overall_survival, 2, lag)
+  lagged_overall_survival[1, ] <- 1
+  averaged_overall_survival <- (overall_survival + lagged_overall_survival) / 2
+  for (i in 1:length(objects)) {
+    current_cif <- hazards[[i]] * (newdata$tend - newdata$tstart) * averaged_overall_survival
+    current_cif <- apply(current_cif, 2, cumsum)
+    ci_lower[[i]] <- apply(current_cif, 1, quantile, probs = alpha / 2)
+    ci_upper[[i]] <- apply(current_cif, 1, quantile, probs = 1 - alpha / 2)
+  }
+  
+  add_this <- vector(mode = "list", length = length(object))
+  for (i in 1:length(object)) {
+    if (ci) {
+      add_this[[i]] <- cbind(cif[[i]], 
+                             ci_lower[[i]],
+                             ci_upper[[i]])
+      add_name <- paste("cif", c("", "_lower", "_upper"), sep = "")
+      colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
+                                       add_name, sep = "_")
+    } else {
+      add_this[[i]] <- as.data.frame(cif[[i]])
+      colnames(add_this[[i]]) <- paste(attr(object, "risks")[i], 
+                                       "cif", sep = "_")
+    }
+  }
+  return(add_this)
+}
+
+
+
 
 #' Helper function for the final output of the CFI columns
 #' 
@@ -345,3 +430,4 @@ add_overall_surv <- function(newdata, object, data,
     data.frame(newdata, overall_surv = 1 - rowSums(cif))
   }
 }
+
