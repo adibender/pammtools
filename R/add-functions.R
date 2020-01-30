@@ -334,9 +334,8 @@ get_cumu_hazard <- function(
       if (ci_type == "sim") {
         newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
           time_var = time_var, ...)
-        ci_df <- split(newdata, group_indices(newdata)) %>%
+        newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(get_sim_ci_cumu, object = object, nsim = nsim)
-        newdata <- newdata %>% bind_cols(ci_df)
       }
     }
   } else {
@@ -449,9 +448,8 @@ get_surv_prob <- function(
       if (ci_type == "sim") {
         newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
           time_var = time_var)
-        ci_df <- split(newdata, group_indices(newdata)) %>%
+        newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(get_sim_ci_surv, object = object, nsim = nsim)
-        newdata <- newdata %>% bind_cols(ci_df)
       }
     }
   } else {
@@ -510,9 +508,8 @@ add_ci <- function(
             map_dfr(add_delta_ci, object = object, se_mult = se_mult)
       } else {
         if (ci_type == "sim") {
-          ci_df <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(get_sim_ci, object = object)
-          newdata <- newdata %>% bind_cols(ci_df)
+          newdata <- split(newdata, group_indices(newdata)) %>%
+            map_dfr(get_sim_ci, object = object, nsim = nsim)
         }
       }
     }
@@ -576,10 +573,10 @@ get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L) {
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
-  ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
+  newdata$ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
 
-  tibble(ci_lower = ci_lower, ci_upper = ci_upper)
+  newdata
 
 }
 
@@ -590,14 +587,14 @@ get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L) {
   V     <- object$Vp
   coefs <- coef(object)
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigm = V)
+  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)
     cumsum(newdata$intlen * exp(X %*% z)))
 
-  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
+  newdata$cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
 
-  tibble(cumu_lower = cumu_lower, cumu_upper = cumu_upper)
+  newdata
 
 }
 
@@ -611,9 +608,9 @@ get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L) {
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)
     exp(-cumsum(newdata$intlen * exp(X %*% z))))
 
-  surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
+  newdata$surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
 
-  tibble(surv_lower = surv_lower, surv_upper = surv_upper)
+  newdata
 
 }
