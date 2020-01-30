@@ -8,7 +8,14 @@
 \alias{plot.pamm}
 \title{Fit a piece-wise exponential additive model}
 \usage{
-pamm(formula, data = list(), method = "REML", ..., trafo_args = NULL)
+pamm(
+  formula,
+  data = list(),
+  method = "REML",
+  ...,
+  trafo_args = NULL,
+  engine = "gam"
+)
 
 is.pamm(x)
 
@@ -35,10 +42,14 @@ for REML estimation, including of unknown scale, \code{"P-REML"} for REML estima
 of the scale. \code{"ML"} and \code{"P-ML"} are similar, but using maximum likelihood in place of REML. Beyond the 
 exponential family \code{"REML"} is the default, and the only other option is \code{"ML"}.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{gam}}.}
+\item{...}{Further arguments passed to \code{engine}.}
 
 \item{trafo_args}{A named list. If data is not in PED format, \code{as_ped}
 will be called internally with arguments provided in \code{trafo_args}.}
+
+\item{engine}{Character name of the function that will be called to fit the
+model. The intended entries are either \code{"gam"} or \code{"bam"}
+(both from package \code{mgcv}).}
 
 \item{x}{Any R object.}
 
@@ -52,7 +63,6 @@ The first two can not be overriden. The \code{method} argument
 can be specified as usual, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
 }
 \examples{
-data("veteran", package = "survival")
 ped <- tumor \%>\%
  as_ped(Surv(days, status) ~ complications, cut = seq(0, 3000, by = 50))
 pam <- pamm(ped_status ~ s(tend) + complications, data = ped)

@@ -26,15 +26,17 @@ append_ped_attr <- function(pamm, ped) {
 #' can be specified as usual, but defaults to \code{GCV.cp} in \code{\link[mgcv]{gam}}.
 #'
 #' @inheritParams mgcv::gam
-#' @param ... Further arguments passed to \code{\link[mgcv]{gam}}.
+#' @param ... Further arguments passed to \code{engine}.
 #' @param trafo_args A named list. If data is not in PED format, \code{as_ped}
 #' will be called internally with arguments provided in \code{trafo_args}.
+#' @param engine Character name of the function that will be called to fit the
+#' model. The intended entries are either \code{"gam"} or \code{"bam"}
+#' (both from package \code{mgcv}).
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
 #' @seealso \code{\link[mgcv]{gam}}
 #' @examples
-#' data("veteran", package = "survival")
 #' ped <- tumor %>%
 #'  as_ped(Surv(days, status) ~ complications, cut = seq(0, 3000, by = 50))
 #' pam <- pamm(ped_status ~ s(tend) + complications, data = ped)
@@ -45,7 +47,13 @@ append_ped_attr <- function(pamm, ped) {
 #'  data = tumor,
 #' trafo_args = list(formula = Surv(days, status)~complications))
 #' @export
-pamm <- function(formula, data = list(), method = "REML", ..., trafo_args =NULL) {
+pamm <- function(
+  formula,
+  data       = list(),
+  method     = "REML",
+  ...,
+  trafo_args = NULL,
+  engine     = "gam") {
 
   dots <- list(...)
   dots$formula <- formula
@@ -57,7 +65,7 @@ pamm <- function(formula, data = list(), method = "REML", ..., trafo_args =NULL)
   dots$data   <- data
   dots$offset <- data$offset
 
-  pamm_fit        <- do.call(gam, dots)
+  pamm_fit        <- do.call(engine, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))
   pamm_fit        <- append_ped_attr(pamm_fit, data)
   pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
