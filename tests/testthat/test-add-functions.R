@@ -12,6 +12,9 @@ bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
+pam3 <- mgcv::gam(ped_status ~ s(tend, k=5, by = as.factor(trt)) + as.factor(trt),
+  data = ped, family = poisson(), offset = offset)
+
 test_that("hazard functions work for PAM", {
 
   expect_data_frame(haz <- add_hazard(ped_info(ped), bam), nrows = 5L,
@@ -52,6 +55,16 @@ test_that("hazard functions work for PAM", {
   # hr = 1 if reference = data
   hr2 <- ped_info(ped) %>%  add_hazard(pam2, reference = list(age = mean(.$age)))
   expect_equal(hr2$hazard, rep(1, 5))
+
+  ## factor group variable
+  ndf <- ped %>% make_newdata(tend = unique(tend), trt = unique(trt)) %>%
+    group_by(trt)
+  ndf1 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "default")
+  ndf2 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "delta")
+  ndf3 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "sim", nsim = 100L)
+  expect_true(all(ndf1$cumu_hazard > ndf1$cumu_lower & ndf1$cumu_hazard < ndf1$cumu_upper))
+  expect_true(all(ndf2$cumu_hazard > ndf2$cumu_lower & ndf2$cumu_hazard < ndf2$cumu_upper))
+  expect_true(all(ndf3$cumu_hazard > ndf3$cumu_lower & ndf3$cumu_hazard < ndf3$cumu_upper))
 
 })
 
