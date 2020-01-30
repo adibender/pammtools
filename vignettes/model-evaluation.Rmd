@@ -42,8 +42,8 @@ In order to work with the `pec` or `cindex` functions from the **`pec`** package
 the models have to be fit using the `pamm` function
 (which is a thin wrapper around `mgcv::gam`).
 Once the models are fit, the prediction error curves (PEC) and C-Index can
-be comptuted similar to any other model (see respective help pages `?pec::pec` and
-`?pec::cindex`). Note that for thechnical reasons, evaluation of `pamm` objects
+be computed similar to any other model (see respective help pages `?pec::pec` and
+`?pec::cindex`). Note that for technical reasons, evaluation of `pamm` objects
 should not start at exact 0 (see `times` and `start` arguments below).
 
 
@@ -79,9 +79,10 @@ pec <- pec(
 )
 ```
 
-The results illustrate that one model is not necessarily better w.r.t. the prediction error for all time-points. For example `pam3` is better than `pam2`
+The results illustrate that no one model is not necessarily better w.r.t. the prediction error for all time-points. For example `pam3` is better than `pam2`
 in the beginning and worse towards the end. Similarly, the integrated brier score
-(IBS) olso depends on the evaluation time.
+(IBS) also depends on the evaluation time.
+
 ```{r, fig.width = 6, fig.height = 5, out.with = "0.5\\textwidth", dependson = "pec-fit"}
 # plot prediction error curve
 plot(pec)
@@ -91,7 +92,7 @@ crps(pec, times = quantile(tumor$days[tumor$status == 1], c(.25, .5, .75)))
 
 
 ### C-Index
-Examplary, we calculate the C-Index, hower, note the warning message and the
+Exemplary, we calculate the C-Index, however, note the warning message and the
 cited literature.
 ```{r}
 cindex(
