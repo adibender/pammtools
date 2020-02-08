@@ -17,7 +17,8 @@ rpexp(n = 1, rate = 1, t = 0)
     and \code{t} should be in increasing order.}
 }
 \description{
-This is a copy of the same function from \code{\link[msm]{rpexp}}.
+This is a copy of the same function from \code{rpexp} from package
+\pkg{msm}.
 Copied here to reduce dependencies.
 }
 \keyword{internal}
