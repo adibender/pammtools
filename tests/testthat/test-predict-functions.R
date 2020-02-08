@@ -10,7 +10,7 @@ context("Predict functions")
     engine = "bam", method = "fREML", discrete = TRUE)
 
   ## predictSurvProb (pec) generic
-  spmat <- predictSurvProb(pam, tumor[21:23,], times = c(90, 500, 1217))
+  spmat <- predictSurvProb.pamm(pam, tumor[21:23,], times = c(90, 500, 1217))
   expect_identical(
     round(spmat, 2),
     matrix(
@@ -24,8 +24,8 @@ context("Predict functions")
     )
   )
 
-  expect_error(predictSurvProb(pam, tumor[21:23,], times = c(90, 500, 2000)))
-  spmat2 <- predictSurvProb(pam2, tumor[21:23,], times = c(90, 500, 1217))
+  expect_error(predictSurvProb.pamm(pam, tumor[21:23,], times = c(90, 500, 2000)))
+  spmat2 <- predictSurvProb.pamm(pam2, tumor[21:23,], times = c(90, 500, 1217))
   expect_identical(round(spmat, 2), round(spmat2, 2))
 
   }

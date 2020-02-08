@@ -1,9 +1,10 @@
-# pammtools 0.2.0
+# pammtools 0.2.1
 * Adds a new interface for model estimation called `pamm`, which is a thin wrapper
 around `mgcv::gam` with some arguments pre-set.
-* Adds S3 methods `predict.pamm` and `predictSurvProb.pamm`
-* Adds support for model evaluation using package **`pec`**
+* Adds S3 method `predict.pammpredictSurvProb.pamm`
+* Adds support and vignette for model evaluation using package **`pec`**
 * Fixed bug when CIs were calculated simulation based and model contained factor variables
+* Removed unnecessary dependencies in Imports/Suggests
 
 # pammtools 0.1.15
 * Interface for specification of data transformation in `as_ped` changed. The vertical bar `|` is no longer necessary to indicate concurrent or cumulative effects
@@ -32,12 +33,12 @@ Allows to calculate (log-)hazard ratios.
 * Added new vignette linking to tutorial paper (online only)
 
 # pammtools 0.1.9
-* maintainance update: fixes CRAN issues due to new RNG
+* maintenance update: fixes CRAN issues due to new RNG
 
 # pammtools 0.1.8
 
 ## documentation
-* Updates to cummulative effect vignette
+* Updates to cumulative effect vignette
 * Updates to time-dependent covariate vignette (+ data transformation)
 * Update citation information
 

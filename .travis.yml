@@ -11,6 +11,16 @@ jobs:
     - Rscript -e 'remotes::install_cran("pammtools", dependencies = TRUE)'
     - Rscript -e 'remotes::install_cran("TBFmultinomial", dependencies = TRUE)'
     - Rscript -e 'remotes::install_github("jimhester/covr")'
+    - Rscript -e 'remotes::install_cran("pkgdown")'
+    - Rscript -e 'remotes::install_cran("scam")'
+    - Rscript -e 'remotes::install_cran("RColorBrewer")'
+    - Rscript -e 'remotes::install_cran("timereg")'
+    - Rscript -e 'remotes::install_cran("grid")'
+    - Rscript -e 'remotes::install_cran("gridExtra")'
+    - Rscript -e 'remotes::install_cran("coxme")'
+    - Rscript -e 'remotes::install_cran("knitr")'
+    - Rscript -e 'remotes::install_cran("rmarkdown")'
+    - Rscript -e 'remotes::install_cran("pec")'
 # whitelist
 branches:
   only:

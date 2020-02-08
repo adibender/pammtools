@@ -128,7 +128,7 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' Add (cumulative) hazard based on the provided data set and model.
 #' If \code{ci=TRUE} confidence intervals (CI) are also added. Their width can
 #' be controlled via the \code{se_mult} argument. The method by which the
-#' CI are calculated can be specifie by \code{ci_type}.
+#' CI are calculated can be specified by \code{ci_type}.
 #' This is a wrapper around
 #' \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
 #' (log-)hazard ratio is calculated.
