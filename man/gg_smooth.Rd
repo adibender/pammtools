@@ -10,7 +10,7 @@ gg_smooth(x, ...)
 \method{gg_smooth}{default}(x, fit, ...)
 }
 \arguments{
-\item{x}{A data frame or object of class \code{pamm}.}
+\item{x}{A data frame or object of class \code{ped}.}
 
 \item{...}{Further arguments passed to \code{\link{get_terms}}}
 

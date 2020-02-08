@@ -22,6 +22,9 @@ split_data <- function(
   max_time = NULL,
   ...) {
 
+  dots_in <- list(...)
+  dots_in$formula <- formula
+
   ## assert that inputs have correct formats
   assert_class(formula, "formula")
   assert_data_frame(data, min.rows = 1, min.cols = 2)
@@ -68,7 +71,7 @@ split_data <- function(
   dots         <- list(...)
   dots$data    <- data
   dots$formula <- formula
-  dots$cut     <- cut
+  dots$cut     <- dots_in$cut <- cut
   rm(data)
 
   # if id allready in the data set, remove id variable from dots but keep
@@ -119,9 +122,10 @@ split_data <- function(
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
   attr(split_df, "breaks") <- cut
-  attr(split_df, "id_var") <- id_var
+  attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
+  attr(split_df, "trafo_args") <- dots_in
 
   split_df
 

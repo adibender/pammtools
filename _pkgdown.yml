@@ -69,6 +69,7 @@ articles:
     - tveffects
     - frailty
     - tdcovar
+    - model-evaluation
     - cumulative-effects
     - convenience
     - smj-tutorial
@@ -98,6 +99,8 @@ navbar:
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
       href: articles/tdcovar.html
+    - text: Model evaluation
+      href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations
       href: articles/cumulative-effects.html
     - text: 'Paper: A generalized additive model approach to time-to-event analysis'

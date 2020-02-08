@@ -45,18 +45,12 @@ nest_tdc.default <- function(data, formula, ...) {
     vars_to_exclude <- intersect(colnames(data), tdc_vars)
     return(data %>% select(-one_of(vars_to_exclude)))
   } else {
-    df_list <-
-        if (tidyr_new_interface()) {
-          map(
-            tdc_vars,
-            ~ tidyr::nest(.data = data[, c(id, .x)], {{.x}} := one_of(.x)))
-        } else {
-          map(
-            tdc_vars,
-            ~tidyr::nest(data = data[, c(id, .)], -one_of(id), .key = !!.))
-      }
-      suppressMessages(nested_df <- df_list %>% reduce(left_join)) # better: numeric vectors in each list element
-      class(nested_df) <- c("nested_fdf", class(nested_df))
+    df_list <- map(
+      tdc_vars,
+      ~ tidyr::nest(.data = data[, c(id, .x)], {{.x}} := one_of(.x)))
+
+    suppressMessages(nested_df <- df_list %>% reduce(left_join)) # better: numeric vectors in each list element
+    class(nested_df) <- c("nested_fdf", class(nested_df))
   }
 
   nested_df %>% as_tibble()

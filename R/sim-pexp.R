@@ -11,7 +11,6 @@
 #' @param cut A sequence of time-points starting with 0.
 #' @import dplyr
 #' @import Formula
-#' @importFrom msm rpexp
 #' @importFrom lazyeval f_eval
 #' @importFrom tidyr replace_na
 #' @examples
@@ -265,11 +264,7 @@ eta_cumu <- function(data, fcumu, cut, ...) {
   comb_df <- combine_df(
     data.frame(t = cut),
     select(data, one_of("id", vars)))
-  if(tidyr_new_interface()) {
-    comb_df <- comb_df %>% unnest(cols = -one_of("id"))
-  } else {
-    comb_df <- comb_df %>% unnest()
-  }
+  comb_df <- comb_df %>% unnest(cols = -one_of("id"))
   comb_df %>%
     group_by(.data$id, .data$t) %>%
     mutate(

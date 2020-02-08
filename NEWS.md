@@ -1,3 +1,10 @@
+# pammtools 0.2.0
+* Adds a new interface for model estimation called `pamm`, which is a thin wrapper
+around `mgcv::gam` with some arguments pre-set.
+* Adds S3 methods `predict.pamm` and `predictSurvProb.pamm`
+* Adds support for model evaluation using package **`pec`**
+* Fixed bug when CIs were calculated simulation based and model contained factor variables
+
 # pammtools 0.1.15
 * Interface for specification of data transformation in `as_ped` changed. The vertical bar `|` is no longer necessary to indicate concurrent or cumulative effects
 
