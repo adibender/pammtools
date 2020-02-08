@@ -45,7 +45,9 @@ append_ped_attr <- function(pamm, ped) {
 #' pamm(
 #'  ped_status ~ s(tend) + complications,
 #'  data = tumor,
-#' trafo_args = list(formula = Surv(days, status)~complications))
+#'  trafo_args = list(
+#'    formula = Surv(days, status)~complications),
+#'    cut = seq(0, 3000, by = 50))
 #' @export
 pamm <- function(
   formula,
