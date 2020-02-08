@@ -13,7 +13,9 @@ probabilities}
 \item{newdata}{A data frame containing predictor variable combinations for
 which to compute predicted survival probabilities.}
 
-\item{times}{A vector of times for which predictions should be generated.}
+\item{times}{A vector of times in the range of the response variable, e.g.
+times when the response is a survival object, at which to return the
+survival probabilities.}
 }
 \description{
 S3 method for pamm objects for compatibility with package pec

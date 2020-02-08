@@ -3,7 +3,7 @@
 #' @inheritParams pec::predictSurvProb
 #' @importFrom pec predictSurvProb
 #' @importFrom purrr map
-#' @param times A vector of times for which predictions should be generated.
+#'
 #' @export
 predictSurvProb.pamm <- function(
   object,

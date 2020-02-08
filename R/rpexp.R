@@ -1,6 +1,7 @@
 #' Draw random numbers from piece-wise exponential distribution.
 #'
-#' This is a copy of the same function from \code{\link[msm]{rpexp}}.
+#' This is a copy of the same function from \code{rpexp} from package
+#' \pkg{msm}.
 #' Copied here to reduce dependencies.
 #'
 #' @inheritParams msm::rpexp

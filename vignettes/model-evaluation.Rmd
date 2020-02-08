@@ -26,7 +26,6 @@ library(ggplot2)
 theme_set(theme_bw())
 library(survival)
 library(pec)
-library(obliqueRSF)
 ```
 
 In this vignette we illustrate how to obtain model performance measures for

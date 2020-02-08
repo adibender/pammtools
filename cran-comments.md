@@ -1,5 +1,5 @@
 ## Test environments
-* Local R 3.6.1
+* Local Ubuntu Linux R 3.6.2
 * R release and devel with Travis CI
 * Appveyor (patched and devel)
 * win-builder
