@@ -18,3 +18,4 @@ vignettes/*_files
 *.dropbox.attr
 
 docs/*
+pkgdown/
