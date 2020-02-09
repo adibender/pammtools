@@ -20,8 +20,7 @@ opts_chunk$set(
 ```{r, message=FALSE}
 library(dplyr)
 library(mgcv)
-# library(pammtools)
-devtools::load_all()
+library(pammtools)
 library(ggplot2)
 theme_set(theme_bw())
 library(survival)
@@ -46,7 +45,7 @@ be computed similar to any other model (see respective help pages `?pec::pec` an
 should not start at exact 0 (see `times` and `start` arguments below).
 
 
-### Prediction error curves (PEC) and Integrated Brier Score (IBS)
+## Prediction error curves (PEC) and Integrated Brier Score (IBS)
 
 ```{r, "pec-fit", message = FALSE}
 data(tumor)
@@ -90,7 +89,7 @@ crps(pec, times = quantile(tumor$days[tumor$status == 1], c(.25, .5, .75)))
 ```
 
 
-### C-Index
+## C-Index
 Exemplary, we calculate the C-Index, however, note the warning message and the
 cited literature.
 ```{r}
