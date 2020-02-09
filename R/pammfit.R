@@ -37,14 +37,14 @@ append_ped_attr <- function(pamm, ped) {
 #' @rdname pamm
 #' @seealso \code{\link[mgcv]{gam}}
 #' @examples
-#' ped <- tumor %>%
+#' ped <- tumor[1:100, ] %>%
 #'  as_ped(Surv(days, status) ~ complications, cut = seq(0, 3000, by = 50))
 #' pam <- pamm(ped_status ~ s(tend) + complications, data = ped)
 #' summary(pam)
 #' ## Alternatively
 #' pamm(
 #'  ped_status ~ s(tend) + complications,
-#'  data = tumor,
+#'  data = tumor[1:100, ],
 #' trafo_args = list(formula = Surv(days, status)~complications))
 #' @export
 pamm <- function(

@@ -18,7 +18,6 @@ citEntry(
   textVersion = "Andreas Bender, Andreas Groll and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling, https://doi.org/10.1177/1471082X17748083.",
   journal = "Statistical Modelling",
   year = "2018",
-  doi = "10.1177/1471082X17748083",
   URL = "https://doi.org/10.1177/1471082X17748083"
 )
 
@@ -29,6 +28,5 @@ citEntry(
   textVersion = "Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut K\u00fcchenhoff; Penalized estimation of complex, non-linear exposure-lag-response associations, Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003",
   journal = "Biostatistics",
   year = "2018",
-  doi = "10.1093/biostatistics/kxy003",
-  URL = "https://dx.doi.org/10.1093/biostatistics/kxy003"
+  URL = "https://doi.org/10.1093/biostatistics/kxy003"
 )
