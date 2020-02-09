@@ -7,11 +7,16 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 notes
 
-* A simple maintainance release to support upcoming version of tidyr
-* Fixed relative link in NEWS.md
-* Reduced run length of add_term example
+* "Found the following (possibly) invalid URLs". I checked and the links URLs in
+question are working (just take some time to load).
+
+
+## Additional comments
+* Adds support for model evaluation
+* Reduces dependencies in Suggests
+* Fixes bug in simulation based CI calculation
 
 ## Reverse dependencies
 
