@@ -145,7 +145,7 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' respective intervals. \code{"delta"} calculates CIs based on the standard
 #' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
-#' the estimated coefficients. See \href{here}{https://adibender.github.io/simpamm/confidence-intervals.html}
+#' the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
 #' for details and empirical evaluation.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
 #' the confidence intervals.

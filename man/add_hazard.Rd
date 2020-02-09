@@ -56,7 +56,7 @@ will be calculated. Default transforms the linear predictor at
 respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
-the estimated coefficients. See \href{here}{https://adibender.github.io/simpamm/confidence-intervals.html}
+the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
 for details and empirical evaluation.}
 
 \item{overwrite}{Should hazard columns be overwritten if already present in
