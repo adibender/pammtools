@@ -155,6 +155,8 @@ as_ped.list <- function(
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+  attr(ped, "trafo_args")$formula <- formula
+
   ped
 
 }
@@ -177,7 +179,7 @@ as_ped.ped <- function(data, newdata, ...) {
 
   trafo_args <- attr(data, "trafo_args")
   trafo_args[["data"]] <- newdata
-  do.call(split_data,  trafo_args)
+  do.call(as_ped,  trafo_args)
 
 }
 
