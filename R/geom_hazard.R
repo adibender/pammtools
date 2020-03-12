@@ -107,11 +107,12 @@ geom_stephazard <- function(
 #' @usage NULL
 #' @export
 GeomStepHazard <- ggproto(
-  "GeomStepHazard", GeomStep,
-  draw_panel = function(data, panel_params, coord, direction = "vh") {
-    data <- plyr::ddply(data, "group", stairstep, direction = direction)
-    GeomPath$draw_panel(data, panel_params, coord)
-  },
+  "GeomStepHazard",
+  GeomStep,
+  # draw_panel = function(data, panel_params, coord, direction = "vh") {
+  #   data <- ggplot2:::dapply(data, "group", stairstep, direction = direction)
+  #   GeomPath$draw_panel(data, panel_params, coord)
+  # },
   setup_data = function(data, params) {
     row1   <- data %>% group_by(group) %>% slice(1)
     row1$x <- 0
