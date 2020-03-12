@@ -7,11 +7,12 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | o notes
+0 errors | 0 warnings | 1 notes
 
 
 ## Additional comments
 * Fixes CRAN issue (plyr dependency removed)
+* Note says URL not reachable, but it is reachable, just takes some time
 
 ## Reverse dependencies
 
