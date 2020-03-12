@@ -24,12 +24,7 @@ devtools::install_github("adibender/pammtools")
 
 ### Overview
 
-**`pammtools`** facilitates the estimation of Piece-wise exponential Additive
-Mixed Models (PAMMs) for time-to-event data.
-PAMMs can be represented as generalized additive models and can therefore
-be estimated using GAM software (e.g. **`mgcv`**), which, compared to other packages for survival analysis, often offers
-more flexibility w.r.t. to the specification of covariate effects
-(e.g. non-linear, time-varying effects, cumulative effects, etc.).
+**`pammtools`** facilitates the estimation of Piece-wise exponential Additive Mixed Models (PAMMs) for time-to-event data. PAMMs can be represented as generalized additive models and can therefore be estimated using GAM software (e.g. **`mgcv`**), which, compared to other packages for survival analysis, often offers more flexibility w.r.t. to the specification of covariate effects (e.g. non-linear, time-varying effects, cumulative effects, etc.).
 
 To get started, see the [Articles](https://adibender.github.io/pammtools/articles/) section.
 
