@@ -1,3 +1,7 @@
+# pammtools 0.2.2
+* CRAN fix, removed plyr dependency (see issue #141)
+* `as_ped.ped` now also works for transformations with time-dependent covariates
+
 # pammtools 0.2.1
 * Adds a new interface for model estimation called `pamm`, which is a thin wrapper
 around `mgcv::gam` with some arguments pre-set.
