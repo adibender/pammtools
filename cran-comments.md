@@ -7,16 +7,11 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 notes
-
-* "Found the following (possibly) invalid URLs". I checked and the links URLs in
-question are working (just take some time to load).
+0 errors | 0 warnings | o notes
 
 
 ## Additional comments
-* Adds support for model evaluation
-* Reduces dependencies in Suggests
-* Fixes bug in simulation based CI calculation
+* Fixes CRAN issue (plyr dependency removed)
 
 ## Reverse dependencies
 

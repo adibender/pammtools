@@ -137,7 +137,7 @@ respective mean or modus values. For data of class `ped` or `fped` `make_newdata
 
 * Added functionality to flexibly simulate data from PEXP including cumulative effects, see `?sim_pexp`
 
-* Added functionality to calculate Aaalen-model style cumulative coefficients,
+* Added functionality to calculate Aalen-model style cumulative coefficients,
 see `?cumulative_coefficient`
 
 
