@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.2.1
-Date: 2020-02-07
+Version: 0.2.2
+Date: 2020-03-12
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
@@ -21,7 +21,7 @@ Imports:
     magrittr,
     rlang,
     tidyr (>= 1.0.0),
-    ggplot2,
+    ggplot2 (>= 3.2.0),
     dplyr (>= 0.7.0),
     purrr (>= 0.2.3),
     tibble,
