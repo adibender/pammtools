@@ -55,3 +55,19 @@ test_that("Trafo works for list objects (with TDCs)", {
   expect_data_frame(ped, nrows = 2, ncols = 19)
 
 })
+
+
+test_that("Trafo works for Competing Risks data", {
+
+  library(prodlim)
+  set.seed(123)
+  N <- 100
+  cdat <- SimCompRisk(N)
+  cdat$time <- round(cdat$time,1)
+  ped_cr <- cdat %>% as_ped(Surv(time, event) ~ X1)
+  expect_identical(sum(ped_cr$ped_status) - sum(cdat$event != 0), 0)
+  expect_identical(nrow(ped_cr), 5092L)
+  ndf <- ped_cr %>% as_ped(newdata = cdat[1:2,])
+  expect_true(all.equal(ndf, filter(ped_cr, id %in% c(1:2))))
+
+})

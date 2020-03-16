@@ -58,17 +58,28 @@ as_ped.data.frame <- function(
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
-  dots <- list(...)
-  dots$data <- data
-  formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-  dots$formula  <- formula
-  dots$cut <- cut
-  dots$max_time <- max_time
-  ped <- do.call(split_data, dots)
-  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
-  attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+  lhs_vars <- get_lhs_vars(formula)
 
-  ped
+  status_values <- unique(data[[lhs_vars[2]]]) %>% sort()
+
+  if (length(status_values[status_values != 0]) >= 2) {
+    as_ped_cr(data = data, formula = formula, cut = cut,
+      max_time = max_time, tdc_specials = tdc_specials, ...)
+  } else {
+
+    dots <- list(...)
+    dots$data <- data
+    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+    dots$formula  <- formula
+    dots$cut <- cut
+    dots$max_time <- max_time
+    ped <- do.call(split_data, dots)
+    attr(ped, "time_var") <- get_lhs_vars(formula)[1]
+    attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+
+    ped
+
+  }
 
 }
 
@@ -195,5 +206,52 @@ as_ped.pamm <- function(data, newdata, ...) {
   trafo_args      <- data[["trafo_args"]]
   trafo_args$data <- newdata
   do.call(split_data, trafo_args)
+
+}
+
+
+#' Competing risks trafo
+#' @inherit as_ped
+#' @importFrom rlang .env
+#'
+#' @keywords internal
+as_ped_cr <- function(
+  data,
+  formula,
+  cut =NULL,
+  max_time = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  ...) {
+
+  lhs_vars <- get_lhs_vars(formula)
+
+  status_values <- unique(data[[lhs_vars[2]]]) %>% sort()
+  cause_values <- status_values[status_values != 0]
+
+  cuts <- map(
+    cause_values,
+    ~get_cut(
+      mutate(data, !!lhs_vars[2] := 1L * (.data[[lhs_vars[2]]] == .env[[".x"]])),
+      formula = formula, cut = cut, max_time = NULL
+    )
+  )
+  cut <- do.call(union, cuts)
+
+  ped_list <- lapply(
+    cause_values,
+    function(.cause) {
+      print(.cause)
+      ped_i <- data %>%
+        mutate(!!lhs_vars[2] := 1L * (.data[[lhs_vars[2]]] == .env[[".cause"]])) %>%
+        pammtools::as_ped(
+          formula      = formula,
+          cut          = cut,
+          max_time     = max_time,
+          tdc_specials = tdc_specials)
+      ped_i$type <- .cause
+      ped_i
+    })
+
+  ped_cr <- do.call(rbind, ped_list)
 
 }
