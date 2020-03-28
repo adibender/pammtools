@@ -1,11 +1,3 @@
-pem_cr <- function(formula, family = poisson, data, offset, ...) {
-  UseMethod("pem_cr", data)
-}
-
-pem_cr.default <- function(formula, family = poisson, data, offset, ...) {
-  pem_cr.ped_cr(formula, family = poisson, data, offset, ...)
-}
-
 #' Wrapping function for PEMs with competing risks using stats::glm
 #' 
 #' This function serves as a wrapper for the glm function (stats) to be 
@@ -49,7 +41,7 @@ pem_cr.default <- function(formula, family = poisson, data, offset, ...) {
 #' pem_cr <- glm_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
 #' @author Philipp Kopper
-pem_cr.ped_cr <- function(formula, family = poisson, data, offset, ...) {
+pem_cr <- function(formula, family = poisson, data, offset, ...) {
   check_input(formula, data, offset)
   res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
   class(res) <- "pem_cr"
@@ -212,8 +204,8 @@ print.pam_cr <- function(summary_list) {
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
 
 
-as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0, 
-                      cut = NULL, ...) {
+as_ped_cr_cs <- function(data, formula, keep_status = TRUE, censor_code = 0, 
+                         cut = NULL, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
@@ -223,7 +215,7 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
   true_status <- data[[status_str]]
   status <- unique(true_status)
   status <- status[status != censor_code]
-  ped_status <- vector(mode = "list", length = length(status))
+  ped_sets <- vector(mode = "list", length = length(status))
   if (is.null(cut)) {
     cut <- unique(data[[time_str]])[order(unique(data[[time_str]]))]
   }
@@ -231,15 +223,111 @@ as_ped_cr <- function(data, formula, keep_status = TRUE, censor_code = 0,
     current_data <- data
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    current_status <- as_ped(current_data, formula, cut = cut, ...)$ped_status
-    ped_status[[i]] <- current_status * status[i]
+    ped_sets[[i]] <- as_ped(current_data, formula, ...)
   }
-  ped <- as_ped(current_data, formula, cut = cut, ...)
-  ped$ped_status <- Reduce("+", ped_status)
-  class(ped) <- c("ped_cr", "ped", "data.frame")
-  attr(ped, "risks") <- attr(data, "risks")
-  ped
+  class(ped_sets) <- c("cs", "ped_cr", "ped", "data.frame")
+  attr(ped_sets, "risks") <- attr(data, "risks")
+  ped_sets
 }
+
+
+as_ped_cr_sh <- function(data, formula, keep_status = TRUE, censor_code = 0, 
+                         cut = NULL, max_time = NULL, ...) {
+  if(is.null(max_time)) max_time <- max(data[[time_str]])
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
+  true_status <- data[[status_str]]
+  status <- unique(true_status)
+  status <- status[status != censor_code]
+  ped_sets <- vector(mode = "list", length = length(status))
+  for (i in 1:length(status)) {
+    current_data <- data
+    current_data[!(data[[status_str]] %in% c(0, status[i])), time_str] <- 
+      max_time
+    current_data[[status_str]][data[[status_str]] != status[i]] <- 0
+    current_data[[status_str]][data[[status_str]] == status[i]] <- 1
+    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+  }
+  class(ped_sets) <- c("sh", "ped_cr", "ped", "data.frame")
+  attr(ped_sets, "risks") <- attr(data, "risks")
+  ped_sets
+}
+
+as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0, 
+                           cut = NULL, censor_formula = NULL, ...) {
+  time_str <- all.vars(formula)[1]
+  status_str <- all.vars(formula)[2]
+  true_time <- data[[time_str]]
+  data <- make_numeric(data, status_str, censor_code)
+  true_status <- data[[status_str]]
+  status <- unique(true_status)
+  status <- as.integer(status[status != censor_code])
+  status <- status[order(status)]
+  ped_status <- vector(mode = "list", length = length(status))
+  censor_data <- data
+  censor_data[data[[status_str]] == 0, status_str] <- 1
+  censor_data[data[[status_str]] != 0, status_str] <- 0
+  #censor_ped <- as_ped(censor_data, formula, cut = cut, id = "id")#,...)
+  censor_ped <- as_ped(censor_data, formula,...)
+  if (is.null(censor_formula)) {
+    censor_formula <- as.formula(ped_status ~ s(tend))
+  }
+  censor_model <- gam(censor_formula, data = censor_ped, family = "poisson", 
+                        offset = offset)
+    #censor_model <- glm(ped_status ~ interval, data = censor_ped, family = "poisson", offset = offset)
+  predicted_hazards <- add_hazard(censor_ped, censor_model, ci = FALSE)
+  predicted_hazards$increment <- predicted_hazards$tend - predicted_hazards$tstart
+  predicted_hazards$predicted_add_time <- rexp(nrow(predicted_hazards), 
+                                               predicted_hazards$hazard)
+  add_time <- rep(0, nrow(data))
+  tend <- rep(0, nrow(data))
+  j <- 1
+  for (i in 1:(nrow(predicted_hazards) - 1)) {
+    if (predicted_hazards$id[i] != predicted_hazards$id[i + 1]) {
+      add_time[j] <- predicted_hazards$predicted_add_time[i]
+      tend[j] <- predicted_hazards$tend[i]
+      j <- j + 1
+    }
+  }
+  add_time[j] <- 
+    predicted_hazards$predicted_add_time[nrow(predicted_hazards)]
+  actual_event <- as.data.frame(cbind(id = 1:nrow(data), 
+                                      actual_event = data[[time_str]],
+                                      status = data[[status_str]]))
+  replacement <- pmin(max(data[[time_str]]), actual_event$actual_event + add_time)
+  actual_event$new_time <- ifelse(actual_event[[status_str]] != 0, 
+                                  replacement, actual_event$actual_event)
+  actual_event <- actual_event[order(actual_event$id), ]
+  ped_sets <- vector(mode = "list", length = length(status))
+  cd <- ped_sets
+  for (i in 1:length(status)) {
+    modified_data <- data
+    modified_data[, time_str] <- ifelse( 
+      !(data[[status_str]] %in% c(0, status[i])),
+      actual_event$new_time, modified_data[[time_str]])
+    current_data <- modified_data
+    current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
+    current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
+    #ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    cd[[i]] <- current_data
+  }
+  attr(ped_sets, "data_base") <- cd
+  class(ped_sets) <- c("sh", "ped_cr", "ped", "data.frame")
+  attr(ped_sets, "risks") <- attr(data, "risks")
+  ped_sets
+}
+
+
+
+
+
+
+
+
+
 
 #' Helper function which creates the CR data frame for one specific risk.
 #' 
