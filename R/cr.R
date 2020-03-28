@@ -224,8 +224,9 @@ as_ped_cr_cs <- function(data, formula, keep_status = TRUE, censor_code = 0,
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
     ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
-  class(ped_sets) <- c("cs", "ped_cr", "ped", "data.frame")
+  class(ped_sets) <- c("cs", "ped_cr")
   attr(ped_sets, "risks") <- attr(data, "risks")
   ped_sets
 }
@@ -233,9 +234,9 @@ as_ped_cr_cs <- function(data, formula, keep_status = TRUE, censor_code = 0,
 
 as_ped_cr_sh <- function(data, formula, keep_status = TRUE, censor_code = 0, 
                          cut = NULL, max_time = NULL, ...) {
-  if(is.null(max_time)) max_time <- max(data[[time_str]])
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
+  if(is.null(max_time)) max_time <- max(data[[time_str]])
   true_time <- data[[time_str]]
   data <- make_numeric(data, status_str, censor_code)
   true_status <- data[[status_str]]
@@ -249,8 +250,9 @@ as_ped_cr_sh <- function(data, formula, keep_status = TRUE, censor_code = 0,
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
     ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
-  class(ped_sets) <- c("sh", "ped_cr", "ped", "data.frame")
+  class(ped_sets) <- c("sh", "ped_cr")
   attr(ped_sets, "risks") <- attr(data, "risks")
   ped_sets
 }
@@ -274,8 +276,8 @@ as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0,
   if (is.null(censor_formula)) {
     censor_formula <- as.formula(ped_status ~ s(tend))
   }
-  censor_model <- gam(censor_formula, data = censor_ped, family = "poisson", 
-                        offset = offset)
+  censor_model <- mgcv::gam(censor_formula, data = censor_ped, family = "poisson", 
+                            offset = offset)
     #censor_model <- glm(ped_status ~ interval, data = censor_ped, family = "poisson", offset = offset)
   predicted_hazards <- add_hazard(censor_ped, censor_model, ci = FALSE)
   predicted_hazards$increment <- predicted_hazards$tend - predicted_hazards$tstart
@@ -312,10 +314,11 @@ as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0,
     current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
     #ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
     ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    class(ped_sets[[i]]) <- c("ped", "data.frame")
     cd[[i]] <- current_data
   }
   attr(ped_sets, "data_base") <- cd
-  class(ped_sets) <- c("sh", "ped_cr", "ped", "data.frame")
+  class(ped_sets) <- c("sh", "ped_cr")
   attr(ped_sets, "risks") <- attr(data, "risks")
   ped_sets
 }
