@@ -41,11 +41,17 @@
 #' pem_cr <- glm_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
 #' @author Philipp Kopper
-pem_cr <- function(formula, family = poisson, data, offset, ...) {
-  check_input(formula, data, offset)
-  res <- fit_cr(formula, family, data, offset, m_type = "glm", ...)
-  class(res) <- "pem_cr"
-  attr(res, "risks") <- attr(data, "risks")
+pem_cr <- function(formula, family = poisson, ped, offset, ...) {
+  #check_input(formula, ped, offset)
+  res <- vector(mode = "list", length = length(ped))
+  for (i in 1:length(res)) {
+    res[[i]] <- glm(formula = formula, family = family, 
+                    data = ped[[i]], offset = offset, ...)
+  }
+  names(res) <- attr(ped, "risks")
+  which_type <- c("sh", "cs")[c("sh", "cs") %in% class(ped)]
+  class(res) <- c("pem_cr", which_type)
+  attr(res, "risks") <- attr(ped, "risks")
   #for methods
   return(res)
 }
@@ -126,12 +132,22 @@ print.pem_cr <- function(summary_list) {
 #' pem_cr <- gam_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
 pam_cr <- function(formula, family = gaussian(), 
-                   data = list(), offset = NULL, bam = FALSE, ...) {
-  check_input(formula, data, offset)
-  m_type <- ifelse(bam, "bam", "gam")
-  res <- fit_cr(formula, family, data, offset, m_type = m_type, ...)
-  class(res) <- c("pam_cr", "pem_cr")
-  attr(res, "risks") <- attr(data, "risks")
+                   ped = list(), offset = NULL, bam = FALSE, ...) {
+  #check_input(formula, ped, offset)
+  res <- vector(mode = "list", length = length(ped))
+  for (i in 1:length(res)) {
+    if (bam) {
+      res[[i]] <- bam(formula = formula, family = family, 
+                      data = ped[[i]], offset = offset, ...)
+    } else {
+      res[[i]] <- gam(formula = formula, family = family, 
+                      data = ped[[i]], offset = offset, ...)
+    }
+  }
+  names(res) <- attr(ped, "risks")
+  which_type <- c("sh", "cs")[c("sh", "cs") %in% class(ped)]
+  class(res) <- c("pam_cr", "pem_cr", which_type)
+  attr(res, "risks") <- attr(ped, "risks")
   #for methods
   return(res)
 }
@@ -204,8 +220,7 @@ print.pam_cr <- function(summary_list) {
 #' id = "id", cut = seq(0, max(df$obs_times), 0.25))
 
 
-as_ped_cr_cs <- function(data, formula, keep_status = TRUE, censor_code = 0, 
-                         cut = NULL, ...) {
+as_ped_cr_cs <- function(data, formula, censor_code = 0, cut = NULL, ...) {
   assert_data_frame(data)
   assert_formula(formula)
   time_str <- all.vars(formula)[1]
@@ -216,27 +231,25 @@ as_ped_cr_cs <- function(data, formula, keep_status = TRUE, censor_code = 0,
   status <- unique(true_status)
   status <- status[status != censor_code]
   ped_sets <- vector(mode = "list", length = length(status))
-  if (is.null(cut)) {
-    cut <- unique(data[[time_str]])[order(unique(data[[time_str]]))]
-  }
   for (i in 1:length(status)) {
     current_data <- data
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut)
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
+  names(ped_sets) <- status
   class(ped_sets) <- c("cs", "ped_cr")
-  attr(ped_sets, "risks") <- attr(data, "risks")
+  attr(ped_sets, "risks") <- status
   ped_sets
 }
 
 
-as_ped_cr_sh <- function(data, formula, keep_status = TRUE, censor_code = 0, 
-                         cut = NULL, max_time = NULL, ...) {
+as_ped_cr_sh <- function(data, formula, censor_code = 0, cut = NULL, 
+                         max_time = NULL, ...) {
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
-  if(is.null(max_time)) max_time <- max(data[[time_str]])
+  if (is.null(max_time)) max_time <- max(data[[time_str]])
   true_time <- data[[time_str]]
   data <- make_numeric(data, status_str, censor_code)
   true_status <- data[[status_str]]
@@ -249,16 +262,17 @@ as_ped_cr_sh <- function(data, formula, keep_status = TRUE, censor_code = 0,
       max_time
     current_data[[status_str]][data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][data[[status_str]] == status[i]] <- 1
-    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, ...)
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
+  names(ped_sets) <- status
   class(ped_sets) <- c("sh", "ped_cr")
-  attr(ped_sets, "risks") <- attr(data, "risks")
+  attr(ped_sets, "risks") <- status
   ped_sets
 }
 
-as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0, 
-                           cut = NULL, censor_formula = NULL, ...) {
+as_ped_cr_cens <- function(data, formula, censor_code = 0, cut = NULL, 
+                           censor_formula = NULL, ...) {
   time_str <- all.vars(formula)[1]
   status_str <- all.vars(formula)[2]
   true_time <- data[[time_str]]
@@ -272,7 +286,7 @@ as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0,
   censor_data[data[[status_str]] == 0, status_str] <- 1
   censor_data[data[[status_str]] != 0, status_str] <- 0
   #censor_ped <- as_ped(censor_data, formula, cut = cut, id = "id")#,...)
-  censor_ped <- as_ped(censor_data, formula,...)
+  censor_ped <- as_ped(censor_data, formula, cut = cut, ...)
   if (is.null(censor_formula)) {
     censor_formula <- as.formula(ped_status ~ s(tend))
   }
@@ -313,13 +327,14 @@ as_ped_cr_cens <- function(data, formula, keep_status = TRUE, censor_code = 0,
     current_data[[status_str]][modified_data[[status_str]] != status[i]] <- 0
     current_data[[status_str]][modified_data[[status_str]] == status[i]] <- 1
     #ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, id = "id")#, ...)
-    ped_sets[[i]] <- as_ped(current_data, formula, ...)
+    ped_sets[[i]] <- as_ped(current_data, formula, cut = cut, ...)
     class(ped_sets[[i]]) <- c("ped", "data.frame")
     cd[[i]] <- current_data
   }
   attr(ped_sets, "data_base") <- cd
+  names(ped_sets) <- status
   class(ped_sets) <- c("sh", "ped_cr")
-  attr(ped_sets, "risks") <- attr(data, "risks")
+  attr(ped_sets, "risks") <- status
   ped_sets
 }
 
