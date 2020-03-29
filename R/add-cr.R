@@ -279,6 +279,7 @@ add_cif_ci <- function(cif, objects, newdata, ci, alpha = 0.05, nsim = 500L) {
     cumu_hazards <- hazards
     ci_lower <- hazards
     ci_upper <- hazards
+    cif_median <- hazards
     for (i in 1:length(objects)) {
       X     <- predict.gam(objects[[i]], newdata = newdata, type = "lpmatrix")
       V     <- objects[[i]]$Vp
@@ -295,6 +296,7 @@ add_cif_ci <- function(cif, objects, newdata, ci, alpha = 0.05, nsim = 500L) {
     for (i in 1:length(objects)) {
       current_cif <- hazards[[i]] * (newdata$tend - newdata$tstart) * averaged_overall_survival
       current_cif <- apply(current_cif, 2, cumsum)
+      cif_median[[i]] <- apply(current_cif, 1, quantile, probs = 0.5)
       ci_lower[[i]] <- apply(current_cif, 1, quantile, probs = alpha / 2)
       ci_upper[[i]] <- apply(current_cif, 1, quantile, probs = 1 - alpha / 2)
     }
@@ -302,7 +304,7 @@ add_cif_ci <- function(cif, objects, newdata, ci, alpha = 0.05, nsim = 500L) {
   add_this <- vector(mode = "list", length = length(objects))
   for (i in 1:length(objects)) {
     if (ci) {
-      add_this[[i]] <- cbind(cif[[i]], 
+      add_this[[i]] <- cbind(cif_median[[i]], 
                              ci_lower[[i]],
                              ci_upper[[i]])
       add_name <- paste("cif", c("", "_lower", "_upper"), sep = "")
