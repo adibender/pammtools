@@ -6,7 +6,8 @@
 #' @author Philipp Kopper
 hazard_adder_cr <- function(newdata, object, hazard_function, ci, se_mult, 
                             ci_type = c("default", "delta", "sim"), 
-                            overwrite, time_var, result = "df", ...) {
+                            overwrite, time_var, result = "df", invert = FALSE, 
+                            ...) {
   measure <- vector(mode = "list", length = length(object))
   for (i in 1:length(object)) {
     measure[[i]] <- hazard_function(newdata, object[[i]], ci = ci, 
@@ -22,6 +23,11 @@ hazard_adder_cr <- function(newdata, object, hazard_function, ci, se_mult,
   }
   if (result == "df") {
     new_cols <- Reduce(cbind, measure)
+    if (invert) {
+      new_cols <- 1 - new_cols
+      colnames(new_cols) <- gsub("surv", "cif", colnames(new_cols))
+      colnames(new_cols) <- gsub("_prob", "", colnames(new_cols))
+    }
     return(cbind(newdata, new_cols))
   } else {
     return(list(newdata = newdata, measure = measure))
@@ -221,11 +227,20 @@ add_surv_prob_cr <- function(newdata, object,
 #' @export
 #' @author Philipp Kopper
 #' add_cif(pam_cs, ped_cs, ci = FALSE)
-add_cif <- function(newdata, model, ped) {
-  UseMethod("add_cif")
+add_cif <- function(newdata, model, ped, ci = TRUE, ...) {
+  UseMethod("add_cif", object = model)
 }
 
-add_cif.sh <- WRAPPER FOR add_surv_prob()
+add_cif.default <- function(newdata, model, ped, ci = TRUE, ...) {
+  add_cif.cs(newdata, model, ped, ci, ...)
+}
+
+add_cif.sh <- function(newdata, model, ped = NULL, ci = TRUE, se_mult = 2, 
+                       ci_type = "default", overwrite = FALSE, 
+                       time_var = NULL, ...) {
+  res <- hazard_adder_cr(newdata, model, hazard_function = add_surv_prob, ci, 
+                         se_mult, ci_type, overwrite, time_var, invert = TRUE, ...)
+}
 
 add_cif.cs <- function(newdata, model, ped, 
                     ci = TRUE, alpha = 0.05,
