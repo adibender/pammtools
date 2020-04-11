@@ -235,7 +235,7 @@ get_hazard <- function(
   newdata$hazard <- unname(drop(X %*% coefs))
   if (ci) {
     newdata <- newdata %>%
-      add_ci(object, X, type = type, ci_type = ci_type, se_mult = se_mult)
+      add_ci(object, X, type = type, ci_type = ci_type, se_mult = se_mult, ...)
   }
   if (type == "response") {
     newdata <- newdata %>% mutate(hazard = exp(.data$hazard))
@@ -328,14 +328,14 @@ get_cumu_hazard <- function(
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(add_delta_ci_cumu, object = object, se_mult = se_mult)
+            map_dfr(add_delta_ci_cumu, object = object, se_mult = se_mult, ...)
       }
     } else {
       if (ci_type == "sim") {
         newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
           time_var = time_var, ...)
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(get_sim_ci_cumu, object = object, nsim = nsim)
+          map_dfr(get_sim_ci_cumu, object = object, nsim = nsim, ...)
       }
     }
   } else {
@@ -442,20 +442,20 @@ get_surv_prob <- function(
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(add_delta_ci_surv, object = object, se_mult = se_mult)
+          map_dfr(add_delta_ci_surv, object = object, se_mult = se_mult, ...)
       }
     } else {
       if (ci_type == "sim") {
         newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
-          time_var = time_var)
+          time_var = time_var, ...)
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(get_sim_ci_surv, object = object, nsim = nsim)
+          map_dfr(get_sim_ci_surv, object = object, nsim = nsim, ...)
       }
     }
   } else {
     newdata <- newdata %>%
       get_hazard(object = object, type = "response", ci = FALSE,
-        time_var = time_var)
+        time_var = time_var, ...)
   }
 
   newdata <- newdata %>%
@@ -477,7 +477,7 @@ add_ci <- function(
   type    = c("response", "link"),
   se_mult = 2,
   ci_type = c("default", "delta", "sim"),
-  nsim = 100) {
+  nsim = 100, ...) {
 
   ci_type <- match.arg(ci_type)
 
@@ -505,11 +505,11 @@ add_ci <- function(
     } else {
       if (ci_type == "delta") {
         newdata <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(add_delta_ci, object = object, se_mult = se_mult)
+            map_dfr(add_delta_ci, object = object, se_mult = se_mult, ...)
       } else {
         if (ci_type == "sim") {
           newdata <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(get_sim_ci, object = object, nsim = nsim)
+            map_dfr(get_sim_ci, object = object, nsim = nsim, ...)
         }
       }
     }
@@ -517,8 +517,8 @@ add_ci <- function(
   newdata
 }
 
-add_delta_ci <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
@@ -530,8 +530,8 @@ add_delta_ci <- function(newdata, object, se_mult = 2) {
 
 }
 
-add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+add_delta_ci_cumu <- function(newdata, object, se_mult = 2, ...) {
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(newdata$intlen)
@@ -545,8 +545,8 @@ add_delta_ci_cumu <- function(newdata, object, se_mult = 2) {
 
 }
 
-add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+add_delta_ci_surv <- function(newdata, object, se_mult = 2, ...) {
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
 
   Delta  <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(newdata$intlen)
@@ -565,8 +565,8 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2) {
 #' @keywords internal
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
-get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L) {
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -581,9 +581,9 @@ get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L) {
 }
 
 
-get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L) {
+get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
 
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
   coefs <- coef(object)
 
@@ -598,9 +598,9 @@ get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L) {
 
 }
 
-get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L) {
+get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
 
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V     <- object$Vp
   coefs <- coef(object)
 
