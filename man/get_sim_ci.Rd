@@ -4,7 +4,7 @@
 \alias{get_sim_ci}
 \title{Calculate simulation based confidence intervals}
 \usage{
-get_sim_ci(newdata, object, alpha = 0.05, nsim = 100L)
+get_sim_ci(newdata, object, alpha = 0.05, nsim = 100L, ...)
 }
 \description{
 Calculate simulation based confidence intervals
