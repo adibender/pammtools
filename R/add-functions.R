@@ -53,14 +53,14 @@ add_term <- function(
 
   X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
 
-  newdata[["fit"]] <- drop(X %*% object$coefficients[col_ind])
+  newdata[["fit"]] <- unname(drop(X %*% object$coefficients[col_ind]))
   if (ci) {
     cov.coefs <- if (is_gam) {
       object$Vp[col_ind, col_ind]
     } else {
       vcov(object)[col_ind, col_ind]
     }
-    se <- sqrt(rowSums( (X %*% cov.coefs) * X ))
+    se <- unname(sqrt(rowSums( (X %*% cov.coefs) * X )))
     newdata <- newdata %>%
       mutate(
         ci_lower = .data$fit - se_mult * se,
