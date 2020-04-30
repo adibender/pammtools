@@ -34,7 +34,7 @@ sample_info.data.frame <- function(x) {
 
   if (length(nnames) != 0) {
     suppressMessages(
-      x <- left_join(num, fac) %>% grouped_df(vars = lapply(nnames, as.name))
+      x <- left_join(num, fac) %>% group_by(!!!lapply(nnames, as.name))
     )
   } else {
     x <- bind_cols(num, fac)
