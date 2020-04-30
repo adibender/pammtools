@@ -109,7 +109,15 @@ slice.ped <- function(.data, ...) {
 #' @export select
 #' @rdname dplyr_verbs
 select.ped <- function(.data, ...) {
-  reped(select(unped(.data), ...))
+  out <- NextMethod()
+
+  # I don't know if this is the correct thing to do here; you'll
+  # need to think about what attributes should be preserved
+  attr <- attributes(.data)
+  attr$names <- names(out)
+  attributes(out) <- attr
+
+  out
 }
 
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}
