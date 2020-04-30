@@ -473,3 +473,30 @@ fill.nested_fdf <- function(
   return(tbl)
 
 }
+
+
+# vectrs methods ----------------------------------------------------------
+
+#' @importFrom vctrs vec_cast vec_ptype2
+NULL
+
+ped_ptype2 <- function(x, y, ...) {
+  reped(vctrs::df_ptype2(x, y, ...))
+}
+ped_cast <- function(x, y, ...) {
+  reped(vctrs::df_cast(x, y, ...))
+}
+
+#' @export
+vec_ptype2.ped.ped <- function(x, y, ...)        ped_ptype2(x, y, ...)
+#' @export
+vec_ptype2.ped.data.frame <- function(x, y, ...) ped_ptype2(x, y, ...)
+#' @export
+vec_ptype2.data.frame.ped <- function(x, y, ...) ped_ptype2(x, y, ...)
+
+#' @export
+vec_cast.ped.ped <- function(x, y, ...)          ped_cast(x, y, ...)
+#' @export
+vec_cast.ped.data.frame <- function(x, y, ...)   vctrs::df_cast(x, y, ...)
+#' @export
+vec_cast.data.frame.ped <- function(x, y, ...)   ped_cast(x, y, ...)
