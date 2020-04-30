@@ -34,10 +34,10 @@ predictSurvProb.pamm <- function(
   }
 
   env_times <- times
-  newdata[["pred"]] <- predict(
+  newdata[["pred"]] <- unname(predict(
     unpam(object),
     newdata = newdata,
-    type    = "response")
+    type    = "response"))
   newdata <- newdata %>%
     arrange(.data$id, .data$times) %>%
     group_by(.data$id) %>%
