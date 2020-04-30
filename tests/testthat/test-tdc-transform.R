@@ -42,7 +42,7 @@ test_that("Concurrent TDC are transformed correctly", {
       concurrent(bili, tz_var = "day", lag = 10) +
       concurrent(protime, tz_var = "day", lag = 0),
     id = "id")
-  expect_data_frame(ped, nrow = 40, ncol = 11)
+  expect_data_frame(ped, nrows = 40, ncols = 11)
   expect_equal(sum(ped$ped_status), 2)
   expect_equal(sort(unique(ped$tend)), sort(unique(c(time, tz, tz+10))))
   expect_equal(ped$bili,
