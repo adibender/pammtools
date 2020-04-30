@@ -28,7 +28,8 @@ Imports:
     lazyeval,
     Formula,
     mvtnorm,
-    pec
+    pec,
+    vctrs
 Suggests:
     testthat
 License: MIT + file LICENSE

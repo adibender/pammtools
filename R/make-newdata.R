@@ -81,7 +81,8 @@ sample_info.fped <- function(x) {
 #'
 #' Works like \code{\link[base]{expand.grid}} but for data frames.
 #'
-#' @importFrom dplyr slice bind_cols combine
+#' @importFrom dplyr slice bind_cols
+#' @importFrom vctrs vec_c
 #' @importFrom purrr map map_lgl map2 transpose cross
 #' @importFrom checkmate test_data_frame
 #' @param ... Data frames that should be combined to one data frame.
@@ -101,7 +102,7 @@ combine_df <- function(...) {
   }
   ind_seq   <- map(dots, ~ seq_len(nrow(.x)))
   not_empty <- map_lgl(ind_seq, ~ length(.x) > 0)
-  ind_list  <- ind_seq[not_empty] %>% cross() %>% transpose() %>% map(combine)
+  ind_list  <- ind_seq[not_empty] %>% cross() %>% transpose() %>% map(function(x) vec_c(!!!x))
 
   map2(dots[not_empty], ind_list, function(.x, .y) slice(.x, .y)) %>%
     bind_cols()
