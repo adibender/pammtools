@@ -497,6 +497,6 @@ vec_ptype2.data.frame.ped <- function(x, y, ...) ped_ptype2(x, y, ...)
 #' @export
 vec_cast.ped.ped <- function(x, y, ...)          ped_cast(x, y, ...)
 #' @export
-vec_cast.ped.data.frame <- function(x, y, ...)   vctrs::df_cast(x, y, ...)
+vec_cast.ped.data.frame <- function(x, y, ...)   ped_cast(x, y, ...)
 #' @export
-vec_cast.data.frame.ped <- function(x, y, ...)   ped_cast(x, y, ...)
+vec_cast.data.frame.ped <- function(x, y, ...)   vctrs::df_cast(x, y, ...)
