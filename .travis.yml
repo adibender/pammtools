@@ -22,6 +22,8 @@ jobs:
     - Rscript -e 'remotes::install_cran("rmarkdown")'
     - Rscript -e 'remotes::install_cran("pec")'
     - Rscript -e 'remotes::install_cran("devtools")'
+    - Rscript -e 'remotes::install_github("tidyverse/dplyr")'
+    - Rscript -e 'remotes::install_github("r-lib/vctrs")'
 # whitelist
 branches:
   only:
