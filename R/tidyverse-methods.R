@@ -56,8 +56,8 @@ arrange.ped <- function(.data, ...) {
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-group_by.ped <- function(.data, ..., add = FALSE) {
-  reped(group_by(unped(.data), ..., add = add))
+group_by.ped <- function(.data, ...) {
+  reped(group_by(unped(.data), ...))
 }
 
 #' @export
@@ -287,8 +287,8 @@ arrange.nested_fdf <- function(.data, ...) {
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-group_by.nested_fdf <- function(.data, ..., add = FALSE) {
-  re_nested_df(group_by(un_nested_df(.data), ..., add = add))
+group_by.nested_fdf <- function(.data, ...) {
+  re_nested_df(group_by(un_nested_df(.data), ...))
 }
 
 #' @export
