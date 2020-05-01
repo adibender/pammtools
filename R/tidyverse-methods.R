@@ -124,7 +124,7 @@ select.ped <- function(.data, ...) {
 #' @export
 #' @export mutate
 #' @rdname dplyr_verbs
-mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
+mutate.ped <- function(.data, ..., keep_attributes = TRUE) {
   if (keep_attributes) {
     data_attr   <- ped_attr(.data)
   }

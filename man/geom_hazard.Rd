@@ -90,8 +90,9 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
-\item{direction}{direction of stairs: 'vh' for vertical then horizontal, or
-'hv' for horizontal then vertical.}
+\item{direction}{direction of stairs: 'vh' for vertical then horizontal,
+'hv' for horizontal then vertical, or 'mid' for step half-way between
+adjacent x-values.}
 }
 \description{
 \code{geom_hazard} is an extension of the \code{geom_line}, and

@@ -191,14 +191,14 @@ riskset_info <- function(ped) {
   assert_class(ped, classes = "ped")
 
   # how often is interval the last row for a given id when status == 0?
-  censored <- ped %>% group_by(id, add = TRUE) %>%
+  censored <- ped %>% group_by(id, .add = TRUE) %>%
     arrange(.data$tend) %>% slice(n()) %>%
     filter(.data$ped_status == 0) %>% ungroup(id) %>%
     grouped_df(vars = c(group_vars(ped), "interval")) %>%
     summarize(ped_censored = n())
 
   join_vars <- c(group_vars(ped), "interval")
-  ped %>% group_by(.data$interval, add = TRUE) %>%
+  ped %>% group_by(.data$interval, .add = TRUE) %>%
     summarize(
       ped_riskset = n(),
       ped_events = sum(.data$ped_status)) %>%
