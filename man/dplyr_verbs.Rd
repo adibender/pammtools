@@ -57,7 +57,7 @@
 \usage{
 \method{arrange}{ped}(.data, ...)
 
-\method{group_by}{ped}(.data, ...)
+\method{group_by}{ped}(.data, ..., .add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
 
@@ -107,7 +107,7 @@
 
 \method{arrange}{nested_fdf}(.data, ...)
 
-\method{group_by}{nested_fdf}(.data, ...)
+\method{group_by}{nested_fdf}(.data, ..., .add = FALSE)
 
 \method{ungroup}{nested_fdf}(x, ...)
 
@@ -159,6 +159,14 @@
 \item{.data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{...}{see \code{dplyr} documentation}
+
+\item{.add}{When \code{FALSE}, the default, \code{group_by()} will
+override existing groups. To add to the existing groups, use
+\code{.add = TRUE}.
+
+This argument was previously called \code{add}, but that prevented
+creating a new grouping variable called \code{add}, and conflicts with
+our naming conventions.}
 
 \item{x}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 

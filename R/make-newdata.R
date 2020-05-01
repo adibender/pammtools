@@ -241,7 +241,7 @@ make_newdata.ped <- function(x, ...) {
     }
     ndf$tend <- int_tend
     suppressMessages(
-      ndf <- right_join(int_df, ndf)
+      ndf <- ndf %>% left_join(int_df)
       )
   } else {
     ndf <- combine_df(int_df[1, ], ndf)
@@ -282,7 +282,7 @@ make_newdata.fped <- function(x, ...) {
   out_df <- do.call(combine_df, compact(list(cumu_smry, ndf)))
   int_df <- int_info(attr(x, "breaks"))
   suppressMessages(
-    out_df <- right_join(int_df, out_df) %>%
+    out_df <- out_df %>% left_join(int_df) %>%
       select(-one_of(c("intmid"))) %>% as_tibble()
       )
 
