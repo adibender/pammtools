@@ -1,7 +1,5 @@
-language: R
-sudo: false
+language: r
 cache: packages
-fortran: false
 latex: false
 
 jobs:
@@ -22,7 +20,7 @@ jobs:
     - Rscript -e 'remotes::install_cran("rmarkdown")'
     - Rscript -e 'remotes::install_cran("pec")'
     - Rscript -e 'remotes::install_cran("devtools")'
-    - Rscript -e 'remotes::install_github("tidyverse/dplyr")'
+    - Rscript -e 'remotes::install_github("tidyverse/dplyr", dependencies = TRUE)'
     - Rscript -e 'remotes::install_github("r-lib/vctrs")'
 # whitelist
 branches:
@@ -35,9 +33,9 @@ after_success:
 
 deploy:
   provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_PAT
-  keep-history: false
-  local-dir: docs
+  skip_cleanup: true
+  github_token: $GITHUB_PAT
+  keep_history: false
+  local_dir: docs
   on:
     all_branches: true
