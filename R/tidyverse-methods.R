@@ -52,19 +52,20 @@ arrange.ped <- function(.data, ...) {
   reped(arrange(unped(.data), ...))
 }
 
-#' @inheritParams dplyr group_by
+
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-if (utils::packageVersion("dplyr") > "0.8.5" ) {
-  group_by.ped <- function(.data, ..., .add = FALSE) {
+group_by.ped <- ifelse(
+  utils::packageVersion("dplyr") > "0.8.5",
+  function(.data, ..., .add = FALSE) {
     reped(group_by(unped(.data), ..., .add = .add))
-  }
-} else {
-  group_by.ped <- function(.data, ..., add = FALSE) {
+  },
+  function(.data, ..., add = FALSE) {
     reped(group_by(unped(.data), ..., add = add))
   }
-}
+)
+
 
 #' @export
 #' @export ungroup
@@ -289,19 +290,20 @@ arrange.nested_fdf <- function(.data, ...) {
   re_nested_df(arrange(un_nested_df(.data), ...))
 }
 
-#' @inheritParams dplyr::group_by
+
+
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-if (utils::packageVersion("dplyr") > "0.8.5" ) {
-  group_by.nested_fdf <- function(.data, ..., .add = FALSE) {
+group_by.nested_fdf <- ifelse(
+  utils::packageVersion("dplyr") > "0.8.5",
+  function(.data, ..., .add = FALSE) {
     re_nested_df(group_by(un_nested_df(.data), ..., .add = .add))
-  }
-} else {
-    group_by.nested_fdf <- function(.data, ..., add = FALSE) {
+  },
+  function(.data, ..., add = FALSE) {
     re_nested_df(group_by(un_nested_df(.data), ..., add = add))
   }
-}
+)
 
 #' @export
 #' @export ungroup

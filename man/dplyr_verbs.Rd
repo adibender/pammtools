@@ -20,6 +20,7 @@
 \alias{transmute}
 \alias{ungroup}
 \alias{arrange.ped}
+\alias{group_by.ped}
 \alias{ungroup.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
@@ -36,6 +37,7 @@
 \alias{left_join.ped}
 \alias{right_join.ped}
 \alias{arrange.nested_fdf}
+\alias{group_by.nested_fdf}
 \alias{ungroup.nested_fdf}
 \alias{filter.nested_fdf}
 \alias{sample_n.nested_fdf}
@@ -54,6 +56,8 @@
 \title{\code{dplyr} Verbs for \code{ped}-Objects}
 \usage{
 \method{arrange}{ped}(.data, ...)
+
+\method{group_by}{ped}(.data, ..., add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
 
@@ -102,6 +106,8 @@
 )
 
 \method{arrange}{nested_fdf}(.data, ...)
+
+\method{group_by}{nested_fdf}(.data, ..., add = FALSE)
 
 \method{ungroup}{nested_fdf}(x, ...)
 
