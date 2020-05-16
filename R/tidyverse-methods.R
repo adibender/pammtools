@@ -57,12 +57,12 @@ arrange.ped <- function(.data, ...) {
 #' @export group_by
 #' @rdname dplyr_verbs
 if (utils::packageVersion("dplyr") > "0.8.5" ) {
-  group_by.ped <- function(.data, ..., add = FALSE) {
-    reped(group_by(unped(.data), ..., add = add))
-  }
-} else {
   group_by.ped <- function(.data, ..., .add = FALSE) {
     reped(group_by(unped(.data), ..., .add = .add))
+  }
+} else {
+  group_by.ped <- function(.data, ..., add = FALSE) {
+    reped(group_by(unped(.data), ..., add = add))
   }
 }
 
