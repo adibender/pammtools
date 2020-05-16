@@ -6,7 +6,6 @@
     utils::globalVariables(".")
 
   }
-
   invisible()
 
 }
