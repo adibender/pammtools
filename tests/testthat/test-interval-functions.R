@@ -43,8 +43,3 @@ test_that("ped info returned for (grouped) ped objects", {
 	# without covariates
 	expect_data_frame(ped_info(select(ped, -trt, -age)), nrows=4L, ncols=5L)
 })
-
-test_that("riskset info returned for (grouped) ped objects", {
-  expect_data_frame(riskset_info(ped), nrows=4L, ncols=4L)
-  expect_data_frame(group_by(ped, trt) %>% riskset_info(), nrow=8L, ncols=5L)
-})
