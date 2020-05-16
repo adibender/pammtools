@@ -1,7 +1,8 @@
-language: R
-sudo: false
+language: r
+r:
+  - oldrel
+  - devel
 cache: packages
-fortran: false
 latex: false
 
 jobs:
@@ -33,9 +34,9 @@ after_success:
 
 deploy:
   provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_PAT
-  keep-history: false
-  local-dir: docs
+  skip_cleanup: true
+  github_token: $GITHUB_PAT
+  keep_history: false
+  local_dir: docs
   on:
     all_branches: true

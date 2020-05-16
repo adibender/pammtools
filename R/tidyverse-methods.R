@@ -52,13 +52,20 @@ arrange.ped <- function(.data, ...) {
   reped(arrange(unped(.data), ...))
 }
 
-#' @inheritParams dplyr::group_by
+
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-group_by.ped <- function(.data, ..., add = FALSE) {
-  reped(group_by(unped(.data), ..., add = add))
-}
+group_by.ped <- ifelse(
+  utils::packageVersion("dplyr") > "0.8.5",
+  function(.data, ..., .add = FALSE) {
+    reped(group_by(unped(.data), ..., .add = .add))
+  },
+  function(.data, ..., add = FALSE) {
+    reped(group_by(unped(.data), ..., add = add))
+  }
+)
+
 
 #' @export
 #' @export ungroup
@@ -109,14 +116,22 @@ slice.ped <- function(.data, ...) {
 #' @export select
 #' @rdname dplyr_verbs
 select.ped <- function(.data, ...) {
-  reped(select(unped(.data), ...))
+  out <- NextMethod()
+
+  # I don't know if this is the correct thing to do here; you'll
+  # need to think about what attributes should be preserved
+  attr <- attributes(.data)
+  attr$names <- names(out)
+  attributes(out) <- attr
+
+  out
 }
 
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}
 #' @export
 #' @export mutate
 #' @rdname dplyr_verbs
-mutate.ped <- function(.data, ..., keep_attributes=TRUE) {
+mutate.ped <- function(.data, ..., keep_attributes = TRUE) {
   if (keep_attributes) {
     data_attr   <- ped_attr(.data)
   }
@@ -275,13 +290,20 @@ arrange.nested_fdf <- function(.data, ...) {
   re_nested_df(arrange(un_nested_df(.data), ...))
 }
 
-#' @inheritParams dplyr::group_by
+
+
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-group_by.nested_fdf <- function(.data, ..., add = FALSE) {
-  re_nested_df(group_by(un_nested_df(.data), ..., add = add))
-}
+group_by.nested_fdf <- ifelse(
+  utils::packageVersion("dplyr") > "0.8.5",
+  function(.data, ..., .add = FALSE) {
+    re_nested_df(group_by(un_nested_df(.data), ..., .add = .add))
+  },
+  function(.data, ..., add = FALSE) {
+    re_nested_df(group_by(un_nested_df(.data), ..., add = add))
+  }
+)
 
 #' @export
 #' @export ungroup
@@ -465,3 +487,30 @@ fill.nested_fdf <- function(
   return(tbl)
 
 }
+
+
+# vectrs methods ----------------------------------------------------------
+
+#' @importFrom vctrs vec_cast vec_ptype2
+NULL
+
+ped_ptype2 <- function(x, y, ...) {
+  reped(vctrs::df_ptype2(x, y, ...))
+}
+ped_cast <- function(x, y, ...) {
+  reped(vctrs::df_cast(x, y, ...))
+}
+
+#' @export
+vec_ptype2.ped.ped <- function(x, y, ...)        ped_ptype2(x, y, ...)
+#' @export
+vec_ptype2.ped.data.frame <- function(x, y, ...) ped_ptype2(x, y, ...)
+#' @export
+vec_ptype2.data.frame.ped <- function(x, y, ...) ped_ptype2(x, y, ...)
+
+#' @export
+vec_cast.ped.ped <- function(x, y, ...)          ped_cast(x, y, ...)
+#' @export
+vec_cast.ped.data.frame <- function(x, y, ...)   ped_cast(x, y, ...)
+#' @export
+vec_cast.data.frame.ped <- function(x, y, ...)   vctrs::df_cast(x, y, ...)

@@ -4,7 +4,9 @@
 \name{tumor}
 \alias{tumor}
 \title{Stomach area tumor data}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 776 rows and 9 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 776 rows and 9 columns.
+}
 \usage{
 tumor
 }

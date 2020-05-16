@@ -5,7 +5,11 @@
 \alias{extub_event}
 \alias{extub_tdc}
 \title{Time until extubation}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 110 rows and 6 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 110 rows and 6 columns.
+
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 1518 rows and 3 columns.
+}
 \usage{
 extub_event
 

@@ -171,38 +171,3 @@ ped_info <- function(ped) {
   }
 
 }
-
-#' Extract risk set information for each interval.
-#'
-#' The columns \code{ped_riskset, ped_events, ped_censored} provide the
-#' size of the risk set at the beginning of each interval as well as the number
-#' of events and censorings that occurred in the interval, respectively.
-#'
-#' @inheritParams ped_info
-#' @import checkmate dplyr
-#' @examples
-#' ped <- tumor[1:4,] %>% as_ped(Surv(days, status)~ .)
-#' riskset_info(ped)
-#' @keywords internal
-#' @export
-#' @return A data frame with one row for each interval in \code{ped}.
-#' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
-riskset_info <- function(ped) {
-  assert_class(ped, classes = "ped")
-
-  # how often is interval the last row for a given id when status == 0?
-  censored <- ped %>% group_by(id, add = TRUE) %>%
-    arrange(.data$tend) %>% slice(n()) %>%
-    filter(.data$ped_status == 0) %>% ungroup(id) %>%
-    grouped_df(vars = c(group_vars(ped), "interval")) %>%
-    summarize(ped_censored = n())
-
-  join_vars <- c(group_vars(ped), "interval")
-  ped %>% group_by(.data$interval, add = TRUE) %>%
-    summarize(
-      ped_riskset = n(),
-      ped_events = sum(.data$ped_status)) %>%
-    left_join(censored, by = join_vars) %>%
-    mutate(ped_censored = ifelse(is.na(.data$ped_censored),
-        0, .data$ped_censored))
-}

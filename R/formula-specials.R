@@ -274,7 +274,7 @@ add_concurrent <- function(ped, data, id_var) {
       function(.x, .y) {
         ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
         .y[ll_ind, tdc_vars_i]
-      }) %>% bind_rows() %>% ungroup()
+      }) %>% bind_rows() %>% as.data.frame()
 
     ped <- ped %>% bind_cols(li)
 

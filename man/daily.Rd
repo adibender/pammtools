@@ -4,7 +4,9 @@
 \name{daily}
 \alias{daily}
 \title{Time-dependent covariates of the \code{\link{patient}} data set.}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 18797 rows and 4 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 18797 rows and 4 columns.
+}
 \usage{
 daily
 }

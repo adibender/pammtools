@@ -4,7 +4,9 @@
 \name{patient}
 \alias{patient}
 \title{Survival data of critically ill ICU patients}
-\format{An object of class \code{data.frame} with 2000 rows and 12 columns.}
+\format{
+An object of class \code{data.frame} with 2000 rows and 12 columns.
+}
 \usage{
 patient
 }

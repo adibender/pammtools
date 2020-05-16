@@ -1,6 +1,6 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.2.2
+Version: 0.2.3
 Date: 2020-03-12
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
@@ -28,12 +28,13 @@ Imports:
     lazyeval,
     Formula,
     mvtnorm,
-    pec
+    pec,
+    vctrs
 Suggests:
     testthat
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/adibender/pammtools
 BugReports: https://github.com/adibender/pammtools/issues
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8

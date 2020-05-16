@@ -20,3 +20,4 @@
 ^sandbox$
 ^cran-comments\.md$
 ^pkgdown$
+^pammtools\.Rproj$

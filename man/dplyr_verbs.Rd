@@ -160,10 +160,6 @@
 
 \item{...}{see \code{dplyr} documentation}
 
-\item{add}{When \code{add = FALSE}, the default, \code{group_by()} will
-override existing groups. To add to the existing groups, use
-\code{add = TRUE}.}
-
 \item{x}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
 \item{tbl}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
