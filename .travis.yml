@@ -1,4 +1,8 @@
 language: r
+r:
+  - oldrel
+  - release
+  - devel
 cache: packages
 latex: false
 
@@ -20,8 +24,6 @@ jobs:
     - Rscript -e 'remotes::install_cran("rmarkdown")'
     - Rscript -e 'remotes::install_cran("pec")'
     - Rscript -e 'remotes::install_cran("devtools")'
-    - Rscript -e 'remotes::install_github("tidyverse/dplyr", dependencies = TRUE)'
-    - Rscript -e 'remotes::install_github("r-lib/vctrs")'
 # whitelist
 branches:
   only:
