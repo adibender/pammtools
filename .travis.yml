@@ -1,7 +1,4 @@
 language: r
-r:
-  - oldrel
-  - devel
 cache: packages
 latex: false
 
