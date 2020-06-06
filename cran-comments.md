@@ -11,7 +11,7 @@
 
 
 ## Additional comments
-* Fixes CRAN issue (plyr dependency removed)
+* Fixes CRAN warnings (man page and code discrepancy)
 * Note says URL not reachable, but it is reachable, just takes some time
 
 ## Reverse dependencies

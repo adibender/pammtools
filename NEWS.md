@@ -1,3 +1,9 @@
+# pammtools 0.2.4
+* CRAN fix. Discrepancy betwen man page and code.
+
+# pammtools 0.2.3
+* CRAN fix. Compliance with new dplyr version (1.0.0)
+
 # pammtools 0.2.2
 * CRAN fix, removed plyr dependency (see issue #141)
 * `as_ped.ped` now also works for transformations with time-dependent covariates
