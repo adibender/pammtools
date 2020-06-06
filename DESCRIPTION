@@ -29,7 +29,7 @@ Imports:
     Formula,
     mvtnorm,
     pec,
-    vctrs
+    vctrs (>= 0.3.0)
 Suggests:
     testthat
 License: MIT + file LICENSE
