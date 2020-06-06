@@ -57,7 +57,7 @@
 \usage{
 \method{arrange}{ped}(.data, ...)
 
-\method{group_by}{ped}(.data, ..., add = FALSE)
+\method{group_by}{ped}(.data, ..., .add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
 
@@ -107,7 +107,7 @@
 
 \method{arrange}{nested_fdf}(.data, ...)
 
-\method{group_by}{nested_fdf}(.data, ..., add = FALSE)
+\method{group_by}{nested_fdf}(.data, ..., .add = FALSE)
 
 \method{ungroup}{nested_fdf}(x, ...)
 
@@ -164,38 +164,42 @@
 
 \item{tbl}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
 
-\item{size}{For \code{sample_n()}, the number of rows to select.
+\item{size}{<\code{\link[dplyr:dplyr_tidy_select]{tidy-select}}>
+For \code{sample_n()}, the number of rows to select.
 For \code{sample_frac()}, the fraction of rows to select.
 If \code{tbl} is grouped, \code{size} applies to each group.}
 
 \item{replace}{Sample with or without replacement?}
 
-\item{weight}{Sampling weights. This must evaluate to a vector of
-non-negative numbers the same length as the input. Weights are
-automatically standardised to sum to 1.
+\item{weight}{<\code{\link[dplyr:dplyr_tidy_select]{tidy-select}}> Sampling weights.
+This must evaluate to a vector of non-negative numbers the same length as
+the input. Weights are automatically standardised to sum to 1.}
 
-This argument is automatically \link[rlang:quo]{quoted} and later
-\link[rlang:eval_tidy]{evaluated} in the context of the data
-frame. It supports \link[rlang:quasiquotation]{unquoting}. See
-\code{vignette("programming")} for an introduction to these concepts.}
-
-\item{.env}{This variable is deprecated and no longer has any
-effect. To evaluate \code{weight} in a particular context, you can
-now unquote a \link[rlang:quosure]{quosure}.}
+\item{.env}{DEPRECATED.}
 
 \item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 
-\item{y}{tbls to join}
+\item{y}{A pair of data frames, data frame extensions (e.g. a tibble), or
+lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
+more details.}
 
-\item{by}{a character vector of variables to join by.  If \code{NULL}, the
-default, \code{*_join()} will do a natural join, using all variables with
-common names across the two tables. A message lists the variables so
-that you can check they're right (to suppress the message, simply
-explicitly list the variables that you want to join).
+\item{by}{A character vector of variables to join by.
 
-To join by different variables on x and y use a named vector.
-For example, \code{by = c("a" = "b")} will match \code{x.a} to
-\code{y.b}.}
+If \code{NULL}, the default, \verb{*_join()} will perform a natural join, using all
+variables in common across \code{x} and \code{y}. A message lists the variables so that you
+can check they're correct; suppress the message by supplying \code{by} explicitly.
+
+To join by different variables on \code{x} and \code{y}, use a named vector.
+For example, \code{by = c("a" = "b")} will match \code{x$a} to \code{y$b}.
+
+To join by multiple variables, use a vector with length > 1.
+For example, \code{by = c("a", "b")} will match \code{x$a} to \code{y$a} and \code{x$b} to
+\code{y$b}. Use a named vector to match different variables in \code{x} and \code{y}.
+For example, \code{by = c("a" = "b", "c" = "d")} will match \code{x$a} to \code{y$b} and
+\code{x$c} to \code{y$d}.
+
+To perform a cross-join, generating all combinations of \code{x} and \code{y},
+use \code{by = character()}.}
 
 \item{copy}{If \code{x} and \code{y} are not from the same data source,
 and \code{copy} is \code{TRUE}, then \code{y} will be copied into the

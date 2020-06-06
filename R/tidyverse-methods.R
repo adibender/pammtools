@@ -38,7 +38,7 @@ fped_attr <- function(fped) {
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
 #' @import dplyr
-#' @aliases arrange filter distinct full_join group_by group_by inner_join left_join mutate rename right_join sample_frac sample_n select slice summarise transmute ungroup
+#' @aliases arrange filter distinct full_join group_by inner_join left_join mutate rename right_join sample_frac sample_n select slice summarise transmute ungroup
 #' @keywords internal
 NULL
 
@@ -56,15 +56,10 @@ arrange.ped <- function(.data, ...) {
 #' @export
 #' @export group_by
 #' @rdname dplyr_verbs
-group_by.ped <- ifelse(
-  utils::packageVersion("dplyr") > "0.8.5",
-  function(.data, ..., .add = FALSE) {
-    reped(group_by(unped(.data), ..., .add = .add))
-  },
-  function(.data, ..., add = FALSE) {
-    reped(group_by(unped(.data), ..., add = add))
-  }
-)
+group_by.ped <- function(.data, ..., .add = FALSE) {
+  reped(group_by(unped(.data), ..., .add = .add))
+}
+
 
 
 #' @export
