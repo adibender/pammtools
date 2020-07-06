@@ -237,7 +237,7 @@ as_ped_cr <- function(data, formula, id, censor_code = 0L,
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             id = id, cut = cut, ...)
     if (output != "list") {
-      ped_sets[[i]][["ped_status"]] <- i * ped_sets[[i]][["ped_status"]]
+      ped_sets[[i]]$cause <- i * ped_sets[[i]][["ped_status"]]
     }
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
@@ -248,7 +248,7 @@ as_ped_cr <- function(data, formula, id, censor_code = 0L,
     return(ped)
   } else {
     ped <- as.data.frame(Reduce("rbind", ped_sets))
-    class(ped) <- c("ped_cr_df", "ped_cr")
+    class(ped) <- c("ped_cr_df", "ped_cr", "data.frame")
     attr(ped, "risks") <- status
     return(ped)
   }
