@@ -238,7 +238,7 @@ as_ped_cr <- function(data, formula, id, censor_code = 0L,
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             id = id, cut = cut[[i]], ...)
     if (output != "list") {
-      ped_sets[[i]]$cause <- i * ped_sets[[i]][["ped_status"]]
+      ped_sets[[i]]$cause <- i
     }
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
@@ -360,7 +360,7 @@ check_cuts <- function(cut, status) {
     stop("cut must be either a numeric vector or a list of numeric vectors.")
   }
   if (is.list(cut)) {
-    if (any(!unlist(lapply(cut, is.numeric)))) {
+    if (any((!unlist(lapply(cut, is.numeric))) & (!unlist(lapply(cut, is.null))))) {
       stop("cut must be either a numeric vector or a list of numeric vectors.")
     }
   }
