@@ -226,6 +226,7 @@ as_ped_cr <- function(data, formula, id, censor_code = 0L,
   if (length(status) < 2) {
     stop("There are no competing risks. Use as_ped() instead.")
   } 
+  cut <- check_cuts(cut, status)
   ped_sets <- vector(mode = "list", length = length(status))
   for (i in 1:length(status)) {
     current_data <- f_data
@@ -235,7 +236,7 @@ as_ped_cr <- function(data, formula, id, censor_code = 0L,
       current_data <- list(current_data, data[[2L]])
     }
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
-                            id = id, cut = cut, ...)
+                            id = id, cut = cut[[i]], ...)
     if (output != "list") {
       ped_sets[[i]]$cause <- i * ped_sets[[i]][["ped_status"]]
     }
@@ -349,4 +350,26 @@ make_numeric <- function(data, status_str, censor_code) {
   }
   data[[status_str]] <- as.numeric(data[[status_str]])
   data
+}
+
+check_cuts <- function(cut, status) {
+  if (is.null(status)) {
+    return(rep(list(cut), length(status)))
+  }
+  if ((!is.list(cut)) & (!is.numeric(cut))) {
+    stop("cut must be either a numeric vector or a list of numeric vectors.")
+  }
+  if (is.list(cut)) {
+    if (any(!unlist(lapply(cut, is.numeric)))) {
+      stop("cut must be either a numeric vector or a list of numeric vectors.")
+    }
+  }
+  if ((length(cut) != length(status)) & (!is.numeric(cut))) {
+    stop("cut must have length 1 or identical length as the number of status in the data.")
+  }
+  if (is.numeric(cut)) {
+    return(rep(list(cut), length(status)))
+  } else {
+    return(cut)
+  }
 }
