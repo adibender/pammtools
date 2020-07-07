@@ -29,6 +29,9 @@ specials concurrent and cumulative.}
 \item{censor_code}{Either a string or integer (depending on data) with out
 outlines which level in the status variable is associated with censorship.}
 
+\item{output}{A chracter value: either "data.frame" or "list".
+Will be matched via match.arg().}
+
 \item{cut}{Break points, used to partition the follow up into intervals.
 If unspecified, all unique event times will be used.}
 
@@ -40,7 +43,7 @@ A list of PED data.frames.
 }
 \description{
 This is a wrapper for the general data transformation function provided by
-the pammtools package (as_ped). The usage is identical to as_ped.
+the pammtools package (as_ped). The use is identical to as_ped.
 However, the function creates one single PED object for each risk.
 The results are stored in a list
 For more details use ?as_ped.

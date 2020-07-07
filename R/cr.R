@@ -22,6 +22,8 @@
 #' If unspecified, all unique event times will be used.
 #' @param censor_code Either a string or integer (depending on data) with out
 #' outlines which level in the status variable is associated with censorship.
+#' @param output A chracter value: either "data.frame" or "list". 
+#' Will be matched via match.arg().
 #' @return A list of PED data.frames.
 #' @export
 #' @author Philipp Kopper
