@@ -4,7 +4,8 @@ Version: 0.2.5
 Date: 2020-07-07
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
-    person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
+    person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")),
+    person("Philipp", "Kopper", , "philipp.kopper@stat.uni-muenchen.de", role = c("aut")))
 Description: The Piece-wise exponential (Additive Mixed) Model
     (PAMM; Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>) is a
     powerful model class for the analysis of survival (or time-to-event) data,
@@ -40,3 +41,4 @@ URL: https://github.com/adibender/pammtools
 BugReports: https://github.com/adibender/pammtools/issues
 RoxygenNote: 7.1.0
 Encoding: UTF-8
+Roxygen: list(markdown = TRUE)

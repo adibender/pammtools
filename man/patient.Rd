@@ -17,19 +17,19 @@ other covariates. This is a subset of the data discussed in
 The full data is available \href{https://github.com/adibender/elra-biostats}{here}.
 The following variables are provided:
 \describe{
- \item{Year}{The year of ICU Admission}
- \item{CombinedicuID}{Intensive Care Unit (ICU) ID}
- \item{CombinedID}{Patient identificator}
- \item{Survdays}{Survival time of patients. Here it is assumed that patients
-   survive until t=30 if released from hospital.}
- \item{PatientDied}{Status indicator; 1=death, 0=censoring}
- \item{survhosp}{Survival time in hospital. Here it is assumed that patients
-   are censored at time of hospital release (potentially informative)}
- \item{Gender}{Male or female}
- \item{Age}{The patients age at Admission}
- \item{AdmCatID}{Admission category: medical, surgical elective or surgical emergency}
- \item{ApacheIIScore}{The patient's Apache II Score at Admission}
- \item{BMI}{Patient's Body Mass Index}
- \item{DiagID2}{Diagnosis at admission in 9 categories}  }
+\item{Year}{The year of ICU Admission}
+\item{CombinedicuID}{Intensive Care Unit (ICU) ID}
+\item{CombinedID}{Patient identificator}
+\item{Survdays}{Survival time of patients. Here it is assumed that patients
+survive until t=30 if released from hospital.}
+\item{PatientDied}{Status indicator; 1=death, 0=censoring}
+\item{survhosp}{Survival time in hospital. Here it is assumed that patients
+are censored at time of hospital release (potentially informative)}
+\item{Gender}{Male or female}
+\item{Age}{The patients age at Admission}
+\item{AdmCatID}{Admission category: medical, surgical elective or surgical emergency}
+\item{ApacheIIScore}{The patient's Apache II Score at Admission}
+\item{BMI}{Patient's Body Mass Index}
+\item{DiagID2}{Diagnosis at admission in 9 categories}  }
 }
 \keyword{datasets}

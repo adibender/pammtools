@@ -68,8 +68,8 @@ A data frame class \code{ped} in piece-wise exponential data format.
 This is the general data transformation function provided by the
 \code{pammtools} package. Two main applications must be distinguished:
 \enumerate{
- \item Transformation of standard time-to-event data.
- \item Transformation of time-to-event data with time-dependent covariates (TDC).
+\item Transformation of standard time-to-event data.
+\item Transformation of time-to-event data with time-dependent covariates (TDC).
 }
 For the latter, the type of effect one wants to estimate is also
 important for the data transformation step.

@@ -15,15 +15,15 @@ Information on patients treated for a cancer disease
 located in the stomach area.
 The data set includes:
 \describe{
- \item{days}{Time from operation until death in days.}
- \item{status}{Event indicator (0 = censored, 1 = death).}
- \item{age}{The subject's age.}
- \item{sex}{The subject's sex (male/female).}
- \item{charlson_score}{Charlson comorbidity score, 1-6.}
- \item{transfusion}{Has subject received transfusions (no/yes).}
- \item{complications}{Did major complications occur during operation (no/yes).}
- \item{metastases}{Did the tumor develop metastases? (no/yes).}
- \item{resection}{Was the operation accompanied by a major resection (no/yes).}
+\item{days}{Time from operation until death in days.}
+\item{status}{Event indicator (0 = censored, 1 = death).}
+\item{age}{The subject's age.}
+\item{sex}{The subject's sex (male/female).}
+\item{charlson_score}{Charlson comorbidity score, 1-6.}
+\item{transfusion}{Has subject received transfusions (no/yes).}
+\item{complications}{Did major complications occur during operation (no/yes).}
+\item{metastases}{Did the tumor develop metastases? (no/yes).}
+\item{resection}{Was the operation accompanied by a major resection (no/yes).}
 }
 }
 \keyword{datasets}

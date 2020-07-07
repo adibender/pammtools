@@ -33,6 +33,6 @@ A modified \code{ped} object.
 }
 \description{
 See \code{tidyr} documentation of the respective functions for
-  description and examples.
+description and examples.
 }
 \keyword{internal}
