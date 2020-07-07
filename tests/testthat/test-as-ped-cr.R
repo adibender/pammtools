@@ -20,14 +20,14 @@ test_that("Trafo works and attributes are appended for data.frame.", {
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
-  expect_equal(sum(ped$cause), 36)
+  expect_equal(sum(as.numeric(ped$cause)), 36)
   
   ped <- as_ped_cr(
     data = sir_adm,
     formula = Surv(time, status) ~ .,
     output = "data.frame")
   expect_data_frame(ped, nrows = 33L, ncols = 10L)
-  expect_equal(sum(ped$cause), 44L)
+  expect_equal(sum(as.numeric(ped$cause)), 44L)
   
 })
 
