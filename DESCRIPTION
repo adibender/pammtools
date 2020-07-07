@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.2.4
-Date: 2020-06-06
+Version: 0.2.5
+Date: 2020-07-07
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut")))
@@ -12,6 +12,7 @@ Description: The Piece-wise exponential (Additive Mixed) Model
     pammtools provides tidy workflow for survival analysis with PAMMs,
     including data simulation, transformation and other functions for data
     preprocessing and model post-processing as well as visualization.
+    Since version 0.2.5 competing risk data transformation is also supported.
 Depends:
     R (>= 3.3.0)
 Imports:
@@ -28,6 +29,7 @@ Imports:
     lazyeval,
     Formula,
     mvtnorm,
+    mvna,
     pec,
     vctrs (>= 0.3.0)
 Suggests:
