@@ -71,8 +71,8 @@
 #' "list).
 #' @export
 #' @author Philipp Kopper
-as_ped_cr <- function(data, formula, censor_code = 0L, 
-                      output = c("data.frame", "list"), cut = NULL, ...) {
+as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
+                      output = c("data.frame", "list"), ...) {
   df <- check_data(data)
   data <- df[[1]]
   f_data <- df[[2]]
@@ -105,7 +105,7 @@ as_ped_cr <- function(data, formula, censor_code = 0L,
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             cut = cut[[i]], ...)
     if (output != "list") {
-      ped_sets[[i]]$cause <- status[i]
+      ped_sets[[i]]$cause <- as.factor(as.character(status[i]))
     }
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }

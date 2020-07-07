@@ -7,9 +7,10 @@
 as_ped_cr(
   data,
   formula,
+  cut = NULL,
+  max_time,
   censor_code = 0L,
   output = c("data.frame", "list"),
-  cut = NULL,
   ...
 )
 }
@@ -25,25 +26,25 @@ on the left-hand-side and covariate specification on the right-hand-side (RHS).
 The RHS can be an extended formula, which specifies how TDCs should be transformed
 using specials \code{concurrent} and \code{cumulative}.}
 
-\item{censor_code}{Either a string or integer (depending on data) with out
-outlines which level in the status variable is associated with censorship.}
-
-\item{output}{A chracter value: either "data.frame" or "list".
-Will be matched via \code{match.arg}.}
-
 \item{cut}{Either a numeric vector or a list of numeric vectors.
 If provided as list, the length of the list must equal the number of
 competing risks.
 Break points, used to partition the follow up into intervals.
 If unspecified, all unique event times will be used.}
 
-\item{...}{Further arguments passed to the \code{as_ped} function or its
-methods (\code{data.frame} method) and eventually to
-\code{\link[survival]{survSplit}}}
-
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}
 will be administratively censored at \code{max_time}.}
+
+\item{censor_code}{Either a string or integer (depending on data) with out
+outlines which level in the status variable is associated with censorship.}
+
+\item{output}{A chracter value: either "data.frame" or "list".
+Will be matched via \code{match.arg}.}
+
+\item{...}{Further arguments passed to the \code{as_ped} function or its
+methods (\code{data.frame} method) and eventually to
+\code{\link[survival]{survSplit}}}
 }
 \value{
 A data frame class \code{ped} in piece-wise exponential data format
