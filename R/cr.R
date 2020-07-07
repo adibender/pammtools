@@ -2,7 +2,7 @@
 #' hazards competing risks model
 #'
 #' This is a wrapper for the general data transformation function provided by 
-#' the pammtools package (as_ped). The usage is identical to as_ped.
+#' the pammtools package (as_ped). The use is identical to as_ped.
 #' However, the function creates one single PED object for each risk.
 #' The results are stored in a list
 #' For more details use ?as_ped. 
