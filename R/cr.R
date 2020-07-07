@@ -24,7 +24,6 @@
 #' outlines which level in the status variable is associated with censorship.
 #' @return A list of PED data.frames.
 #' @export
-#' @import pammtools
 #' @author Philipp Kopper
 as_ped_cr <- function(data, formula, censor_code = 0L, 
                       output = c("data.frame", "list"), cut = NULL, ...) {
