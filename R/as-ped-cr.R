@@ -72,35 +72,37 @@
 #' @export
 #' @author Philipp Kopper
 as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
-                      output = c("data.frame", "list"), ...) {
+                      output_type = c("data.frame", "list"), ...) {
   df <- check_data(data)
-  data <- df[[1]]
-  f_data <- df[[2]]
+  data <- df[[1L]]
+  event_data <- df[[2L]]
   assert_formula(formula)
   output <- match.arg(output, c("data.frame", "list"))
   time_str <- all.vars(formula)[1L]
   status_str <- all.vars(formula)[2L]
-  true_time <- f_data[[time_str]]
-  f_data <- make_numeric(f_data, status_str, censor_code)
-  true_status <- f_data[[status_str]]
+  true_time <- event_data[[time_str]]
+  event_data <- make_numeric(event_data, status_str, censor_code)
+  true_status <- event_data[[status_str]]
   if (is.data.frame(data)) {
     status <- unique(data[[status_str]])
   } else {
     status <- unique(data[[1L]][[status_str]])
   }
-  status_num <- unique(f_data[[status_str]])
+  status_num <- unique(event_data[[status_str]])
   status <- status[status != censor_code]
-  if (length(status) < 2) {
+  if (length(status) < 2L) {
     stop("There are no competing risks. Use as_ped() instead.")
   } 
   cut <- check_cuts(cut, status)
   ped_sets <- vector(mode = "list", length = length(status))
-  for (i in 1:length(status)) {
-    current_data <- f_data
-    current_data[[status_str]][f_data[[status_str]] != status_num[i]] <- 0L
-    current_data[[status_str]][f_data[[status_str]] == status_num[i]] <- 1L
+  for (i in 1L:length(status)) {
+    current_data <- event_data
+    current_data[[status_str]][event_data[[status_str]] != status_num[i]] <- 0L
+    current_data[[status_str]][event_data[[status_str]] == status_num[i]] <- 1L
     if (!is.data.frame(data) & length(data) == 2L) {
-      current_data <- list(current_data, data[[2L]])
+      current_data <- append(list(current_data), list(data[[2L]]))
+    } else if (!is.data.frame(data) & length(data) > 2L) {
+      current_data <- append(list(current_data), data[[2L:length(data)]])
     }
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             cut = cut[[i]], ...)
@@ -144,8 +146,8 @@ make_numeric <- function(data, status_str, censor_code) {
     risks <- risks[order(risks)]
   }
   attr(data, "risks") <- risks
-  data[data[[status_str]] == censor_code, status_str] <- 0
-  for (i in 1:length(risks)) {
+  data[data[[status_str]] == censor_code, status_str] <- 0L
+  for (i in 1L:length(risks)) {
     data[data[[status_str]] == risks[i], status_str] <- i
   }
   data[[status_str]] <- as.numeric(data[[status_str]])
@@ -179,8 +181,8 @@ check_data <- function(data) {
     stop("data must be either a data.frame or a list.")
   }
   if (!(is.data.frame(data))) {
-    f_data <- data[[1L]]
-    assert_data_frame(f_data)
+    event_data <- data[[1L]]
+    assert_data_frame(event_data)
     if (length(data) == 1L) {
       data <- data[[1L]]
     }
@@ -188,8 +190,8 @@ check_data <- function(data) {
       assert_data_frame(data[[2L]])
     }
   } else {
-    f_data <- data
-    assert_data_frame(f_data)
+    event_data <- data
+    assert_data_frame(event_data)
   }
-  return(list(data, f_data))
+  return(list(data, event_data))
 }
