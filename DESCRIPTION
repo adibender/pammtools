@@ -32,7 +32,8 @@ Imports:
     mvtnorm,
     mvna,
     pec,
-    vctrs (>= 0.3.0)
+    vctrs (>= 0.3.0),
+    data.table
 Suggests:
     testthat
 License: MIT + file LICENSE

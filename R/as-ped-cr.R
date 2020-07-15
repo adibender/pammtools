@@ -102,7 +102,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     if (!is.data.frame(data) & length(data) == 2L) {
       current_data <- append(list(current_data), list(data[[2L]]))
     } else if (!is.data.frame(data) & length(data) > 2L) {
-      current_data <- append(list(current_data), data[[2L:length(data)]])
+      current_data <- append(list(current_data), data[2L:length(data)])
     }
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             cut = cut[[i]], ...)
@@ -118,7 +118,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     attr(ped, "risks") <- status
     return(ped)
   } else {
-    ped <- as.data.frame(Reduce("rbind", ped_sets))
+    ped <- do.call(rbind, ped_sets)
     class(ped) <- c("ped_cr_df", "ped_cr", "data.frame")
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
     attr(ped, "breaks") <- cut

@@ -57,8 +57,9 @@ test_that("Trafo works for list objects (with TDCs)", {
   data("patient")
   event_df  <- filter(patient, CombinedID %in% c(1110, 1116, 1316))
   event_df$PatientDied[3] <- 2L
-  ped <- as_ped_cr(data = list(event_df), formula = Surv(survhosp, PatientDied)~ .,
-                cut = 0:30, id = "CombinedID")
+  ped <- as_ped_cr(data = list(event_df), 
+                   formula = Surv(survhosp, PatientDied) ~ .,
+                   cut = 0:30, id = "CombinedID")
   expect_data_frame(ped, nrows = 70 * 2, ncols = 16)
   tdc_df    <- filter(daily, CombinedID  %in% c(1110, 1116, 1316))
   ## check nesting
@@ -113,13 +114,6 @@ test_that("Tibbles are supported.", {
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
   expect_equal(sum(as.numeric(ped$cause)), 36)
-  
-  ped <- as_ped_cr(
-    data = sir_adm,
-    formula = Surv(time, status) ~ .,
-    output = "data.frame")
-  expect_data_frame(ped, nrows = 33L, ncols = 10L)
-  expect_equal(sum(as.numeric(ped$cause)), 44L)
 })
 
 test_that("data.tables are supported.", {
@@ -143,12 +137,5 @@ test_that("data.tables are supported.", {
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
   expect_equal(sum(as.numeric(ped$cause)), 36)
-  
-  ped <- as_ped_cr(
-    data = sir_adm,
-    formula = Surv(time, status) ~ .,
-    output = "data.frame")
-  expect_data_frame(ped, nrows = 33L, ncols = 10L)
-  expect_equal(sum(as.numeric(ped$cause)), 44L)
 })
 
