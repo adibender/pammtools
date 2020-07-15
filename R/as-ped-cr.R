@@ -48,7 +48,7 @@
 #' will be administratively censored at \code{max_time}.
 #' @param censor_code Either a string or integer (depending on data) with out
 #' outlines which level in the status variable is associated with censorship.
-#' @param output A chracter value: either "data.frame" or "list". 
+#' @param output_type A chracter value: either "data.frame" or "list". 
 #' Will be matched via \code{match.arg}.
 #' @param ... Further arguments passed to the \code{as_ped} function or its 
 #' methods (\code{data.frame} method) and eventually to 
@@ -77,7 +77,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
   data <- df[[1L]]
   event_data <- df[[2L]]
   assert_formula(formula)
-  output <- match.arg(output, c("data.frame", "list"))
+  output_type <- match.arg(output_type, c("data.frame", "list"))
   time_str <- all.vars(formula)[1L]
   status_str <- all.vars(formula)[2L]
   true_time <- event_data[[time_str]]
@@ -106,12 +106,12 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     }
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             cut = cut[[i]], ...)
-    if (output != "list") {
+    if (output_type != "list") {
       ped_sets[[i]]$cause <- as.factor(as.character(status[i]))
     }
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
-  if (output == "list") {
+  if (output_type == "list") {
     ped <- ped_sets
     names(ped) <- status
     class(ped) <- c("ped_cr_list", "ped_cr")

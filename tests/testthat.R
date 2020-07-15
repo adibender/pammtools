@@ -4,6 +4,8 @@ library(checkmate)
 library(dplyr)
 library(purrr)
 library(tidyr)
+library(data.table)
+library(mvna)
 # library(pammtools)
 
 test_check("pammtools")

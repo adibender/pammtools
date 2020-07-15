@@ -10,7 +10,7 @@ as_ped_cr(
   cut = NULL,
   max_time,
   censor_code = 0L,
-  output = c("data.frame", "list"),
+  output_type = c("data.frame", "list"),
   ...
 )
 }
@@ -39,7 +39,7 @@ will be administratively censored at \code{max_time}.}
 \item{censor_code}{Either a string or integer (depending on data) with out
 outlines which level in the status variable is associated with censorship.}
 
-\item{output}{A chracter value: either "data.frame" or "list".
+\item{output_type}{A chracter value: either "data.frame" or "list".
 Will be matched via \code{match.arg}.}
 
 \item{...}{Further arguments passed to the \code{as_ped} function or its

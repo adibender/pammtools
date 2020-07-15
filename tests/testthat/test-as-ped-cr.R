@@ -92,3 +92,63 @@ test_that("Single risk not accepted.", {
     "There are no competing risks. Use as_ped() instead.", fixed = TRUE)
 })
 
+test_that("Tibbles are supported.", {
+  # preparations
+  data("sir.adm", package = "mvna")
+  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
+  ped <- as_ped_cr(
+    data    = tibble(sir_adm),
+    formula = Surv(time, status) ~ age + pneu,
+    cut     = c(0, 10, 100)
+    )
+  # retransform to ped
+  expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
+  expect_is(ped, "ped_cr_df")
+  expect_subset(c("ped_status", "tstart", "tend", 
+                  "interval", "offset", "cause"), names(ped))
+  expect_is(attr(ped, "breaks"), "list")
+  expect_is(attr(ped, "breaks")[[1]], "numeric")
+  expect_is(attr(ped, "breaks")[[2]], "numeric")
+  expect_is(attr(ped, "intvars"), "character")
+  expect_is(attr(ped, "id_var"), "character")
+  expect_equal(attr(ped, "id_var"), "id")
+  expect_equal(sum(as.numeric(ped$cause)), 36)
+  
+  ped <- as_ped_cr(
+    data = sir_adm,
+    formula = Surv(time, status) ~ .,
+    output = "data.frame")
+  expect_data_frame(ped, nrows = 33L, ncols = 10L)
+  expect_equal(sum(as.numeric(ped$cause)), 44L)
+})
+
+test_that("data.tables are supported.", {
+  # preparations
+  data("sir.adm", package = "mvna")
+  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
+  ped <- as_ped_cr(
+    data    = data.table(sir_adm),
+    formula = Surv(time, status) ~ age + pneu,
+    cut     = c(0, 10, 100)
+  )
+  # retransform to ped
+  expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
+  expect_is(ped, "ped_cr_df")
+  expect_subset(c("ped_status", "tstart", "tend", 
+                  "interval", "offset", "cause"), names(ped))
+  expect_is(attr(ped, "breaks"), "list")
+  expect_is(attr(ped, "breaks")[[1]], "numeric")
+  expect_is(attr(ped, "breaks")[[2]], "numeric")
+  expect_is(attr(ped, "intvars"), "character")
+  expect_is(attr(ped, "id_var"), "character")
+  expect_equal(attr(ped, "id_var"), "id")
+  expect_equal(sum(as.numeric(ped$cause)), 36)
+  
+  ped <- as_ped_cr(
+    data = sir_adm,
+    formula = Surv(time, status) ~ .,
+    output = "data.frame")
+  expect_data_frame(ped, nrows = 33L, ncols = 10L)
+  expect_equal(sum(as.numeric(ped$cause)), 44L)
+})
+
