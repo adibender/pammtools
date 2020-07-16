@@ -50,7 +50,6 @@
 #'   )
 #' pam <- pamm_cr(ped_status ~ s(tend) + age, data = ped)
 #' @export
-#' @rdname pamm_cr
 pamm_cr <- function(formula, data = list(), method = "REML", ..., 
                     engine = "gam") {
   UseMethod("pamm_cr", data)
