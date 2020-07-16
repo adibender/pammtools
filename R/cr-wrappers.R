@@ -50,6 +50,7 @@
 #'   )
 #' pam <- pamm_cr(ped_status ~ s(tend) + age, data = ped)
 #' @export
+#' @rdname pamm_cr
 pamm_cr <- function(formula, data = list(), method = "REML", ..., 
                     engine = "gam") {
   UseMethod("pamm_cr", data)
@@ -126,13 +127,13 @@ pamm_cr.ped_cr_union <- function(formula, data = list(), method = "REML", ...,
 #' @return A list of summaries.
 #' @author Philipp Kopper
 summary.pamm_cr_list <- function(pam_cr) {
-  summary_list <- vector(mode = "list", length = length(pem_cr))
-  names(summary_list) <- names(pem_cr)
-  for (i in 1:length(pem_cr)) {
-    pem_cr[[i]]$call <- ""
-    summary_list[[i]] <- summary(pem_cr[[i]])
+  summary_list <- vector(mode = "list", length = length(pam_cr))
+  names(summary_list) <- names(pam_cr)
+  for (i in 1:length(pam_cr)) {
+    pam_cr[[i]]$call <- ""
+    summary_list[[i]] <- summary(pam_cr[[i]])
   }
-  names(summary_list) <- attr(pem_cr, "risks")
+  names(summary_list) <- attr(pam_cr, "risks")
   summary_list
 }
 

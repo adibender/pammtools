@@ -1,6 +1,6 @@
 context("Test as_ped_cr functions")
 
-test_that("Trafo works and attributes are appended for joint PED object..", {
+test_that("Trafo works and attributes are appended for joint PED object.", {
   # preparations
   data("sir.adm", package = "mvna")
   sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
@@ -9,14 +9,11 @@ test_that("Trafo works and attributes are appended for joint PED object..", {
     formula      = Surv(time, status) ~ age + pneu,
     cut          = c(0, 10, 100)
   )
-  # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
   expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend", 
                   "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "list")
-  expect_is(attr(ped, "breaks")[[1]], "numeric")
-  expect_is(attr(ped, "breaks")[[2]], "numeric")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
@@ -124,12 +121,10 @@ test_that("Tibbles are supported.", {
     )
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
-  expect_is(ped, "ped_cr_df")
+  expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend", 
                   "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "list")
-  expect_is(attr(ped, "breaks")[[1]], "numeric")
-  expect_is(attr(ped, "breaks")[[2]], "numeric")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
@@ -147,12 +142,10 @@ test_that("data.tables are supported.", {
   )
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
-  expect_is(ped, "ped_cr_df")
+  expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend", 
                   "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "list")
-  expect_is(attr(ped, "breaks")[[1]], "numeric")
-  expect_is(attr(ped, "breaks")[[2]], "numeric")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")

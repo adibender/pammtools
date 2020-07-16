@@ -125,8 +125,8 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     ped <- do.call(rbind, ped_sets)
     class(ped) <- c("ped_cr_union", "ped_cr", "data.frame")
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
-    attr(ped, "breaks") <- cut
-    attr(ped, "trafo_args")[["cut"]] <- cut
+    attr(ped, "breaks") <- unique(unlist(cut))
+    attr(ped, "trafo_args")[["cut"]] <- unique(unlist(cut))
     attr(ped, "risks") <- status
     return(ped)
   }
