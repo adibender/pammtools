@@ -118,12 +118,12 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
   if (!combine) {
     ped <- ped_sets
     names(ped) <- status
-    class(ped) <- c("ped_cr_list", "ped_cr")
+    class(ped) <- c("ped_cr_list", "ped_cr", "list")
     attr(ped, "risks") <- status
     return(ped)
   } else {
     ped <- do.call(rbind, ped_sets)
-    class(ped) <- c("ped_cr_df", "ped_cr", "data.frame")
+    class(ped) <- c("ped_cr_union", "ped_cr", "data.frame")
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
     attr(ped, "breaks") <- cut
     attr(ped, "trafo_args")[["cut"]] <- cut
@@ -186,7 +186,7 @@ check_cuts <- function(cut, status, combine, times) {
 
 check_data <- function(data) {
   if (!(is.data.frame(data)) & !(is.list(data))) {
-    stop("data must be either a data.frame or a list.")
+    stop("data must be either a data.frame (tibble / data.table etc.) or a list.")
   }
   if (!(is.data.frame(data))) {
     event_data <- data[[1L]]
