@@ -36,12 +36,12 @@ check_input <- function(formula, data, offset) {
   if (is.null(offset)) stop("You need to specifiy an offset.")
 }
 
-pam_cr <- function(formula, family = poisson(), 
+pamm_cr <- function(formula, family = poisson(), 
                    ped = list(), offset = NULL, bam = FALSE, ...) {
   UseMethod("pam_cr", ped)
 }
 
-pam_cr.ped_cr_df <- function(formula, family = poisson(), 
+pamm_cr.ped_cr_df <- function(formula, family = poisson(), 
                              ped = list(), offset = NULL, bam = FALSE, ...) {
   if (bam) {
     res <- bam(formula = formula, family = family, 
@@ -95,7 +95,7 @@ pam_cr.ped_cr_df <- function(formula, family = poisson(),
 #' cut = seq(0, max(df$obs_times), 0.25))
 #' pem_cr <- gam_cr(ped_status ~ interval + x1 + x2, 
 #'                  data = ped_cr, offset = offset, family = poisson())
-pam_cr.ped_cr_list <- function(formula, family = poisson(), 
+pamm_cr.ped_cr_list <- function(formula, family = poisson(), 
                                ped = list(), offset = NULL, bam = FALSE, ...) {
   #check_input(formula, ped, offset)
   res <- vector(mode = "list", length = length(ped))
@@ -125,8 +125,15 @@ pam_cr.ped_cr_list <- function(formula, family = poisson(),
 #' model of a PEM.
 #' @return A list of summaries.
 #' @author Philipp Kopper
-summary.pam_cr_list <- function(pam_cr) {
-  summary.pem_cr(pam_cr)
+summary.pamm_cr_list <- function(pam_cr) {
+  summary_list <- vector(mode = "list", length = length(pem_cr))
+  names(summary_list) <- names(pem_cr)
+  for (i in 1:length(pem_cr)) {
+    pem_cr[[i]]$call <- ""
+    summary_list[[i]] <- summary(pem_cr[[i]])
+  }
+  names(summary_list) <- attr(pem_cr, "risks")
+  summary_list
 }
 
 #' Print method for competing risk PAMs (piece-wise additive models)
@@ -135,6 +142,9 @@ summary.pam_cr_list <- function(pam_cr) {
 #' model of a PAM.
 #' @return A (printed) list of summaries.
 #' @author Philipp Kopper
-print.pam_cr_list <- function(summary_list) {
-  print.pem_cr(summary_list)
+print.pamm_cr_list <- function(summary_list) {
+  for (i in 1:length(summary_list)) {
+    cat(paste("Risk:", names(summary_list)[i]))
+    print(summary_list[[i]])
+  }
 }
