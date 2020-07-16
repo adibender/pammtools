@@ -1,58 +1,31 @@
-#' Helper function which creates the CR data frame for one specific risk.
-#' 
-#' @param data a ped_cr data.frame. 
-#' @param cr The competing risk which we aim a data frame for. 
-#' Needs to have the same name / number as in data.
-#' @return a ped data.frame object for a single competing risk. 
-#' (All other risks are treated as censoring.)
-#' @author Philipp Kopper
-modify_cr_data <- function(data, cr) {
-  data$ped_status <- ifelse(data$ped_status == cr, 1, 0)
-  data
+
+pamm_cr <- function(formula, data = list(), method = "REML", ...,
+                    trafo_args = NULL, engine = "gam") {
+  UseMethod("pamm_cr", data)
 }
 
-
-#' Input checking for cr PEMs / PAMMs
-#' 
-#' This function fits a gams/glms depending on the input for a cr framework.
-#' It is the operative sub-routine of glm_cr and gam_cr.
-#' @param formula an object of class formula or a string convertible to it.
-#' The model formula corresponding to a gam or glm.
-#' @param data A data.frame of class ped_cr that features time-to-event data
-#' and convariates. (see https://adibender.github.io/pammtools/)
-#' @param offset The offset for each observation. Contained in data.
-#' @return An assertion if there is false input.
-#' @import checkmate
-#' @author Philipp Kopper
-check_input <- function(formula, data, offset) {
-  assert_formula(formula)
-  if (!("ped_cr_subdist" %in% class(data))) {
-    assert_data_frame(data)
-  } else {
-    for (i in 1:length(data)) {
-      assert_data_frame(data[[i]])
-    }
+pamm_cr.ped_cr_list <- function(formula, data = list(), method = "REML", ...,
+                                trafo_args = NULL, engine = "gam") {
+  res <- vector(mode = "list", length(data))
+  for (i in 1:res) {
+    res[[i]] <- pamm(formula, data[[i]], method, ..., trafo_args, engine)
   }
-  if (is.null(offset)) stop("You need to specifiy an offset.")
-}
-
-pamm_cr <- function(formula, family = poisson(), 
-                   ped = list(), offset = NULL, bam = FALSE, ...) {
-  UseMethod("pam_cr", ped)
-}
-
-pamm_cr.ped_cr_df <- function(formula, family = poisson(), 
-                             ped = list(), offset = NULL, bam = FALSE, ...) {
-  if (bam) {
-    res <- bam(formula = formula, family = family, 
-               data = ped[[i]], offset = offset, ...)
-  } else {
-    res <- gam(formula = formula, family = family, 
-               data = ped[[i]], offset = offset, ...)
-  }
-  class(res) <- c("pam_cr", "pem_cr", "gam", "glm")
-  attr(res, "risks") <- attr(ped, "risks")
+  names(res) <- names(data)
+  class(res) <- c("pamm_cr")
+  attr(res, "risks") <- attr(data, "risks")
+  attr(res, "attr_ped") <- 
+    list(
+      breaks = attr(data, "breaks"),
+      id_var = attr(data, "id_var"),
+      intvars = attr(data, "int_vars")
+    )
+  attr(res, "trafo_args") <- attr(data, "trafo_args")
   return(res)
+}
+
+pamm_cr.ped_cr_union <- function(formula, data = list(), method = "REML", ...,
+                                 trafo_args = NULL, engine = "gam") {
+  pamm(formula, data, method, ..., trafo_args, engine)
 }
 #' Wrapping function for PAMs with competing risks using mgcv::gam
 #' 
@@ -111,7 +84,6 @@ pamm_cr.ped_cr_list <- function(formula, family = poisson(),
   names(res) <- attr(ped, "risks")
   class(res) <- c("pam_cr_list", "pem_cr_list")
   attr(res, "risks") <- attr(ped, "risks")
-  #for methods
   return(res)
 }
 
