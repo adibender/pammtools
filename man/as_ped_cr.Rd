@@ -10,7 +10,7 @@ as_ped_cr(
   cut = NULL,
   max_time,
   censor_code = 0L,
-  output_type = c("data.frame", "list"),
+  combine = TRUE,
   ...
 )
 }
@@ -30,7 +30,10 @@ using specials \code{concurrent} and \code{cumulative}.}
 If provided as list, the length of the list must equal the number of
 competing risks.
 Break points, used to partition the follow up into intervals.
-If unspecified, all unique event times will be used.}
+If unspecified, all unique event times will be used.
+This argument interacts with \code{combine}. If \code{cut} is unspecified
+and \code{combine} is \code{FALSE}, each risk has a different set of cuts.
+If set to \code{TRUE}, the cuts are all unique event points of all risks together.}
 
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}
@@ -39,8 +42,9 @@ will be administratively censored at \code{max_time}.}
 \item{censor_code}{Either a string or integer (depending on data) with out
 outlines which level in the status variable is associated with censorship.}
 
-\item{output_type}{A chracter value: either "data.frame" or "list".
-Will be matched via \code{match.arg}.}
+\item{combine}{A logical value. Defaults to \code{TRUE}. Indicates which
+output type should be used. \code{TRUE} results in a joint PED object for
+all risks. \code{FALSE} results in a named list of single PED objects.}
 
 \item{...}{Further arguments passed to the \code{as_ped} function or its
 methods (\code{data.frame} method) and eventually to
@@ -77,7 +81,7 @@ different for all associated risks, e.g. the user can supply distinct cut
 points for each single risk. This function returns either a data.frame
 which complies with the data.frames proposed
 \href{https://arxiv.org/abs/2006.15442}{here} or a list of single risk
-data.frames. (This depends on the argument "output".)
+PED objects. (This depends on the argument "output".)
 Currently our function only supports cause-specific competing
 risks. That means that for each single risk a competing event is treated
 (and recoded) as censoring event.
@@ -88,10 +92,10 @@ data("sir.adm", package = "mvna")
 sir_adm <- sir.adm[c(1, 36, 85), ]
 sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, 
                       cut = list(c(0, 5, 20), c(0, 10, 25)))
-sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, output = "list")
+sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE)
 sir_adm$status <- c("death", "discharge", "cens")
 sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, censor_code = "cens")
-sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, output = "list", 
+sir_adm \%>\% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE, 
                       censor_code = "cens")
 }
 \author{

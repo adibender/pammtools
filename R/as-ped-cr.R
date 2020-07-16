@@ -43,16 +43,17 @@
 #' competing risks.
 #' Break points, used to partition the follow up into intervals.
 #' If unspecified, all unique event times will be used.
-#' This argument interacts with \code{output_type}. If \code{cut} is unspecified
-#' and \code{output_type} is set to "list", each risk has a different set of cuts.
-#' If set to "union", the cuts are all unique event points of all risks together.
+#' This argument interacts with \code{combine}. If \code{cut} is unspecified
+#' and \code{combine} is \code{FALSE}, each risk has a different set of cuts.
+#' If set to \code{TRUE}, the cuts are all unique event points of all risks together.
 #' @param max_time If \code{cut} is unspecified, this will be the last
 #' possible event time. All event times after \code{max_time}
 #' will be administratively censored at \code{max_time}.
 #' @param censor_code Either a string or integer (depending on data) with out
 #' outlines which level in the status variable is associated with censorship.
-#' @param output_type A chracter value: either "union" or "list". 
-#' Defualts to "union". Will be matched via \code{match.arg}.
+#' @param combine A logical value. Defaults to \code{TRUE}. Indicates which
+#' output type should be used. \code{TRUE} results in a joint PED object for
+#' all risks. \code{FALSE} results in a named list of single PED objects.
 #' @param ... Further arguments passed to the \code{as_ped} function or its 
 #' methods (\code{data.frame} method) and eventually to 
 #' \code{\link[survival]{survSplit}}
@@ -63,10 +64,10 @@
 #' sir_adm <- sir.adm[c(1, 36, 85), ]
 #' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, 
 #'                       cut = list(c(0, 5, 20), c(0, 10, 25)))
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, output = "list")
+#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE)
 #' sir_adm$status <- c("death", "discharge", "cens")
 #' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, censor_code = "cens")
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, output = "list", 
+#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE, 
 #'                       censor_code = "cens")
 #' @return A data frame class \code{ped} in piece-wise exponential data format
 #' with an additional column indicating which cause is observed (if output == 
@@ -75,12 +76,12 @@
 #' @export
 #' @author Philipp Kopper
 as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
-                      output_type = c("union", "list"), ...) {
+                      combine = TRUE, ...) {
+  assert_logical(combine)
   df <- check_data(data)
   data <- df[[1L]]
   event_data <- df[[2L]]
   assert_formula(formula)
-  output_type <- match.arg(output_type, c("union", "list"))
   time_str <- all.vars(formula)[1L]
   status_str <- all.vars(formula)[2L]
   true_time <- event_data[[time_str]]
@@ -96,7 +97,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
   if (length(status) < 2L) {
     stop("There are no competing risks. Use as_ped() instead.")
   } 
-  cut <- check_cuts(cut, status, output_type, true_time)
+  cut <- check_cuts(cut, status, combine, true_time)
   ped_sets <- vector(mode = "list", length = length(status))
   for (i in 1L:length(status)) {
     current_data <- event_data
@@ -109,12 +110,12 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     }
     ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
                             cut = cut[[i]], ...)
-    if (output_type != "list") {
+    if (combine) {
       ped_sets[[i]]$cause <- as.factor(as.character(status[i]))
     }
     class(ped_sets[[i]]) <- c("ped", "data.frame")
   }
-  if (output_type == "list") {
+  if (!combine) {
     ped <- ped_sets
     names(ped) <- status
     class(ped) <- c("ped_cr_list", "ped_cr")
@@ -157,9 +158,9 @@ make_numeric <- function(data, status_str, censor_code) {
   data
 }
 
-check_cuts <- function(cut, status, output_type, times) {
+check_cuts <- function(cut, status, combine, times) {
   if (is.null(cut)) {
-    if (output_type == "list") {
+    if (!combine) {
       return(rep(list(cut), length(status)))
     } else {
       return(rep(list(unique(times)), length(status)))
