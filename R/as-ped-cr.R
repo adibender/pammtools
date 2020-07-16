@@ -23,7 +23,7 @@
 #' points for each single risk. This function returns either a data.frame 
 #' which complies with the data.frames proposed 
 #' \href{https://arxiv.org/abs/2006.15442}{here} or a list of single risk 
-#' data.frames. (This depends on the argument "output".)
+#' PED objects. (This depends on the argument "output".)
 #' Currently our function only supports cause-specific competing 
 #' risks. That means that for each single risk a competing event is treated 
 #' (and recoded) as censoring event.
@@ -43,13 +43,16 @@
 #' competing risks.
 #' Break points, used to partition the follow up into intervals.
 #' If unspecified, all unique event times will be used.
+#' This argument interacts with \code{output_type}. If \code{cut} is unspecified
+#' and \code{output_type} is set to "list", each risk has a different set of cuts.
+#' If set to "union", the cuts are all unique event points of all risks together.
 #' @param max_time If \code{cut} is unspecified, this will be the last
 #' possible event time. All event times after \code{max_time}
 #' will be administratively censored at \code{max_time}.
 #' @param censor_code Either a string or integer (depending on data) with out
 #' outlines which level in the status variable is associated with censorship.
-#' @param output_type A chracter value: either "data.frame" or "list". 
-#' Will be matched via \code{match.arg}.
+#' @param output_type A chracter value: either "union" or "list". 
+#' Defualts to "union". Will be matched via \code{match.arg}.
 #' @param ... Further arguments passed to the \code{as_ped} function or its 
 #' methods (\code{data.frame} method) and eventually to 
 #' \code{\link[survival]{survSplit}}
@@ -72,12 +75,12 @@
 #' @export
 #' @author Philipp Kopper
 as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
-                      output_type = c("data.frame", "list"), ...) {
+                      output_type = c("union", "list"), ...) {
   df <- check_data(data)
   data <- df[[1L]]
   event_data <- df[[2L]]
   assert_formula(formula)
-  output_type <- match.arg(output_type, c("data.frame", "list"))
+  output_type <- match.arg(output_type, c("union", "list"))
   time_str <- all.vars(formula)[1L]
   status_str <- all.vars(formula)[2L]
   true_time <- event_data[[time_str]]
@@ -93,7 +96,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
   if (length(status) < 2L) {
     stop("There are no competing risks. Use as_ped() instead.")
   } 
-  cut <- check_cuts(cut, status)
+  cut <- check_cuts(cut, status, output_type, true_time)
   ped_sets <- vector(mode = "list", length = length(status))
   for (i in 1L:length(status)) {
     current_data <- event_data
@@ -154,9 +157,13 @@ make_numeric <- function(data, status_str, censor_code) {
   data
 }
 
-check_cuts <- function(cut, status) {
+check_cuts <- function(cut, status, output_type, times) {
   if (is.null(cut)) {
-    return(rep(list(cut), length(status)))
+    if (output_type == "list") {
+      return(rep(list(cut), length(status)))
+    } else {
+      return(rep(list(unique(times)), length(status)))
+    }
   }
   if ((!is.list(cut)) & (!is.numeric(cut))) {
     stop("cut must be either a numeric vector or a list of numeric vectors.")

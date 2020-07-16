@@ -1,14 +1,14 @@
 context("Test as_ped_cr functions")
 
-test_that("Trafo works and attributes are appended for data.frame.", {
+test_that("Trafo works and attributes are appended for union.", {
   # preparations
   data("sir.adm", package = "mvna")
   sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   ped <- as_ped_cr(
-    data    = sir_adm,
-    formula = Surv(time, status) ~ age + pneu,
-    cut     = c(0, 10, 100),
-    output  = "data.frame")
+    data         = sir_adm,
+    formula      = Surv(time, status) ~ age + pneu,
+    cut          = c(0, 10, 100),
+    output_type  = "union")
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
   expect_is(ped, "ped_cr_df")
@@ -23,34 +23,55 @@ test_that("Trafo works and attributes are appended for data.frame.", {
   expect_equal(sum(as.numeric(ped$cause)), 36)
   
   ped <- as_ped_cr(
-    data = sir_adm,
-    formula = Surv(time, status) ~ .,
-    output = "data.frame")
+    data         = sir_adm,
+    formula      = Surv(time, status) ~ .,
+    output_type  = "union")
   expect_data_frame(ped, nrows = 33L, ncols = 10L)
   expect_equal(sum(as.numeric(ped$cause)), 44L)
   
 })
 
-test_that("Trafo for list output is identical to data.frame output.", {
+test_that("Trafo for list output is identical to union output.", {
   # preparations
   data("sir.adm", package = "mvna")
   sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
-  ped_df <- as_ped_cr(
-    data    = sir_adm,
-    formula = Surv(time, status) ~ age + pneu,
-    cut     = c(0, 10, 100),
-    output  = "data.frame")
-    ped_list <- as_ped_cr(
-      data    = sir_adm,
-      formula = Surv(time, status) ~ age + pneu,
-      cut     = c(0, 10, 100),
-      output  = "list")
-    ped_df_1 <- ped_df[ped_df$cause == 1, 1:8]
-    ped_df_2 <- ped_df[ped_df$cause == 2, 1:8]
-    expect_equal(sum(ped_df_1[, c(1:3, 5:8)] - ped_list[[1]][, c(1:3, 5:8)]), 0)
-    expect_equal(sum(ped_df_2[, c(1:3, 5:8)] - ped_list[[2]][, c(1:3, 5:8)]), 0)
-    expect_equal(ped_df_1[, 4], ped_list[[1]][, 4])
-    expect_equal(ped_df_2[, 4], ped_list[[2]][, 4])
+  ped_union <- as_ped_cr(
+    data        = sir_adm,
+    formula     = Surv(time, status) ~ age + pneu,
+    cut         = c(0, 10, 100),
+    output_type = "union")
+  ped_list <- as_ped_cr(
+    data        = sir_adm,
+    formula     = Surv(time, status) ~ age + pneu,
+    cut         = c(0, 10, 100),
+    output_type = "list")
+    ped_union_1 <- ped_union[ped_union$cause == 1, 1:8]
+    ped_union_2 <- ped_union[ped_union$cause == 2, 1:8]
+    expect_equal(sum(ped_union_1[, c(1:3, 5:8)] - ped_list[[1]][, c(1:3, 5:8)]), 0)
+    expect_equal(sum(ped_union_2[, c(1:3, 5:8)] - ped_list[[2]][, c(1:3, 5:8)]), 0)
+    expect_equal(ped_union_1[, 4], ped_list[[1]][, 4])
+    expect_equal(ped_union_2[, 4], ped_list[[2]][, 4])
+})
+
+test_that("Default cut behaviour works.", {
+  # preparations
+  data("sir.adm", package = "mvna")
+  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
+  ped_union <- as_ped_cr(
+    data         = sir_adm,
+    formula      = Surv(time, status) ~ age + pneu,
+    output_type  = "union")
+  ped_list <- as_ped_cr(
+    data         = sir_adm,
+    formula      = Surv(time, status) ~ age + pneu,
+    output_type  = "list")
+  ped_union_1 <- ped_union[ped_union$cause == 1, 1:8]
+  ped_union_2 <- ped_union[ped_union$cause == 2, 1:8]
+  expect_equal(unique(ped_union$tend), c(4, 10, 22, 24, 25, 37, 101))
+  expect_equal(unique(ped_union_1$tend), unique(ped_union$tend))
+  expect_equal(unique(ped_union_1$tend), unique(ped_union$tend))
+  expect_equal(unique(ped_list$`1`$tend), c(4, 10, 24, 37, 101))
+  expect_equal(unique(ped_list$`2`$tend), c(22, 25))
 })
 
 test_that("Trafo works for list objects (with TDCs)", {
