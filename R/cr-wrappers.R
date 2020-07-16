@@ -26,13 +26,14 @@
 #' covariates required by the formula. By default the variables are taken from 
 #' \code{environment(formula)}: typically the environment from which \code{gam}
 #' is called.
+#' @param method Optimisation method directly handed over to \code{gam}.
 #' @param ... Further arguments passed to \code{engine}.
 #' @param engine Character name of the function that will be called to fit the
 #' model. The intended entries are either \code{"gam"} or \code{"bam"}
 #' (both from package \code{mgcv}).
 #' @import mgcv
 #' @importFrom stats poisson
-#' @rdname pamm
+#' @rdname pamm_cr
 #' @seealso \code{\link[mgcv]{gam}}
 #' @examples
 #' data("sir.adm", package = "mvna")
@@ -55,6 +56,8 @@ pamm_cr <- function(formula, data = list(), method = "REML", ...,
   UseMethod("pamm_cr", data)
 }
 
+#' @rdname pamm_cr
+#' @export
 pamm_cr.default <- function(formula, data = list(), method = "REML", ...,
                             engine = "gam") {
   res <-  
@@ -72,6 +75,8 @@ pamm_cr.default <- function(formula, data = list(), method = "REML", ...,
   }
 }
 
+#' @rdname pamm_cr
+#' @export
 pamm_cr.ped_cr_list <- function(formula, data = list(), method = "REML", ...,
                                 engine = "gam") {
   res <- vector(mode = "list", length(data))
@@ -101,6 +106,8 @@ pamm_cr.ped_cr_list <- function(formula, data = list(), method = "REML", ...,
   return(res)
 }
 
+#' @rdname pamm_cr
+#' @export
 pamm_cr.ped_cr_union <- function(formula, data = list(), method = "REML", ...,
                                  engine = "gam") {
   dots <- list(...)
