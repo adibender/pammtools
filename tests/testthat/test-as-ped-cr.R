@@ -124,7 +124,7 @@ test_that("Tibbles are supported.", {
     )
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
-  expect_is(ped, "ped_cr_df")
+  expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend", 
                   "interval", "offset", "cause"), names(ped))
   expect_is(attr(ped, "breaks"), "list")
@@ -147,7 +147,7 @@ test_that("data.tables are supported.", {
   )
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
-  expect_is(ped, "ped_cr_df")
+  expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend", 
                   "interval", "offset", "cause"), names(ped))
   expect_is(attr(ped, "breaks"), "list")
