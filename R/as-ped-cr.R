@@ -123,7 +123,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     return(ped)
   } else {
     ped <- do.call(rbind, ped_sets)
-    class(ped) <- c("ped_cr_union", "ped_cr", "data.frame")
+    class(ped) <- c("ped_cr_union", "ped_cr", "ped", "data.frame")
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
     attr(ped, "breaks") <- unique(unlist(cut))
     attr(ped, "trafo_args")[["cut"]] <- unique(unlist(cut))
