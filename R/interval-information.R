@@ -156,11 +156,13 @@ get_intervals.default <- function(
 #' @return A data frame with one row for each unique interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 ped_info <- function(ped) {
+  UseMethod("ped_info", ped)
+}
 
-  assert_class(ped, classes = "ped")
+ped_info.ped <- function(ped) {
 
   int_df <- int_info(ped)
-  sdf    <- sample_info(ped)
+  sdf    <- sample_info(ped) 
   if (is.null(sdf)) {
     return(int_df)
   } else {
@@ -170,4 +172,13 @@ ped_info <- function(ped) {
       grouped_df(vars = group_vars(sdf))
   }
 
+}
+
+ped_info.ped_cr_list <- function(ped) {
+  res <- vector(mode = "list", length = length(ped))
+  names(res) <- names(ped)
+  for (i in 1:length(ped)) {
+    res[[i]] <- ped_info(ped[[i]])
+  }
+  res
 }
