@@ -264,3 +264,28 @@ int_info.ped_cr_union <- function(x, ...) {
   ii[order(ii[["cause"]], ii[["tend"]]), ]
   
 }
+
+data("sir.adm", package = "mvna")
+sir_adm <- sir.adm[1:150, ]
+
+ped <- as_ped_cr(
+  data         = sir_adm,
+  formula      = Surv(time, status) ~ age + pneu,
+  combine      = FALSE
+)
+pam <- pamm_cr(ped_status ~ s(tend, k = 3L) + age, data = ped)
+pinfo <- ped_info(ped)
+haz_list <- pinfo %>% add_cif(pam)
+
+ped <- as_ped_cr(
+  data         = sir_adm,
+  formula      = Surv(time, status) ~ age + pneu
+)
+pam <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age : cause, 
+               data = ped)
+pinfo <- ped_info(ped)
+haz_df <- pinfo %>% add_cif(pam)
+
+plot(haz_list$cif)
+plot(haz_df$cif)
+

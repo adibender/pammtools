@@ -152,3 +152,25 @@ test_that("data.tables are supported.", {
   expect_equal(sum(as.numeric(ped$cause)), 36)
 })
 
+test_that("Trafo works for more than two risks.", {
+  # preparations
+  data("sir.adm", package = "mvna")
+  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
+  sir_adm$status[2] <- 3
+  ped <- as_ped_cr(
+    data         = sir_adm,
+    formula      = Surv(time, status) ~ age + pneu,
+    cut          = c(0, 10, 100)
+  )
+  expect_data_frame(ped, nrow = 12L * 3L, ncols = 9L)
+  expect_is(ped, "ped_cr_union")
+  expect_subset(c("ped_status", "tstart", "tend", 
+                  "interval", "offset", "cause"), names(ped))
+  expect_is(attr(ped, "breaks"), "numeric")
+  expect_is(attr(ped, "intvars"), "character")
+  expect_is(attr(ped, "id_var"), "character")
+  expect_equal(attr(ped, "id_var"), "id")
+  expect_equal(sum(as.numeric(ped$cause)), 72)
+  expect_equal(sum(ped$ped_status[ped$cause == 3L]), 1)
+  
+})
