@@ -1,7 +1,6 @@
 # ignored folders
 inst/doc
 sandbox/
-
 # RStudio
 .Rproj.user
 pam.Rproj
@@ -13,9 +12,8 @@ docs/articles/aalen*
 docs/articles/model-eval*
 vignettes/*.html
 vignettes/*_files
-
 ## dropbox
 *.dropbox.attr
-
 docs/*
 pkgdown/
+*.Rproj

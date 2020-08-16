@@ -15,13 +15,13 @@ This data set contains the time-dependent covariates (TDCs) for the \code{\link{
 data set. Note that nutrition was protocoled for at most 12 days after
 ICU admission. The data set includes:
 \describe{
- \item{CombinedID}{Unique patient identifier. Can be used to merge with
- \code{\link{patient}} data}
- \item{Study_Day}{The calendar (!) day at which calories (or proteins) were
- administered}
- \item{caloriesPercentage}{The percentage of target calories supplied to the
-   patient by the ICU staff}
- \item{proteinGproKG}{The amount of protein supplied to the patient by the
-   ICU staff}}
+\item{CombinedID}{Unique patient identifier. Can be used to merge with
+\code{\link{patient}} data}
+\item{Study_Day}{The calendar (!) day at which calories (or proteins) were
+administered}
+\item{caloriesPercentage}{The percentage of target calories supplied to the
+patient by the ICU staff}
+\item{proteinGproKG}{The amount of protein supplied to the patient by the
+ICU staff}}
 }
 \keyword{datasets}

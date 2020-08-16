@@ -219,6 +219,6 @@ a modified \code{ped} object (except for \code{do})
 }
 \description{
 See \code{dplyr} documentation of the respective functions for
-  description and examples.
+description and examples.
 }
 \keyword{internal}

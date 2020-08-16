@@ -128,6 +128,6 @@ ggplot(ndf, aes(x = tend, y = surv_prob)) +
 }
 \seealso{
 \code{\link[ggplot2]{geom_line}},
-  \code{\link[ggplot2]{geom_step}}.
+\code{\link[ggplot2]{geom_step}}.
 }
 \keyword{datasets}
