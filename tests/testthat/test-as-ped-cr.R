@@ -2,8 +2,6 @@ context("Test as_ped_cr functions")
 
 test_that("Trafo works and attributes are appended for joint PED object.", {
   # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   ped <- as_ped_cr(
     data         = sir_adm,
     formula      = Surv(time, status) ~ age + pneu,
@@ -11,27 +9,25 @@ test_that("Trafo works and attributes are appended for joint PED object.", {
   )
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
   expect_is(ped, "ped_cr_union")
-  expect_subset(c("ped_status", "tstart", "tend", 
+  expect_subset(c("ped_status", "tstart", "tend",
                   "interval", "offset", "cause"), names(ped))
   expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
   expect_equal(sum(as.numeric(ped$cause)), 36)
-  
+
   ped <- as_ped_cr(
     data         = sir_adm,
     formula      = Surv(time, status) ~ .
   )
   expect_data_frame(ped, nrows = 56L, ncols = 10L)
   expect_equal(sum(as.numeric(ped$cause)), 84L)
-  
+
 })
 
 test_that("Trafo for list output is identical to joint output.", {
   # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   ped_union <- as_ped_cr(
     data    = sir_adm,
     formula = Surv(time, status) ~ age + pneu,
@@ -52,8 +48,6 @@ test_that("Trafo for list output is identical to joint output.", {
 
 test_that("Default cut behaviour works.", {
   # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   ped_union <- as_ped_cr(
     data    = sir_adm,
     formula = Surv(time, status) ~ age + pneu,
@@ -75,7 +69,7 @@ test_that("Trafo works for list objects (with TDCs)", {
   data("patient")
   event_df  <- filter(patient, CombinedID %in% c(1110, 1116, 1316))
   event_df$PatientDied[3] <- 2L
-  ped <- as_ped_cr(data = list(event_df), 
+  ped <- as_ped_cr(data = list(event_df),
                    formula = Surv(survhosp, PatientDied) ~ .,
                    cut = 0:30, id = "CombinedID")
   expect_data_frame(ped, nrows = 70 * 2, ncols = 16)
@@ -106,14 +100,12 @@ test_that("Single risk not accepted.", {
   event_df  <- filter(patient, CombinedID %in% c(1110, 1116, 1316))
   expect_error(
     as_ped_cr(data = list(event_df), formula = Surv(survhosp, PatientDied)~ .,
-              cut = 0:30, id = "CombinedID"), 
+              cut = 0:30, id = "CombinedID"),
     "There are no competing risks. Use as_ped() instead.", fixed = TRUE)
 })
 
 test_that("Tibbles are supported.", {
   # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   ped <- as_ped_cr(
     data    = tibble(sir_adm),
     formula = Surv(time, status) ~ age + pneu,
@@ -122,7 +114,7 @@ test_that("Tibbles are supported.", {
   # retransform to ped
   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
   expect_is(ped, "ped_cr_union")
-  expect_subset(c("ped_status", "tstart", "tend", 
+  expect_subset(c("ped_status", "tstart", "tend",
                   "interval", "offset", "cause"), names(ped))
   expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
@@ -131,31 +123,27 @@ test_that("Tibbles are supported.", {
   expect_equal(sum(as.numeric(ped$cause)), 36)
 })
 
-test_that("data.tables are supported.", {
-  # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
-  ped <- as_ped_cr(
-    data    = data.table(sir_adm),
-    formula = Surv(time, status) ~ age + pneu,
-    cut     = c(0, 10, 100)
-  )
-  # retransform to ped
-  expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
-  expect_is(ped, "ped_cr_union")
-  expect_subset(c("ped_status", "tstart", "tend", 
-                  "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "numeric")
-  expect_is(attr(ped, "intvars"), "character")
-  expect_is(attr(ped, "id_var"), "character")
-  expect_equal(attr(ped, "id_var"), "id")
-  expect_equal(sum(as.numeric(ped$cause)), 36)
-})
+# test_that("data.tables are supported.", {
+#   # preparations
+#   ped <- as_ped_cr(
+#     data    = data.table(sir_adm),
+#     formula = Surv(time, status) ~ age + pneu,
+#     cut     = c(0, 10, 100)
+#   )
+#   # retransform to ped
+#   expect_data_frame(ped, nrow = 12L * 2L, ncols = 9L)
+#   expect_is(ped, "ped_cr_union")
+#   expect_subset(c("ped_status", "tstart", "tend",
+#                   "interval", "offset", "cause"), names(ped))
+#   expect_is(attr(ped, "breaks"), "numeric")
+#   expect_is(attr(ped, "intvars"), "character")
+#   expect_is(attr(ped, "id_var"), "character")
+#   expect_equal(attr(ped, "id_var"), "id")
+#   expect_equal(sum(as.numeric(ped$cause)), 36)
+# })
 
 test_that("Trafo works for more than two risks.", {
   # preparations
-  data("sir.adm", package = "mvna")
-  sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
   sir_adm$status[2] <- 3
   ped <- as_ped_cr(
     data         = sir_adm,
@@ -164,7 +152,7 @@ test_that("Trafo works for more than two risks.", {
   )
   expect_data_frame(ped, nrow = 12L * 3L, ncols = 9L)
   expect_is(ped, "ped_cr_union")
-  expect_subset(c("ped_status", "tstart", "tend", 
+  expect_subset(c("ped_status", "tstart", "tend",
                   "interval", "offset", "cause"), names(ped))
   expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
@@ -172,5 +160,5 @@ test_that("Trafo works for more than two risks.", {
   expect_equal(attr(ped, "id_var"), "id")
   expect_equal(sum(as.numeric(ped$cause)), 72)
   expect_equal(sum(ped$ped_status[ped$cause == 3L]), 1)
-  
+
 })
