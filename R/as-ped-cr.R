@@ -1,82 +1,73 @@
 #' Transform competing risks data to Piece-wise Exponential Data (PED)
 #'
-#' This is the competing risks wrapper for the general data transformation 
-#' function provided by the
-#' \code{pammtools} package. 
-#' The data transformation works identically compared to \code{as_ped}.
-#' Like for the single risk case, two main applications must be distinguished:
-#' \enumerate{
-#'  \item Transformation of standard time-to-event data.
-#'  \item Transformation of time-to-event data with time-dependent covariates (TDC).
-#' }
-#' For the latter, the type of effect one wants to estimate is also
-#' important for the data transformation step.
-#' In any case, the data transformation is specified by a two sided formula.
-#' In case of TDCs, the right-hand-side of the formula can contain formula specials
-#' \code{concurrent} and \code{cumulative}.
-#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{data-transformation}
-#' vignette for details.
+#' Transformation of competing risks data to Piece-wise Exponantial Data (PED).
+#' The data transformation works equivantly to the single event case (see
+#' \code{\link{as_ped}} for details). More details about data transformation are
+#' also provided in the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{data-transformation
+#' vignette}.
 #'
-#' This function wraps the \code{as_ped} function and repeats the data 
+#' This function wraps the \code{as_ped} function and repeats the data
 #' transfomation for each single risk. The data transformation procedure can be
-#' different for all associated risks, e.g. the user can supply distinct cut 
-#' points for each single risk. This function returns either a data.frame 
-#' which complies with the data.frames proposed 
-#' \href{https://arxiv.org/abs/2006.15442}{here} or a list of single risk 
+#' different for all associated risks, e.g. the user can supply distinct cut
+#' points for each single risk. This function returns either a data.frame
+#' which complies with the data.frames proposed
+#' \href{https://arxiv.org/abs/2006.15442}{here} or a list of single risk
 #' PED objects. (This depends on the argument "output".)
-#' Currently our function only supports cause-specific competing 
-#' risks. That means that for each single risk a competing event is treated 
+#' Currently our function only supports cause-specific competing
+#' risks. That means that for each single risk a competing event is treated
 #' (and recoded) as censoring event.
 #'
 #' @rdname as_ped_cr
-#' @param data Either an object inheriting from data frame or in case of
-#' time-dependent covariates a list of data frames (of length 2), where the 
-#' first data frame contains the time-to-event information and static 
-#' covariates while the second contains information on time-dependent
-#' covariates and the times at which they have been observed.
-#' @param formula A two sided formula with a \code{\link[survival]{Surv}} object
-#' on the left-hand-side and covariate specification on the right-hand-side (RHS).
-#' The RHS can be an extended formula, which specifies how TDCs should be transformed
-#' using specials \code{concurrent} and \code{cumulative}.
+#' @inheritParams as_ped
 #' @param cut Either a numeric vector or a list of numeric vectors.
-#' If provided as list, the length of the list must equal the number of 
+#' If provided as list, the length of the list must equal the number of
 #' competing risks.
-#' Break points, used to partition the follow up into intervals.
+#' Specifies split points, used to partition the follow up into intervals.
 #' If unspecified, all unique event times will be used.
-#' This argument interacts with \code{combine}. If \code{cut} is unspecified
+#' This argument interacts with argument \code{combine}. If \code{cut} is unspecified
 #' and \code{combine} is \code{FALSE}, each risk has a different set of cuts.
-#' If set to \code{TRUE}, the cuts are all unique event points of all risks together.
-#' @param max_time If \code{cut} is unspecified, this will be the last
-#' possible event time. All event times after \code{max_time}
-#' will be administratively censored at \code{max_time}.
+#' If set to \code{combine = TRUE}, the cut points are a union of unique event
+#' times across all competing events.
 #' @param censor_code Either a string or integer (depending on data) with out
 #' outlines which level in the status variable is associated with censorship.
 #' @param combine A logical value. Defaults to \code{TRUE}. Indicates which
 #' output type should be used. \code{TRUE} results in a joint PED object for
-#' all risks. \code{FALSE} results in a named list of single PED objects.
-#' @param ... Further arguments passed to the \code{as_ped} function or its 
-#' methods (\code{data.frame} method) and eventually to 
+#' all risks, i.e., PED objects for each cause are stacked and returned as one data frame.
+#' \code{FALSE} results in a named list of PED objects.
+#' @param ... Further arguments passed to the \code{as_ped} function or its
+#' methods (\code{data.frame} method) and eventually to
 #' \code{\link[survival]{survSplit}}
 #' @importFrom Formula Formula
 #' @examples
-#' library(mvna)
-#' data("sir.adm", package = "mvna")
-#' sir_adm <- sir.adm[c(1, 36, 85), ]
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, 
-#'                       cut = list(c(0, 5, 20), c(0, 10, 25)))
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE)
-#' sir_adm$status <- c("death", "discharge", "cens")
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, censor_code = "cens")
-#' sir_adm %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE, 
-#'                       censor_code = "cens")
+#' data("pbc", package = "survival")
+#' pbc_tmp <- pbc[c(1, 2, 5), ]
+#' # creates cause specific data sets with cause specific, custom interval split points
+#' # and stacks them
+#' pbc_tmp %>% as_ped_cr(Surv(time, status) ~ age + sex,
+#'                       cut = list(c(0, 200, 500), c(0, 500, 1550)))
+#' # returns cause specific data sets as a list
+#' pbc_tmp %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE)
+#' # provide censoring code if status is not numeric
+#' pbc_tmp$status <- c("death", "discharge", "censoring")
+#' # by default, a union of event times for all causes will be used as split points
+#' pbc_tmp %>% as_ped_cr(Surv(time, status) ~ age + sex, censor_code = "censoring")
+#' pbc_tmp %>% as_ped_cr(Surv(time, status) ~ age + sex, combine = FALSE,
+#'                       censor_code = "censoring")
 #' @return A data frame class \code{ped} in piece-wise exponential data format
-#' with an additional column indicating which cause is observed (if output == 
-#' "data.frame".) or a named list of single risk data.frames (if output == 
+#' with an additional column indicating which cause is observed (if output ==
+#' "data.frame".) or a named list of single risk data.frames (if output ==
 #' "list).
 #' @export
 #' @author Philipp Kopper
-as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
-                      combine = TRUE, ...) {
+as_ped_cr <- function(
+  data,
+  formula,
+  cut = NULL,
+  max_time,
+  censor_code = 0L,
+  combine = TRUE,
+  ...) {
+
   assert_logical(combine)
   df <- check_data(data)
   data <- df[[1L]]
@@ -96,7 +87,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
   status <- status[status != censor_code]
   if (length(status) < 2L) {
     stop("There are no competing risks. Use as_ped() instead.")
-  } 
+  }
   cut <- check_cuts(cut, status, combine, true_time)
   ped_sets <- vector(mode = "list", length = length(status))
   for (i in 1L:length(status)) {
@@ -108,7 +99,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
     } else if (!is.data.frame(data) & length(data) > 2L) {
       current_data <- append(list(current_data), data[2L:length(data)])
     }
-    ped_sets[[i]] <- as_ped(data = current_data, formula = formula, 
+    ped_sets[[i]] <- as_ped(data = current_data, formula = formula,
                             cut = cut[[i]], ...)
     if (combine) {
       ped_sets[[i]]$cause <- as.factor(as.character(status[i]))
@@ -133,7 +124,7 @@ as_ped_cr <- function(data, formula, cut = NULL, max_time, censor_code = 0L,
 }
 
 #' Conversion to numeric risks
-#' 
+#'
 #' This function converts character or factor status into numeric ones.
 #' This is necessary for further processing.
 #' @param data A data.frame of class ped_cr that features time-to-event data
