@@ -9,11 +9,11 @@ get_cut <- function(data, formula, cut = NULL, ...) {
 
 #' @rdname get_cut
 #' @inherit get_cut
-get_cut.default <- function(data, formula, cut = NULL, max_time = NULL, ...) {
+get_cut.default <- function(data, formula, cut = NULL, max_time = NULL, event = 1L, ...) {
 
   if (is.null(cut)) {
     outcome_vars <- get_lhs_vars(formula)
-    cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == 1])
+    cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
     if (!is.null(max_time)) {
       cut <- cut[cut < max_time]
       cut <- c(cut, max_time)
