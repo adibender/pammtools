@@ -18,6 +18,7 @@ as_ped(data, ...)
   cut = NULL,
   max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
+  censor_code = 0L,
   ...
 )
 
