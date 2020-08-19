@@ -99,8 +99,9 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   cut <- union(cut, ccr_breaks[ccr_breaks <= max(cut)]) %>% sort()
 
   ped <- data %>%
-    select_if (is.atomic) %>%
-    as_ped.data.frame(
+    select_if(is.atomic) %>%
+    as.data.frame() %>%
+    as_ped(
       formula  = formula,
       id       = dots$id,
       cut      = cut,
@@ -127,8 +128,8 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   attr(ped, "func_mat_names") <- make_mat_names(
-    attr(ped, "func"),
-    attr(ped, "time_var"))
+  attr(ped, "func"),
+  attr(ped, "time_var"))
 
   ped
 
@@ -230,7 +231,7 @@ as_ped_cr <- function(
 
   cut <- map2(
     event_types,
-    ifelse(is.list(cut), cut, list(cut)),
+    if(is.list(cut)) cut else list(cut),
     function(.event, .cut) {
       get_cut(data, formula = formula, cut = .cut, max_time = NULL, event = .event)
     }
