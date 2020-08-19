@@ -18,6 +18,7 @@ as_ped(data, ...)
   cut = NULL,
   max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
+  censor_code = 0L,
   ...
 )
 
@@ -55,6 +56,9 @@ will be administratively censored at \code{max_time}.}
 
 \item{tdc_specials}{A character vector. Names of potential specials in
 \code{formula} for concurrent and or cumulative effects.}
+
+\item{censor_code}{Specifies the value of the status variable that indicates censoring.
+Often this will be \code{0}, which is the default.}
 
 \item{x}{any R object.}
 

@@ -32,6 +32,8 @@
 #' will be administratively censored at \code{max_time}.
 #' @param tdc_specials A character vector. Names of potential specials in
 #' \code{formula} for concurrent and or cumulative effects.
+#' @param censor_code Specifies the value of the status variable that indicates censoring.
+#' Often this will be \code{0}, which is the default.
 #' @param ... Further arguments passed to the \code{data.frame} method and
 #' eventually to \code{\link[survival]{survSplit}}
 #' @importFrom Formula Formula
@@ -53,20 +55,31 @@ as_ped.data.frame <- function(
   cut          = NULL,
   max_time     = NULL,
   tdc_specials = c("concurrent", "cumulative"),
+  censor_code = 0L,
   ...) {
 
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
-  dots <- list(...)
-  dots$data <- data
-  formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-  dots$formula  <- formula
-  dots$cut <- cut
-  dots$max_time <- max_time
-  ped <- do.call(split_data, dots)
-  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
-  attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+  event_types <- get_event_types(data, formula, censor_code)
+  if (length(event_types) > 1) {
+
+    ped <- as_ped_cr(data = data, formula = formula, cut = cut, max_time = max_time,
+      tdc_specials = tdc_specials, censor_code = censor_code, ...)
+
+  } else {
+
+    dots          <- list(...)
+    dots$data     <- data
+    dots$formula  <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+    dots$cut      <- cut
+    dots$max_time <- max_time
+
+    ped <- do.call(split_data, dots)
+    attr(ped, "time_var") <- get_lhs_vars(dots$formula)[1]
+    attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
+
+  }
 
   ped
 
@@ -88,8 +101,9 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   cut <- union(cut, ccr_breaks[ccr_breaks <= max(cut)]) %>% sort()
 
   ped <- data %>%
-    select_if (is.atomic) %>%
-    as_ped.data.frame(
+    select_if(is.atomic) %>%
+    as.data.frame() %>%
+    as_ped(
       formula  = formula,
       id       = dots$id,
       cut      = cut,
@@ -116,8 +130,8 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   attr(ped, "func_mat_names") <- make_mat_names(
-    attr(ped, "func"),
-    attr(ped, "time_var"))
+  attr(ped, "func"),
+  attr(ped, "time_var"))
 
   ped
 
@@ -195,5 +209,89 @@ as_ped.pamm <- function(data, newdata, ...) {
   trafo_args      <- data[["trafo_args"]]
   trafo_args$data <- newdata
   do.call(split_data, trafo_args)
+
+}
+
+
+#' Competing risks trafo
+#' @inherit as_ped
+#' @importFrom rlang .env
+#'
+#' @keywords internal
+as_ped_cr <- function(
+  data,
+  formula,
+  cut          = NULL,
+  max_time     = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code  = 0L,
+  combine      = TRUE,
+  ...) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  event_types <- get_event_types(data, formula, censor_code)
+
+  cut <- map2(
+    event_types,
+    if(is.list(cut)) cut else list(cut),
+    function(.event, .cut) {
+      get_cut(data, formula = formula, cut = .cut, max_time = NULL, event = .event)
+    }
+  )
+  if(length(cut) > 1 & combine) {
+    cut <- list(do.call(union, cut))
+  }
+
+  ped <- map2(
+    event_types,
+    cut,
+    function(.event, .cut) {
+      ped_i <- data %>%
+        mutate(!!lhs_vars[2] := 1L * (.data[[lhs_vars[2]]] == .env[[".event"]])) %>%
+        as_ped(
+          formula      = formula,
+          cut          = .cut,
+          max_time     = max_time,
+          tdc_specials = tdc_specials,
+          ...)
+      ped_i$cause <- .event
+      ped_i
+    })
+
+  if (combine) {
+    ped <- do.call(rbind, ped)
+    class(ped) <- c("ped_cr_union", "ped_cr", class(ped))
+    attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
+    attr(ped, "breaks") <- cut
+  } else {
+    class(ped) <- c("ped_cr_list", "ped_cr", "ped", class(ped))
+    names(ped) <- event_types
+    attributes(ped)$trafo_args$id <- attributes(ped[[1]])$trafo_args$id
+    attributes(ped)$trafo_args$formula <- formula
+  }
+
+  attr(ped, "trafo_args")[["cut"]] <- cut
+  attr(ped, "trafo_args")[["combine"]] <- combine
+  attr(ped, "trafo_args")[["censor_code"]] <- censor_code
+  attr(ped, "risks") <- event_types
+
+  ped
+
+}
+
+#' Exctract event types
+#'
+#' Given a formula that specifies the status variable of the outcome, this function
+#' extracts the different event types (except for censoring, specified by
+#' \code{censor_code}).
+#'
+#' @inheritParams as_ped
+#'
+#' @keywords internal
+get_event_types <- function(data, formula, censor_code) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  status_values <- unique(data[[lhs_vars[2]]]) %>% sort()
+  status_values[status_values != censor_code]
 
 }
