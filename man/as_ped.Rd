@@ -57,6 +57,9 @@ will be administratively censored at \code{max_time}.}
 \item{tdc_specials}{A character vector. Names of potential specials in
 \code{formula} for concurrent and or cumulative effects.}
 
+\item{censor_code}{Specifies the value of the status variable that indicates censoring.
+Often this will be \code{0}, which is the default.}
+
 \item{x}{any R object.}
 
 \item{newdata}{A new data set (\code{data.frame}) that contains the same
