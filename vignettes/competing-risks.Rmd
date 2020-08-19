@@ -1,0 +1,99 @@
+---
+title: "Competing Risks"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{competing-risks}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+link-citations: yes
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5
+)
+```
+
+In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a seperate model.
+However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equaly to the hazard of multiple event types).
+
+For illustration we use the `fourD` data set from the **`etm`** package for illustration. The data set contains time-constant covariates like `age` and `sex` as
+well as time to event `time` and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
+
+```{r}
+library(survival)
+devtools::load_all()
+data("fourD", package = "etm")
+head(fourD)
+```
+
+## Data transformation
+The data transformation required to fit PAMMs to competing risks data is similar to the transformation in the single event case (see the [data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html) for details). In fact, internally the standard transformation is applied to each event type using `as_ped`, however, some choices have to be made
+
+- use the same or different interval split points for the different event types?
+- return the data as a list (one element for each event type) or a stacked data set (with an additional column (covariate), indicating the event type)
+
+For cause specific hazards without shared effects the combination of event specific interval split points and list output is usually sufficient. For models with shared we need to stack the individual data sets and use split points common for all event types.
+
+
+## Cause specific hazards model without shared effects
+Below we transform the data set for the case without shared effects. By specifying `cobmine = FALSE`, the individual data sets are not stacked but rather returned in a list.
+```{r}
+ped <- fourD %>%
+  select(-medication, - treated) %>%
+  as_ped(Surv(time, status)~., id = "id", combine = FALSE)
+str(ped, 1)
+# data set for event type 1 (death from cardiovascular events)
+head(ped[[1]])
+# data set for event type 2 (death from other causes)
+head(ped[[2]])
+```
+To fit the model, we could loop through the list entries and fit the model of interest, however, there is also a convenience function, that recognizes the
+data type and fits the models accordngly:
+
+```{r}
+library(mgcv)
+pamm_csh1 <- gam(
+  formula = ped_status ~ s(tend, k = 20) + sex + age,
+  data    = ped[[1]],
+  family  = poisson(),
+  offset  = offset)
+pamm_csh2 <- gam(
+  formula = ped_status ~ s(tend) + sex + age,
+  data    = ped[[2]],
+  family  = poisson(),
+  offset  = offset)
+summary(pamm_csh1)
+summary(pamm_csh2)
+```
+
+## Cause specific hazards with shared effects
+The data transformation is performed as before, but setting `combine=TRUE` (the default), the interval cut points are created based on all event times (event times of all event types, here) and stacked:
+
+```{r}
+ped_stacked <- fourD %>%
+  select(-medication, - treated) %>%
+  as_ped(Surv(time, status)~., id = "id") %>%
+  mutate(cause = as.factor(cause))
+head(ped_stacked)
+```
+
+Model for cause specific hazards with shared effects is performed by inclusion of interaction effects:
+
+```{r}
+pam_csh_shared <- gam(
+  formula = ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
+  data = ped_stacked, family = poisson, offset = offset)
+summary(pam_csh_shared)
+```
+
+The results indicate that cause specific terms (interactions) are necessary in this case and the two models largely agree. For example, the age effect for the two causes are very similar for both models:
+
+- cause1:  `0.0197` (`pamm_csh1`) vs. `0.0198` (`pamm_csh_shared`)
+- cause2:  `0.0636` (`pamm_csh2`) vs. `0.0198 + 0.0444 = 0.0642` (`pamm_csh_shared`)
