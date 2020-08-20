@@ -32,6 +32,8 @@
 #' will be administratively censored at \code{max_time}.
 #' @param tdc_specials A character vector. Names of potential specials in
 #' \code{formula} for concurrent and or cumulative effects.
+#' @param censor_code Specifies the value of the status variable that indicates censoring.
+#' Often this will be \code{0}, which is the default.
 #' @param ... Further arguments passed to the \code{data.frame} method and
 #' eventually to \code{\link[survival]{survSplit}}
 #' @importFrom Formula Formula
@@ -237,7 +239,7 @@ as_ped_cr <- function(
     }
   )
   if(length(cut) > 1 & combine) {
-    cut <- list(do.call(union, cut))
+    cut <- list(reduce(cut, union))
   }
 
   ped <- map2(
@@ -270,13 +272,22 @@ as_ped_cr <- function(
 
   attr(ped, "trafo_args")[["cut"]] <- cut
   attr(ped, "trafo_args")[["combine"]] <- combine
+  attr(ped, "trafo_args")[["censor_code"]] <- censor_code
   attr(ped, "risks") <- event_types
 
   ped
 
 }
 
-#' exctract event types
+#' Exctract event types
+#'
+#' Given a formula that specifies the status variable of the outcome, this function
+#' extracts the different event types (except for censoring, specified by
+#' \code{censor_code}).
+#'
+#' @inheritParams as_ped
+#'
+#' @keywords internal
 get_event_types <- function(data, formula, censor_code) {
 
   lhs_vars <- get_lhs_vars(formula)
