@@ -212,8 +212,10 @@ as_ped.pamm <- function(data, newdata, ...) {
 
 }
 
+## Competing risks
 
 #' Competing risks trafo
+#'
 #' @inherit as_ped
 #' @importFrom rlang .env
 #'
