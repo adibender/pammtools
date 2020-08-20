@@ -159,10 +159,12 @@ ped_info <- function(ped) {
   UseMethod("ped_info", ped)
 }
 
+#' @rdname ped_info
+#' @export
 ped_info.ped <- function(ped) {
 
   int_df <- int_info(ped)
-  sdf    <- sample_info(ped) 
+  sdf    <- sample_info(ped)
   if (is.null(sdf)) {
     return(int_df)
   } else {
@@ -174,6 +176,8 @@ ped_info.ped <- function(ped) {
 
 }
 
+#' @rdname ped_info
+#' @export
 ped_info.ped_cr_list <- function(ped) {
   res <- vector(mode = "list", length = length(ped))
   names(res) <- names(ped)
