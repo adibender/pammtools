@@ -1,7 +1,6 @@
 data("sir.adm", package = "mvna")
 
-sir_adm <- sir.adm[c(1,
-  2, 3, 26, 40, 43, 50), ]
+sir_adm <- sir.adm[c(1, 2, 3, 26, 40, 43, 50), ]
 
 
 sir_adm2 <- sir.adm[1:150, ]

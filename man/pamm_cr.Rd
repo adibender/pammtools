@@ -53,22 +53,6 @@ term.)
 Unlike \code{pamm} this function does not support on-the-spot transformation
 to a PED object (via \code{trafo_args}) if no PED object is supplied.
 }
-\examples{
-data("sir.adm", package = "mvna")
-sir_adm <- sir.adm[1:150, ]
-ped <- as_ped_cr(
-  data         = sir_adm,
-  formula      = Surv(time, status) ~ age + pneu
-  )
-pam <- pamm_cr(ped_status ~ s(tend, by = cause) + age : cause, data = ped)
-## Or 
-ped <- as_ped_cr(
-  data         = sir_adm,
-  formula      = Surv(time, status) ~ age + pneu,
-  combine      = FALSE
-  )
-pam <- pamm_cr(ped_status ~ s(tend) + age, data = ped)
-}
 \seealso{
 \code{\link[mgcv]{gam}}
 }
