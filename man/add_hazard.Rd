@@ -2,10 +2,13 @@
 % Please edit documentation in R/add-functions.R
 \name{add_hazard}
 \alias{add_hazard}
+\alias{add_hazard.default}
 \alias{add_cumu_hazard}
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
-add_hazard(
+add_hazard(newdata, object, ...)
+
+\method{add_hazard}{default}(
   newdata,
   object,
   reference = NULL,
@@ -39,6 +42,9 @@ add_cumu_hazard(
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
+
 \item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
 one, or a named list with (partial) covariate specifications. See examples.}
 
@@ -67,9 +73,6 @@ the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
-
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}

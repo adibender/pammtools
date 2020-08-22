@@ -2,11 +2,14 @@
 % Please edit documentation in R/add-functions.R
 \name{get_hazard}
 \alias{get_hazard}
+\alias{get_hazard.default}
 \title{Calculate predicted hazard}
 \usage{
-get_hazard(
-  newdata,
+get_hazard(object, newdata, ...)
+
+\method{get_hazard}{default}(
   object,
+  newdata,
   reference = NULL,
   ci = TRUE,
   type = c("response", "link"),
@@ -17,14 +20,17 @@ get_hazard(
 )
 }
 \arguments{
+\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
+                }
+
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
   are required. If this is not provided then predictions corresponding to the
                 original data are returned. If \code{newdata} is provided then
                 it should contain all the variables needed for prediction: a
                 warning is generated if not. See details for use with \code{link{linear.functional.terms}}. }
 
-\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
-                }
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
 
 \item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
 one, or a named list with (partial) covariate specifications. See examples.}
@@ -50,9 +56,6 @@ numeric.}
 
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}
-
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
 }
 \description{
 Calculate predicted hazard
