@@ -12,7 +12,7 @@ bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
-pam3 <- mgcv::gam(ped_status ~ s(tend, k=5, by = as.factor(trt)) + as.factor(trt),
+pam3 <- mgcv::gam(ped_status ~ s(tend, k = 5, by = as.factor(trt)) + as.factor(trt),
   data = ped, family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
