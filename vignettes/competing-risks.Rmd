@@ -124,7 +124,7 @@ ggplot(ndf, aes(x = tend, y = cif)) +
 
 Similarl to other applications of `add_*` functions, we can additionally group by other covariate values, e.g.:
 
-```{r fig.width = 12, fig.height = 5, out.width = "600px"}
+```{r fig.width = 12, fig.height = 5, out.width = "700px"}
 ndf <- ped_stacked %>%
   make_newdata(tend = unique(tend), cause = unique(cause), sex = unique(sex))
 class(ndf) <- c("ped", "data.frame")
@@ -139,7 +139,7 @@ ggplot(ndf, aes(x = tend, y = cif)) +
   facet_wrap(~sex)
 ```
 
-```{r, fig.width = 12, fig.height = 5, out.width = "600px"}
+```{r, fig.width = 12, fig.height = 5, out.width = "700px"}
 ggplot(ndf, aes(x = tend, y = cif)) +
   geom_line(aes(col = sex)) +
   geom_ribbon(
