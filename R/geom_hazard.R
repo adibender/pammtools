@@ -59,6 +59,7 @@ geom_hazard <- function(
 
 
 #' @rdname geom_hazard
+#'
 #' @format NULL
 #' @usage NULL
 #' @import ggplot2

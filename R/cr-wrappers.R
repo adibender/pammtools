@@ -121,16 +121,18 @@ pamm_cr.ped_cr_union <- function(
   method = "REML",
   ...,
   engine = "gam") {
-    dots <- list(...)
-    dots$formula <- formula
-    dots$family  <- poisson()
-    dots$data   <- data
-    dots$offset <- data$offset
-    pamm_fit        <- do.call(engine, dots)
-    class(pamm_fit) <- c("pamm_cr", "pamm", class(pamm_fit))
-    pamm_fit        <- append_ped_attr(pamm_fit, data)
-    pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
-    pamm_fit
+
+  dots                     <- list(...)
+  dots$formula             <- formula
+  dots$family              <- poisson()
+  dots$data                <- data
+  dots$offset              <- data$offset
+  pamm_fit                 <- do.call(engine, dots)
+  class(pamm_fit)          <- c("pamm_cr", "pamm", class(pamm_fit))
+  pamm_fit                 <- append_ped_attr(pamm_fit, data)
+  pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
+  pamm_fit
+
 }
 
 #' Summary method for competing risk PAMs (piece-wise additive models)

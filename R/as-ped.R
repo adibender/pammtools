@@ -262,7 +262,7 @@ as_ped_cr <- function(
     ped <- do.call(rbind, ped)
     class(ped) <- c("ped_cr_union", "ped_cr", class(ped))
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
-    attr(ped, "breaks") <- cut
+    attr(ped, "breaks") <- if (length(cut) ==1) unlist(cut) else cut
   } else {
     class(ped) <- c("ped_cr_list", "ped_cr", "ped", class(ped))
     names(ped) <- event_types
@@ -270,7 +270,7 @@ as_ped_cr <- function(
     attributes(ped)$trafo_args$formula <- formula
   }
 
-  attr(ped, "trafo_args")[["cut"]] <- cut
+  attr(ped, "trafo_args")[["cut"]] <- if (length(cut) ==1) unlist(cut) else cut
   attr(ped, "trafo_args")[["combine"]] <- combine
   attr(ped, "trafo_args")[["censor_code"]] <- censor_code
   attr(ped, "risks") <- event_types

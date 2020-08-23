@@ -7,6 +7,18 @@ test_that("pamm_cr works for joint PED object.", {
     formula      = Surv(time, status) ~ age + pneu
   )
   # gam engine
+  pam <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age:cause, data = ped)
+  expect_is(pam, "pamm")
+  expect_is(summary(pam), "summary.gam")
+  expect_data_frame(int_info(pam), nrows = 41L, ncols = 5L)
+  expect_identical(is.pamm(pam), TRUE)
+
+  # bam engine
+  pam2 <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age:cause,
+                  data = ped, engine = "bam")
+  expect_true(inherits(pam2, "bam"))
+  expect_data_frame(int_info(pam2), nrows = 41L, ncols = 5L)
+
   pam <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age : cause,
                  data = ped)
   expect_is(pam, "pamm")
@@ -18,13 +30,13 @@ test_that("pamm_cr works for joint PED object.", {
   pam2 <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age : cause,
                   data = ped, engine = "bam")
   expect_true(inherits(pam2, "bam"))
-  # expect_data_frame(int_info(pam2), nrows = 43L, ncols = 5L)
+  expect_data_frame(int_info(pam2), nrows = 41L, ncols = 5L)
   expect_identical(is.pamm(pam2), TRUE)
   # pass arguments to bam
   pam3 <- pamm_cr(ped_status ~ s(tend, by = cause, k = 3L) + age : cause,
                   data = ped, engine = "bam", discrete = TRUE, method = "fREML")
   expect_true(inherits(pam3, "bam"))
-  # expect_data_frame(int_info(pam3), nrows = 43L, ncols = 5L)
+  expect_data_frame(int_info(pam3), nrows = 41L, ncols = 5L)
   expect_identical(is.pamm(pam), TRUE)
 
 })

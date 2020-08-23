@@ -12,8 +12,7 @@ test_that("Trafo works and attributes are appended.", {
   expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend",
                   "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "list")
-  expect_is(attr(ped, "breaks")[[1]], "numeric")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")
@@ -65,7 +64,7 @@ test_that("Trafo works for more than two risks.", {
   expect_is(ped, "ped_cr_union")
   expect_subset(c("ped_status", "tstart", "tend",
                   "interval", "offset", "cause"), names(ped))
-  expect_is(attr(ped, "breaks"), "list")
+  expect_is(attr(ped, "breaks"), "numeric")
   expect_is(attr(ped, "intvars"), "character")
   expect_is(attr(ped, "id_var"), "character")
   expect_equal(attr(ped, "id_var"), "id")

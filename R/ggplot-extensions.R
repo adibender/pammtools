@@ -44,6 +44,7 @@ geom_stepribbon <- function(
 }
 
 #' @rdname geom_stepribbon
+#' @importFrom ggplot2 ggproto
 #' @format NULL
 #' @usage NULL
 #' @export
