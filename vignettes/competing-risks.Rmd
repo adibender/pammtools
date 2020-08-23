@@ -32,6 +32,7 @@ well as time to event `time` and event type indicator `status` (0 = censored, 1 
 ```{r}
 library(survival)
 library(pammtools)
+library(purrr)
 data("fourD", package = "etm")
 head(fourD)
 ```

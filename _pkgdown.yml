@@ -72,6 +72,7 @@ articles:
     - model-evaluation
     - cumulative-effects
     - convenience
+    - competing-risks
     - smj-tutorial
 
 navbar:
@@ -103,6 +104,8 @@ navbar:
       href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations
       href: articles/cumulative-effects.html
+    - text: Competing Risks
+      href: articles/competing-risks.html
     - text: 'Paper: A generalized additive model approach to time-to-event analysis'
       href: articles/smj-tutorial.html
   - text: News
