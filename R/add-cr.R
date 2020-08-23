@@ -252,31 +252,29 @@ get_cif.default <- function(
 }
 
 
-#' @rdname add_cif
-#' @export
 add_cif.pamm_cr <- function(
   newdata,
   object,
-  ci        = TRUE,
+  ci = TRUE,
   overwrite = FALSE,
-  time_var  = NULL,
-  alpha     = 0.05,
-  n_sim     = 500L,
+  time_var = NULL,
+  alpha = 0.05,
+  n_sim = 500L,
   ...) {
 
-  dots           <- list(...)
-  dots$object    <- object
-  dots$ci        <- ci
+  dots <- list(...)
+  dots$object <- object
+  dots$ci <- ci
   dots$overwrite <- overwrite
-  dots$time_var  <- time_var
+  dots$time_var <- time_var
 
-  data_list    <- newdata %>% split(newdata[["cause"]])
+  data_list <- newdata %>% split(newdata[["cause"]])
   cumu_hazards <- vector(mode = "list", length = length(data_list))
-  hazards      <- cumu_hazards
-  cif_lower    <- hazards
-  cif_upper    <- hazards
-  cif_median   <- hazards
-  res          <- hazards
+  hazards <- cumu_hazards
+  cif_lower <- hazards
+  cif_upper <- hazards
+  cif_median <- hazards
+  res <- hazards
 
   for (i in 1:length(data_list)) {
     dots$newdata <- data_list[[i]]
@@ -285,14 +283,10 @@ add_cif.pamm_cr <- function(
     V        <- object$Vp
     coefs    <- coef(object)
     sim_coef_mat <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
-    hazards[[i]] <- apply(
-      sim_coef_mat,
-      1,
-      function(z) exp(X %*% z))
-    cumu_hazards[[i]] <- apply(
-      hazards[[i]],
-      2,
-      function(z) cumsum(z) * (newdata$tend - newdata$tstart))
+    hazards[[i]] <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+      cumu_hazards[[i]] <- apply(hazards[[i]], 2, function(z) cumsum(z) *
+                                 (newdata$tend - newdata$tstart))
+
   }
   overall_survival <- exp( - Reduce(`+`, cumu_hazards[[i]]))
   lagged_overall_survival <- lag(overall_survival)

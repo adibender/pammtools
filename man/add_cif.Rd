@@ -3,7 +3,6 @@
 \name{add_cif}
 \alias{add_cif}
 \alias{add_cif.default}
-\alias{add_cif.pamm_cr}
 \title{Add cumulative incidence function to data}
 \usage{
 add_cif(newdata, object, ...)
@@ -16,17 +15,6 @@ add_cif(newdata, object, ...)
   alpha = 0.05,
   n_sim = 500L,
   cause_var = "cause",
-  ...
-)
-
-\method{add_cif}{pamm_cr}(
-  newdata,
-  object,
-  ci = TRUE,
-  overwrite = FALSE,
-  time_var = NULL,
-  alpha = 0.05,
-  n_sim = 500L,
   ...
 )
 }
@@ -57,11 +45,6 @@ on which estimation of CIFs and their confidence/credible intervals will be
 based on.}
 
 \item{cause_var}{Character. Column name of the 'cause' variable.}
-
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
 }
 \description{
 Add cumulative incidence function to data
