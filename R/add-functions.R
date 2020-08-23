@@ -165,7 +165,13 @@ preproc_reference <- function(reference, cnames, n_rows) {
 #' ped_info(ped) %>% add_hazard(pam, type = "response")
 #' ped_info(ped) %>% add_cumu_hazard(pam)
 #' @export
-add_hazard <- function(
+add_hazard <- function(newdata, object, ...) {
+  UseMethod("add_hazard", object)
+}
+
+#' @rdname add_hazard
+#' @export
+add_hazard.default <- function(
   newdata,
   object,
   reference = NULL,
@@ -189,7 +195,7 @@ add_hazard <- function(
       newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  get_hazard(newdata, object, reference = reference,
+  get_hazard(object, newdata, reference = reference,
     ci = ci, type = type, se_mult = se_mult, ci_type = ci_type,
     time_var = time_var, ...)
 
@@ -201,9 +207,14 @@ add_hazard <- function(
 #' @importFrom stats model.frame
 #' @importFrom mgcv predict.gam predict.bam
 #' @keywords internal
-get_hazard <- function(
-  newdata,
+get_hazard <- function(object, newdata, ...) {
+  UseMethod("get_hazard", object)
+}
+
+#' @rdname get_hazard
+get_hazard.default <- function(
   object,
+  newdata,
   reference = NULL,
   ci        = TRUE,
   type      = c("response", "link"),
@@ -318,7 +329,7 @@ get_cumu_hazard <- function(
   if (ci) {
     if (ci_type == "default" | ci_type == "delta") {
       vars_exclude <- c(vars_exclude, "se", "ci_lower", "ci_upper")
-      newdata <- get_hazard(newdata, object, type = "response", ci = ci,
+      newdata <- get_hazard(object, newdata, type = "response", ci = ci,
         ci_type = ci_type, time_var = time_var, se_mult = se_mult, ...)
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
@@ -332,15 +343,15 @@ get_cumu_hazard <- function(
       }
     } else {
       if (ci_type == "sim") {
-        newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
+        newdata <- get_hazard(object, newdata, type = "response", ci = FALSE,
           time_var = time_var, ...)
         newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(get_sim_ci_cumu, object = object, nsim = nsim, ...)
       }
     }
   } else {
-    newdata <- newdata %>%
-      get_hazard(object, type = "response", ci = ci,
+    newdata <-
+      get_hazard(object, newdata, type = "response", ci = ci,
         ci_type = ci_type, time_var = time_var, se_mult = se_mult, ...)
   }
   newdata <- newdata %>%
@@ -432,7 +443,7 @@ get_surv_prob <- function(
   if (ci) {
     if (ci_type == "default" | ci_type == "delta") {
       vars_exclude <- c(vars_exclude, "se", "ci_lower", "ci_upper")
-      newdata <- get_hazard(newdata, object, type = "response", ci = ci,
+      newdata <- get_hazard(object, newdata, type = "response", ci = ci,
         ci_type = ci_type, time_var = time_var,  se_mult = se_mult, ...)
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
@@ -446,15 +457,15 @@ get_surv_prob <- function(
       }
     } else {
       if (ci_type == "sim") {
-        newdata <- get_hazard(newdata, object, type = "response", ci = FALSE,
+        newdata <- get_hazard(object, newdata, type = "response", ci = FALSE,
           time_var = time_var, ...)
         newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(get_sim_ci_surv, object = object, nsim = nsim, ...)
       }
     }
   } else {
-    newdata <- newdata %>%
-      get_hazard(object = object, type = "response", ci = FALSE,
+    newdata <-
+      get_hazard(object = object, newdata, type = "response", ci = FALSE,
         time_var = time_var, ...)
   }
 

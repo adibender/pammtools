@@ -14,12 +14,12 @@ The RHS can be an extended formula, which specifies how TDCs should be transform
 using specials \code{concurrent} and \code{cumulative}.}
 
 \item{data}{Either an object inheriting from data frame or in case of
-time-dependent covariates a list of data frames, where the first data frame
+time-dependent covariates a list of data frames (of length 2), where the first data frame
 contains the time-to-event information and static covariates while the second
 (and potentially further data frames) contain information on time-dependent
 covariates and the times at which they have been observed.}
 
-\item{cut}{Break points, used to partition the follow up into intervals.
+\item{cut}{Split points, used to partition the follow up into intervals.
 If unspecified, all unique event times will be used.}
 
 \item{max_time}{If \code{cut} is unspecified, this will be the last

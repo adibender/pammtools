@@ -7,7 +7,7 @@
 \usage{
 get_cut(data, formula, cut = NULL, ...)
 
-\method{get_cut}{default}(data, formula, cut = NULL, max_time = NULL, ...)
+\method{get_cut}{default}(data, formula, cut = NULL, max_time = NULL, event = 1L, ...)
 }
 \description{
 Obtain interval break points

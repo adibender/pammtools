@@ -1,0 +1,148 @@
+---
+title: "Competing Risks"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Competing Risks}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+link-citations: yes
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5,
+  dpi        = 300
+)
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a seperate model.
+However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equaly to the hazard of multiple event types).
+
+For illustration we use the `fourD` data set from the **`etm`** package for illustration. The data set contains time-constant covariates like `age` and `sex` as
+well as time to event `time` and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
+
+```{r}
+library(survival)
+devtools::load_all("./")
+data("fourD", package = "etm")
+head(fourD)
+```
+
+## Data transformation
+The data transformation required to fit PAMMs to competing risks data is similar to the transformation in the single event case (see the [data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html) for details). In fact, internally the standard transformation is applied to each event type using `as_ped`, however, some choices have to be made
+
+- use the same or different interval split points for the different event types?
+- return the data as a list (one element for each event type) or a stacked data set (with an additional column (covariate), indicating the event type)
+
+For cause specific hazards without shared effects the combination of event specific interval split points and list output is usually sufficient. For models with shared we need to stack the individual data sets and use split points common for all event types.
+
+
+## Cause specific hazards model without shared effects
+Below we transform the data set for the case without shared effects. By specifying `cobmine = FALSE`, the individual data sets are not stacked but rather returned in a list.
+```{r}
+cut <- sample(fourD$time, 100)
+ped <- fourD %>%
+  select(-medication, - treated) %>%
+  as_ped(Surv(time, status)~., id = "id", cut = cut, combine = FALSE)
+str(ped, 1)
+# data set for event type 1 (death from cardiovascular events)
+head(ped[[1]])
+# data set for event type 2 (death from other causes)
+head(ped[[2]])
+```
+To fit the model, we could loop through the list entries and fit the model of interest, however, there is also a convenience function, that recognizes the
+data type and fits the models accordngly:
+
+```{r}
+library(mgcv)
+pam_csh <- map(ped, ~ pamm(ped_status ~ s(tend) + sex + age, data = .x))
+map(pam_csh, summary)
+```
+
+## Cause specific hazards with shared effects
+The data transformation is performed as before, but setting `combine=TRUE` (the default), the interval cut points are created based on all event times (event times of all event types, here) and stacked:
+
+```{r}
+ped_stacked <- fourD %>%
+  select(-medication, - treated) %>%
+  as_ped(Surv(time, status)~., id = "id", cut = cut) %>%
+  mutate(cause = as.factor(cause))
+head(ped_stacked)
+```
+
+Model for cause specific hazards with shared effects is performed by inclusion of interaction effects:
+
+```{r}
+pam_csh_shared <- pamm(
+  formula = ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
+  data = ped_stacked)
+summary(pam_csh_shared)
+```
+
+```{r, echo = FALSE}
+coef_csh1 <- coef(pam_csh[[1]]) %>% round(3)
+coef_csh2 <- coef(pam_csh[[2]]) %>% round(3)
+coef_shared <- coef(pam_csh_shared) %>% round(3)
+```
+
+The results indicate that cause specific terms (interactions) are necessary in this case and the two models largely agree. For example, the age effect for the two causes are very similar for both models:
+
+- cause1:  `r coef_csh1["age"]` (`pamm_csh1`) vs. `r coef_shared["age"]` (`pamm_csh_shared`)
+- cause2:  `r coef_csh2["age"]` (`pamm_csh2`) vs. `r coef_shared["age"]` + `r coef_shared["age:cause2"]`= `r sum(coef_shared[c("age", "age:cause2")])` (`pamm_csh_shared`)
+
+
+## Cumulative Incidence Function
+Finally, in many cases we will want to calculate and visualize the cumulative incidence functions for different covariate combinations.
+In **`pammtools`** this can be again achieved using `make_newdata` and using the appropriate `add_*` function, here `add_cif`:
+
+```{r, fig.width = 6, fig.height = 5, out.width = "500px"}
+ndf <- ped_stacked %>%
+  make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+  group_by(cause) %>%
+  add_cif(pam_csh_shared)
+ndf %>%
+  select(tend, cause, cif, cif_lower, cif_upper) %>%
+  group_by(cause) %>%
+  slice(1:3)
+
+ggplot(ndf, aes(x = tend, y = cif)) +
+  geom_line(aes(col = cause)) +
+  geom_ribbon(
+    aes(ymin = cif_lower, ymax = cif_upper, fill = cause),
+    alpha = .3)
+```
+
+
+Similarl to other applications of `add_*` functions, we can additionally group by other covariate values, e.g.:
+
+```{r fig.width = 12, fig.height = 5, out.width = "600px"}
+ndf <- ped_stacked %>%
+  make_newdata(tend = unique(tend), cause = unique(cause), sex = unique(sex))
+class(ndf) <- c("ped", "data.frame")
+ndf <- ndf %>%
+  group_by(cause, sex) %>%
+  add_cif(pam_csh_shared)
+ggplot(ndf, aes(x = tend, y = cif)) +
+  geom_line(aes(col = cause)) +
+  geom_ribbon(
+    aes(ymin = cif_lower, ymax = cif_upper, fill = cause),
+    alpha = .3) +
+  facet_wrap(~sex)
+```
+
+```{r, fig.width = 12, fig.height = 5, out.width = "600px"}
+ggplot(ndf, aes(x = tend, y = cif)) +
+  geom_line(aes(col = sex)) +
+  geom_ribbon(
+    aes(ymin = cif_lower, ymax = cif_upper, fill = sex),
+    alpha = .3) +
+  facet_wrap(~cause)
+```
