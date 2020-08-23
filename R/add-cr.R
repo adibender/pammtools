@@ -149,15 +149,16 @@ add_surv_prob_cr.pamm_cr_list <- function(newdata, object, ci = TRUE, se_mult = 
 #' Add cumulative incidence function to data
 #'
 #' @inheritParams add_hazard
+#' @param alpha The alpha level for confidence/credible intervals.
+#' @param n_sim Number of simulations (draws from posterior of estimated coefficients)
+#' on which estimation of CIFs and their confidence/credible intervals will be
+#' based on.
+#' @param cause_var Character. Column name of the 'cause' variable.
 #'
 #' @export
 add_cif <- function(
   newdata,
   object,
-  ci        = TRUE,
-  overwrite = FALSE,
-  alpha     = 0.05,
-  n_sim     = 500L,
   ...) {
 
   UseMethod("add_cif", object)

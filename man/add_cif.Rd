@@ -6,15 +6,7 @@
 \alias{add_cif.pamm_cr}
 \title{Add cumulative incidence function to data}
 \usage{
-add_cif(
-  newdata,
-  object,
-  ci = TRUE,
-  overwrite = FALSE,
-  alpha = 0.05,
-  n_sim = 500L,
-  ...
-)
+add_cif(newdata, object, ...)
 
 \method{add_cif}{default}(
   newdata,
@@ -48,6 +40,9 @@ add_cif(
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
+
 \item{ci}{\code{logical}. Indicates if confidence intervals should be
 calculated. Defaults to \code{TRUE}.}
 
@@ -55,8 +50,13 @@ calculated. Defaults to \code{TRUE}.}
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
+\item{alpha}{The alpha level for confidence/credible intervals.}
+
+\item{n_sim}{Number of simulations (draws from posterior of estimated coefficients)
+on which estimation of CIFs and their confidence/credible intervals will be
+based on.}
+
+\item{cause_var}{Character. Column name of the 'cause' variable.}
 
 \item{time_var}{Name of the variable used for the baseline hazard. If
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else

@@ -573,6 +573,7 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2, ...) {
 }
 
 #' Calculate simulation based confidence intervals
+#'
 #' @keywords internal
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
