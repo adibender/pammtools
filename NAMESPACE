@@ -2,6 +2,7 @@
 
 S3method(add_cif,default)
 S3method(add_hazard,glm)
+S3method(add_surv_prob,default)
 S3method(arrange,nested_fdf)
 S3method(arrange,ped)
 S3method(as.data.frame,crps)

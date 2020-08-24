@@ -403,13 +403,11 @@ add_surv_prob <- function(newdata, object, ...) {
 }
 
 #' @rdname add_surv_prob
-add_surv_prob.glm <- function(
+#' @export
+add_surv_prob.default <- function(
   newdata,
   object,
-  ci              = TRUE,
-  se_mult         = 2,
   overwrite       = FALSE,
-  time_var        = NULL,
   interval_length = "intlen",
   ...)  {
 
@@ -427,8 +425,7 @@ add_surv_prob.glm <- function(
       newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  get_surv_prob(object, newdata, ci = ci, se_mult = se_mult,
-    time_var = time_var, interval_length = interval_length, ...)
+  get_surv_prob(object, newdata, interval_length = interval_length, ...)
 
 }
 
@@ -448,7 +445,7 @@ get_surv_prob.glm <- function(
   ci              = TRUE,
   ci_type         = c("default", "delta", "sim"),
   se_mult         = 2L,
-  time_var   = NULL,
+  time_var        = NULL,
   interval_length = "intlen",
   nsim            = 100L,
   ...) {

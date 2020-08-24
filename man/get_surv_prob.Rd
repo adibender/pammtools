@@ -32,17 +32,6 @@ get_surv_prob(object, newdata, ...)
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}
 
-\item{ci}{\code{logical}. Indicates if confidence intervals should be
-calculated. Defaults to \code{TRUE}.}
-
-\item{se_mult}{Factor by which standard errors are multiplied for calculating
-the confidence intervals.}
-
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
-
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 }

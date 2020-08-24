@@ -2,18 +2,15 @@
 % Please edit documentation in R/add-functions.R
 \name{add_surv_prob}
 \alias{add_surv_prob}
-\alias{add_surv_prob.glm}
+\alias{add_surv_prob.default}
 \title{Add survival probability estimates}
 \usage{
 add_surv_prob(newdata, object, ...)
 
-\method{add_surv_prob}{glm}(
+\method{add_surv_prob}{default}(
   newdata,
   object,
-  ci = TRUE,
-  se_mult = 2,
   overwrite = FALSE,
-  time_var = NULL,
   interval_length = "intlen",
   ...
 )
@@ -31,20 +28,9 @@ add_surv_prob(newdata, object, ...)
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}
 
-\item{ci}{\code{logical}. Indicates if confidence intervals should be
-calculated. Defaults to \code{TRUE}.}
-
-\item{se_mult}{Factor by which standard errors are multiplied for calculating
-the confidence intervals.}
-
 \item{overwrite}{Should hazard columns be overwritten if already present in
 the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \code{c("hazard", "se", "lower", "upper")} will be overwritten.}
-
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
