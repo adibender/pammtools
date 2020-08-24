@@ -2,9 +2,12 @@
 % Please edit documentation in R/add-functions.R
 \name{add_surv_prob}
 \alias{add_surv_prob}
+\alias{add_surv_prob.glm}
 \title{Add survival probability estimates}
 \usage{
-add_surv_prob(
+add_surv_prob(newdata, object, ...)
+
+\method{add_surv_prob}{glm}(
   newdata,
   object,
   ci = TRUE,
@@ -25,6 +28,9 @@ add_surv_prob(
 \item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
                 }
 
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
+
 \item{ci}{\code{logical}. Indicates if confidence intervals should be
 calculated. Defaults to \code{TRUE}.}
 
@@ -42,9 +48,6 @@ numeric.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
-
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
 }
 \description{
 Given suitable data (i.e. data with all columns used for estimation of the model),

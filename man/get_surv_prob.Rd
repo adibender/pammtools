@@ -2,11 +2,14 @@
 % Please edit documentation in R/add-functions.R
 \name{get_surv_prob}
 \alias{get_surv_prob}
+\alias{get_surv_prob.glm}
 \title{Calculate survival probabilities}
 \usage{
-get_surv_prob(
-  newdata,
+get_surv_prob(object, newdata, ...)
+
+\method{get_surv_prob}{glm}(
   object,
+  newdata,
   ci = TRUE,
   ci_type = c("default", "delta", "sim"),
   se_mult = 2L,
@@ -17,14 +20,17 @@ get_surv_prob(
 )
 }
 \arguments{
+\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
+                }
+
 \item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
   are required. If this is not provided then predictions corresponding to the
                 original data are returned. If \code{newdata} is provided then
                 it should contain all the variables needed for prediction: a
                 warning is generated if not. See details for use with \code{link{linear.functional.terms}}. }
 
-\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
-                }
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
 
 \item{ci}{\code{logical}. Indicates if confidence intervals should be
 calculated. Defaults to \code{TRUE}.}
@@ -39,9 +45,6 @@ numeric.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
-
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
 }
 \description{
 Calculate survival probabilities

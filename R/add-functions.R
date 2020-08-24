@@ -75,7 +75,7 @@ make_X <- function(object, ...) {
   UseMethod("make_X", object)
 }
 
-make_X.default <- function(object, newdata, ...) {
+make_X.glm <- function(object, newdata, ...) {
   X <- model.matrix(object$formula[-2], data = newdata, ...)
 
 }
@@ -171,7 +171,7 @@ add_hazard <- function(newdata, object, ...) {
 
 #' @rdname add_hazard
 #' @export
-add_hazard.default <- function(
+add_hazard.glm <- function(
   newdata,
   object,
   reference = NULL,
@@ -211,8 +211,25 @@ get_hazard <- function(object, newdata, ...) {
   UseMethod("get_hazard", object)
 }
 
+
 #' @rdname get_hazard
-get_hazard.default <- function(
+get_hazard.dafault <- function(
+  object,
+  newdata,
+  type      = c("response", "link"),
+  ...)  {
+
+  assert_data_frame(newdata, all.missing = FALSE)
+  type    <- match.arg(type)
+
+
+  newdata[["hazard"]] <- predict(object, newdata, type)
+  newdata
+
+}
+
+#' @rdname get_hazard
+get_hazard.glm <- function(
   object,
   newdata,
   reference = NULL,
@@ -224,7 +241,6 @@ get_hazard.default <- function(
   ...)  {
 
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
   type    <- match.arg(type)
   ci_type <- match.arg(ci_type)
 
@@ -380,13 +396,20 @@ get_cumu_hazard <- function(
 #' pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
 #' ped_info(ped) %>% add_surv_prob(pam, ci=TRUE)
 #' @export
-add_surv_prob <- function(
+add_surv_prob <- function(newdata, object, ...) {
+
+  UseMethod("add_surv_prob", object)
+
+}
+
+#' @rdname add_surv_prob
+add_surv_prob.glm <- function(
   newdata,
   object,
   ci              = TRUE,
   se_mult         = 2,
   overwrite       = FALSE,
-  time_var   = NULL,
+  time_var        = NULL,
   interval_length = "intlen",
   ...)  {
 
@@ -404,7 +427,7 @@ add_surv_prob <- function(
       newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  get_surv_prob(newdata, object, ci = ci, se_mult = se_mult,
+  get_surv_prob(object, newdata, ci = ci, se_mult = se_mult,
     time_var = time_var, interval_length = interval_length, ...)
 
 }
@@ -414,9 +437,14 @@ add_surv_prob <- function(
 #'
 #' @inheritParams add_surv_prob
 #' @keywords internal
-get_surv_prob <- function(
-  newdata,
+get_surv_prob <- function(object, newdata, ...) {
+  UseMethod("get_surv_prob", object)
+}
+
+#' @rdname get_surv_prob
+get_surv_prob.glm <- function(
   object,
+  newdata,
   ci              = TRUE,
   ci_type         = c("default", "delta", "sim"),
   se_mult         = 2L,

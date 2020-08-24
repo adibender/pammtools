@@ -2,12 +2,15 @@
 % Please edit documentation in R/add-functions.R
 \name{get_hazard}
 \alias{get_hazard}
-\alias{get_hazard.default}
+\alias{get_hazard.dafault}
+\alias{get_hazard.glm}
 \title{Calculate predicted hazard}
 \usage{
 get_hazard(object, newdata, ...)
 
-\method{get_hazard}{default}(
+\method{get_hazard}{dafault}(object, newdata, type = c("response", "link"), ...)
+
+\method{get_hazard}{glm}(
   object,
   newdata,
   reference = NULL,
@@ -32,14 +35,14 @@ get_hazard(object, newdata, ...)
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}
 
+\item{type}{Either \code{"response"} or \code{"link"}. The former calculates
+hazard, the latter the log-hazard.}
+
 \item{reference}{A data frame with number of rows equal to \code{nrow(newdata)} or
 one, or a named list with (partial) covariate specifications. See examples.}
 
 \item{ci}{\code{logical}. Indicates if confidence intervals should be
 calculated. Defaults to \code{TRUE}.}
-
-\item{type}{Either \code{"response"} or \code{"link"}. The former calculates
-hazard, the latter the log-hazard.}
 
 \item{ci_type}{The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at

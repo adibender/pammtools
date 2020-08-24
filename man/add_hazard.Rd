@@ -2,13 +2,13 @@
 % Please edit documentation in R/add-functions.R
 \name{add_hazard}
 \alias{add_hazard}
-\alias{add_hazard.default}
+\alias{add_hazard.glm}
 \alias{add_cumu_hazard}
 \title{Add predicted (cumulative) hazard to data set}
 \usage{
 add_hazard(newdata, object, ...)
 
-\method{add_hazard}{default}(
+\method{add_hazard}{glm}(
   newdata,
   object,
   reference = NULL,
