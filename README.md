@@ -6,7 +6,7 @@
 [![CRAN\_Download\_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools <img src="man/figures/logo.png" align="right" />
+## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools <img src="man/figures/logo.png" align="right" width="150px" />
 
 
 ### Installation

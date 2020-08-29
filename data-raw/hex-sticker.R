@@ -48,4 +48,4 @@ sticker(p, package = "pammtools", s_width = 2, s_height = 2,
   h_fill = "whitesmoke", h_color = "black",
   s_x = .875, s_y = 1.05, filename="./man/figures/logo.png",
   url = "adibender.github.io/pammtools", u_size = 4.5,
-  u_x = .2, u_y = .527, u_angle = "330", white_around_sticker=F)
+  u_x = .2, u_y = .527, u_angle = "330", white_around_sticker=T)
