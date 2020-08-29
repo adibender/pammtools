@@ -13,17 +13,20 @@ pam_tumor_tve <- mgcv::bam(
   data = ped_tumor, family = poisson(), offset = offset,
   method = "fREML", discrete = TRUE)
 
-cumu_coefs <- get_cumu_coef(pam_tumor_tve, ped_tumor, terms = c("metastases", "charlson_score", "complications", "sex"))
+cumu_coefs <- get_cumu_coef(pam_tumor_tve, ped_tumor,
+  terms = c("age", "metastases", "charlson_score", "complications", "sex", "transfusion"))
 
 library(timereg)
 aal <- aalen(Surv(days, status)~., data = tumor)
-cumu_coef_aalen <- get_cumu_coef(aal, terms = c("metastases", "charlson_score", "complications", "sex"))
+cumu_coef_aalen <- get_cumu_coef(aal,
+  terms = c("age", "metastases", "charlson_score", "complications", "sex", "transfusion"))
 cumu_coef_aalen$variable[cumu_coef_aalen$variable == "complicationsyes"] <- "complications (yes)"
 cumu_coef_aalen$variable[cumu_coef_aalen$variable == "metastasesyes"] <- "metastases (yes)"
+cumu_coef_aalen$variable[cumu_coef_aalen$variable == "transfusionyes"] <- "transfusion (yes)"
 cumu_coef_aalen$variable[cumu_coef_aalen$variable == "sexfemale"] <- "sex (female)"
 
-c1 <- cumu_coefs %>% filter(variable == "complications (yes)")
-c2 <- cumu_coef_aalen %>% filter(variable == "complications (yes)")
+c1 <- cumu_coefs %>% filter(variable %in% c("complications (yes)"))
+c2 <- cumu_coef_aalen %>% filter(variable %in% c("complications (yes)"))
 
 library(ggplot2)
 theme_set(theme_minimal())
@@ -40,6 +43,9 @@ p <- ggplot(c1, aes(x = time, y = cumu_hazard)) +
   facet_wrap(~variable, nrow = 2)
 
 library(hexSticker)
-sticker(p, package = "pammtools", p_size = 20, s_width = 2, s_height = 2,
-  p_color = "black", h_fill = "whitesmoke", h_color = "black",
-  s_x = .9, s_y = 1)
+sticker(p, package = "pammtools", s_width = 2, s_height = 2,
+  p_color = "black", p_x = .75, p_size = 18,
+  h_fill = "whitesmoke", h_color = "black",
+  s_x = .875, s_y = 1.05, filename="./man/figures/logo.png",
+  url = "adibender.github.io/pammtools", u_size = 4.5,
+  u_x = .2, u_y = .527, u_angle = "330", white_around_sticker=F)
