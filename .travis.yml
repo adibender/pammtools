@@ -6,7 +6,7 @@ jobs:
   include:
   - r: release
     before_cache:
-    - Rscript -e 'remotes::install_cran("pammtools", dependencies = TRUE)'
+    - Rscript -e 'remotes::install_github("pammtools", dependencies = TRUE)'
     - Rscript -e 'remotes::install_cran("TBFmultinomial", dependencies = TRUE)'
     - Rscript -e 'remotes::install_github("jimhester/covr")'
     - Rscript -e 'remotes::install_cran("pkgdown")'
