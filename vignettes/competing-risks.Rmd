@@ -3,7 +3,7 @@ title: "Competing Risks"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Competing Risks}
+  %\VignetteIndexEntry{competing-risks}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes
