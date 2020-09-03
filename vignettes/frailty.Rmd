@@ -3,7 +3,7 @@ title: "Frailty and random effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Frailty and random effects}
+  %\VignetteIndexEntry{frailty}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---

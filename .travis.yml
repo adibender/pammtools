@@ -8,7 +8,7 @@ jobs:
     before_cache:
     - Rscript -e 'remotes::install_github("adibender/pammtools", dependencies = TRUE)'
     - Rscript -e 'remotes::install_cran("TBFmultinomial", dependencies = TRUE)'
-    - Rscript -e 'remotes::install_github("jimhester/covr")'
+    - Rscript -e 'remotes::install_cran("covr")'
     - Rscript -e 'remotes::install_cran("pkgdown")'
     - Rscript -e 'remotes::install_cran("scam")'
     - Rscript -e 'remotes::install_cran("RColorBrewer")'
