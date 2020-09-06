@@ -3,10 +3,8 @@ title: "Competing Risks"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{competing-risks}
+  %\VignetteIndexEntry{Competing Risks}
   %\VignetteEngine{knitr::rmarkdown}
-bibliography: Remote.bib
-link-citations: yes
 ---
 
 ```{r, echo = FALSE}
@@ -89,8 +87,8 @@ summary(pam_csh_shared)
 ```
 
 ```{r, echo = FALSE}
-coef_csh1 <- coef(pam_csh[[1]]) %>% round(3)
-coef_csh2 <- coef(pam_csh[[2]]) %>% round(3)
+coef_csh1   <- coef(pam_csh[[1]]) %>% round(3)
+coef_csh2   <- coef(pam_csh[[2]]) %>% round(3)
 coef_shared <- coef(pam_csh_shared) %>% round(3)
 ```
 
