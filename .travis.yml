@@ -19,6 +19,7 @@ jobs:
     - Rscript -e 'remotes::install_cran("rmarkdown")'
     - Rscript -e 'remotes::install_cran("pec")'
     - Rscript -e 'remotes::install_cran("devtools")'
+    - Rscript -e 'remotes::install_github("cran/etm")'
 
 # whitelist
 branches:
@@ -26,7 +27,6 @@ branches:
     - master
 
 after_success:
-  - Rscript -e 'remotes::install_cran("etm")'
   - Rscript -e 'devtools::install()'
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
   - Rscript -e 'pkgdown::build_site()'
