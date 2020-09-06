@@ -6,8 +6,7 @@ jobs:
   include:
   - r: release
     before_cache:
-    - Rscript -e 'remotes::install_github("adibender/pammtools", dependencies = TRUE)'
-    - Rscript -e 'remotes::install_cran("TBFmultinomial", dependencies = TRUE)'
+    - Rscript -e 'remotes::install_cran("TBFmultinomial")'
     - Rscript -e 'remotes::install_cran("covr")'
     - Rscript -e 'remotes::install_cran("pkgdown")'
     - Rscript -e 'remotes::install_cran("scam")'
@@ -27,6 +26,7 @@ branches:
     - master
 
 after_success:
+  - Rscript -e 'devtools::install()
   - Rscript -e 'covr::codecov(type="all", line_exclusions="R/zzz.R")'
   - Rscript -e 'pkgdown::build_site()'
 
