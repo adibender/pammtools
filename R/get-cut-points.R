@@ -25,8 +25,8 @@ get_cut.default <- function(
     if (length(outcome_vars) == 2) {
       cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
     } else {
-      cut_start <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[3]]]) == event])
-      cut_end <- unique(data[[outcome_vars[2]]][1L * (data[[outcome_vars[3]]]) == event])
+      cut_start <- unique(data[[outcome_vars[1]]])
+      cut_end <- unique(data[[outcome_vars[2]]])
       cut <- union(cut_start, cut_end)
     }
     if (!is.null(max_time)) {
