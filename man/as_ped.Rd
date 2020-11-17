@@ -8,6 +8,7 @@
 \alias{is.ped}
 \alias{as_ped.ped}
 \alias{as_ped.pamm}
+\alias{as_ped_recurrent}
 \title{Transform data to Piece-wise Exponential Data (PED)}
 \usage{
 as_ped(data, ...)
@@ -31,6 +32,19 @@ is.ped(x)
 \method{as_ped}{ped}(data, newdata, ...)
 
 \method{as_ped}{pamm}(data, newdata, ...)
+
+as_ped_recurrent(
+  data,
+  formula,
+  cut = NULL,
+  max_time = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code = 0L,
+  episode_var = character(),
+  timescale = c("gap", "calendar"),
+  min_events = 1L,
+  ...
+)
 }
 \arguments{
 \item{data}{Either an object inheriting from data frame or in case of
@@ -87,4 +101,13 @@ vignette for details.
 tumor[1:3, ]
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex)
+\dontrun{
+data("cgd", package = "frailtyHL")
+cgd <- cgd \%>\%
+ select(id, tstart, tstop, enum, status, age)
+ped_re <- split_data(
+  formula = Surv(tstart, tstop, status) ~ age + enum,
+  data = cgd2)
 }
+}
+\keyword{internal}

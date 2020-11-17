@@ -279,6 +279,59 @@ as_ped_cr <- function(
 
 }
 
+
+#' Recurrent events trafo
+#'
+#' @examples
+#' \dontrun{
+#' data("cgd", package = "frailtyHL")
+#' cgd <- cgd %>%
+#'  select(id, tstart, tstop, enum, status, age)
+#' ped_re <- split_data(
+#'   formula = Surv(tstart, tstop, status) ~ age + enum,
+#'   data = cgd2)
+#' }
+#' @rdname as_ped
+#' @export
+#' @keywords internal
+as_ped_recurrent <- function(
+  data,
+  formula,
+  cut          = NULL,
+  max_time     = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code  = 0L,
+  episode_var  = character(),
+  timescale    = c("gap", "calendar"),
+  min_events   = 1L,
+  ...
+) {
+
+  assert_character(episode_var, min.chars = 1L, min.len = 1L, any.missing = FALSE,
+    len = 1L)
+  assert_integer(min_events, lower = 1L, len = 1L)
+
+  status_error(data, formula)
+  assert_subset(tdc_specials, c("concurrent", "cumulative"))
+
+
+  dots             <- list(...)
+  dots$data        <- data
+  dots$formula     <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+  dots$cut         <- cut
+  dots$max_time    <- max_time
+  dots$episode_var <- episode_var
+  dots$min_events  <- min_events
+  dots$timescale   <- timescale
+
+  ped <- do.call(split_data_recurrent, dots)
+  attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
+  attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
+
+  ped
+
+}
+
 #' Exctract event types
 #'
 #' Given a formula that specifies the status variable of the outcome, this function
@@ -291,7 +344,7 @@ as_ped_cr <- function(
 get_event_types <- function(data, formula, censor_code) {
 
   lhs_vars <- get_lhs_vars(formula)
-  status_values <- unique(data[[lhs_vars[2]]]) %>% sort()
+  status_values <- unique(data[[lhs_vars[length(lhs_vars)]]]) %>% sort()
   status_values[status_values != censor_code]
 
 }
