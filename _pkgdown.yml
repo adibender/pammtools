@@ -69,6 +69,7 @@ articles:
     - tveffects
     - frailty
     - tdcovar
+    - left-truncation
     - model-evaluation
     - cumulative-effects
     - convenience
@@ -99,6 +100,8 @@ navbar:
     - text: Frailties (random effects)
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
+    - text: Left-truncated data
+      href: articles/left-truncation.html
       href: articles/tdcovar.html
     - text: Model evaluation
       href: articles/model-evaluation.html

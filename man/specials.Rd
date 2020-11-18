@@ -36,7 +36,9 @@ Defaults to 0.}
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
 The RHS can be an extended formula, which specifies how TDCs should be transformed
-using specials \code{concurrent} and \code{cumulative}.}
+using specials \code{concurrent} and \code{cumulative}. The left hand-side can
+be in start-stop-notation. This, however, is only used to create left-truncated
+data and does not support the full functionality.}
 
 \item{special}{The name of the special whose existence in the
 \code{formula} should be checked}
