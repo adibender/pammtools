@@ -4,6 +4,7 @@
 #' \code{pammtools} package. Two main applications must be distinguished:
 #' \enumerate{
 #'  \item Transformation of standard time-to-event data.
+#'  \item Transformation of left-truncated time-to-event data.
 #'  \item Transformation of time-to-event data with time-dependent covariates (TDC).
 #' }
 #' For the latter, the type of effect one wants to estimate is also
@@ -24,7 +25,9 @@
 #' @param formula A two sided formula with a \code{\link[survival]{Surv}} object
 #' on the left-hand-side and covariate specification on the right-hand-side (RHS).
 #' The RHS can be an extended formula, which specifies how TDCs should be transformed
-#' using specials \code{concurrent} and \code{cumulative}.
+#' using specials \code{concurrent} and \code{cumulative}. The left hand-side can
+#' be in start-stop-notation. This, however, is only used to create left-truncated
+#' data and does not support the full functionality.
 #' @param cut Split points, used to partition the follow up into intervals.
 #' If unspecified, all unique event times will be used.
 #' @param max_time If \code{cut} is unspecified, this will be the last
@@ -274,59 +277,6 @@ as_ped_cr <- function(
   attr(ped, "trafo_args")[["combine"]] <- combine
   attr(ped, "trafo_args")[["censor_code"]] <- censor_code
   attr(ped, "risks") <- event_types
-
-  ped
-
-}
-
-
-#' Recurrent events trafo
-#'
-#' @examples
-#' \dontrun{
-#' data("cgd", package = "frailtyHL")
-#' cgd <- cgd %>%
-#'  select(id, tstart, tstop, enum, status, age)
-#' ped_re <- split_data(
-#'   formula = Surv(tstart, tstop, status) ~ age + enum,
-#'   data = cgd2)
-#' }
-#' @rdname as_ped
-#' @export
-#' @keywords internal
-as_ped_recurrent <- function(
-  data,
-  formula,
-  cut          = NULL,
-  max_time     = NULL,
-  tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  episode_var  = character(),
-  timescale    = c("gap", "calendar"),
-  min_events   = 1L,
-  ...
-) {
-
-  assert_character(episode_var, min.chars = 1L, min.len = 1L, any.missing = FALSE,
-    len = 1L)
-  assert_integer(min_events, lower = 1L, len = 1L)
-
-  status_error(data, formula)
-  assert_subset(tdc_specials, c("concurrent", "cumulative"))
-
-
-  dots             <- list(...)
-  dots$data        <- data
-  dots$formula     <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-  dots$cut         <- cut
-  dots$max_time    <- max_time
-  dots$episode_var <- episode_var
-  dots$min_events  <- min_events
-  dots$timescale   <- timescale
-
-  ped <- do.call(split_data_recurrent, dots)
-  attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
-  attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
 
   ped
 
