@@ -252,7 +252,7 @@ get_hazard.default <- function(
     newdata <- newdata %>% mutate(hazard = exp(.data$hazard))
   }
 
-  newdata
+  newdata %>% arrange(.data[[time_var]], .by_group = TRUE)
 
 }
 
