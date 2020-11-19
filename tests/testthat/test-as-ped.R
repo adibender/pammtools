@@ -43,7 +43,7 @@ test_that("Trafo works for list objects (with TDCs)", {
     cut     = 0:30,
     id  = "CombinedID")
   expect_subset("survhosp_Study_Day_mat", colnames(ped))
-  expect_data_frame(ped, nrows = 40, ncols = 20)
+  expect_data_frame(ped, nrows = 40L, ncols = 20L)
   expect_identical(any(is.na(ped$caloriesPercentage_Study_Day)), FALSE)
   expect_identical(colnames(ped$Study_Day), paste0("Study_Day", 1:12))
   ped <- as_ped(
@@ -52,6 +52,20 @@ test_that("Trafo works for list objects (with TDCs)", {
         cumulative(Study_Day, caloriesPercentage, tz_var = "Study_Day") +
           cumulative(proteinGproKG, tz_var = "Study_Day"),
       id  = "CombinedID")
-  expect_data_frame(ped, nrows = 2, ncols = 19)
+  expect_data_frame(ped, nrows = 2L, ncols = 19L)
+
+})
+
+
+test_that("Trafo works for left truncated data", {
+
+  mort2 <- mort %>% group_by(id) %>% slice(1) %>% filter(id %in% c(1:3))
+  mort_ped <- as_ped(Surv(tstart, exit, event) ~ ses, data = mort2)
+  expect_data_frame(mort_ped, nrows = 8L, ncols = 7L)
+  expect_identical(round(mort_ped$tstart, 2), c(0.00, 3.48, 13.46, 17.56, 3.48, 13.46, 0.00, 3.48))
+  expect_identical(round(mort_ped$tend, 2), c(3.48, 13.46, 17.56, 20.00, 13.46, 17.56, 3.48, 13.46))
+  expect_identical(round(mort_ped$offset, 2), c(1.25, 2.30, 1.41, 0.89, 2.30, 1.41, 1.25, 2.30))
+  expect_identical(mort_ped$ped_status, c(rep(0, 5), 1, 0, 0))
+  expect_identical(mort_ped$ses, factor(rep(c("upper", "lower", "upper"), times = c(4,2,2))))
 
 })

@@ -60,6 +60,31 @@ int_info.default <- function(
 
 }
 
+#' @rdname int_info
+int_info.data.frame <- function(
+  x,
+  min_time = 0L, ...) {
+
+  # check inputs
+  assert_data_frame(x, types = "numeric", any.missing = FALSE, ncols = 2)
+  # assert_numeric(min_time, lower  = 0L)
+  stopifnot(all(x[,1] < x[,2]))
+
+  # sort x and add origin if necessary
+  if (is.unsorted(x[,1])) {
+    x <- x[order(x[,1], x[,2]), ]
+  }
+
+  colnames(x)[2] <- "tend"
+  x[["intlen"]] <- x[, 2] - x[, 1]
+  x[["intmid"]] <- x[, 1] + x[, "intlen"] / 2
+  x[["interval"]] <- paste0("(", x[, 1], ",", x[, 2], "]")
+  x[["interval"]] <- factor(x[["interval"]], levels = x[["interval"]])
+
+  x[x[["tstart"]] >= min_time, ]
+
+}
+
 #' @import dplyr
 #' @rdname int_info
 #' @examples

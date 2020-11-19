@@ -1,3 +1,7 @@
+# pammtools 0.3.0
++ updates to the `split_data` function that now accepts `Surv(start, stop, event)` type inputs, e.g., to construct left-truncated data.
+
+
 # pammtools 0.2.4
 * CRAN fix. Discrepancy betwen man page and code.
 

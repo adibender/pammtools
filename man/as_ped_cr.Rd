@@ -25,7 +25,9 @@ covariates and the times at which they have been observed.}
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
 The RHS can be an extended formula, which specifies how TDCs should be transformed
-using specials \code{concurrent} and \code{cumulative}.}
+using specials \code{concurrent} and \code{cumulative}. The left hand-side can
+be in start-stop-notation. This, however, is only used to create left-truncated
+data and does not support the full functionality.}
 
 \item{cut}{Split points, used to partition the follow up into intervals.
 If unspecified, all unique event times will be used.}
@@ -51,6 +53,7 @@ This is the general data transformation function provided by the
 \code{pammtools} package. Two main applications must be distinguished:
 \enumerate{
 \item Transformation of standard time-to-event data.
+\item Transformation of left-truncated time-to-event data.
 \item Transformation of time-to-event data with time-dependent covariates (TDC).
 }
 For the latter, the type of effect one wants to estimate is also
