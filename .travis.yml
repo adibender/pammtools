@@ -22,6 +22,7 @@ jobs:
     - Rscript -e 'remotes::install_cran("rmarkdown")'
     - Rscript -e 'remotes::install_cran("pec")'
     - Rscript -e 'remotes::install_cran("devtools")'
+    - Rscript -e 'remotes::install_cran("eha")'
     - Rscript -e 'remotes::install_github("cran/etm")'
 
 # whitelist
