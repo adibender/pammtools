@@ -54,7 +54,8 @@ int_info.default <- function(
     mutate(
       intmid = tstart + intlen / 2,
       interval = paste0("(", tstart, ",", tend, "]"),
-      interval = factor(.data$interval, levels = .data$interval))
+      interval = factor(.data$interval, levels = unique(.data$interval))
+    )
 
   filter(tdf, tstart >= min_time)
 
