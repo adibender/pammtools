@@ -100,7 +100,7 @@ navbar:
     - text: Frailties (random effects)
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
-      href: articles/tdcovar.htm
+      href: articles/tdcovar.html
     - text: Left-truncated data
       href: articles/left-truncation.html
     - text: Model evaluation
