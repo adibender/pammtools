@@ -2,6 +2,9 @@ language: r
 cache: packages
 latex: false
 
+before_install:
+  - sudo apt-get -y install libharfbuzz-dev libfribidi-dev
+
 jobs:
   include:
   - r: release
