@@ -22,7 +22,7 @@ split_data <- function(
   max_time = NULL,
   ...) {
 
-  dots_in <- list(...)
+  dots_in         <- list(...)
   dots_in$formula <- formula
 
   ## assert that inputs have correct formats
@@ -47,30 +47,29 @@ split_data <- function(
   }
 
 
-  if (length(surv_vars) != 2) {
-    stop(
-      "Currently a formula of the form Surv(time, event)~., is required.\n
-      See ?Surv for more details.")
-  }
   ## standardize event time and status names
-  proposed.names <- c("ped_time", "ped_status")
-  if (any(proposed.names %in% names(data))) {
+  proposed_names <- c("ped_start", "ped_time", "ped_status")
+  ind <- ifelse(length(surv_vars) == 2, 2, 1):3
+  proposed_names <- proposed_names[ind]
+  if (any(proposed_names %in% names(data))) {
     stop(paste0("Error in attempt to rename provided time/status variables:
       Variables ",
-      intersect(proposed.names, names(data)), " allready in data set."))
+      intersect(proposed_names, names(data)), " allready in data set."))
   }
-  data    <- rename(data, !!!set_names(surv_vars, as.list(proposed.names)))
-  formula <- as.formula(
-    paste0("Surv(ped_time, ped_status)",
-      paste0(formula[-2], collapse = "")))
+  data <- rename(
+    data,
+    !!!set_names(
+      surv_vars,
+      as.list(proposed_names)))
+  formula_cut <- update_formula(formula, proposed_names)
 
   # obtain interval breaks points
-  cut <- get_cut(data, formula, cut = cut, max_time = max_time)
+  cut <- get_cut(data, formula_cut, cut = cut, max_time = max_time)
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)
   dots$data    <- data
-  dots$formula <- formula
+  dots$formula <- update_formula(formula, proposed_names)
   dots$cut     <- dots_in$cut <- cut
   rm(data)
 
@@ -98,6 +97,10 @@ split_data <- function(
 
   # create data in ped format
   split_df <- do.call(survSplit, args = dots)
+  if("ped_start" %in% colnames(split_df)) {
+    split_df <- rename(split_df, !!!set_names("ped_start", "tstart"))
+  }
+
 
   # Add variables for piece-wise exponential (additive) model
   split_df  <- split_df %>%
@@ -110,7 +113,14 @@ split_data <- function(
 
 
   ## combine data with general interval info
-  split_df <- left_join(split_df, int_info(cut), by = c("tstart" = "tstart"))
+  if(length(surv_vars) == 3) {
+    info_cut <- split_df %>%
+      select(one_of(c("tstart", "ped_time"))) %>% unique()
+  } else {
+    info_cut <- cut
+  }
+  int_info <- int_info(info_cut)
+  split_df <- left_join(split_df, int_info, by = c("tstart" = "tstart"))
 
   ## rearrange columns
   move <- c(id_var, "tstart", "tend", "interval", "intmid", "intlen", "offset",

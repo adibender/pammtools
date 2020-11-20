@@ -3,10 +3,8 @@ title: "Competing Risks"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Competing Risks}
+  %\VignetteIndexEntry{competing-risks}
   %\VignetteEngine{knitr::rmarkdown}
-bibliography: Remote.bib
-link-citations: yes
 ---
 
 ```{r, echo = FALSE}
@@ -89,8 +87,8 @@ summary(pam_csh_shared)
 ```
 
 ```{r, echo = FALSE}
-coef_csh1 <- coef(pam_csh[[1]]) %>% round(3)
-coef_csh2 <- coef(pam_csh[[2]]) %>% round(3)
+coef_csh1   <- coef(pam_csh[[1]]) %>% round(3)
+coef_csh2   <- coef(pam_csh[[2]]) %>% round(3)
 coef_shared <- coef(pam_csh_shared) %>% round(3)
 ```
 
@@ -122,15 +120,18 @@ ggplot(ndf, aes(x = tend, y = cif)) +
 ```
 
 
-Similarl to other applications of `add_*` functions, we can additionally group by other covariate values, e.g.:
+Similarl to other applications of `add_*` functions, we can additionally group by other covariate values:
 
-```{r fig.width = 12, fig.height = 5, out.width = "700px"}
+```{r}
 ndf <- ped_stacked %>%
   make_newdata(tend = unique(tend), cause = unique(cause), sex = unique(sex))
-class(ndf) <- c("ped", "data.frame")
 ndf <- ndf %>%
   group_by(cause, sex) %>%
   add_cif(pam_csh_shared)
+```
+
+The estimated CIFs can then be compared w.r.t. to `cause` for each category of `sex`:
+```{r fig.width = 12, fig.height = 5, out.width = "700px"}
 ggplot(ndf, aes(x = tend, y = cif)) +
   geom_line(aes(col = cause)) +
   geom_ribbon(
@@ -138,6 +139,8 @@ ggplot(ndf, aes(x = tend, y = cif)) +
     alpha = .3) +
   facet_wrap(~sex)
 ```
+
+or w.r.t. to `sex` for each cause:
 
 ```{r, fig.width = 12, fig.height = 5, out.width = "700px"}
 ggplot(ndf, aes(x = tend, y = cif)) +

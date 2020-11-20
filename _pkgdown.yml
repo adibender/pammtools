@@ -34,6 +34,7 @@ reference:
       - add_term
       - add_hazard
       - add_surv_prob
+      - add_cif
   - title: "Convenience functions for visualization of model outputs."
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
@@ -50,7 +51,6 @@ reference:
     desc: "Data sets contained in **`pammtools`**"
     contents:
       - tumor
-      - simdf_elra
   - title: "Utilities"
     desc: "Utility functions"
     contents:
@@ -69,6 +69,7 @@ articles:
     - tveffects
     - frailty
     - tdcovar
+    - left-truncation
     - model-evaluation
     - cumulative-effects
     - convenience
@@ -100,6 +101,8 @@ navbar:
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
       href: articles/tdcovar.html
+    - text: Left-truncated data
+      href: articles/left-truncation.html
     - text: Model evaluation
       href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations

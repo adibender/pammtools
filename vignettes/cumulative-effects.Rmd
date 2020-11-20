@@ -3,7 +3,7 @@ title: "Cumulative Effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{data-transformation}
+  %\VignetteIndexEntry{cumulative-effects}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

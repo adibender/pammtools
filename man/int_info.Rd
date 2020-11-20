@@ -3,6 +3,7 @@
 \name{int_info}
 \alias{int_info}
 \alias{int_info.default}
+\alias{int_info.data.frame}
 \alias{int_info.ped}
 \alias{int_info.pamm}
 \title{Create start/end times and interval information}
@@ -10,6 +11,8 @@
 int_info(x, ...)
 
 \method{int_info}{default}(x, min_time = 0L, ...)
+
+\method{int_info}{data.frame}(x, min_time = 0L, ...)
 
 \method{int_info}{ped}(x, ...)
 
