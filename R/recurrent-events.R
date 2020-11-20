@@ -10,7 +10,6 @@
 #' @param timescale Defines the timescale for the recurrent event data transformation.
 #' Defaults to \code{"gaptime"}.
 #' @param min_events Minimum number of events for each event number.
-#' @param
 #' @examples
 #' \dontrun{
 #' data("cgd", package = "frailtyHL")
