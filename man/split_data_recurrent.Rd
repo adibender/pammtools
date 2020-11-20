@@ -61,9 +61,9 @@ cgd2 <- filter(cgd2, id \%in\% c(1:5))
 # gaptime scale
 ped_gt <- split_data_recurrent(
  formula = Surv(tstart, tstop, status) ~ age + enum,
- data = cgd3,
+ data = cgd2,
  episode_var = "enum")
-ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd3,
+ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd2,
    episode_var = "enum", timescale = "calendar")
 }
 }
