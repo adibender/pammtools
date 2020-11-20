@@ -8,7 +8,6 @@
 \alias{is.ped}
 \alias{as_ped.ped}
 \alias{as_ped.pamm}
-\alias{as_ped_recurrent}
 \title{Transform data to Piece-wise Exponential Data (PED)}
 \usage{
 as_ped(data, ...)
@@ -32,19 +31,6 @@ is.ped(x)
 \method{as_ped}{ped}(data, newdata, ...)
 
 \method{as_ped}{pamm}(data, newdata, ...)
-
-as_ped_recurrent(
-  data,
-  formula,
-  cut = NULL,
-  max_time = NULL,
-  tdc_specials = c("concurrent", "cumulative"),
-  censor_code = 0L,
-  episode_var = character(),
-  timescale = c("gap", "calendar"),
-  min_events = 1L,
-  ...
-)
 }
 \arguments{
 \item{data}{Either an object inheriting from data frame or in case of
@@ -59,7 +45,9 @@ eventually to \code{\link[survival]{survSplit}}}
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
 The RHS can be an extended formula, which specifies how TDCs should be transformed
-using specials \code{concurrent} and \code{cumulative}.}
+using specials \code{concurrent} and \code{cumulative}. The left hand-side can
+be in start-stop-notation. This, however, is only used to create left-truncated
+data and does not support the full functionality.}
 
 \item{cut}{Split points, used to partition the follow up into intervals.
 If unspecified, all unique event times will be used.}
@@ -87,6 +75,7 @@ This is the general data transformation function provided by the
 \code{pammtools} package. Two main applications must be distinguished:
 \enumerate{
 \item Transformation of standard time-to-event data.
+\item Transformation of left-truncated time-to-event data.
 \item Transformation of time-to-event data with time-dependent covariates (TDC).
 }
 For the latter, the type of effect one wants to estimate is also
@@ -101,13 +90,4 @@ vignette for details.
 tumor[1:3, ]
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex)
-\dontrun{
-data("cgd", package = "frailtyHL")
-cgd <- cgd \%>\%
- select(id, tstart, tstop, enum, status, age)
-ped_re <- split_data(
-  formula = Surv(tstart, tstop, status) ~ age + enum,
-  data = cgd2)
 }
-}
-\keyword{internal}

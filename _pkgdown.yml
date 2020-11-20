@@ -69,6 +69,7 @@ articles:
     - tveffects
     - frailty
     - tdcovar
+    - left-truncation
     - model-evaluation
     - cumulative-effects
     - convenience
@@ -100,6 +101,8 @@ navbar:
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
       href: articles/tdcovar.html
+    - text: Left-truncated data
+      href: articles/left-truncation.html
     - text: Model evaluation
       href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations

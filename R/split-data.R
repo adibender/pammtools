@@ -12,16 +12,6 @@
 #'    cut=c(0, 100, 400), id="id")
 #' head(ped)
 #' class(ped) # class ped (piece-wise exponential data)
-#' \dontrun{
-#'  data("cgd", package = "frailtyHL")
-#' cgd2 <- cgd %>%
-#'  filter(id %in% c(1:5)) %>%
-#'  select(id, tstart, tstop, enum, status, age)
-#' cgd2 <- filter(cgd2, enum == 2)
-#' ped_re <- split_data(
-#'   formula = Surv(tstart, tstop, status) ~ age + enum,
-#'   data = cgd2)
-#' }
 #' @seealso \code{\link[survival]{survSplit}}
 #' @export
 #' @keywords internal
