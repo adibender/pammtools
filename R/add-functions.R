@@ -626,3 +626,124 @@ get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
   newdata
 
 }
+
+
+## Cumulative Incidence Function (CIF) for competing risks data
+
+
+#' Add cumulative incidence function to data
+#'
+#' @inheritParams add_hazard
+#' @param alpha The alpha level for confidence/credible intervals.
+#' @param n_sim Number of simulations (draws from posterior of estimated coefficients)
+#' on which estimation of CIFs and their confidence/credible intervals will be
+#' based on.
+#' @param cause_var Character. Column name of the 'cause' variable.
+#'
+#' @export
+add_cif <- function(
+  newdata,
+  object,
+  ...) {
+
+  UseMethod("add_cif", object)
+
+}
+
+
+#' @rdname add_cif
+#' @export
+add_cif.default <- function(
+  newdata,
+  object,
+  ci        = TRUE,
+  overwrite = FALSE,
+  alpha     = 0.05,
+  n_sim     = 500L,
+  cause_var = "cause",
+  time_var = NULL,
+  ...) {
+
+  coefs        <- coef(object)
+  V            <- object$Vp
+  sim_coef_mat <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
+
+  map_dfr(
+    split(newdata, group_indices(newdata)),
+    ~get_cif(
+      newdata = .x, object = object, ci = ci, alpha = alpha, n_sim = n_sim,
+      cause_var = cause_var, coefs = coefs, V = V, sim_coef_mat = sim_coef_mat,
+      time_var = time_var, ...)
+  )
+
+}
+
+#' Calculate CIF for one cause
+#'
+#' @keywords internal
+get_cif <- function(newdata, object, ...) {
+
+  UseMethod("get_cif", object)
+
+}
+
+#' @rdname get_cif
+#' @keywords internal
+get_cif.default <- function(
+  newdata,
+  object,
+  ci,
+  time_var,
+  alpha,
+  n_sim,
+  cause_var,
+  coefs,
+  V,
+  sim_coef_mat,
+  ...) {
+
+  is_gam <- inherits(object, "gam")
+  if (is.null(time_var)) {
+    time_var <- ifelse(is_gam, "tend", "interval")
+  } else {
+    assert_string(time_var)
+    assert_choice(time_var, colnames(newdata))
+  }
+
+
+  causes_model <- as.factor(object$attr_ped$risks)
+  cause_data   <- unique(newdata[[cause_var]])
+
+  if(length(cause_data) > 1) {
+    stop("Did you forget to group by cause?")
+  }
+
+  hazards <- map(
+    causes_model,
+    ~ {
+        .df <- mutate(newdata, cause = .x) %>%
+          arrange(.data[[time_var]], .by_group = TRUE)
+        X <- predict(object, .df, type = "lpmatrix")
+        apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+      }
+    )
+  overall_survivals <- apply(
+    Reduce("+", hazards),
+    2,
+    function(z) exp(-cumsum(z * newdata[["intlen"]])))
+  names(hazards) <- causes_model
+  # calculate cif
+  hazard           <- hazards[[cause_data]]
+  # Value of survival just prior to time-point
+  survival         <- overall_survivals - 1e-20
+  hps              <- hazard * survival
+  cifs             <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
+  newdata[["cif"]] <- rowMeans(cifs)
+ if(ci) {
+    newdata[["cif_lower"]] <- apply(cifs, 1, quantile, alpha/2)
+    newdata[["cif_upper"]] <- apply(cifs, 1, quantile, 1-alpha/2)
+  }
+
+  newdata
+
+}

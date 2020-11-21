@@ -268,7 +268,7 @@ as_ped_cr <- function(
     attr(ped, "breaks") <- if (length(cut) ==1) unlist(cut) else cut
   } else {
     class(ped) <- c("ped_cr_list", "ped_cr", "ped", class(ped))
-    names(ped) <- event_types
+    names(ped) <- paste0("cause = ", event_types)
     attributes(ped)$trafo_args$id <- attributes(ped[[1]])$trafo_args$id
     attributes(ped)$trafo_args$formula <- formula
   }

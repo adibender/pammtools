@@ -55,6 +55,10 @@ tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 #' @rdname tidy_fixed
 #' @importFrom tibble as_tibble
 #' @keywords internal
+#' @examples
+#' library(survival)
+#' gc <- coxph(Surv(days, status)~age + sex, data = tumor)
+#' tidy_fixed(gc)
 #' @export
 tidy_fixed.coxph <- function(x, ...) {
 

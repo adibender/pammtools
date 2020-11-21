@@ -1,5 +1,6 @@
 ---
 title: "Competing Risks"
+author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -24,8 +25,8 @@ theme_set(theme_bw())
 In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a seperate model.
 However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equaly to the hazard of multiple event types).
 
-For illustration we use the `fourD` data set from the **`etm`** package for illustration. The data set contains time-constant covariates like `age` and `sex` as
-well as time to event `time` and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
+For illustration we use the `fourD` data set from the **`etm`** package. The data set contains time-constant covariates like `age` and `sex` as
+well as time-to-event (`time`) and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
 
 ```{r}
 library(survival)
@@ -41,11 +42,12 @@ The data transformation required to fit PAMMs to competing risks data is similar
 - use the same or different interval split points for the different event types?
 - return the data as a list (one element for each event type) or a stacked data set (with an additional column (covariate), indicating the event type)
 
-For cause specific hazards without shared effects the combination of event specific interval split points and list output is usually sufficient. For models with shared we need to stack the individual data sets and use split points common for all event types.
+For cause specific hazards without shared effects the combination of cause specific interval split points and list output is usually sufficient. For models with shared effects we need to stack the individual data sets and use split points common for all event types.
 
 
 ## Cause specific hazards model without shared effects
 Below we transform the data set for the case without shared effects. By specifying `cobmine = FALSE`, the individual data sets are not stacked but rather returned in a list.
+
 ```{r}
 cut <- sample(fourD$time, 100)
 ped <- fourD %>%
@@ -98,7 +100,7 @@ The results indicate that cause specific terms (interactions) are necessary in t
 - cause2:  `r coef_csh2["age"]` (`pamm_csh2`) vs. `r coef_shared["age"]` + `r coef_shared["age:cause2"]`= `r sum(coef_shared[c("age", "age:cause2")])` (`pamm_csh_shared`)
 
 
-## Cumulative Incidence Function
+## Cumulative Incidence Function (CIF)
 Finally, in many cases we will want to calculate and visualize the cumulative incidence functions for different covariate combinations.
 In **`pammtools`** this can be again achieved using `make_newdata` and using the appropriate `add_*` function, here `add_cif`:
 
@@ -137,7 +139,7 @@ ggplot(ndf, aes(x = tend, y = cif)) +
   geom_ribbon(
     aes(ymin = cif_lower, ymax = cif_upper, fill = cause),
     alpha = .3) +
-  facet_wrap(~sex)
+  facet_wrap(~sex, labeller = label_both)
 ```
 
 or w.r.t. to `sex` for each cause:
@@ -148,5 +150,5 @@ ggplot(ndf, aes(x = tend, y = cif)) +
   geom_ribbon(
     aes(ymin = cif_lower, ymax = cif_upper, fill = sex),
     alpha = .3) +
-  facet_wrap(~cause)
+  facet_wrap(~cause, labeller = label_both)
 ```
