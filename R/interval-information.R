@@ -61,7 +61,9 @@ int_info.default <- function(
 
 }
 
+
 #' @rdname int_info
+#' @export
 int_info.data.frame <- function(
   x,
   min_time = 0L, ...) {
@@ -76,7 +78,7 @@ int_info.data.frame <- function(
     x <- x[order(x[,1], x[,2]), ]
   }
 
-  colnames(x)[2] <- "tend"
+  colnames(x) <- c("tstart", "tend")
   x[["intlen"]] <- x[, 2] - x[, 1]
   x[["intmid"]] <- x[, 1] + x[, "intlen"] / 2
   x[["interval"]] <- paste0("(", x[, 1], ",", x[, 2], "]")
@@ -160,7 +162,6 @@ get_intervals.default <- function(
   int_df %>%
     slice(int) %>%
     mutate(times = times) %>%
-    # arrange(times) %>%
     select(times, everything())
 
 }
@@ -200,15 +201,4 @@ ped_info.ped <- function(ped) {
       grouped_df(vars = group_vars(sdf))
   }
 
-}
-
-#' @rdname ped_info
-#' @export
-ped_info.ped_cr_list <- function(ped) {
-  res <- vector(mode = "list", length = length(ped))
-  names(res) <- names(ped)
-  for (i in 1:length(ped)) {
-    res[[i]] <- ped_info(ped[[i]])
-  }
-  res
 }

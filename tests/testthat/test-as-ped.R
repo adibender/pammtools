@@ -35,6 +35,11 @@ test_that("Trafo works for list objects (with TDCs)", {
   expect_data_frame(ped, nrows = 40, ncols = 15)
   tdc_df    <- filter(daily, CombinedID  %in% c(1110, 1116))
   ## check nesting
+  expect_error(as_ped(
+    data    = list(event_df, tdc_df),
+    formula = Surv(survhosp, PatientDied) ~ .,
+    cut     = 0:30,
+    id  = "CombinedID"))
   ped <- as_ped(
     data    = list(event_df, tdc_df),
     formula = Surv(survhosp, PatientDied) ~ . +
