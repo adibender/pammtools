@@ -71,8 +71,9 @@ tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex)
 \dontrun{
 data("cgd", package = "frailtyHL")
 cgd <- cgd \%>\%
- select(id, tstart, tstop, enum, status, age)
-ped_re <- split_data(
+ select(id, tstart, tstop, enum, status, age) \%>\%
+ filter(enum \%in\% c(1:2))
+ped_re <- as_ped_recurrent(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2)
 }
