@@ -39,3 +39,37 @@ get_cut.default <- function(
   sort(cut)
 
 }
+
+
+get_cut.list <- function (
+  data,
+  formula,
+  cut       = NULL,
+  max_time  = NULL,
+  event     = 1L,
+  timescale = "gap",
+  ...) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  rhs_vars <- get_rhs_vars(formula)
+  if (length(lhs_vars) == 3) {
+    formula_cuts <- as.formula(
+      paste0("Surv(", lhs_vars[2], ",", lhs_vars[3], ") ~ ",
+        paste(rhs_vars, collapse = "+")))
+  } else {
+    formula_cuts <- formula
+  }
+  cuts <- map(
+    .x = data,
+    .f = ~get_cut.default(
+      data     = .x,
+      formula  = formula_cuts,
+      cut      = cut,
+      max_time = max_time,
+      event    = event,
+      ...)
+  )
+
+  cuts <- Reduce(union, cuts)
+
+}

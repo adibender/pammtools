@@ -222,7 +222,7 @@ split_data_recurrent <- function(
   # only keep spells with minimum number of events
   data_list <- data_list[map_dbl(data_list, nrow) > min_events]
   cuts <- get_cut(data_list, formula, cut = cut, max_time = max_time,
-    event = event, min_events = min_events)
+    event = event, timescale = timescale)
 
   ## create argument list to be passed to survSplit
   dots <- list(...)

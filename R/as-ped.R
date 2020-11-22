@@ -306,12 +306,13 @@ get_event_types <- function(data, formula, censor_code) {
 #' @examples
 #' \dontrun{
 #' data("cgd", package = "frailtyHL")
-#' cgd <- cgd %>%
+#' cgd2 <- cgd %>%
 #'  select(id, tstart, tstop, enum, status, age) %>%
 #'  filter(enum %in% c(1:2))
 #' ped_re <- as_ped_recurrent(
 #'   formula = Surv(tstart, tstop, status) ~ age + enum,
-#'   data = cgd2)
+#'   data = cgd2,
+#'  episode_var = "enum")
 #' }
 #' @rdname as_ped
 #' @export
