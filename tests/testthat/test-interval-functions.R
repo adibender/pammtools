@@ -9,6 +9,8 @@ ped <- filter(ped, id %in% c(1:3, 135:137))
 
 test_that("Interval infos correct", {
 	expect_data_frame(int_info(1:2), nrows=2L, ncols=5L)
+	expect_data_frame(int_info(2:1), nrows=2L, ncols=5L)
+	expect_data_frame(int_info(data.frame(x1 = c(1,0), x2=c(2, 1))), nrows = 2L, ncols = 5L)
 	expect_equal(names(int_info(1:2)), c("tstart", "tend", "intlen", "intmid", "interval"))
 	expect_equal(levels(int_info(1:2)$interval), c("(0,1]", "(1,2]"))
 })

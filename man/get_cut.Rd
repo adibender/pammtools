@@ -3,33 +3,14 @@
 \name{get_cut}
 \alias{get_cut}
 \alias{get_cut.default}
-\alias{get_cut.list}
 \title{Obtain interval break points}
 \usage{
 get_cut(data, formula, cut = NULL, ...)
 
 \method{get_cut}{default}(data, formula, cut = NULL, max_time = NULL, event = 1L, ...)
-
-\method{get_cut}{list}(
-  data,
-  formula,
-  cut = NULL,
-  max_time = NULL,
-  event = 1L,
-  time_scale = "gap",
-  ...
-)
 }
 \description{
 Default method words for data frames.
 The list method applies the default method to each data set within the list.
-}
-\examples{
-\dontrun{
-data("cgd", library = "frailtyHL")
-cuts <- get_cut(
- data = split(cgd, f = cgd$enum),
- formula = Surv(tstop, status)~treat + sex + age))
-}
 }
 \keyword{internal}
