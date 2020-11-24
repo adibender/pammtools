@@ -218,9 +218,9 @@ split_data_recurrent <- function(
   }
   # split data for each spell
   data_list <- split(data, data[[episode_var]])
-  rm(data)
+  # rm(data)
   # only keep spells with minimum number of events
-  data_list <- data_list[map_dbl(data_list, nrow) > min_events]
+  data_list <- data_list[map_dbl(data_list, ~sum(.x[[surv_vars[3]]])) >= min_events]
   cuts <- get_cut(data_list, formula, cut = cut, max_time = max_time,
     event = event, timescale = timescale)
 
@@ -247,15 +247,16 @@ split_data_recurrent <- function(
     }
   )
 
-  split_df <- bind_rows(split_df_list)
+  split_df <- bind_rows(split_df_list) %>%
+    arrange(.data[[episode_var]], .data[[dots$id]], .data[["tstart"]])
 
   ## set class and and attributes
-  # class(split_df) <- c("ped", class(split_df))
-  # attr(split_df, "breaks") <- cut
-  # attr(split_df, "id_var") <- dots_in$id <- id_var
-  # attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
-  #   "ped_status")
-  # attr(split_df, "trafo_args") <- dots_in
+  class(split_df) <- c("ped", class(split_df))
+  attr(split_df, "breaks") <- cut
+  attr(split_df, "id_var") <- dots_in$id <- id_var
+  attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
+    "ped_status")
+  attr(split_df, "trafo_args") <- dots_in
 
   split_df
 
