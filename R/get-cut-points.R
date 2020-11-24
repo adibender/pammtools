@@ -26,8 +26,8 @@ get_cut.default <- function(
       cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
     } else {
       cut_start <- unique(data[[outcome_vars[1]]])
-      cut_end <- unique(data[[outcome_vars[2]]])
-      cut <- union(cut_start, cut_end)
+      cut_end   <- unique(data[[outcome_vars[2]]])
+      cut       <- union(cut_start, cut_end)
     }
     if (!is.null(max_time)) {
       cut <- cut[cut < max_time]
@@ -51,8 +51,8 @@ get_cut.list <- function (
   ...) {
 
   lhs_vars <- get_lhs_vars(formula)
-  rhs_vars <- get_rhs_vars(formula)
-  if (length(lhs_vars) == 3) {
+  if (length(lhs_vars) == 3 & timescale == "gap") {
+    rhs_vars <- get_rhs_vars(formula)
     formula_cuts <- as.formula(
       paste0("Surv(", lhs_vars[2], ",", lhs_vars[3], ") ~ ",
         paste(rhs_vars, collapse = "+")))

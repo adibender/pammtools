@@ -247,8 +247,25 @@ split_data_recurrent <- function(
     }
   )
 
-  split_df <- bind_rows(split_df_list) %>%
+  split_df <- bind_rows(split_df_list)
+  split_df <- split_df %>%
     arrange(.data[[episode_var]], .data[[dots$id]], .data[["tstart"]])
+
+  # remove all obs beyond last observed event time
+  if (is.null(max_time)) {
+    max_time <- max(split_df[["tend"]][split_df[["ped_status"]] == 1])
+    split_df <- split_df %>% filter(.data[["tend"]] <= max_time)
+  }
+
+  if (timescale == "calendar") {
+    split_check <- split_df %>%
+      group_by(.data[[dots$id]]) %>%
+      summarize(dups = sum(duplicated(.data[["tstart"]])))
+
+    if (any(split_check[["dups"]]) != 0) {
+      stop("Something went wrong during data transformation. \n Please post an issue at 'https://github.com/adibender/pammtools/issues' with your code and data")
+    }
+  }
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
