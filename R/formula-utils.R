@@ -105,3 +105,16 @@ update_formula <- function(formula, proposed_names) {
   as.formula(paste0(lhs_form, "~", as.character(rhs_form))[2])
 
 }
+
+add_to_rhs <- function(formula, rhs_additions = NULL) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  rhs_vars <- c(get_rhs_vars(formula), rhs_additions)
+  as.formula(
+    paste0(
+      "Surv(", paste0(lhs_vars, collapse=","), ") ~ ",
+      paste0(rhs_vars, collapse = "+")
+    )
+  )
+
+}

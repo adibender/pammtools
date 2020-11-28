@@ -76,7 +76,7 @@ cgd2 <- cgd \%>\%
 ped_re <- as_ped_recurrent(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2,
- episode_var = "enum")
+ transition = "enum")
 }
 }
 \keyword{internal}

@@ -7,7 +7,7 @@
 split_data_recurrent(
   formula,
   data,
-  episode_var = character(),
+  transition = character(),
   cut = NULL,
   max_time = NULL,
   event = 1L,
@@ -30,7 +30,7 @@ contains the time-to-event information and static covariates while the second
 (and potentially further data frames) contain information on time-dependent
 covariates and the times at which they have been observed.}
 
-\item{episode_var}{A character indicating the column in data that indicates the
+\item{transition}{A character indicating the column in data that indicates the
 event/episode number for recurrent events.}
 
 \item{cut}{Split points, used to partition the follow up into intervals.
@@ -64,9 +64,9 @@ cgd2 <- filter(cgd2, id \%in\% c(1:5))
 ped_gt <- split_data_recurrent(
  formula = Surv(tstart, tstop, status) ~ age + enum,
  data = cgd2,
- episode_var = "enum", max_time = 388)
+ transition = "enum", max_time = 388)
 ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd2,
-   episode_var = "enum", timescale = "calendar", max_time = 388)
+   transition = "enum", timescale = "calendar", max_time = 388)
 }
 }
 \seealso{

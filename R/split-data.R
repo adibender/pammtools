@@ -148,7 +148,7 @@ split_data <- function(
 #' contain a colum that indicates the spell (event number).
 #' @inherit split_data
 #' @inheritParams get_cut
-#' @param episode_var A character indicating the column in data that indicates the
+#' @param transition A character indicating the column in data that indicates the
 #' event/episode number for recurrent events.
 #' @param event The value that encodes the occurrence of an event in the data set.
 #' @param timescale Defines the timescale for the recurrent event data transformation.
@@ -164,15 +164,15 @@ split_data <- function(
 #' ped_gt <- split_data_recurrent(
 #'  formula = Surv(tstart, tstop, status) ~ age + enum,
 #'  data = cgd2,
-#'  episode_var = "enum", max_time = 388)
+#'  transition = "enum", max_time = 388)
 #' ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd2,
-#'    episode_var = "enum", timescale = "calendar", max_time = 388)
+#'    transition = "enum", timescale = "calendar", max_time = 388)
 #' }
 #' @export
 split_data_recurrent <- function(
   formula,
   data,
-  episode_var    = character(),
+  transition    = character(),
   cut        = NULL,
   max_time   = NULL,
   event      = 1L,
@@ -180,7 +180,7 @@ split_data_recurrent <- function(
   timescale = c("gap", "calendar"),
   ...) {
 
-  assert_character(episode_var, min.chars = 1L, min.len = 1L, any.missing = FALSE,
+  assert_character(transition, min.chars = 1L, min.len = 1L, any.missing = FALSE,
     len = 1L)
   assert_integer(min_events, lower = 1L, len = 1L)
   assert_character(timescale)
@@ -217,7 +217,7 @@ split_data_recurrent <- function(
     formula <- update_formula(formula, proposed_names = c(".time", surv_vars[3]))
   }
   # split data for each spell
-  data_list <- split(data, data[[episode_var]])
+  data_list <- split(data, data[[transition]])
   # rm(data)
   # only keep spells with minimum number of events
   data_list <- data_list[map_dbl(data_list, ~sum(.x[[surv_vars[3]]])) >= min_events]
@@ -249,7 +249,7 @@ split_data_recurrent <- function(
 
   split_df <- bind_rows(split_df_list)
   split_df <- split_df %>%
-    arrange(.data[[episode_var]], .data[[dots$id]], .data[["tstart"]])
+    arrange(.data[[transition]], .data[[dots$id]], .data[["tstart"]])
 
   # remove all obs beyond last observed event time
   if (is.null(max_time)) {

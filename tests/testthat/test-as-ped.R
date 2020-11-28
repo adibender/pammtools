@@ -79,19 +79,19 @@ test_that("Trafo works for left truncated data", {
 test_that("Trafo works for recurrent events data", {
 
   test_df <- data.frame(
-    id = c(1,1, 2,2,2),
+    id     = c(1,1, 2,2,2),
     tstart = c(0, .5, 0, .8, 1.2),
-    tstop = c(.5, 3, .8, 1.2, 3),
+    tstop  = c(.5, 3, .8, 1.2, 3),
     status = c(1, 0, 1, 1, 0),
-    enum = c(1, 2, 1, 2, 3),
-    age = c(50, 50, 24, 24, 24))
+    enum   = c(1, 2, 1, 2, 3),
+    age    = c(50, 50, 24, 24, 24))
   # GAP timescale
-  gap_df <- split_data_recurrent(
-    data = test_df,
-    formula = Surv(tstart, tstop, status)~ enum + age,
-    id = "id",
-    episode_var = "enum",
-    timescale = "gap")
+  gap_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ enum + age,
+    transition = "enum",
+    id         = "id",
+    timescale  = "gap")
 
   expect_data_frame(gap_df, nrows = 9L, ncols = 8L)
   expect_identical(
@@ -110,12 +110,12 @@ test_that("Trafo works for recurrent events data", {
   )
 
   ## CALENDAR timescale
-  cal_df <- split_data_recurrent(
-    data        = test_df,
-    formula     = Surv(tstart, tstop, status)~ enum + age,
-    id          = "id",
-    episode_var = "enum",
-    timescale   = "calendar")
+  cal_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ age,
+    id         = "id",
+    transition = "enum",
+    timescale  = "calendar")
 
   expect_data_frame(cal_df, nrows = 6L, ncols = 8L)
   expect_identical(

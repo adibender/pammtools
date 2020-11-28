@@ -20,6 +20,9 @@ as_ped(data, ...)
   max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
   censor_code = 0L,
+  transition = character(),
+  timescale = c("gap", "calendar"),
+  min_events = 1L,
   ...
 )
 
@@ -40,7 +43,7 @@ as_ped_recurrent(
   max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
   censor_code = 0L,
-  episode_var = character(),
+  transition = character(),
   timescale = c("gap", "calendar"),
   min_events = 1L,
   ...
@@ -112,7 +115,7 @@ cgd2 <- cgd \%>\%
 ped_re <- as_ped_recurrent(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2,
- episode_var = "enum")
+ transition = "enum")
 }
 }
 \keyword{internal}
