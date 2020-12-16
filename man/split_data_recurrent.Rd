@@ -55,20 +55,14 @@ Currently, the input data must be in start-stop notation for each spell and
 contain a colum that indicates the spell (event number).
 }
 \examples{
-\dontrun{
-data("cgd", package = "frailtyHL")
-cgd2 <- filter(cgd, enum \%in\% c(1:2)) \%>\%
- select(id, age, tstart, tstop, status, enum)
-cgd2 <- filter(cgd2, id \%in\% c(1:5))
-# gaptime scale
-ped_gt <- split_data_recurrent(
- formula = Surv(tstart, tstop, status) ~ age + enum,
- data = cgd2,
- transition = "enum", max_time = 388)
-ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd2,
-   transition = "enum", timescale = "calendar", max_time = 388)
-}
+data("veteran", package="survival")
+head(veteran)
+ped <- split_data(Surv(time, status)~trt + age, data=veteran,
+   cut=c(0, 100, 400), id="id")
+head(ped)
+class(ped) # class ped (piece-wise exponential data)
 }
 \seealso{
 \code{\link[survival]{survSplit}}
 }
+\keyword{internal}

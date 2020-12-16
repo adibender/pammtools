@@ -155,20 +155,7 @@ split_data <- function(
 #' Defaults to \code{"gaptime"}.
 #' @param min_events Minimum number of events for each event number.
 #' @examples
-#' \dontrun{
-#' data("cgd", package = "frailtyHL")
-#' cgd2 <- filter(cgd, enum %in% c(1:2)) %>%
-#'  select(id, age, tstart, tstop, status, enum)
-#' cgd2 <- filter(cgd2, id %in% c(1:5))
-#' # gaptime scale
-#' ped_gt <- split_data_recurrent(
-#'  formula = Surv(tstart, tstop, status) ~ age + enum,
-#'  data = cgd2,
-#'  transition = "enum", max_time = 388)
-#' ped_ct <- split_data_recurrent(Surv(tstart, tstop, status)~enum + age, data = cgd2,
-#'    transition = "enum", timescale = "calendar", max_time = 388)
-#' }
-#' @export
+#' @keywords internal
 split_data_recurrent <- function(
   formula,
   data,
