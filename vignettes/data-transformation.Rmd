@@ -150,7 +150,7 @@ infants_ped <- as_ped(Surv(enter, exit, event) ~ mother + age, data = infants)
 infants_ped %>% filter(id == 4)
 ```
 
-For analysis of such thata refer to the [Left-truncation vignette](left-truncation.html)
+For analysis of such data refer to the [Left-truncation vignette](left-truncation.html)
 
 ## Data with time-dependent covariates
 In case of data with time-dependent covariates (that should not be

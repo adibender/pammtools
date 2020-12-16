@@ -60,7 +60,7 @@ The header shows that
 we have information on entry (`enter`) and exit (`exit`) times into the riskset.
 Survival is indicated by the `event` variable. The variable of interest is `mother`, i.e., whether mother was alive or dead. For each child who's mother died, 2 children of the same age and same values for the other covariates were included into the study who's mother was still alive at inclusion age. The maximum follow up was 365 days.
 
-As a proof of concept we show that we can recreate the effects found by the Cox model for left truncatd data as implemented in `eha::coxreg`:
+As a proof of concept we show that we can recreate the effects found by the Cox model for left truncated data as implemented in `eha::coxreg`:
 
 ```{r}
 # fit cox model for left-truncated data

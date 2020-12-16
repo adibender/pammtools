@@ -23,7 +23,7 @@ theme_set(theme_bw())
 ```
 
 In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a seperate model.
-However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equaly to the hazard of multiple event types).
+However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equally to the hazard of multiple event types).
 
 For illustration we use the `fourD` data set from the **`etm`** package. The data set contains time-constant covariates like `age` and `sex` as
 well as time-to-event (`time`) and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
@@ -60,7 +60,7 @@ head(ped[[1]])
 head(ped[[2]])
 ```
 To fit the model, we could loop through the list entries and fit the model of interest, however, there is also a convenience function, that recognizes the
-data type and fits the models accordngly:
+data type and fits the models accordingly:
 
 ```{r}
 library(mgcv)

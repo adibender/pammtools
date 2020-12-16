@@ -25,12 +25,12 @@ theme_set(theme_bw())
 
 In this article we illustrate how to fit recurrent events data using pammtools.
 In general, recurrent events can be mostly treated as standard PAMMs, however,
-the dependencies between observations of the same subject have to be accounted for and potentially the dependencies of the hazards on the past, e.g., number of (previous) events, time since last event, time since begining of follow up, etc.
+the dependencies between observations of the same subject have to be accounted for and potentially the dependencies of the hazards on the past, e.g., number of (previous) events, time since last event, time since beginnng of follow up, etc.
 
-For the data transformation, there are two possibities, depending on the time-scale that is chosen for analysis
+For the data transformation, there are two possibilities, depending on the time-scale that is chosen for analysis
 
-  - gap-time scale (also "clock-reset"): Each occurence of an event resets the clock, such that the follow up of a subjects is reset to 0
-  - calendar-time scale (also "clock-forward"): The follow up is defined as usual. If an event occurs for a subject, the status variable is set to 1 in the respecitve interval.
+  - gap-time scale (also "clock-reset"): Each occurrence of an event resets the clock, such that the follow up of a subjects is reset to 0
+  - calendar-time scale (also "clock-forward"): The follow up is defined as usual. If an event occurs for a subject, the status variable is set to 1 in the respective interval.
 
 The hazard is given by
 
