@@ -13,7 +13,7 @@ as well as plotting.
 \details{
 The best way to get an overview of the functionality provided and how to
 fit PAMMs is to view the vignettes
-available at \url{https://adibender.github.io/pammtools/articles}.
+available at \url{https://adibender.github.io/pammtools/articles/}.
 A summary of the vignettes' content is given below:
 
 \itemize{
@@ -54,5 +54,5 @@ Biostatistics 20 (2): 315–31. https://doi.org/10.1093/biostatistics/kxy003.
 
 Bender, Andreas, and Fabian Scheipl. 2018.
 “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-ArXiv:1806.01042 \link{Stat}, June. http://arxiv.org/abs/1806.01042.
+ArXiv:1806.01042 \link{Stat}, June. https://arxiv.org/abs/1806.01042.
 }
