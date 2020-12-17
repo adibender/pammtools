@@ -82,7 +82,7 @@ children with diseased mother's are about `r round(exp(coef(pam)[2]), 2)` times 
 
 ```{r, fig.width = 4, fig.height = 4, out.width = "300px"}
 ## compare (baseline) cumulative hazard probabilities
-base <- basehaz(fit)
+base <- survival::basehaz(fit)
 ndf <- make_newdata(infants_ped, tend = unique(tend), mother = c("alive")) %>%
   add_cumu_hazard(pam)
 ggplot(ndf, aes(x = tend, y = cumu_hazard)) +
