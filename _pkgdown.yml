@@ -109,6 +109,8 @@ navbar:
       href: articles/cumulative-effects.html
     - text: Competing Risks
       href: articles/competing-risks.html
+    - text: Recurrent Events
+      href: articles/recurrent-events.html
     - text: 'Paper: A generalized additive model approach to time-to-event analysis'
       href: articles/smj-tutorial.html
   - text: News
