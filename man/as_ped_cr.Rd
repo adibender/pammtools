@@ -68,5 +68,15 @@ vignette for details.
 tumor[1:3, ]
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
 tumor[1:3, ] \%>\% as_ped(Surv(days, status)~ age + sex)
+\dontrun{
+data("cgd", package = "frailtyHL")
+cgd2 <- cgd \%>\%
+ select(id, tstart, tstop, enum, status, age) \%>\%
+ filter(enum \%in\% c(1:2))
+ped_re <- as_ped_recurrent(
+  formula = Surv(tstart, tstop, status) ~ age + enum,
+  data = cgd2,
+ transition = "enum")
+}
 }
 \keyword{internal}

@@ -58,11 +58,21 @@ as_ped.data.frame <- function(
   cut          = NULL,
   max_time     = NULL,
   tdc_specials = c("concurrent", "cumulative"),
-  censor_code = 0L,
+  censor_code  = 0L,
+  transition   = character(),
+  timescale    = c("gap", "calendar"),
+  min_events   = 1L,
   ...) {
 
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
+
+  if (test_character(transition, min.chars = 1L, min.len = 1L)) {
+    ped <- as_ped_recurrent(data = data, formula = formula, cut = cut,
+      max_time = max_time, tdc_specials = tdc_specials, censor_code = censor_code,
+      transition = transition, timescale = timescale, min_events = min_events, ... )
+    return(ped)
+  }
 
   event_types <- get_event_types(data, formula, censor_code)
   if (length(event_types) > 1) {
@@ -296,5 +306,65 @@ get_event_types <- function(data, formula, censor_code) {
   lhs_vars <- get_lhs_vars(formula)
   status_values <- unique(data[[lhs_vars[length(lhs_vars)]]]) %>% sort()
   status_values[status_values != censor_code]
+
+}
+
+
+
+#' Recurrent events trafo
+#'
+#' @examples
+#' \dontrun{
+#' data("cgd", package = "frailtyHL")
+#' cgd2 <- cgd %>%
+#'  select(id, tstart, tstop, enum, status, age) %>%
+#'  filter(enum %in% c(1:2))
+#' ped_re <- as_ped_recurrent(
+#'   formula = Surv(tstart, tstop, status) ~ age + enum,
+#'   data = cgd2,
+#'  transition = "enum")
+#' }
+#' @rdname as_ped
+#' @export
+#' @keywords internal
+as_ped_recurrent <- function(
+  data,
+  formula,
+  cut          = NULL,
+  max_time     = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code  = 0L,
+  transition  = character(),
+  timescale    = c("gap", "calendar"),
+  min_events   = 1L,
+  ...
+) {
+
+  assert_character(transition, min.chars = 1L, min.len = 1L, any.missing = FALSE,
+    len = 1L)
+  assert_integer(min_events, lower = 1L, len = 1L)
+
+  status_error(data, formula)
+  assert_subset(tdc_specials, c("concurrent", "cumulative"))
+
+  rhs_vars <- get_rhs_vars(formula)
+  if (!(transition %in% rhs_vars)) {
+    formula <- add_to_rhs(formula, transition)
+  }
+
+  dots            <- list(...)
+  dots$data       <- data
+  dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+  dots$cut        <- cut
+  dots$max_time   <- max_time
+  dots$transition <- transition
+  dots$min_events <- min_events
+  dots$timescale  <- timescale
+
+  ped <- do.call(split_data_recurrent, dots)
+  attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
+  attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
+
+  return(ped)
 
 }

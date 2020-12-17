@@ -91,6 +91,7 @@ gg_tensor <- function(x, ci = FALSE, ...) {
 #' pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
 #'  data=ped, family=poisson(), offset=offset)
 #' gg_re(pam)
+#' plot(pam, select = 2)
 #' @seealso \code{\link{tidy_re}}
 #' @export
 gg_re <- function(x, ...) {

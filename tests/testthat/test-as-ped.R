@@ -74,3 +74,63 @@ test_that("Trafo works for left truncated data", {
   expect_identical(mort_ped$ses, factor(rep(c("upper", "lower", "upper"), times = c(4,2,2))))
 
 })
+
+
+test_that("Trafo works for recurrent events data", {
+
+  test_df <- data.frame(
+    id     = c(1,1, 2,2,2),
+    tstart = c(0, .5, 0, .8, 1.2),
+    tstop  = c(.5, 3, .8, 1.2, 3),
+    status = c(1, 0, 1, 1, 0),
+    enum   = c(1, 2, 1, 2, 3),
+    age    = c(50, 50, 24, 24, 24))
+  # GAP timescale
+  gap_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ enum + age,
+    transition = "enum",
+    id         = "id",
+    timescale  = "gap")
+
+  expect_data_frame(gap_df, nrows = 9L, ncols = 8L)
+  expect_identical(
+    round(gap_df$tstart, 1),
+    c(0.0, 0.4, 0.0, 0.4, 0.5, 0.0, 0.4, 0.5, 0.0))
+  expect_identical(
+    round(gap_df$tend, 1),
+    c(0.4, 0.5, 0.4, 0.5, 0.8, 0.4, 0.5, 0.8, 0.4))
+  expect_identical(
+    gap_df$ped_status,
+    c(0, 1, 0, 0, 1, 0, 0, 0, 1)
+  )
+  expect_identical(
+    gap_df$enum,
+    rep(c(1, 2), times = c(5, 4))
+  )
+
+  ## CALENDAR timescale
+  cal_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ age,
+    id         = "id",
+    transition = "enum",
+    timescale  = "calendar")
+
+  expect_data_frame(cal_df, nrows = 6L, ncols = 8L)
+  expect_identical(
+    round(cal_df$tstart, 1),
+    c(0.0, 0.0, 0.5, 0.5, 0.8, 0.8))
+  expect_identical(
+    round(cal_df$tend, 1),
+    c(0.5, 0.5, 0.8, 0.8, 1.2, 1.2))
+  expect_identical(
+    cal_df$ped_status,
+    c(1, 0, 1, 0, 0, 1)
+  )
+  expect_identical(
+    cal_df$enum,
+    rep(c(1, 2), each = 3)
+  )
+
+})

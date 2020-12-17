@@ -89,12 +89,12 @@ navbar:
       href: articles/baseline.html
     - text: Basic modeling
       href: articles/basics.html
+    - text: Non-linear effects (penalized splines)
+      href: articles/splines.html
     - text: Workflow and convenience functions
       href: articles/convenience.html
     - text: Stratified models
       href: articles/strata.html
-    - text: Non-linear effects (penalized splines)
-      href: articles/splines.html
     - text: Time-varying effects (TVEs)
       href: articles/tveffects.html
     - text: Frailties (random effects)
