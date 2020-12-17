@@ -1,4 +1,4 @@
-# pammtools 0.5.3
+# pammtools 0.5.4
 + updates to the `split_data` function that now accepts `Surv(start, stop, event)` type inputs, e.g., to construct left-truncated data.
 + Support and [vignette for left truncated data](https://adibender.github.io/pammtools/articles/left-truncation.html)
 + Support and [vignette for competing risks data](https://adibender.github.io/pammtools/articles/competing-risks.html)
