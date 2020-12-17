@@ -21,3 +21,4 @@
 ^cran-comments\.md$
 ^pkgdown$
 ^pammtools\.Rproj$
+^revdep$
