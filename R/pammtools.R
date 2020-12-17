@@ -7,7 +7,7 @@
 #'
 #' The best way to get an overview of the functionality provided and how to
 #' fit PAMMs is to view the vignettes
-#' available at \url{https://adibender.github.io/pammtools/articles}.
+#' available at \url{https://adibender.github.io/pammtools/articles/}.
 #' A summary of the vignettes' content is given below:
 #'
 #' \itemize{
@@ -50,6 +50,6 @@
 #'
 #' Bender, Andreas, and Fabian Scheipl. 2018.
 #' “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-#' ArXiv:1806.01042 [Stat], June. http://arxiv.org/abs/1806.01042.
+#' ArXiv:1806.01042 [Stat], June. https://arxiv.org/abs/1806.01042.
 NULL
 NULL

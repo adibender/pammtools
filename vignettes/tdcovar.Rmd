@@ -35,14 +35,14 @@ Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 In the following, we demonstrate an analysis containing time-dependent covariates,
 using the well-known recidivism data discussed in detail in @Fox2011.
 The R-Code of the original analysis using the extended Cox model can be found
-[here](http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R),
+[here](https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R),
 the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf).
 
 ```{r}
 # raw data
-# http://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R
+# https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R
 recidivism <- read.table(
-    file   = "http://math.unm.edu/~james/Rossi.txt",
+    file   = "https://math.unm.edu/~james/Rossi.txt",
     header = TRUE) %>%
   mutate(subject=row_number())
 ```

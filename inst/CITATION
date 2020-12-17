@@ -9,7 +9,7 @@ citEntry(entry = "Article",
   journal = "arXiv:1806.01042 [stat]",
   textVersion = "Bender, A. and Scheipl, F. (2018b). pammtools: Piece-wise
   exponential additive mixed modeling tools. arXiv:1806.01042 [stat]",
-  url = "http://arxiv.org/abs/1806.01042")
+  url = "https://arxiv.org/abs/1806.01042")
 
 citEntry(
   entry = "Article",
