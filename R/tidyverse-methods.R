@@ -74,8 +74,10 @@ group_by.ped <- function(.data, ..., .add = FALSE) {
 ungroup.ped <- function(x, ...) {
 
   class_data <- class(x)
+  attr_data <- attributes(x)
   x <- ungroup(unped(x), ...)
-  class(x) <- class_data
+  attr_data[["class"]] <- c("ped", class(x))
+  attributes(x) <- attr_data[setdiff(names(attr_data), c("groups"))]
 
   return(x)
 

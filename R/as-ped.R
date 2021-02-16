@@ -180,8 +180,8 @@ as_ped.list <- function(
 
     }
   }
-  attr(ped, "time_var") <- get_lhs_vars(formula)[1]
-  attr(ped, "status_var") <- get_lhs_vars(formula)[2]
+  lhs_vars <- get_lhs_vars(formula)
+  attr(ped, "time_var") <- lhs_vars[1]
   attr(ped, "trafo_args")$formula <- formula
 
   ped
@@ -363,7 +363,6 @@ as_ped_recurrent <- function(
 
   ped <- do.call(split_data_recurrent, dots)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
-  attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
 
   return(ped)
 

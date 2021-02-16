@@ -255,7 +255,7 @@ split_data_recurrent <- function(
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
-  attr(split_df, "breaks") <- cut
+  attr(split_df, "breaks") <- cuts
   attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
