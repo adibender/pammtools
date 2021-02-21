@@ -3,7 +3,7 @@ title: "Non-linear effects (penalized splines)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{splines}
+  %\VignetteIndexEntry{splines.html}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -182,11 +182,10 @@ mpam <- scam(ped_status ~ s(tend) + age + s(hgb, bs = "mpd"), data = mgus2.ped,
 
 ```{r, figscam, fig.height = 3.5, fig.width = 7, dependson="scammod"}
 layout(matrix(1:2, nrow = 1))
-plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.5, 2), main="Unconstrained fit")
+plot(pamfit2, select = 2, se = TRUE, ylim = c(-0.75, 2), main="Unconstrained fit")
 # 1.72 = intercept difference between pamfit2 and mpam
 const <- abs(coef(pamfit2)[1] - coef(mpam)[1])
-plot(mpam, select = 2, se = TRUE, shift = const,
-  ylim = c(-0.5-const, 2-const), main="Fit with monotonicity constraint")
+plot(mpam, select = 2, se = TRUE, ylim = c(-.75, 2), main="Fit with monotonicity constraint")
 ```
 
 ## References

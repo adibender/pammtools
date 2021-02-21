@@ -15,12 +15,16 @@ gg_re(x, ...)
 Plot Normal QQ plots for random effects
 }
 \examples{
+library(pammtools)
 data("lung", package="survival")
 lung$inst <- as.factor(lung$inst) # for mgcv
-ped <- lung \%>\% as_ped(Surv(time, status)~ph.ecog + inst, id="id")
+ped <- lung \%>\%
+ dplyr::slice(1:100) \%>\%
+ as_ped(Surv(time, status)~ph.ecog + inst, id="id")
 pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
  data=ped, family=poisson(), offset=offset)
 gg_re(pam)
+plot(pam, select = 2)
 }
 \seealso{
 \code{\link{tidy_re}}

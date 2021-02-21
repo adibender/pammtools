@@ -1,0 +1,92 @@
+---
+title: "Left Truncation"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{left-truncation}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+link-citations: yes
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  fig.width  = 4,
+  fig.height = 4,
+  crop       = TRUE,
+  cache      = TRUE)
+## output hooks, e.g., to truncate rows of output
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+   lines <- options$output.lines
+   if (is.null(lines)) {
+     return(hook_output(x, options))  # pass to default hook
+   }
+   x <- unlist(strsplit(x, "\n"))
+   more <- "..."
+   if (length(lines) == 1) {
+     if (length(x) > lines) {
+       # truncate the output, but add ....
+       x <- c(head(x, lines), more)
+     }
+   } else {
+     x <- c(if (abs(lines[1]) > 1) more else NULL,
+            x[lines],
+            if (length(x) > lines[abs(length(lines))]) more else NULL
+           )
+   }
+   # paste these lines together
+   x <- paste(c(x, ""), collapse = "\n")
+   hook_output(x, options)
+ })
+```
+
+In this vignette we briefly illustrate how to fit PAMMs for left-truncated data.
+As an example we use the data already discussed in the [left-truncation section](data.transformation.html#left-truncated-data) of the data transformation vignette.
+
+We first we load some libraries as well as the data.
+
+```{r}
+library(eha)
+library(pammtools)
+library(ggplot2)
+theme_set(theme_bw())
+data(infants, package = "eha")
+head(infants)
+```
+The header shows that
+we have information on entry (`enter`) and exit (`exit`) times into the riskset.
+Survival is indicated by the `event` variable. The variable of interest is `mother`, i.e., whether mother was alive or dead. For each child who's mother died, 2 children of the same age and same values for the other covariates were included into the study who's mother was still alive at inclusion age. The maximum follow up was 365 days.
+
+As a proof of concept we show that we can recreate the effects found by the Cox model for left truncated data as implemented in `eha::coxreg`:
+
+```{r}
+# fit cox model for left-truncated data
+fit <- coxreg(
+  formula = Surv(enter, exit, event) ~  mother,
+  data = infants)
+# fit pam to left-truncated data
+infants_ped <- infants %>% as_ped(Surv(enter, exit, event)~.)
+pam <- pamm(
+  formula = ped_status ~ s(tend)+ mother,
+  trafo_args = list(formula = Surv(enter, exit, event)~.),
+  data = infants)
+# compare coefficients
+cbind(coef(pam)[2], coef(fit))
+```
+
+The coefficients of the `mother` variable are very similar and indicate that
+children with diseased mother's are about `r round(exp(coef(pam)[2]), 2)` times as likely to die within one year after birth.
+
+```{r, fig.width = 4, fig.height = 4, out.width = "300px"}
+## compare (baseline) cumulative hazard probabilities
+base <- survival::basehaz(fit)
+ndf <- make_newdata(infants_ped, tend = unique(tend), mother = c("alive")) %>%
+  add_cumu_hazard(pam)
+ggplot(ndf, aes(x = tend, y = cumu_hazard)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = cumu_lower, ymax = cumu_upper), alpha = .3) +
+  geom_step(data = base, aes(x = time, y = hazard), col = 2)
+```

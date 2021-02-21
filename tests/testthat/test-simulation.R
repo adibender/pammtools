@@ -1,5 +1,14 @@
 context("Test simulation functions")
 
+test_that("Test that rpexp works", {
+  expect_identical(length(rpexp(n = 1, rate = 1, t = 0)), 1L)
+  expect_error(rpexp(n = 1, rate = 1, t = c(0, 1)))
+  expect_error(rpexp(n = 1, rate = 1, t = 1))
+  expect_error(rpexp(n = 1, rate = c(1, 1, 1), t = c(0, 2, 1)))
+  expect_identical(rpexp(n=0, rate = 1, t = 0), numeric(0))
+  expect_identical(length(rpexp(n=c(1, 3), rate = 1, t = 0)), 2L)
+})
+
 test_that("Simulation function works", {
 
   suppressWarnings(RNGversion("3.5.0"))

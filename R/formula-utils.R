@@ -93,3 +93,28 @@ has_lhs <- function(formula) {
   length(Formula(formula))[1] > 0
 
 }
+
+
+update_formula <- function(formula, proposed_names) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  stopifnot(length(lhs_vars) == length(proposed_names))
+  rhs_form <- formula(Formula(formula), rhs = 1, lhs = 0)
+  lhs_vars <- proposed_names
+  lhs_form <- paste0("Surv(", paste0(lhs_vars, collapse=", "), ")")
+  as.formula(paste0(lhs_form, "~", as.character(rhs_form))[2])
+
+}
+
+add_to_rhs <- function(formula, rhs_additions = NULL) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  rhs_vars <- c(get_rhs_vars(formula), rhs_additions)
+  as.formula(
+    paste0(
+      "Surv(", paste0(lhs_vars, collapse=","), ") ~ ",
+      paste0(rhs_vars, collapse = "+")
+    )
+  )
+
+}

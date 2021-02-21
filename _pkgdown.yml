@@ -34,6 +34,7 @@ reference:
       - add_term
       - add_hazard
       - add_surv_prob
+      - add_cif
   - title: "Convenience functions for visualization of model outputs."
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
@@ -50,7 +51,6 @@ reference:
     desc: "Data sets contained in **`pammtools`**"
     contents:
       - tumor
-      - simdf_elra
   - title: "Utilities"
     desc: "Utility functions"
     contents:
@@ -69,9 +69,11 @@ articles:
     - tveffects
     - frailty
     - tdcovar
+    - left-truncation
     - model-evaluation
     - cumulative-effects
     - convenience
+    - competing-risks
     - smj-tutorial
 
 navbar:
@@ -87,22 +89,28 @@ navbar:
       href: articles/baseline.html
     - text: Basic modeling
       href: articles/basics.html
+    - text: Non-linear effects (penalized splines)
+      href: articles/splines.html
     - text: Workflow and convenience functions
       href: articles/convenience.html
     - text: Stratified models
       href: articles/strata.html
-    - text: Non-linear effects (penalized splines)
-      href: articles/splines.html
     - text: Time-varying effects (TVEs)
       href: articles/tveffects.html
     - text: Frailties (random effects)
       href: articles/frailty.html
     - text: Time-dependent covariates (TDCs)
       href: articles/tdcovar.html
+    - text: Left-truncated data
+      href: articles/left-truncation.html
     - text: Model evaluation
       href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations
       href: articles/cumulative-effects.html
+    - text: Competing Risks
+      href: articles/competing-risks.html
+    - text: Recurrent Events
+      href: articles/recurrent-events.html
     - text: 'Paper: A generalized additive model approach to time-to-event analysis'
       href: articles/smj-tutorial.html
   - text: News

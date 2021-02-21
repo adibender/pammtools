@@ -4,9 +4,10 @@
 [![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://codecov.io/github/adibender/pammtools/branch/master)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version-ago/pammtools)](https://cran.r-project.org/package=pammtools)
 [![CRAN\_Download\_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools
+## `pammtools`: Piece-Wise Exponential Additive Mixed Modeling Tools <img src="man/figures/logo.png" align="right" width="150px" />
+
 
 ### Installation
 

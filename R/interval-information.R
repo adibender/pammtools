@@ -54,9 +54,37 @@ int_info.default <- function(
     mutate(
       intmid = tstart + intlen / 2,
       interval = paste0("(", tstart, ",", tend, "]"),
-      interval = factor(.data$interval, levels = .data$interval))
+      interval = factor(.data$interval, levels = unique(.data$interval))
+    )
 
   filter(tdf, tstart >= min_time)
+
+}
+
+
+#' @rdname int_info
+#' @export
+int_info.data.frame <- function(
+  x,
+  min_time = 0L, ...) {
+
+  # check inputs
+  assert_data_frame(x, types = "numeric", any.missing = FALSE, ncols = 2)
+  # assert_numeric(min_time, lower  = 0L)
+  stopifnot(all(x[,1] < x[,2]))
+
+  # sort x and add origin if necessary
+  if (is.unsorted(x[,1])) {
+    x <- x[order(x[,1], x[,2]), ]
+  }
+
+  colnames(x) <- c("tstart", "tend")
+  x[["intlen"]] <- x[, 2] - x[, 1]
+  x[["intmid"]] <- x[, 1] + x[, "intlen"] / 2
+  x[["interval"]] <- paste0("(", x[, 1], ",", x[, 2], "]")
+  x[["interval"]] <- factor(x[["interval"]], levels = x[["interval"]])
+
+  x[x[["tstart"]] >= min_time, ]
 
 }
 
@@ -134,7 +162,6 @@ get_intervals.default <- function(
   int_df %>%
     slice(int) %>%
     mutate(times = times) %>%
-    # arrange(times) %>%
     select(times, everything())
 
 }
@@ -156,8 +183,12 @@ get_intervals.default <- function(
 #' @return A data frame with one row for each unique interval in \code{ped}.
 #' @seealso \code{\link[pammtools]{int_info}}, \code{\link[pammtools]{sample_info}}
 ped_info <- function(ped) {
+  UseMethod("ped_info", ped)
+}
 
-  assert_class(ped, classes = "ped")
+#' @rdname ped_info
+#' @export
+ped_info.ped <- function(ped) {
 
   int_df <- int_info(ped)
   sdf    <- sample_info(ped)

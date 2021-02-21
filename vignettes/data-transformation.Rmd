@@ -29,19 +29,18 @@ In this vignette we provide details on transforming data into a format suitable
 to fit piece-wise exponential (additive) models (PAM). Three main cases need to be
 distinguished
 
-  1. [Data without time-dependent covariates](data-transformation.html#data-without-time-dependent-covariates)
+  1. [Data without time-dependent covariates](data-transformation.html#standard-time-to-event-data)
+
+  2. [Left-truncated data](data-transformation.html#left-truncated-data)
 
   2. [Data with time-dependent covariates](data-transformation.html#data-with-time-dependent-covariates)
 
   3. [Data with time-dependent covariates that should be modeled as cumulative effects](data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects)
 
 
-## Data without time-dependent covariates
+## Standard time-to-event data
 
-In this simple case the data transformation is relatively straight forward and
-handled by the `as_ped` (**as** **p**iece-wise **e**xponential **d**ata) function.
-This function internally calls `survival::survSplit`, thus all arguments available
-for the `survSplit` function are also available to the `as_ped` function.
+In the case of "standard" time-to-event the data, the transformation is relatively straight forward and handled by the `as_ped` (**as** **p**iece-wise **e**xponential **d**ata) function. This function internally calls `survival::survSplit`, thus all arguments available for the `survSplit` function are also available to the `as_ped` function.
 
 
 ### Using defaults
@@ -128,6 +127,30 @@ subject `112` had an event at time `51`, thus `log(51-50)=0`:
 ```{r}
 veteran %>% slice(c(85, 112))
 ```
+
+
+## Left-truncated Data
+In left truncated data, subjects enter the risk set at some time-point unequal to zero. Such data usually ships in the so called start-stop notation, where for each subject the start time specifies the left-truncation time (can also be 0) and the
+stop time the time-to-event, which can be right-censored.
+
+For an illustration, we use a data set on infant mortality and maternal death
+available in the **`eha`** package (see `?eha::infants`) for details.
+
+```{r}
+data(infants, package = "eha")
+head(infants)
+```
+
+As children were included in the study after death of their mother, their survival
+time is left-truncated at the entry time (variable `enter`). When transforming such data to the PED format, we need to create a interval cut-point at each entry time.
+In general, each interval has to be constructed such that only subjects already at risk have an entry in the PED data. The previously introduced function `as_ped` can be also used for this setting, however, the LHS of the formula must be in start-stop format:
+
+```{r}
+infants_ped <- as_ped(Surv(enter, exit, event) ~ mother + age, data = infants)
+infants_ped %>% filter(id == 4)
+```
+
+For analysis of such data refer to the [Left-truncation vignette](left-truncation.html)
 
 ## Data with time-dependent covariates
 In case of data with time-dependent covariates (that should not be

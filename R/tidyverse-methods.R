@@ -49,7 +49,13 @@ NULL
 #' @export arrange
 #' @rdname dplyr_verbs
 arrange.ped <- function(.data, ...) {
-  reped(arrange(unped(.data), ...))
+
+  class_data <- class(.data)
+  .data <- arrange(unped(.data), ...)
+  class(.data) <- class_data
+
+  return(.data)
+
 }
 
 
@@ -66,7 +72,15 @@ group_by.ped <- function(.data, ..., .add = FALSE) {
 #' @export ungroup
 #' @rdname dplyr_verbs
 ungroup.ped <- function(x, ...) {
-  reped(ungroup(unped(x), ...))
+
+  class_data <- class(x)
+  attr_data <- attributes(x)
+  x <- ungroup(unped(x), ...)
+  attr_data[["class"]] <- c("ped", class(x))
+  attributes(x) <- attr_data[setdiff(names(attr_data), c("groups"))]
+
+  return(x)
+
 }
 
 #-------------------------------------------------------------------------------
@@ -129,11 +143,13 @@ select.ped <- function(.data, ...) {
 mutate.ped <- function(.data, ..., keep_attributes = TRUE) {
   if (keep_attributes) {
     data_attr   <- ped_attr(.data)
+    data_class <- class(.data)
   }
-  .data <- reped(mutate(unped(.data), ...))
+  .data <- mutate(unped(.data), ...)
   if (keep_attributes) {
     attributes(.data) <- c(attributes(.data), data_attr)
   }
+  class(.data) <- data_class
   return(.data)
 }
 
@@ -141,7 +157,10 @@ mutate.ped <- function(.data, ..., keep_attributes = TRUE) {
 #' @export rename
 #' @rdname dplyr_verbs
 rename.ped <- function(.data, ...) {
-  reped(rename(unped(.data), ...))
+  class_data <- class(.data)
+  .data <- rename(unped(.data), ...)
+  class(.data) <- class_data
+  return(.data)
 }
 
 #' @export
@@ -212,16 +231,17 @@ left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   ..., keep_attributes=TRUE) {
 
+  data_class <- class <- class(y)
   if (keep_attributes) {
     data_attr   <- ped_attr(y)
   }
   #FIXME?
-  tbl <- reped(right_join(unped(x), y, by, copy, suffix, ...))
+  tbl <- right_join(unped(x), y, by, copy, suffix, ...)
 
   if (keep_attributes) {
     attributes(tbl) <- c(attributes(tbl), data_attr)
   }
-
+  class(tbl) <- data_class
   return(tbl)
 }
 
@@ -248,14 +268,17 @@ fill.ped <- function(
   .direction = c("down", "up", "downup", "updown"),
   keep_attributes = TRUE) {
 
+  data_class <- class(data)
+
   if (keep_attributes) {
     data_attr   <- ped_attr(data)
   }
   .direction = match.arg(.direction)
-  tbl <- reped(fill(unped(data), ..., .direction = .direction))
+  tbl <- fill(unped(data), ..., .direction = .direction)
   if (keep_attributes) {
     attributes(tbl) <- c(attributes(tbl), data_attr)
   }
+  class(tbl) <- data_class
 
   return(tbl)
 

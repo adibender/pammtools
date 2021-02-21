@@ -1,5 +1,12 @@
+# pammtools 0.5.4
++ updates to the `split_data` function that now accepts `Surv(start, stop, event)` type inputs, e.g., to construct left-truncated data.
++ Support and [vignette for left truncated data](https://adibender.github.io/pammtools/articles/left-truncation.html)
++ Support and [vignette for competing risks data](https://adibender.github.io/pammtools/articles/competing-risks.html)
++ Support and [vignette for recurrent events data](https://adibender.github.io/pammtools/articles/recurrent-events.html)
+
+
 # pammtools 0.2.4
-* CRAN fix. Discrepancy betwen man page and code.
+* CRAN fix. Discrepancy between man page and code.
 
 # pammtools 0.2.3
 * CRAN fix. Compliance with new dplyr version (1.0.0)
@@ -11,7 +18,7 @@
 # pammtools 0.2.1
 * Adds a new interface for model estimation called `pamm`, which is a thin wrapper
 around `mgcv::gam` with some arguments pre-set.
-* Adds S3 method `predict.pammpredictSurvProb.pamm`
+* Adds S3 method `predictSurvProb.pamm`
 * Adds support and vignette for model evaluation using package **`pec`**
 * Fixed bug when CIs were calculated simulation based and model contained factor variables
 * Removed unnecessary dependencies in Imports/Suggests

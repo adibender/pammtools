@@ -1,0 +1,133 @@
+---
+title: "Recurrent Events"
+author: "Andreas Bender"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{recurrent-events}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5,
+  dpi        = 300
+)
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+In this article we illustrate how to fit recurrent events data using pammtools.
+In general, recurrent events can be mostly treated as standard PAMMs, however,
+the dependencies between observations of the same subject have to be accounted for and potentially the dependencies of the hazards on the past, e.g., number of (previous) events, time since last event, time since beginnng of follow up, etc.
+
+For the data transformation, there are two possibilities, depending on the time-scale that is chosen for analysis
+
+  - gap-time scale (also "clock-reset"): Each occurrence of an event resets the clock, such that the follow up of a subjects is reset to 0
+  - calendar-time scale (also "clock-forward"): The follow up is defined as usual. If an event occurs for a subject, the status variable is set to 1 in the respective interval.
+
+The hazard is given by
+
+$$
+ \lambda
+    \left(
+    {t\ |}\;\mathbf{x}_i,k,z_i
+    \right)
+    = \mathrm{exp}
+        \left(
+            {\beta }_{0,k} +
+            f_{0,k}(t_j) +
+            \sum^P_{p=1}{f_p(x_{i,p},t_j)} +
+            z_i
+        \right)   \qquad \forall \ t\ \epsilon \ ({\tau }_{j-1},{\tau }_j],
+$$
+
+
+where $k$ is the event number. Thus, we can estimate different (baseline) hazards for each of the events (stratification). Further we could interact the other covariates with the event number, if we assume that the effects of the covariates
+can be different for the invididual spells. $z_i, i=1,\ldots,n$ are the random effects (frailties) of the individual subjects, for which we assume Gaussian distribution.
+
+
+# Chronic granolotomous disease (CGD)
+Here we illustrate application of PAMMs to recurrent events data using data
+on chronic granolotomous disease (CGD), which is available from the **`survival`** package. An overview of the data is given below. Subject with ID 1, has an event at $t=219$ and $t=373$ and is censored for the third event at $t=414$. Subject two
+was at risk for eight events, a rarity in this data set, as only few subjects had
+more than one or two events.
+
+```{r}
+library(dplyr)
+library(pammtools)
+library(mgcv)
+# data
+# data
+data("cgd", package = "survival")
+cgd <- cgd %>% mutate(id = as.factor(id))
+cgd %>%
+  filter(id %in% c(1:2)) %>%
+  select(id, enum, tstart, tstop, status, treat, age)
+table(cgd$enum)
+```
+
+
+
+## Analysis Gap-time Scale
+In this section, we perform the analysis on the gap-time scale. The data transformation is similar to the data transformation for single-event data. Note however, that the `Surv` object contains information about the entry and exit time for each of the spells (event numbers), and we have to specify the `transition` variable, that stores the information about the event for which the subject is at risk in the respective rows (time-intervals). Transformation on the gap-time scale is the default and therefore doesn't have to be specified (for analysis on the calendar-time scale, specify the `timescale` argument).
+
+
+```{r}
+# gaptime scale
+ped_gt <- as_ped(
+ formula    = Surv(tstart, tstop, status) ~ center + treat + sex + age + height +
+  weight + inherit + steroids + propylac + hos.cat,
+ data       = cgd,
+ transition = "enum")
+```
+
+An overview of the transformed data is given below for subject 1 (first 3 interval and the last one). Note that the interval boarders are the same for each spell.
+
+```{r}
+ped_gt %>%
+  select(id, tstart, tend, ped_status, enum, age) %>%
+  filter(id == 1) %>%
+  group_by(enum) %>%
+  slice(c(1:3, n()))
+```
+
+As there are only few observations with more than two events, fitting separate
+baseline hazards for any event number beyond 2 doesn't make sense in this case.
+A standard approach is therefore to recode the 2nd event to 2+. Note however, that the data still contains all observations for each subject, we just use the transformed variable (`enum2`) for stratification.
+
+```{r}
+ped_gt <- ped_gt %>% mutate(enum2 = as.factor(ifelse(enum >= 2, "2+", "1")))
+ped_gt %>% filter(id == 1) %>%
+  group_by(enum) %>%
+  slice(1:3) %>%
+  select(id, interval, enum, enum2)
+```
+
+An overview of the model and the estimated smooth effects is given below:
+
+```{r cache = TRUE}
+pam_gt <- bam(
+  formula = ped_status ~
+    s(tend, k = 5) + s(tend, by = as.ordered(enum2), k = 5) + enum2 + # stratified baseline hazard
+    s(height) + s(weight) + s(age) +
+    treat + sex + inherit + steroids + propylac + hos.cat +
+    s(id, bs = "re"),
+  data   = ped_gt,
+  family = poisson(),
+  offset = offset)
+```
+
+The summary output and visualization of smooth covariate effects indicates that
+only age has a relevant effect on the hazard for an event, although uncertainty is high and a zero effect is possible.
+
+```{r, fig.width = 6, fig.height = 3, out.width = "500px"}
+summary(pam_gt)
+gg_smooth(ped_gt, pam_gt, terms = c("height", "weight", "age"))
+```

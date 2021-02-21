@@ -59,8 +59,10 @@ geom_hazard <- function(
 
 
 #' @rdname geom_hazard
+#'
 #' @format NULL
 #' @usage NULL
+#' @import ggplot2
 #' @export
 GeomHazard <- ggproto(
   "GeomHazard", GeomLine,
@@ -109,10 +111,6 @@ geom_stephazard <- function(
 GeomStepHazard <- ggproto(
   "GeomStepHazard",
   GeomStep,
-  # draw_panel = function(data, panel_params, coord, direction = "vh") {
-  #   data <- ggplot2:::dapply(data, "group", stairstep, direction = direction)
-  #   GeomPath$draw_panel(data, panel_params, coord)
-  # },
   setup_data = function(data, params) {
     row1   <- data %>% group_by(group) %>% slice(1)
     row1$x <- 0
@@ -122,32 +120,6 @@ GeomStepHazard <- ggproto(
   }
 )
 
-# copied from https://github.com/tidyverse/ggplot2/blob/master/R/geom-path.r
-# @keyword internal
-stairstep <- function(data, direction="hv") {
-  direction <- match.arg(direction, c("hv", "vh"))
-  data <- as.data.frame(data)[order(data$x), ]
-  n <- nrow(data)
-
-  if (n <= 1) {
-    # Need at least one observation
-    return(data[0, , drop = FALSE])
-  }
-
-  if (direction == "vh") {
-    xs <- rep(1:n, each = 2)[-2 * n]
-    ys <- c(1, rep(2:n, each = 2))
-  } else {
-    ys <- rep(1:n, each = 2)[-2 * n]
-    xs <- c(1, rep(2:n, each = 2))
-  }
-
-  data.frame(
-    x = data$x[xs],
-    y = data$y[ys],
-    data[xs, setdiff(names(data), c("x", "y"))]
-  )
-}
 
 
 #' @inheritParams ggplot2::geom_line

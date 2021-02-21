@@ -2,9 +2,12 @@
 % Please edit documentation in R/interval-information.R
 \name{ped_info}
 \alias{ped_info}
+\alias{ped_info.ped}
 \title{Extract interval information and median/modus values for covariates}
 \usage{
 ped_info(ped)
+
+\method{ped_info}{ped}(ped)
 }
 \arguments{
 \item{ped}{An object of class \code{ped} as returned by

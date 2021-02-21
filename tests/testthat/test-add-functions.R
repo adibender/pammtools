@@ -12,7 +12,7 @@ bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
 pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
   family = poisson(), offset = offset)
 
-pam3 <- mgcv::gam(ped_status ~ s(tend, k=5, by = as.factor(trt)) + as.factor(trt),
+pam3 <- mgcv::gam(ped_status ~ s(tend, k = 5, by = as.factor(trt)) + as.factor(trt),
   data = ped, family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
@@ -264,5 +264,28 @@ test_that("hazards and CI positive for type response", {
   haz_test <- add_hazard(ped_info(ped), pam) %>%
     summarize_at(c("hazard", "ci_lower", "ci_upper"), list(~any(. < 0)))
   expect_equal(any(unlist(haz_test)), FALSE)
+
+})
+
+
+
+test_that("CIF works", {
+
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = T))
+  ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    group_by(cause) %>%
+    add_cif(pam)
+  expect_data_frame(ndf, nrows = 26L, ncols = 11L)
+  expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_true(all(ndf$cif < ndf$cif_upper))
+  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
+  expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
+  expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
 
 })

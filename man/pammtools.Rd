@@ -13,7 +13,7 @@ as well as plotting.
 \details{
 The best way to get an overview of the functionality provided and how to
 fit PAMMs is to view the vignettes
-available at \url{https://adibender.github.io/pammtools/articles}.
+available at \url{https://adibender.github.io/pammtools/articles/}.
 A summary of the vignettes' content is given below:
 
 \itemize{
@@ -37,5 +37,22 @@ different baseline hazard.
 Dealing with time-dependent covariates.
 \item \href{https://adibender.github.io/pammtools/articles/tveffects.html}{tveffects}:
 Specifying time-varying effects.
+\item \href{https://adibender.github.io/pammtools/articles/left-truncation.html}{left-truncation}:
+Estimation for left-truncated data.
+\item \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}:
+Competing risks analysis.
 }
+}
+\references{
+Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018.
+“A Generalized Additive Model Approach to Time-to-Event Analysis”
+Statistical Modelling, February. https://doi.org/10.1177/1471082X17748083.
+
+Bender, Andreas, Fabian Scheipl, Wolfgang Hartl, Andrew G. Day, and Helmut Küchenhoff. 2019.
+“Penalized Estimation of Complex, Non-Linear Exposure-Lag-Response Associations.”
+Biostatistics 20 (2): 315–31. https://doi.org/10.1093/biostatistics/kxy003.
+
+Bender, Andreas, and Fabian Scheipl. 2018.
+“pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
+ArXiv:1806.01042 \link{Stat}, June. https://arxiv.org/abs/1806.01042.
 }

@@ -17,3 +17,4 @@ vignettes/*_files
 docs/*
 pkgdown/
 *.Rproj
+revdep
