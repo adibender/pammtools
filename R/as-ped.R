@@ -64,7 +64,7 @@ as_ped.data.frame <- function(
   min_events   = 1L,
   ...) {
 
-  status_error(data, formula)
+  status_error(data, formula, censor_code)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
   if (test_character(transition, min.chars = 1L, min.len = 1L)) {
@@ -100,9 +100,10 @@ as_ped.data.frame <- function(
 
 #' @rdname as_ped
 #' @export
-as_ped.nested_fdf <- function(data, formula, ...) {
-
-  status_error(data, formula)
+as_ped.nested_fdf <- function(
+  data,
+  formula,
+  ...) {
 
   dots <- list(...)
   # update interval break points (if necessary)
@@ -160,8 +161,6 @@ as_ped.list <- function(
 
   assert_class(data, "list")
   assert_class(formula, "formula")
-
-  status_error(data[[1]], formula)
 
   nl    <- length(data)
   # form  <- Formula(formula)
@@ -346,7 +345,7 @@ as_ped_recurrent <- function(
     len = 1L)
   assert_integer(min_events, lower = 1L, len = 1L)
 
-  status_error(data, formula)
+  status_error(data, formula, censor_code)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
   rhs_vars <- get_rhs_vars(formula)
@@ -367,5 +366,92 @@ as_ped_recurrent <- function(
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
 
   return(ped)
+
+}
+
+#' Multi-state data trafo
+#'
+#' @examples
+#' \dontrun{
+#' data("cgd", package = "frailtyHL")
+#' cgd2 <- cgd %>%
+#'  select(id, tstart, tstop, enum, status, age) %>%
+#'  filter(enum %in% c(1:2))
+#' ped_re <- as_ped_recurrent(
+#'   formula = Surv(tstart, tstop, status) ~ age + enum,
+#'   data = cgd2,
+#'  transition = "enum")
+#' }
+#' @rdname as_ped
+#' @export
+#' @keywords internal
+as_ped_msm <- function(
+  data,
+  formula,
+  cut          = NULL,
+  max_time     = NULL,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code  = 0L,
+  transition   = character(),
+  timescale    = c("gap", "calendar"),
+  min_events   = 1L,
+  combine      = TRUE,
+  ...
+) {
+
+  lhs_vars <- get_lhs_vars(formula)
+  transitions <- unique(data$transition)
+
+  cut <- map2(
+    transitions,
+    if(is.list(cut)) cut else list(cut),
+    function(.transition, .cut) {
+      get_cut(data, formula = formula, cut = .cut, max_time = NULL, event = .transition)
+    }
+  )
+  if(length(cut) > 1 & combine) {
+    cut <- list(reduce(cut, union))
+  }
+
+  ped <- map2(
+    transitions,
+    cut,
+    function(.transition, .cut) {
+      ped_i <- data %>%
+        mutate(
+          !!lhs_vars[length(lhs_vars)] := 1L *
+          (
+            (.data[[transition]] == .env[[".transition"]]) &
+            (.data[[lhs_vars[length(lhs_vars)]]] == 1)
+          )
+        ) %>%
+        as_ped(
+          formula      = formula,
+          cut          = .cut,
+          max_time     = max_time,
+          tdc_specials = tdc_specials,
+          ...)
+      ped_i$transition <- .transition
+      ped_i
+    })
+
+  if (combine) {
+    ped <- do.call(rbind, ped)
+    class(ped) <- c("ped_cr_union", "ped_cr", class(ped))
+    attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
+    attr(ped, "breaks") <- if (length(cut) ==1) unlist(cut) else cut
+  } else {
+    class(ped) <- c("ped_msm_list", "ped_msm", "ped", class(ped))
+    names(ped) <- paste0("cause = ", event_types)
+    attributes(ped)$trafo_args$id <- attributes(ped[[1]])$trafo_args$id
+    attributes(ped)$trafo_args$formula <- formula
+  }
+
+  attr(ped, "trafo_args")[["cut"]] <- if (length(cut) ==1) unlist(cut) else cut
+  attr(ped, "trafo_args")[["combine"]] <- combine
+  attr(ped, "trafo_args")[["censor_code"]] <- censor_code
+  attr(ped, "risks") <- event_types
+
+  ped
 
 }
