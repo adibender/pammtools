@@ -2,9 +2,18 @@
 % Please edit documentation in R/sim-pexp.R
 \name{sim_pexp}
 \alias{sim_pexp}
+\alias{sim_pexp_msm}
 \title{Simulate survival times from the piece-wise exponential distribution}
 \usage{
 sim_pexp(formula, data, cut)
+
+sim_pexp_msm(
+  t_mat,
+  data,
+  cut,
+  proportoin_censoring = 0.3,
+  keep_transitions_at_risk = FALSE
+)
 }
 \arguments{
 \item{formula}{An extended formula that specifies the linear predictor.
@@ -17,9 +26,19 @@ below.}
 \item{data}{A data set with variables specified in \code{formula}.}
 
 \item{cut}{A sequence of time-points starting with 0.}
+
+\item{keep_transitions_at_risk}{Logical. If \code{TRUE} (default), all transitions
+for which a subject was at risk will be included in the data set.}
+
+\item{tmat}{Transition matrix containing the log-hazard definition for each transition.
+Transitions that can not occurr should contain a \code{NA}.}
+
+\item{proportion_censoring}{The proportion of censored observations}
 }
 \description{
 Simulate survival times from the piece-wise exponential distribution
+
+Simulate data for multi-state models
 }
 \examples{
 library(survival)
@@ -96,4 +115,28 @@ sim_df <- sim_pexp(
   data = df,
   cut = 0:10)
 }
+t_mat <- matrix(data = NA, nrow = 3, ncol = 3)
+t_mat[1,2] <- "log(0.7) + x1"
+t_mat[1,3] <- "log(0.5) - 0.25 * x2"
+t_mat[2,3] <- "log(0.9)"
+
+n = 100
+data <- cbind.data.frame(
+ id = 1:n,
+ x1 = runif(n, -3, 3),
+ x2 = runif(n, 0, 6),
+ from = 1,
+ t = 0)
+
+cut =  seq(0, 3, by = 0.01)
+
+msm_df <- sim_pexp_msm(
+ t_mat = t_mat,
+ data = data,
+ cut = cut,
+ proportoin_censoring = 0.3,
+ keep_transitions_at_risk = TRUE)
+head(msm_df)
+
 }
+\keyword{internal}

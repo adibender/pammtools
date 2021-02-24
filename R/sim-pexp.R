@@ -356,44 +356,58 @@ sim_pexp_cr <- function(formula, data, cut) {
 }
 
 
-
-
-
-
 #' Simulate data for multi-state models
 #'
+#' @rdname sim_pexp
 #' @inherit sim_pexp
-#' @param tmat Transition matrix
-#' @param data data.
+#' @param tmat Transition matrix containing the log-hazard definition for each transition.
+#' Transitions that can not occurr should contain a \code{NA}.
+#' @param proportion_censoring The proportion of censored observations
+#' @param keep_transitions_at_risk Logical. If \code{TRUE} (default), all transitions
+#' for which a subject was at risk will be included in the data set.
 #' @export
 #' @keywords internal
+#' @examples
+#' t_mat <- matrix(data = NA, nrow = 3, ncol = 3)
+#' t_mat[1,2] <- "log(0.7) + x1"
+#' t_mat[1,3] <- "log(0.5) - 0.25 * x2"
+#' t_mat[2,3] <- "log(0.9)"
+#'
+#' n = 100
+#' data <- cbind.data.frame(
+#'  id = 1:n,
+#'  x1 = runif(n, -3, 3),
+#'  x2 = runif(n, 0, 6),
+#'  from = 1,
+#'  t = 0)
+#'
+#' cut =  seq(0, 3, by = 0.01)
+#'
+#' msm_df <- sim_pexp_msm(
+#'  t_mat = t_mat,
+#'  data = data,
+#'  cut = cut,
+#'  proportoin_censoring = 0.3,
+#'  keep_transitions_at_risk = TRUE)
+#' head(msm_df)
+#'
 sim_pexp_msm <- function(
   t_mat,
   data,
   cut,
-  prop.censoring = 0.3,
-  keep.trans.under.risk = FALSE ) {
+  proportoin_censoring = 0.3,
+  keep_transitions_at_risk = FALSE ) {
 
   # Aus der Transition Matrix können die Transition-States abgelesen werden
   trans_states <- which(apply(t_mat,1, function(x) !all(is.na(x))))
 
-  # Censoring
-  # Simulated as random variables independent of the competing risks process
-  # Vorgehen: prop:censoring gibt an, wie viel Prozent zensiert werden sollen
-  # Alle nicht zensierten Beobachtungen bekommen max(cut) als censoring time
-  # für die zensierten Beobachtungen ziehe nach Bayersmann aus der uniform Verteilung
+  # cens_time <- c(
+  #   rep(max(cut), times = floor( (1 - proportoin_censoring)*nrow(data))),
+  #   runif((nrow(data) - floor((1 - proportoin_censoring)*nrow(data))), 0, max(cut))
+  # )
+  # data$cens_time <- sample(cens_time)
 
-  # Andreas: 30% bekommen eine cens_time, das heißt aber ja noch nicht, dass auch 30% zensiert werden.
-  # Wenn die Waiting_times kleiner sind als cens_time habe ich ja trotzdem kein censoring
-  # Hab ich das so richtig verstanden in unserem Gespräch?
-  cens_time <- c(
-    rep(max(cut), times = floor( (1 - prop.censoring)*nrow(data))),
-    runif((nrow(data) - floor((1 - prop.censoring)*nrow(data))), 0, max(cut))
-  )
-  data$cens_time <- sample(cens_time)
-
-
-  # Leere Dataframes initiieren um Ergebnisse zu speichern
+  # Initialize object where results are stored
   results <- NULL
   sim_df <- NULL
   trans_not_made <- NULL
@@ -413,15 +427,13 @@ sim_pexp_msm <- function(
         sim_pexp_cr(form, data[data$from == i,], cut = cut) %>%
           mutate(
             time = time + t,
-            to =  which(!is.na(t_mat[i,]))[type],
-            status = status * (time <= cens_time),
-            time   = pmin(time, cens_time)
+            to =  which(!is.na(t_mat[i,]))[type]
           ) %>%
           select(-one_of(paste0("hazard",seq_len(length(attr(form,"rhs"))))))
       )
 
 
-      if (keep.trans.under.risk) {
+      if (keep_transitions_at_risk) {
         # Alle Transitions, die nicht gemacht wurden, aber theoretisch möglich gewesen wären, sollen als zensiert im Dataframe auftauchen (Vgl. mstate)
         trans_not_made <- rbind(trans_not_made,
           results %>%
@@ -443,24 +455,19 @@ sim_pexp_msm <- function(
       }
 
     }
-    # Sammel alle unternommenen Transitions in einem Dataframe
-    # Plus optional alle nicht unternommenen Transitions als zensiert:
 
-    sim_df <- rbind(sim_df,results, trans_not_made)
-    # Nach der Schleife haben alle Individuen, welche "under risk" für eine Transition waren, einen Schritt unternommen (weitere Transition oder Censoring
-    # Joine data und results aus diesem Schritt.
-    # Entferne alle id's, welche sich nun in einem absorbierenden Status befinden oder zensiert wurden
-    # Aktualisiere t für jede ID (Zeitpunkt der Transition aufaddieren)
+    sim_df <- rbind(sim_df, results, trans_not_made)
+
     data <- data %>%
       left_join(
         results[,c("id", "to", "time","status")], by = "id") %>%
       filter(
         status != 0 & to %in% trans_states) %>%
       mutate(
-        from = to,
-        to = NULL,
-        t = t + time,
-        time = NULL,
+        from   = to,
+        to     = NULL,
+        t      = t + time,
+        time   = NULL,
         status = NULL
       )
     # results und trans_not_made wieder leeren
@@ -479,16 +486,29 @@ sim_pexp_msm <- function(
     mutate(
       status = status * (time <= max(cut)),
       time   = pmin(time, max(cut)),
-      Tstart = t,
-      Tstop = time,
-      # Alternativ Waitingtime: time = Tstop - TStart,
-      time = NULL,
-      t = NULL,
-      type = NULL,
-      # trans: jede Transition eigene Bezeichnung
-      trans = as.numeric(paste0(from, to))
+      tstart = t,
+      tstop  = time,
+      gap    = tstop - tstart,
+      time   = NULL,
+      t      = NULL,
+      type   = NULL,
+      transition = as.numeric(paste0(from, to))
     ) %>%
     relocate(to, .after = from)
 
   return(sim_df)
+
 }
+
+
+# #' Add censoring to a time-to-event data set
+# #'
+# #'
+# add_censoring <- function(
+#   data,
+#   formula,
+#   x,
+#   ...
+# ) {
+#     UseMethod("add_censoring", x)
+# }

@@ -155,7 +155,7 @@ split_data <- function(
 #' Defaults to \code{"gaptime"}.
 #' @param min_events Minimum number of events for each event number.
 #' @keywords internal
-split_data_recurrent <- function(
+split_data_multistate <- function(
   formula,
   data,
   transition    = character(),
@@ -243,15 +243,15 @@ split_data_recurrent <- function(
     split_df <- split_df %>% filter(.data[["tend"]] <= max_time)
   }
 
-  if (timescale == "calendar") {
-    split_check <- split_df %>%
-      group_by(.data[[dots$id]]) %>%
-      summarize(dups = sum(duplicated(.data[["tstart"]])))
+  # if (timescale == "calendar") {
+  #   split_check <- split_df %>%
+  #     group_by(.data[[dots$id]]) %>%
+  #     summarize(dups = sum(duplicated(.data[["tstart"]])))
 
-    if (any(split_check[["dups"]]) != 0) {
-      stop("Something went wrong during data transformation. \n Please post an issue at 'https://github.com/adibender/pammtools/issues' with your code and data")
-    }
-  }
+  #   if (any(split_check[["dups"]]) != 0) {
+  #     stop("Something went wrong during data transformation. \n Please post an issue at 'https://github.com/adibender/pammtools/issues' with your code and data")
+  #   }
+  # }
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
