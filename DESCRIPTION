@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.5.4
-Date: 2020-12-04
+Version: 0.6.0.1
+Date: 2020-03-02
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut"), comment = c(ORCID = "0000-0001-8172-3603")),
@@ -9,7 +9,7 @@ Authors@R: c(
 Description: The Piece-wise exponential (Additive Mixed) Model
     (PAMM; Bender and Scheipl (2018) <doi: 10.1177/1471082X17748083>) is a
     powerful model class for the analysis of survival (or time-to-event) data,
-    based on Generalized Additive (Mixed) Models (GA(M)Ms). It offers intuitive specification and robust estimation of complex survival models with stratified baseline hazards, random effects, time-varying effects, time-dependent covariates and cumulative effects (Bender and others (2018) <doi: 10.1093/biostatistics/kxy003>, as well as support for left-truncated, competing risks and recurrent events data.
+    based on Generalized Additive (Mixed) Models (GA(M)Ms). It offers intuitive specification and robust estimation of complex survival models with stratified baseline hazards, random effects, time-varying effects, time-dependent covariates and cumulative effects (Bender and others (2018) <doi: 10.1093/biostatistics/kxy003>, as well as support for left-truncation, competing risks, recurrent events and multi-state analysis.
     pammtools provides tidy workflow for survival analysis with PAMMs,
     including data simulation, transformation and other functions for data
     preprocessing and model post-processing as well as visualization.

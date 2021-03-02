@@ -2,6 +2,9 @@
 #' exponential data format
 #'
 #' @inheritParams as_ped
+#' @param multiple_id Are occurences of same id allowed (per transition).
+#' Defaults to \code{FALSE}, but is sometimes set to \code{TRUE}, e.g., in case of
+#' multi-state models with back transitions.
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
@@ -18,8 +21,9 @@
 split_data <- function(
   formula,
   data,
-  cut      = NULL,
-  max_time = NULL,
+  cut         = NULL,
+  max_time    = NULL,
+  multiple_id = FALSE,
   ...) {
 
   dots_in         <- list(...)
@@ -83,7 +87,7 @@ split_data <- function(
   }
 
   if (id_var %in% names(dots$data)) {
-    if (length(unique(dots$data[[id_var]])) != nrow(dots$data)) {
+    if (length(unique(dots$data[[id_var]])) != nrow(dots$data) & !multiple_id) {
       stop(paste0("Specified ID variable (", id_var, ") must have same number of
         unique values as number of rows in 'data'."))
     }
@@ -212,6 +216,7 @@ split_data_multistate <- function(
 
   ## create argument list to be passed to survSplit
   dots <- list(...)
+  dots$multiple_id <- TRUE # possible in case of multi-state models with back transitions
 
   # if id allready in the data set, remove id variable from dots but keep
   # id variable for later rearrangment
