@@ -2,7 +2,7 @@ context("Test as_ped functions")
 
 test_that("Trafo works and attributes are appended", {
   # preparations
-  data("veteran", package = "survival")
+  data("cancer", package = "survival")
   veteran <- veteran[c(1:3, 135:137), ]
   ped <- as_ped(
     data    = veteran,

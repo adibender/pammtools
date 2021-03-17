@@ -1,6 +1,6 @@
-context("Interal info and median and modus information")
+context("Interval info and median and modus information")
 
-data("veteran", package="survival")
+data("cancer", package="survival")
 ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
 	cut=seq(0,400, by=100), id="id")
 

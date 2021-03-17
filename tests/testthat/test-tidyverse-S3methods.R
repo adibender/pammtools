@@ -2,7 +2,7 @@ context("Tidyverse methods for specific classes")
 
 test_that("ped class is preserved after dplyr operations", {
 
-  data("veteran", package = "survival")
+  data("cancer", package = "survival")
   veteran <- dplyr::slice(veteran, 1:2)
   ped <- as_ped(
     data    = veteran,

@@ -43,7 +43,7 @@ from the `survival` package,
 where the cell type of the lung cancer had four levels:
 
 ```{r}
-data("veteran")
+data("cancer") # load veteran data
 veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),

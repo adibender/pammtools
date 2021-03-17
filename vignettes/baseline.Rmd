@@ -32,7 +32,7 @@ We illustrate the procedure using the `veteran` data from the
 `survival` package:
 
 ```{r}
-data("veteran", package = "survival")
+data("cancer", package = "survival") # load veteran data
 veteran <- veteran %>%
   mutate(
     trt   = 1 * (trt == 2),

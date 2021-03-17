@@ -3,7 +3,7 @@ context("Test pamm wrapper function")
 
  test_that("pamm function works correctly", {
 
-  data("veteran", package="survival")
+  data("cancer", package="survival")
   ped <- as_ped(Surv(time, status)~ trt + karno, data = veteran[1:20,])
   # gam engine
   pam <- pamm(ped_status ~ s(tend, k=3) + karno, data=ped)

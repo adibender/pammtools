@@ -54,14 +54,6 @@ eventually to \code{\link[survival]{survSplit}}}
 Currently, the input data must be in start-stop notation for each spell and
 contain a colum that indicates the spell (event number).
 }
-\examples{
-data("veteran", package="survival")
-head(veteran)
-ped <- split_data(Surv(time, status)~trt + age, data=veteran,
-   cut=c(0, 100, 400), id="id")
-head(ped)
-class(ped) # class ped (piece-wise exponential data)
-}
 \seealso{
 \code{\link[survival]{survSplit}}
 }

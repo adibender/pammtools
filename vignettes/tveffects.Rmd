@@ -71,7 +71,7 @@ Karnofsky performance scores `karno` (the higher the better), `age` and whether
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
-data("veteran", package = "survival")
+data("cancer", package = "survival")
 veteran <- veteran %>%
   mutate(
     trt   = 1L * (trt == 2),

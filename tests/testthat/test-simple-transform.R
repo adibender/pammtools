@@ -2,7 +2,7 @@ context("Simple transformation to PED data")
 
 test_that("Transformation of regular survival data works", {
   ## preparations
-  data("veteran", package = "survival")
+  data("cancer", package = "survival")
   veteran <- veteran[c(1:3, 135:137), ]
   veteran$ID <- sample(1:100, nrow(veteran))
   ped_vet <- split_data(data = veteran, Surv(time, status) ~ trt + age,
@@ -57,7 +57,7 @@ test_that("Transformation of regular survival data works", {
 
 test_that("Error on wrong input", {
   ## preparations
-  data("veteran", package = "survival")
+  data("cancer", package = "survival")
   veteran <- veteran[c(1:3, 135:137), ]
 
   ## tests
