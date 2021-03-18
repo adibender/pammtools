@@ -114,8 +114,8 @@ test_that("cumulative hazard functions work for PAM", {
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
-  expect_equal(round(haz3$cumu_upper, 2), c(.58, 1.11, 1.95, 2.75, 3.59))
-  expect_equal(round(haz3$cumu_lower, 2), c(.38, .76, 1.42, 1.92, 2.28))
+  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .25, .34))
+  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .13, .17))
 
   ## check that hazard columns are not deleted
   newdata <- ped_info(ped) %>% add_hazard(pam) %>%
@@ -257,20 +257,6 @@ test_that("survival probabilities functions work for PAM", {
   expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .88, .84))
 
 })
-
-
-## test sensibility
-
-test_that("hazards and CI positive for type response", {
-
-  ped <- tumor %>% as_ped(Surv(days, status)~ complications + age, id = "id")
-  haz_test <- add_hazard(ped_info(ped), pam) %>%
-    summarize_at(c("hazard", "ci_lower", "ci_upper"), list(~any(. < 0)))
-  expect_equal(any(unlist(haz_test)), FALSE)
-
-})
-
-
 
 test_that("CIF works", {
 
