@@ -1,8 +1,8 @@
-context("Interal info and median and modus information")
+context("Interval info and median and modus information")
 
-data("veteran", package="survival")
-ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
-	cut=seq(0,400, by=100), id="id")
+data("tumor")
+ped <- tumor[1:200, ] %>% as_ped(Surv(days, status)~ complications + age,
+	cut=seq(0,400, by=100))
 
 ped <- filter(ped, id %in% c(1:3, 135:137))
 
@@ -20,11 +20,11 @@ test_that("Interval info returned for ped objects", {
 })
 
 test_that("Sample info returned for data frame", {
-	expect_data_frame(si <- sample_info(veteran), nrows=1L, ncols=8L)
-	expect_equal(colnames(si), colnames(veteran))
-	expect_data_frame(si <- veteran %>% group_by(trt, status) %>% sample_info(),
-		nrows=4L, ncols=8L)
-	expect_equal(colnames(si), colnames(veteran))
+	expect_data_frame(si <- sample_info(tumor), nrows=1L, ncols=9L)
+	expect_equal(colnames(si), colnames(tumor))
+	expect_data_frame(si <- tumor %>% group_by(complications, status) %>% sample_info(),
+		nrows=4L, ncols=9L)
+	expect_equal(colnames(si), colnames(tumor))
 })
 
 test_that("Sample info returned for ped objects", {
@@ -32,7 +32,7 @@ test_that("Sample info returned for ped objects", {
 })
 
 test_that("Sample info returned for grouped ped objects", {
-	expect_data_frame(group_by(ped, trt) %>% sample_info(),
+	expect_data_frame(group_by(ped, complications) %>% sample_info(),
 		nrows=2, ncols=2)
 })
 
@@ -41,7 +41,7 @@ test_that("ped info returned for (grouped) ped objects", {
 	# normal
 	expect_data_frame(ped_info(ped), nrows=4L, ncols=7L)
 	#grouped
-	expect_data_frame(group_by(ped, trt) %>% ped_info(), nrows=8L, ncols=7L)
+	expect_data_frame(group_by(ped, complications) %>% ped_info(), nrows=8L, ncols=7L)
 	# without covariates
-	expect_data_frame(ped_info(select(ped, -trt, -age)), nrows=4L, ncols=5L)
+	expect_data_frame(ped_info(select(ped, -complications, -age)), nrows=4L, ncols=5L)
 })

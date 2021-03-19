@@ -1,18 +1,18 @@
 context("Convenience functions for calculation of hazard and similar")
 
-data("veteran", package = "survival")
-ped <- veteran %>% as_ped(Surv(time, status)~ trt + age,
-  cut = c(0, 50, 100, 200, 300, 400), id = "id")
-pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt, data = ped,
+data("tumor")
+ped <- tumor[1:200,] %>% as_ped(Surv(days, status)~ age + complications,
+  cut = c(0, 50, 100, 200, 300, 400))
+pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + complications, data = ped,
   family = poisson(), offset = offset)
-pam2 <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt + s(age), data = ped,
+pam2 <- mgcv::gam(ped_status ~ s(tend, k = 5) + complications + s(age), data = ped,
   family = poisson(), offset = offset)
-bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + trt, data = ped,
+bam <- mgcv::bam(ped_status ~ s(tend, k = 5) + complications, data = ped,
   family = poisson(), offset = offset, method = "fREML", discrete = TRUE)
-pem <- glm(ped_status ~ 0 + interval + trt, data = ped,
+pem <- glm(ped_status ~ 0 + interval + complications, data = ped,
   family = poisson(), offset = offset)
 
-pam3 <- mgcv::gam(ped_status ~ s(tend, k = 5, by = as.factor(trt)) + as.factor(trt),
+pam3 <- mgcv::gam(ped_status ~ s(tend, k = 5, by = as.factor(complications)) + as.factor(complications),
   data = ped, family = poisson(), offset = offset)
 
 test_that("hazard functions work for PAM", {
@@ -23,8 +23,8 @@ test_that("hazard functions work for PAM", {
     ncols = 11L)
   expect_equal(all(haz$ci_lower < haz$hazard), TRUE)
   expect_equal(all(haz$ci_upper > haz$hazard), TRUE)
-  expect_equal(round(haz$hazard, 3), c(0.009, 0.009, 0.007, 0.006, 0.005))
-  expect_equal(round(haz$ci_lower, 3), c(0.007, 0.007, 0.006, 0.004, 0.003))
+  expect_equal(round(haz$hazard, 3), c(0.001, 0.001, 0.001, 0.001, 0.001))
+  expect_equal(round(haz$ci_lower, 3), c(0, 0, 0, 0, 0))
   expect_error(add_hazard(haz, pam))
   expect_data_frame(add_hazard(haz, pam, overwrite = TRUE),
     nrows = 5L, ncols = 11L)
@@ -32,18 +32,18 @@ test_that("hazard functions work for PAM", {
   haz2 <- add_hazard(ped_info(ped), pam, type = "link")
   expect_equal(all(haz2$ci_lower < haz2$hazard), TRUE)
   expect_equal(all(haz2$ci_upper > haz2$hazard), TRUE)
-  expect_equal(round(haz2$hazard, 2), c(-4.67, -4.75, -4.91, -5.07, -5.23))
-  expect_equal(round(haz2$ci_lower, 2), c(-4.91, -4.94, -5.12, -5.42, -5.74))
+  expect_equal(round(haz2$hazard, 2), c(-7.37, -7.39, -7.41, -7.43, -7.46))
+  expect_equal(round(haz2$ci_lower, 2), c(-7.93, -7.86, -7.78, -7.83, -7.99))
 
   ## delta rule
   expect_data_frame(add_hazard(ped_info(ped), bam, ci_type = "delta"),
     nrows = 5L, ncols = 11L)
   haz3 <- add_hazard(ped_info(ped), pam, ci_type = "delta")
   expect_data_frame(haz3, nrows = 5L, ncols = 11L)
-  expect_equal(round(haz3$hazard * 100, 2), c(.94, .87, .74, .63, .54))
-  expect_equal(round(haz3$se * 100, 2), c(.11, .08, .08, .11, .14))
-  expect_equal(round(haz3$ci_lower * 100, 2), c(.72, .70, .58, .41, .26))
-  expect_equal(round(haz3$ci_upper * 100, 2), c(1.16, 1.03, .9, .85, .82))
+  expect_equal(round(haz3$hazard * 100, 2), c(.06, .06, .06, .06, .06))
+  expect_equal(round(haz3$se * 100, 2), c(.02, .01, .01, .01, .02))
+  expect_equal(round(haz3$ci_lower * 100, 2), c(.03, .03, .04, .04, .03))
+  expect_equal(round(haz3$ci_upper * 100, 2), c(.10, .09, .08, .08, .09))
 
   ## simulation based ci (0.95)
   haz4 <- add_hazard(ped_info(ped), pam, ci_type = "sim")
@@ -51,14 +51,14 @@ test_that("hazard functions work for PAM", {
   ## hazard with reference (i.e. hazard ratio)
   hr <- add_hazard(ped_info(ped), pam2, reference = list(age = c(30)))
   # hazard ratio is constant as age effect not time-varying
-  expect_equal(round(hr$hazard, 3), rep(0.524, 5))
+  expect_equal(round(hr$hazard, 3), rep(1.458, 5))
   # hr = 1 if reference = data
   hr2 <- ped_info(ped) %>%  add_hazard(pam2, reference = list(age = mean(.$age)))
   expect_equal(hr2$hazard, rep(1, 5))
 
   ## factor group variable
-  ndf <- ped %>% make_newdata(tend = unique(tend), trt = unique(trt)) %>%
-    group_by(trt)
+  ndf <- ped %>% make_newdata(tend = unique(tend), complications = unique(complications)) %>%
+    group_by(complications)
   ndf1 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "default")
   ndf2 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "delta")
   ndf3 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "sim", nsim = 100L)
@@ -87,8 +87,8 @@ test_that("cumulative hazard functions work for PAM", {
    nrows = 5L, ncols = 8L)
   expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pam),
     nrows = 5L, ncols = 10L)
-  expect_equal(round(haz$cumu_hazard, 2), c(0.47, 0.90, 1.64, 2.27, 2.81))
-  expect_equal(round(haz$cumu_lower, 2), c(0.37, 0.73, 1.32, 1.77, 2.09))
+  expect_equal(round(haz$cumu_hazard, 2), c(.03, .06, .12, .18, .24))
+  expect_equal(round(haz$cumu_lower, 2), c(.02, .04, .08, .12, .15))
   expect_equal(all(diff(haz$cumu_hazard) >= 0), TRUE)
   # overwrite works
   expect_data_frame(add_cumu_hazard(haz, pam, overwrite = TRUE),
@@ -98,24 +98,24 @@ test_that("cumulative hazard functions work for PAM", {
   expect_error(add_cumu_hazard(haz, pam))
 
   ## test that cumu_hazard works for grouped data
-  grouped_haz <- ped %>% group_by(trt) %>%
+  grouped_haz <- ped %>% group_by(complications) %>%
     ped_info() %>%
     add_cumu_hazard(pam)
   expect_data_frame(grouped_haz, nrows = 10L, ncols = 10L)
   expect_equal(round(grouped_haz$cumu_hazard, 2),
-    c(0.46, 0.88, 1.60, 2.21, 2.74, 0.48, 0.93, 1.69, 2.33, 2.89))
+    c(.03, .06, .12, .18, .24, .06, .13, .25, .37, .49))
 
   ## delta method
   haz2 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "delta")
-  expect_equal(round(haz2$cumu_upper, 2), c(.58, 1.09, 1.94, 2.72, 3.48))
-  expect_equal(round(haz2$cumu_lower, 2), c(.36, .71, 1.34, 1.82, 2.14))
+  expect_equal(round(haz2$cumu_upper, 2), c(.05, .09, .18, .25, .33))
+  expect_equal(round(haz2$cumu_lower, 2), c(.01, .03, .07, .11, .15))
 
   suppressWarnings(RNGversion("3.5.0"))
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
-  expect_equal(round(haz3$cumu_upper, 2), c(.58, 1.11, 1.95, 2.75, 3.59))
-  expect_equal(round(haz3$cumu_lower, 2), c(.38, .76, 1.42, 1.92, 2.28))
+  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .25, .34))
+  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .13, .17))
 
   ## check that hazard columns are not deleted
   newdata <- ped_info(ped) %>% add_hazard(pam) %>%
@@ -142,12 +142,12 @@ test_that("adding terms works for PAM", {
   # standard
   ndf2  <- make_newdata(ped, age = seq_range(age, 3))
   pred2 <- ndf2 %>% add_term(pam2, term = "age")
-  expect_equal(round(pred2$fit, 3), c(0.328, -.174, .775))
+  expect_equal(round(pred2$fit, 3), c(-.604, -.236, .851))
   expect_data_frame(pred2, nrows = 3L, ncols = 12L)
   # with custom reference
   pred2 <- ndf2 %>%
     add_term(pam2, term = "age", reference = list(age = mean(.$age)))
-  expect_equal(round(pred2$fit, 3), c(.501, 0, .948))
+  expect_equal(round(pred2$fit, 3), c(-.368, 0, 1.087))
   expect_data_frame(pred2, nrows = 3L, ncols = 12L)
   expect_equal(pred2$fit[2], 0)
   # with overall function application
@@ -163,27 +163,31 @@ test_that("adding terms works for PAM", {
 })
 
 test_that("adding terms works for PEM", {
-expect_data_frame(term <- add_term(ped_info(ped), pem, term = "trt"),
+
+  expect_data_frame(term <- add_term(ped_info(ped), pem, term = "complications"),
     nrows = 5L, ncols = 10L)
   expect_data_frame(ped_info(ped) %>%
-      add_term(pem, term = "trt", reference = list(trt = mean(.$trt))),
+      add_term(pem, term = "age", reference = list(age = mean(.$age))),
       nrows = 5L, ncols = 10L)
 })
 
 test_that("warns about / aborts for unknown intervals", {
+
   weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
   expect_warning(add_hazard(weird, pam), "not used in original fit")
   expect_error(add_hazard(weird, pem), "not used in original fit")
+
 })
 
 test_that("works for nonstandard baseline arguments", {
+
   pseudonymous <- ped %>% dplyr::rename(stop = tend, int = interval)
   pseudonymous <-  pseudonymous %>% dplyr::mutate(length = stop - tstart)
   ped <- ped %>% dplyr::mutate(intlen = tend - tstart)
 
-  p_pam <- mgcv::gam(ped_status ~ s(stop, k = 5) + trt, data = pseudonymous,
+  p_pam <- mgcv::gam(ped_status ~ s(stop, k = 5) + complications, data = pseudonymous,
     family = poisson(), offset = offset)
-  p_pem <- glm(ped_status ~ 0 + int + trt, data = pseudonymous,
+  p_pem <- glm(ped_status ~ 0 + int + complications, data = pseudonymous,
     family = poisson(), offset = offset)
   expect_equal(
     add_hazard(pseudonymous[1:5, ], p_pam, time_var = "stop")$hazard,
@@ -204,6 +208,7 @@ test_that("works for nonstandard baseline arguments", {
     add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_var = "int",
       interval_length = "length")$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
+
 })
 
 
@@ -223,9 +228,9 @@ test_that("survival probabilities functions work for PAM", {
       all(z >= 0 & z <= 1)
     })
   expect_identical(all(stest), TRUE)
-  expect_identical(round(surv$surv_prob, 2), c(0.63, 0.41, 0.19, 0.10, 0.06))
-  expect_identical(round(surv$surv_lower, 2), c(0.55, 0.33, 0.13, 0.05, 0.02))
-  expect_identical(round(surv$surv_upper, 2), c(0.69, 0.48, 0.27, 0.17, 0.12))
+  expect_identical(round(surv$surv_prob, 2), c(0.97, 0.94, 0.88, 0.83, 0.79))
+  expect_identical(round(surv$surv_lower, 2), c(0.95, 0.90, 0.83, 0.76, 0.68))
+  expect_identical(round(surv$surv_upper, 2), c(0.98, 0.96, 0.92, 0.89, 0.86))
   # check that overwrite works
   expect_data_frame(add_surv_prob(surv, pam, overwrite = TRUE),
     nrows = 5L, ncols = 10L)
@@ -233,41 +238,25 @@ test_that("survival probabilities functions work for PAM", {
   expect_error(add_surv_prob(surv, pam))
 
   ## test that cumu_hazard works for grouped data
-  grouped_surv <- ped %>% group_by(trt) %>%
+  grouped_surv <- ped %>% group_by(complications) %>%
     ped_info() %>%
     add_surv_prob(pam)
   expect_data_frame(grouped_surv, nrows = 10L, ncols = 10L)
   expect_equal(round(grouped_surv$surv_prob, 2),
-    c(0.63, 0.42, 0.20, .11, .06, .62, 0.40, .19, .10, .06))
+    c(0.97, 0.94, 0.88, .83, .79, .94, 0.88, .78, .69, .61))
 
   ## delta CI
   surv2 <- add_surv_prob(ped_info(ped), pam, ci_type = "delta")
-  expect_equal(round(surv2$surv_lower * 10, 2), c(5.56, 3.28, 1.36, .57, .2))
-  expect_equal(round(surv2$surv_upper * 10, 2), c(6.95, 4.83, 2.51, 1.49, 1.01))
+  expect_equal(round(surv2$surv_lower, 2), c(.95, .91, .84, .78, .72))
+  expect_equal(round(surv2$surv_upper, 2), c(.99, .97, .93, .89, .86))
 
   # sim CI
   set.seed(123)
   surv3 <- add_surv_prob(ped_info(ped), pam, ci_type = "sim")
-  expect_equal(round(surv3$surv_lower * 10, 2), c(5.59, 3.28, 1.42, .64, .28))
-  expect_equal(round(surv3$surv_upper * 10, 2), c(6.86, 4.70, 2.42, 1.47, 1.02))
+  expect_equal(round(surv3$surv_lower, 2), c(.94, .90, .83, .78, .71))
+  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .88, .84))
 
 })
-
-
-## test sensibility
-
-test_that("hazards and CI positive for type response", {
-
-  ped <- veteran %>% as_ped(Surv(time, status)~ trt + age, id = "id")
-  pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + trt,
-    data = ped, family = poisson(), offset = offset)
-  haz_test <- add_hazard(ped_info(ped), pam) %>%
-    summarize_at(c("hazard", "ci_lower", "ci_upper"), list(~any(. < 0)))
-  expect_equal(any(unlist(haz_test)), FALSE)
-
-})
-
-
 
 test_that("CIF works", {
 

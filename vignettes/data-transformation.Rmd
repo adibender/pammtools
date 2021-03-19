@@ -49,7 +49,7 @@ As an example data set we first consider Veterans’ Administration lung cancer
 study [@Kalbfleisch1980] available from the `survival` package:
 
 ```{r}
-data("veteran", package = "survival")
+data("cancer", package = "survival") # load veteran data
 veteran <- veteran %>%
   mutate(
     id    = row_number(),
