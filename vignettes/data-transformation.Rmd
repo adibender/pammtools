@@ -45,23 +45,19 @@ In the case of "standard" time-to-event the data, the transformation is relative
 
 ### Using defaults
 
-As an example data set we first consider Veterans’ Administration lung cancer
-study [@Kalbfleisch1980] available from the `survival` package:
+As an example data set we first consider a data set of a stomach area tumor
+available from the **`pammtools`** package. Patients were operated on to remove the tumor. Some patients experienced complications during the operation:
 
 ```{r}
-data("cancer", package = "survival") # load veteran data
-veteran <- veteran %>%
-  mutate(
-    id    = row_number(),
-    trt   = 1L * (trt == 2),
-    prior = 1L * (prior != 0)) %>%
+data("tumor")
+tumor <- tumor %>%
+  mutate(id = row_number()) %>%
   select(id, everything())
-head(veteran)
+head(tumor)
 ```
 
-Each row contains information on the survival time (`time`), an event indicator
-(`status`) and the `treatment` information (`6-MP` vs. `placebo`) as the only
-covariate.
+Each row contains information on the survival time (`days`), an event indicator
+(`status`) as well as information about comorbidities (`charlson_score`), `age`, `sex`, and covariates that might be relevant like whether or not complications occurred (`complications`) and whether the cancer metastasized (`metastases`).
 
 To transform the data into piece-wise exponential data (`ped`) format, we need to
 
@@ -74,18 +70,19 @@ Using the `pammtools` package this is easily achieved with the `as_ped` function
 as follows:
 
 ```{r}
-ped <- as_ped(Surv(time, status) ~ ., data = veteran, id = "id")
-ped %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
+ped <- as_ped(Surv(days, status) ~ ., data = tumor, id = "id")
+ped %>% filter(id %in% c(132, 141, 145)) %>%
+  select(id, tstart, tend, interval, offset, ped_status, age, sex, complications)
 ```
 
 When no cut points are specified, the default is to use the unique event times.
 As can be seen from the above output, the function creates an `id` variable,
-indicating the subjects $i = 1,\ldots,n$, with one row per `id` for each interval
+indicating the subjects $i = 1,\ldots,n$, with one row per interval that
 the subject "visited". Thus,
 
-- subject `42` was under risk during 5 intervals,
-- subject `85` was under risk during one interval,
-- and subject `112` in 33 intervals.
+- subject `132` was at risk during 4 intervals,
+- subject `141` was at risk during 12 intervals,
+- and subject `145` in 7 intervals.
 
 In addition to the optional `id` variable the function also creates
 
@@ -95,7 +92,7 @@ In addition to the optional `id` variable the function also creates
   - `offset`:  the log of the duration during which the subject was under risk in
   that interval
 
-Additionally the time-constant covariates (here: `trt`, `celltype`, `karno`, etc.)
+Additionally the time-constant covariates (here: `age`, `sex`, `complications`,)
 are repeated $n_i$ number of times, where $n_i$ is the number of intervals during
 which subject $i$ was in the risk set.
 
@@ -103,29 +100,29 @@ which subject $i$ was in the risk set.
 ### Custom cut points
 Per default, the `as_ped` function uses all unique event times as cut points
 (which is a sensible default as for example the (cumulative) baseline hazard
-estimates in Cox-PH functions are also updated at event times).
+estimates in Cox-PH functions are also updated at event times). Also, PAMMs represent the baseline hazard via splines whose basis functions are evaluated at
+the cut points. Using unique events times automatically increases the density
+of cut points in relevant areas of the follow-up.
 
 In some cases, however, one might want to reduce the number of cut points,
 to reduce the size of the resulting data and/or faster estimation times.
 To do so the `cut` argument has to be specified.
 Following the above example, we can use only 4 cut points
-$\kappa_0 = 0, \kappa_1 = 50, \kappa_2 = 200, \kappa_3 = 400$,
+$\kappa_0 = 0, \kappa_1 = 3, \kappa_2 = 7, \kappa_3 = 15$,
 resulting in $J = 3$ intervals:
 
 ```{r}
-ped2 <- as_ped(Surv(time, status) ~ ., data = veteran, cut = c(0, 50, 200, 400),
-  id = "id")
-ped2 %>% filter(id %in% c(42, 85, 112)) %>% select(-diagtime, -prior)
+ped2 <- as_ped(Surv(days, status) ~ ., data = tumor, cut = c(0, 3, 7, 15), id = "id")
+ped2 %>%
+  filter(id %in% c(132, 141, 145)) %>%
+  select(id, tstart, tend, interval, offset, ped_status, age, sex, complications)
 ```
-Note that now subjects `42` and `85` have only one row in the data set.
-The fact that subject `42` was in the risk set longer than subject `85` is,
-however, still accounted for by the `offset` variable. Note that the `offset`s
-for subject `85` and subject `112` in interval `(50,200]` are only zero
-because subject `85` had an observed event time of `1`, thus `log(1-0)=0` and
-subject `112` had an event at time `51`, thus `log(51-50)=0`:
+Note that now subjects `141` and `145` have both three rows in the data set.
+The fact that subject `141` was in the risk set of the last interval for a longer time than subject `145` is, however, still accounted for by the `offset` variable.
+Note that the `offset` for subject `145` is only `0`, because the last interval for this subject starts at $t=7$ and the subject experienced and event at $t=8$, thus $\log(8-7) = 0$
 
 ```{r}
-veteran %>% slice(c(85, 112))
+tumor %>% slice(c(85, 112))
 ```
 
 
