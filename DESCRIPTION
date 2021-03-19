@@ -17,7 +17,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     mgcv,
-    survival (>= 3.2-10),
+    survival (>= 2.39-5),
     checkmate,
     magrittr,
     rlang,
