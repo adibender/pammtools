@@ -70,7 +70,7 @@ or a confidence band.
 }
 \examples{
 library(ggplot2)
-huron <- data.frame(year = 1875:1880, level = as.vector(LakeHuron)[1:6])
+huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
 h <- ggplot(huron, aes(year))
 h + geom_stepribbon(aes(ymin = level - 1, ymax = level + 1), fill = "grey70") +
     geom_step(aes(y = level))
