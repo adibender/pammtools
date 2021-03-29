@@ -1,4 +1,3 @@
-[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Build Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://travis-ci.org/adibender/pammtools)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&svg=true)](https://ci.appveyor.com/project/adibender/pammtools/branch/master)
 [![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://codecov.io/github/adibender/pammtools/branch/master)

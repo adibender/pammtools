@@ -1,8 +1,7 @@
 #' Survival data of critically ill ICU patients
 #'
 #' A data set containing the survival time (or hospital release time) among
-#' other covariates. This is a subset of the data discussed in
-#' \href{https://academic.oup.com/biostatistics/article-abstract/20/2/315/4852816}{Bender et. al., 2018}.
+#' other covariates.
 #' The full data is available \href{https://github.com/adibender/elra-biostats}{here}.
 #' The following variables are provided:
 #' \describe{
