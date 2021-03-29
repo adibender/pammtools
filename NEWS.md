@@ -1,5 +1,6 @@
-# pammtools 0.5.5
+# pammtools 0.5.6
 + maintenance fix
++ fixes to URLs and DOIs
 
 
 # pammtools 0.5.4
