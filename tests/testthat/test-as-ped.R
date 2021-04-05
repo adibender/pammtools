@@ -2,14 +2,14 @@ context("Test as_ped functions")
 
 test_that("Trafo works and attributes are appended", {
   # preparations
-  data("veteran", package = "survival")
-  veteran <- veteran[c(1:3, 135:137), ]
+  data("tumor")
+  tumor <- tumor[c(1:3, 135:137), ]
   ped <- as_ped(
-    data    = veteran,
-    formula = Surv(time, status)~ trt + age,
+    data    = tumor,
+    formula = Surv(days, status)~ complications + age,
     cut     = c(0, 100, 400))
   # retransform to ped
-  expect_data_frame(ped, nrow = 10L, ncols = 8L)
+  expect_data_frame(ped, nrow = 12L, ncols = 8L)
   expect_is(ped, "ped")
   expect_subset(c("ped_status", "tstart", "tend", "interval", "offset"),
     names(ped))
@@ -20,9 +20,9 @@ test_that("Trafo works and attributes are appended", {
   expect_equal(is.ped(ped), TRUE)
 
   ped <- as_ped(
-    data = veteran,
-    formula = Surv(time, status)~ trt + age)
-  expect_data_frame(ped, nrows = 21L, ncols = 8L)
+    data = tumor,
+    formula = Surv(days, status)~ complications + age)
+  expect_data_frame(ped, nrows = 11L, ncols = 8L)
 
 
 })

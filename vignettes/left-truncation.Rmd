@@ -48,7 +48,7 @@ As an example we use the data already discussed in the [left-truncation section]
 
 We first we load some libraries as well as the data.
 
-```{r}
+```{r, message = FALSE}
 library(eha)
 library(pammtools)
 library(ggplot2)

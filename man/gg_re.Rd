@@ -16,12 +16,11 @@ Plot Normal QQ plots for random effects
 }
 \examples{
 library(pammtools)
-data("lung", package="survival")
-lung$inst <- as.factor(lung$inst) # for mgcv
-ped <- lung \%>\%
+data("patient")
+ped <- patient \%>\%
  dplyr::slice(1:100) \%>\%
- as_ped(Surv(time, status)~ph.ecog + inst, id="id")
-pam <- mgcv::gam(ped_status ~ s(tend) + ph.ecog + s(inst, bs="re"),
+ as_ped(Surv(Survdays, PatientDied)~ ApacheIIScore + CombinedicuID, id="CombinedID")
+pam <- mgcv::gam(ped_status ~ s(tend) + ApacheIIScore + s(CombinedicuID, bs="re"),
  data=ped, family=poisson(), offset=offset)
 gg_re(pam)
 plot(pam, select = 2)

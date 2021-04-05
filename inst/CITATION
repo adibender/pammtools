@@ -15,18 +15,17 @@ citEntry(
   entry = "Article",
   author = "Andreas Bender and Andreas Groll and Fabian Scheipl",
   title = "A generalized additive model approach to time-to-event analysis",
-  textVersion = "Andreas Bender, Andreas Groll and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling, https://doi.org/10.1177/1471082X17748083.",
+  textVersion = "Andreas Bender, Andreas Groll and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling.",
   journal = "Statistical Modelling",
   year = "2018",
-  URL = "https://doi.org/10.1177/1471082X17748083"
+  url = "https://journals.sagepub.com/doi/10.1177/1471082X17748083"
 )
 
 citEntry(
   entry = "Article",
   author = "Bender, Andreas and Scheipl, Fabian and Hartl, Wolfgang and Day, Andrew G and K\u00fcchenhoff, Helmut",
   title = "Penalized estimation of complex, non-linear exposure-lag-response associations",
-  textVersion = "Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut K\u00fcchenhoff; Penalized estimation of complex, non-linear exposure-lag-response associations, Biostatistics, , kxy003, https://doi.org/10.1093/biostatistics/kxy003",
+  textVersion = "Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut K\u00fcchenhoff; Penalized estimation of complex, non-linear exposure-lag-response associations, Biostatistics, , kxy003",
   journal = "Biostatistics",
-  year = "2018",
-  URL = "https://doi.org/10.1093/biostatistics/kxy003"
+  year = "2019"
 )

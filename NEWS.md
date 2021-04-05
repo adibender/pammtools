@@ -1,3 +1,8 @@
+# pammtools 0.5.6
++ maintenance fix
++ fixes to URLs and DOIs
+
+
 # pammtools 0.5.4
 + updates to the `split_data` function that now accepts `Surv(start, stop, event)` type inputs, e.g., to construct left-truncated data.
 + Support and [vignette for left truncated data](https://adibender.github.io/pammtools/articles/left-truncation.html)

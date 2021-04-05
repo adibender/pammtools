@@ -12,8 +12,7 @@ patient
 }
 \description{
 A data set containing the survival time (or hospital release time) among
-other covariates. This is a subset of the data discussed in
-\href{https://doi.org/10.1093/biostatistics/kxy003}{Bender et. al., 2018}.
+other covariates.
 The full data is available \href{https://github.com/adibender/elra-biostats}{here}.
 The following variables are provided:
 \describe{
