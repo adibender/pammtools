@@ -134,3 +134,12 @@ test_that("Trafo works for recurrent events data", {
   )
 
 })
+
+
+test_that("Trafo works for multi-state data", {
+
+
+
+
+  }
+)

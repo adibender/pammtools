@@ -331,7 +331,8 @@ get_event_types <- function(data, formula, censor_code) {
 #' ped_re <- as_ped_multistate(
 #'   formula = Surv(tstart, tstop, status) ~ age + enum,
 #'   data = cgd2,
-#'  transition = "enum")
+#'  transition = "enum",
+#'  timescale = "calendar")
 #' }
 #' @rdname as_ped
 #' @export
