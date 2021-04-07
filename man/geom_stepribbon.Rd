@@ -11,6 +11,7 @@ geom_stepribbon(
   data = NULL,
   stat = "identity",
   position = "identity",
+  direction = "hv",
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -43,6 +44,10 @@ layer, as a string.}
 
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
+
+\item{direction}{direction of stairs: 'vh' for vertical then horizontal,
+'hv' for horizontal then vertical, or 'mid' for step half-way between
+adjacent x-values.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
