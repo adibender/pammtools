@@ -62,6 +62,7 @@ split_data <- function(
 
   # obtain interval breaks points
   cut <- get_cut(data, formula_cut, cut = cut, max_time = max_time)
+  cut <- sort(unique(cut))
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)
@@ -128,7 +129,7 @@ split_data <- function(
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
-  attr(split_df, "breaks") <- cut
+  attr(split_df, "breaks") <- sort(unique(cut))
   attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
@@ -259,7 +260,7 @@ split_data_multistate <- function(
     "ped_status")
   dots_in$transition <- transition
   dots_in$timescale <- timescale
-  dots_in$cut <- cuts
+  dots_in$cut <- sort(unique(cuts))
   dots_in$max_time <- max_time
   dots_in$event  <- event
   dots_in$min_events <- min_events

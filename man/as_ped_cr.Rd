@@ -76,7 +76,8 @@ cgd2 <- cgd \%>\%
 ped_re <- as_ped_multistate(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2,
- transition = "enum")
+ transition = "enum",
+ timescale = "calendar")
 }
 }
 \keyword{internal}

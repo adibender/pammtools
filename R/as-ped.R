@@ -262,6 +262,7 @@ as_ped_cr <- function(
   )
   if(length(cut) > 1 & combine) {
     cut <- list(reduce(cut, union))
+    cut <- sort(unique(cut))
   }
 
   ped <- map2(
@@ -365,7 +366,7 @@ as_ped_multistate <- function(
   dots            <- list(...)
   dots$data       <- data
   dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-  dots$cut        <- cut
+  dots$cut        <- sort(unique(cut))
   dots$max_time   <- max_time
   dots$transition <- transition
   dots$min_events <- min_events
