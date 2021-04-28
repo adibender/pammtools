@@ -262,7 +262,6 @@ as_ped_cr <- function(
   )
   if(length(cut) > 1 & combine) {
     cut <- list(reduce(cut, union))
-    cut <- sort(unique(cut))
   }
 
   ped <- map2(
