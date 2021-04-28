@@ -5,7 +5,14 @@
 \title{Function to transform data without time-dependent covariates into piece-wise
 exponential data format}
 \usage{
-split_data(formula, data, cut = NULL, max_time = NULL, ...)
+split_data(
+  formula,
+  data,
+  cut = NULL,
+  max_time = NULL,
+  multiple_id = FALSE,
+  ...
+)
 }
 \arguments{
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
@@ -27,6 +34,10 @@ If unspecified, all unique event times will be used.}
 \item{max_time}{If \code{cut} is unspecified, this will be the last
 possible event time. All event times after \code{max_time}
 will be administratively censored at \code{max_time}.}
+
+\item{multiple_id}{Are occurences of same id allowed (per transition).
+Defaults to \code{FALSE}, but is sometimes set to \code{TRUE}, e.g., in case of
+multi-state models with back transitions.}
 
 \item{...}{Further arguments passed to the \code{data.frame} method and
 eventually to \code{\link[survival]{survSplit}}}

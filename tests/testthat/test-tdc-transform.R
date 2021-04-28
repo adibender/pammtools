@@ -4,7 +4,7 @@ context("Transformation with TDC")
 test_that("Concurrent TDC are transformed correctly", {
   data("pbc", package = "survival")
   # default case with lag = 0
-  event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = status == 1)
+  event_df <- filter(pbc, id %in% 1:3) %>% mutate(status = 1L*(status == 1))
   tdc_df <- filter(pbcseq, id %in% 1:3) %>% select(id, day, bili, protime)
   time <- sort(unique(event_df$time))[1:2]
   tz <- sort(unique(tdc_df$day))

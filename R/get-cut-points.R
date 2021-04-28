@@ -36,7 +36,7 @@ get_cut.default <- function(
   }
   # sort interval cut points in case they are not (so that interval factor
   # variables will be in correct ordering)
-  sort(cut)
+  sort(unique(cut))
 
 }
 
@@ -71,5 +71,6 @@ get_cut.list <- function (
   )
 
   cuts <- Reduce(union, cuts)
+  sort(unique(cuts))
 
 }

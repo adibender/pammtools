@@ -277,3 +277,238 @@ eta_cumu <- function(data, fcumu, cut, ...) {
       sum(.data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
 
 }
+
+#' Simulate data for competing risks scenario
+#'
+#'
+#' @keywords internal
+sim_pexp_cr <- function(formula, data, cut) {
+  # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
+  Form <- Formula(formula)
+  # Extract the right handside of the Formula
+  F_rhs <- attr(Form, "rhs")
+  l_rhs <- length(F_rhs)
+  seq_rhs <- seq_len(l_rhs)
+
+  # Andreas: Bekomme das mit dplyr nicht vernünftig hin, geht das irgendwie schöner?
+
+  if (!("id" %in% names(data))) {
+    data$id <- 1:(nrow(data))
+  }
+
+  if (!("t" %in% names(data))) {
+    data$t <- 0
+  }
+
+  data <- data %>%
+    mutate(
+      time   = max(cut),
+      status = 1
+    )
+
+  # construct eta for time-constant part
+  # offset (the log of the duration during which the subject was under risk in that interval)
+
+  ped  <- split_data(
+    formula = Surv(time, status)~.,
+    data    = select_if(data, is_atomic),
+    cut     = cut,
+    id      = "id") %>%
+    mutate(
+      t = t + tstart
+    )
+
+  # calculate cause specific hazards
+  # ped = environment, t von ped wird according formula ausgewertet
+  # TVE: association of the feature with the outcome changes over time ~ x2*(t^2)
+  # TVF: features can change their value during the observation period e.g: ~ sin(x2)*t
+
+  for (i in seq_rhs) {
+    ped[[paste0("hazard", i)]] <-  exp(eval(F_rhs[[i]], ped))
+  }
+  ped[["rate"]] <- reduce(ped[paste0("hazard", seq_rhs)], `+`)
+
+  # simulate survival times
+
+  sim_df <- ped %>%
+    group_by(id) %>%
+    mutate(
+      # Wenn eine Zeit größer als der maximale Beobachtungszeitraum gezogen wurde, dann wird der Status auf 0 gesetzt und die maximale Beobachtungszeit als time verwendet
+      # tstart statt t
+      time   = rpexp(rate = .data$rate, t = .data$tstart),
+      status = 1L * (.data$time <= max(cut)),
+      time   = pmin(.data$time, max(cut)),
+      # t wieder ins "Original" zurückrechnen, muss später auf die Waitingtime drauf gerechnet werden
+      t = .data$t - .data$tstart
+    ) %>%
+    filter(.data$tstart < .data$time & .data$time <= .data$tend)
+
+
+
+  # Ziehe aus den möglichen hazards eins mit den entsprechenden Wahrscheinlichkeiten
+  sim_df$type <- apply(sim_df[paste0("hazard", seq_rhs)], 1,
+    function(probs)
+      sample(seq_rhs, 1, prob = probs))
+
+  sim_df %>%
+    select(-one_of(c("tstart", "tend", "interval", "offset", "ped_status", "rate")))
+
+}
+
+
+#' Simulate data for multi-state models
+#'
+#' @rdname sim_pexp
+#' @inherit sim_pexp
+#' @param tmat Transition matrix containing the log-hazard definition for each transition.
+#' Transitions that can not occurr should contain a \code{NA}.
+#' @param proportion_censoring The proportion of censored observations
+#' @param keep_transitions_at_risk Logical. If \code{TRUE} (default), all transitions
+#' for which a subject was at risk will be included in the data set.
+#' @export
+#' @keywords internal
+#' @examples
+#' t_mat <- matrix(data = NA, nrow = 3, ncol = 3)
+#' t_mat[1,2] <- "log(0.7) + x1"
+#' t_mat[1,3] <- "log(0.5) - 0.25 * x2"
+#' t_mat[2,3] <- "log(0.9)"
+#'
+#' n = 100
+#' data <- cbind.data.frame(
+#'  id = 1:n,
+#'  x1 = runif(n, -3, 3),
+#'  x2 = runif(n, 0, 6),
+#'  from = 1,
+#'  t = 0)
+#'
+#' cut =  seq(0, 3, by = 0.01)
+#'
+#' msm_df <- sim_pexp_msm(
+#'  t_mat = t_mat,
+#'  data = data,
+#'  cut = cut,
+#'  proportoin_censoring = 0.3,
+#'  keep_transitions_at_risk = TRUE)
+#' head(msm_df)
+#'
+sim_pexp_msm <- function(
+  t_mat,
+  data,
+  cut,
+  proportoin_censoring = 0.3,
+  keep_transitions_at_risk = FALSE ) {
+
+  # Aus der Transition Matrix können die Transition-States abgelesen werden
+  trans_states <- which(apply(t_mat,1, function(x) !all(is.na(x))))
+
+  # cens_time <- c(
+  #   rep(max(cut), times = floor( (1 - proportoin_censoring)*nrow(data))),
+  #   runif((nrow(data) - floor((1 - proportoin_censoring)*nrow(data))), 0, max(cut))
+  # )
+  # data$cens_time <- sample(cens_time)
+
+  # Initialize object where results are stored
+  results <- NULL
+  sim_df <- NULL
+  trans_not_made <- NULL
+
+
+  while (nrow(data) > 0) {
+
+    # Für jeden Transition state
+    for (i in seq_along(trans_states)) {
+      # Welche Beobachtungen befinden sich in diesem Status
+      if (nrow(data[data$from == i,]) == 0) next
+      # Welche Hazards führen von diesem Status weg
+      form <- as.Formula(paste("~ ", paste(t_mat[i,which(!is.na(t_mat[i,]))], collapse = "|")))
+      # Führe für jede der Beobachtungen in dem state ein CR Experiment durch
+      # Speichere die Ergebnisse in einem Dataframe
+      results <- rbind(results,
+        sim_pexp_cr(form, data[data$from == i,], cut = cut) %>%
+          mutate(
+            time = time + t,
+            to =  which(!is.na(t_mat[i,]))[type]
+          ) %>%
+          select(-one_of(paste0("hazard",seq_len(length(attr(form,"rhs"))))))
+      )
+
+
+      if (keep_transitions_at_risk) {
+        # Alle Transitions, die nicht gemacht wurden, aber theoretisch möglich gewesen wären, sollen als zensiert im Dataframe auftauchen (Vgl. mstate)
+        trans_not_made <- rbind(trans_not_made,
+          results %>%
+            slice(rep(row_number(),length(attr(form, "rhs")) )) %>%
+            mutate(
+              pos_types = seq_len(length(attr(form, "rhs"))),
+              status = if_else(type != pos_types, 0, 1),
+              to =  which(!is.na(t_mat[i,]))[pos_types]
+            ) %>%
+            filter(
+              type != pos_types
+            ) %>%
+            mutate(
+              pos_types = NULL
+            )
+
+        )
+
+      }
+
+    }
+
+    sim_df <- rbind(sim_df, results, trans_not_made)
+
+    data <- data %>%
+      left_join(
+        results[,c("id", "to", "time","status")], by = "id") %>%
+      filter(
+        status != 0 & to %in% trans_states) %>%
+      mutate(
+        from   = to,
+        to     = NULL,
+        t      = t + time,
+        time   = NULL,
+        status = NULL
+      )
+    # results und trans_not_made wieder leeren
+    results <- NULL
+    trans_not_made <- NULL
+
+    # Ergebnisframe sortieren, ids untereinander und nach Transitionzeiten sortieren
+    sim_df <- sim_df %>%
+      group_by(id) %>%
+      arrange(time, .by_group = TRUE)
+    # Solange, wie sich Individuen in data befinden gibt es id's in transient States, und das Vorgehen wird wiederholt
+  }
+
+  # sim_df aufräumen
+  sim_df <- sim_df %>%
+    mutate(
+      status = status * (time <= max(cut)),
+      time   = pmin(time, max(cut)),
+      tstart = t,
+      tstop  = time,
+      gap    = tstop - tstart,
+      time   = NULL,
+      t      = NULL,
+      type   = NULL,
+      transition = as.numeric(paste0(from, to))
+    ) %>%
+    relocate(to, .after = from)
+
+  return(sim_df)
+
+}
+
+
+# #' Add censoring to a time-to-event data set
+# #'
+# #'
+# add_censoring <- function(
+#   data,
+#   formula,
+#   x,
+#   ...
+# ) {
+#     UseMethod("add_censoring", x)
+# }
