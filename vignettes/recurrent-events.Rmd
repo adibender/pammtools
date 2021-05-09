@@ -1,133 +1,245 @@
 ---
 title: "Recurrent Events"
-author: "Andreas Bender"
+author: "Jordache Ramjith, Andreas Bender, Kit C.B. Roes & Marianne A. Jonker"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+number_sections: true
 vignette: >
   %\VignetteIndexEntry{recurrent-events}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
+link-citations: yes
 ---
 
-```{r, echo = FALSE}
-library(knitr)
-opts_chunk$set(
-  fig.align  = "center",
-  cache      = TRUE,
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  tidy.opts  = list(width.cutoff = 80),
+  echo       = TRUE,
   message    = FALSE,
-  fig.height = 5,
-  fig.width  = 5,
-  dpi        = 300
-)
-library(ggplot2)
-theme_set(theme_bw())
+  fig.align  = "center",
+  crop       = TRUE,
+  cache      = TRUE,
+  fig.width  = 7,
+  fig.height = 3.5)
 ```
 
-In this article we illustrate how to fit recurrent events data using pammtools.
-In general, recurrent events can be mostly treated as standard PAMMs, however,
-the dependencies between observations of the same subject have to be accounted for and potentially the dependencies of the hazards on the past, e.g., number of (previous) events, time since last event, time since beginnng of follow up, etc.
+# Introduction
+We illustrate application of PAMMs in the analysis of the effect of HIV exposure on the time to staphylococcus aureaus infection in children, with possible recurrences. This guide is setup to make the code used for the manuscript results available. The children are anonymized and random `id`s were generated.
 
-For the data transformation, there are two possibilities, depending on the time-scale that is chosen for analysis
-
-  - gap-time scale (also "clock-reset"): Each occurrence of an event resets the clock, such that the follow up of a subjects is reset to 0
-  - calendar-time scale (also "clock-forward"): The follow up is defined as usual. If an event occurs for a subject, the status variable is set to 1 in the respective interval.
-
-The hazard is given by
-
-$$
- \lambda
-    \left(
-    {t\ |}\;\mathbf{x}_i,k,z_i
-    \right)
-    = \mathrm{exp}
-        \left(
-            {\beta }_{0,k} +
-            f_{0,k}(t_j) +
-            \sum^P_{p=1}{f_p(x_{i,p},t_j)} +
-            z_i
-        \right)   \qquad \forall \ t\ \epsilon \ ({\tau }_{j-1},{\tau }_j],
-$$
-
-
-where $k$ is the event number. Thus, we can estimate different (baseline) hazards for each of the events (stratification). Further we could interact the other covariates with the event number, if we assume that the effects of the covariates
-can be different for the invididual spells. $z_i, i=1,\ldots,n$ are the random effects (frailties) of the individual subjects, for which we assume Gaussian distribution.
-
-
-# Chronic granolotomous disease (CGD)
-Here we illustrate application of PAMMs to recurrent events data using data
-on chronic granolotomous disease (CGD), which is available from the **`survival`** package. An overview of the data is given below. Subject with ID 1, has an event at $t=219$ and $t=373$ and is censored for the third event at $t=414$. Subject two
-was at risk for eight events, a rarity in this data set, as only few subjects had
-more than one or two events.
+## Packages
+See the package page for more details. The package **`mgcv`** is used for building the actual PAMM. We also use additional packages for data wrangling and visualization.
 
 ```{r}
-library(dplyr)
-library(pammtools)
 library(mgcv)
-# data
-# data
-data("cgd", package = "survival")
-cgd <- cgd %>% mutate(id = as.factor(id))
-cgd %>%
-  filter(id %in% c(1:2)) %>%
-  select(id, enum, tstart, tstop, status, treat, age)
-table(cgd$enum)
+# library(pammtools)
+devtools::load_all()
+library(dplyr) #data wrangling
+library(ggplot2) #visualization
+library(ggpubr) #visualization
+```
+
+## Time until staphylococcus aureaus infection in children
+
+The data set (`staph`), is contained within the **`pammtools`** package and includes 374 observations from 137 children (from the Drakenstein child health study) with a maximum of 6 recurrences. The `staph` data is in longitudinal format reflecting the recurrences for children over different rows. Here
+
+- `t.start` and `t.stop` indicate the entry and exit time into the risk set for the respective recurrences
+- `event` indicates whether the $k$-th recurrence was observed (1 = yes, 0 = censored for the $k$-th recurrence)
+- `enum` is the event number $k$
+- `HIVexposure` indicates whether the mother of the child was HIV positive (1 = yes, 0 = no)
+
+```{r}
+data("staph")
+head(staph)
+```
+
+The data for the first two children are
+
+```{r}
+staph %>% filter(id %in% c("1", "2"))
 ```
 
 
+## Transformation to PED format
+In order to apply PAMMs to recurrent events, we first transform the data to the *piece-wise exponential data* (PED) format (see [here](https://adibender.github.io/pammtools/articles/data-transformation.html) for details). We use the `as_ped()` function in **`pammtools`**. For the data transformation in the recurrent events context, we first need to decide whether analysis should be performed on the calendar- or gap-time scale. This is controlled by the `timescale` argument (see below). For these data, we use the gap-time.
 
-## Analysis Gap-time Scale
-In this section, we perform the analysis on the gap-time scale. The data transformation is similar to the data transformation for single-event data. Note however, that the `Surv` object contains information about the entry and exit time for each of the spells (event numbers), and we have to specify the `transition` variable, that stores the information about the event for which the subject is at risk in the respective rows (time-intervals). Transformation on the gap-time scale is the default and therefore doesn't have to be specified (for analysis on the calendar-time scale, specify the `timescale` argument).
+The individual inputs for the data transformation are given as follows:
+
+- `formula`: specifies the `Surv` object on the left hand side which contains
+information about the risk set entry and exit times as well as the event indicator; and the variables that should be retained in the data set after data transformation.
+Note that the variables `id` and `enum` will be retained in the data without
+specification.
+- `id`: specifies the variable in the data set the indicates individual subjects
+- `data`: the data to be transformed
+- `transition`: the variable that indicates transitions from one state to another (here state transitions are transitions from event number $k-1$ to $k$)
+- `timescale`: the time scale of the output data (defaults to gap time)
+- `max_time`: The maximum time considered. All observations with $t>max\_time$ will be set to `max_time` and their event indicator set to $0$. Here we restrict the follow-up to `366` days, as it marks one year under observation and few children were under observation beyond that time.
+- `cut`: This argument is unspecified here, but could be used to control the time points at which the follow-up is partitioned. If unspecified, all unique event times are used as cut points.
 
 
 ```{r}
-# gaptime scale
-ped_gt <- as_ped(
- formula    = Surv(tstart, tstop, status) ~ center + treat + sex + age + height +
-  weight + inherit + steroids + propylac + hos.cat,
- data       = cgd,
- transition = "enum")
+ped <- as_ped(
+  formula     = Surv(t.start,t.stop,event) ~ hiv,
+  id          = "id",
+  data        = staph,
+  transition  = "enum",
+  timescale   = "gap",
+  max_time    = 366)
 ```
 
-An overview of the transformed data is given below for subject 1 (first 3 interval and the last one). Note that the interval boarders are the same for each spell.
+The resulting data for the first two infants is indicated below (we show the first and last observation of each infant for each event number they were at risk):
 
 ```{r}
-ped_gt %>%
-  select(id, tstart, tend, ped_status, enum, age) %>%
-  filter(id == 1) %>%
-  group_by(enum) %>%
-  slice(c(1:3, n()))
+ped %>%
+  filter(id %in% c("1", "2")) %>%
+  group_by(id, enum) %>%
+  slice(1, n())
 ```
 
-As there are only few observations with more than two events, fitting separate
-baseline hazards for any event number beyond 2 doesn't make sense in this case.
-A standard approach is therefore to recode the 2nd event to 2+. Note however, that the data still contains all observations for each subject, we just use the transformed variable (`enum2`) for stratification.
+
+## Baseline model {#id}
+
+### Model specification
+
+We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced more than 3 events. So we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use `enum_strata` for stratification when estimating the baseline hazard.
 
 ```{r}
-ped_gt <- ped_gt %>% mutate(enum2 = as.factor(ifelse(enum >= 2, "2+", "1")))
-ped_gt %>% filter(id == 1) %>%
-  group_by(enum) %>%
-  slice(1:3) %>%
-  select(id, interval, enum, enum2)
+ped <- ped %>%
+  mutate(enum_strata = as.factor(ifelse(enum > 1,"recurrent","first")))
 ```
 
-An overview of the model and the estimated smooth effects is given below:
+Using this data, we fit the following model
 
-```{r cache = TRUE}
-pam_gt <- bam(
-  formula = ped_status ~
-    s(tend, k = 5) + s(tend, by = as.ordered(enum2), k = 5) + enum2 + # stratified baseline hazard
-    s(height) + s(weight) + s(age) +
-    treat + sex + inherit + steroids + propylac + hos.cat +
-    s(id, bs = "re"),
-  data   = ped_gt,
-  family = poisson(),
-  offset = offset)
+$$
+\lambda(t,k|z_i) = \exp(\beta_{0k} + f_{0,k}(t) + z_i),
+$$
+
+where $z_i\sim N(0, \sigma_z^2)$ are Gaussian, child specific random effects that account for child-specific frailty and $\beta_{0k}$ and $f_{0k}$ are the constant (intercept) and non-linear parts of the log-baseline hazard of the $k$-th event. Given the data transformation, this is equivalent to fitting a stratified PAM (see [here](https://adibender.github.io/pammtools/articles/strata.html) for details), where stratification is done w.r.t. to `enum_strata`.
+
+### Fitting the model
+Details on the model specification in **`R`** are given below. Note that
+we use the `pamm` function to fit the model, which is a wrapper to `mgcv::gam` or `mgcv::bam`, but direct modeling of the data using any suitable package/function would also be possible. The other arguments are passed to the respective fitting function.
+
+In the formula argument,
+
+- `s(tend, by = enum_strata)` indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using `by=enum_strata` inside `s()` and including `enum_strata` in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and
+- `s(id, bs = "re")` indicates a random effect (frailty) for each child.
+
+```{r}
+pamm0 <- pamm(
+  ped_status ~ enum_strata + s(tend, by = enum_strata) + s(id, bs = "re"),
+  data     = ped,
+  engine   = "bam",
+  method   = "fREML",
+  discrete = TRUE)
 ```
 
-The summary output and visualization of smooth covariate effects indicates that
-only age has a relevant effect on the hazard for an event, although uncertainty is high and a zero effect is possible.
+The resulting model summary output shown below is separated into two parts, one for the "parametric coefficients" and one for the "smooth terms". In case of smooth terms, the estimated degrees of freedom (edf) gives us an idea of how "wiggly" the respective smooth functions are, and the p-values test whether overall these are different from a flat line [@wood_p-values_2013]. For the random effects terms, we report their estimated variances and p-values. From the output, we see that the random effects are statistically insignificant $(p=0.249)$.
 
-```{r, fig.width = 6, fig.height = 3, out.width = "500px"}
-summary(pam_gt)
-gg_smooth(ped_gt, pam_gt, terms = c("height", "weight", "age"))
+```{r}
+summary(pamm0)
 ```
+
+The standard deviation of the random effects is also relatively small and can be extracted using the `gam.vcomp` command:
+
+```{r}
+gam.vcomp(pamm0)
+```
+
+In total, this indicates, that random effects are not required in this model.
+We therefore omit the random effects in the following.
+
+```{r}
+pamm0 <- update(pamm0, .~. - s(id, bs = "re"))
+summary(pamm0)
+```
+The results are very similar to the ones obtained previously.
+
+
+### Estimates over time and visualization
+
+To obtain and visualize any quantity based on the fitted model, it is easiest to create a suitable data set and calculate the quantity of interest. **`pammtools`** provides the respective convenience functions.
+
+Below we illustrate the calculation and visualization of the baseline hazard over time, where we use
+
+- `make_newdata` to create a data set with one row for each unique event time used when fitting the model, stratified by event stratum. `make_newdata` constructs a combination of the variables specified (here unique values of `tend` for each value of `enum_strata`, similar to `expand.grid`, and sets all other variables to mean and modus values, if applicable). It is also aware of the specific PED structure.
+- use the `add_hazard` function to augment the created data set with the predicted hazard and respective confidence intervals.
+
+Once the data is created and augmented with the predicted hazard, we can use standard visualization function to create the graphics:
+
+
+```{r, warnings=FALSE}
+newdata <- ped %>%
+  make_newdata(
+    tend = unique(tend),
+    enum_strata = unique(enum_strata)) %>%
+  add_hazard(pamm0, type = "response")
+
+ggplot(newdata, aes(x = tend/(365.25/12), y = hazard*365.25)) +
+  geom_line() +
+  geom_ribbon(aes(ymin  = ci_lower*365.25, ymax = ci_upper*365.25), alpha = .3) +
+  ylab(expression(hat(h)(t))) + xlab("Time (months)") +
+  scale_x_continuous(limits = c(0, 12.5),breaks=seq(0,12,2),expand=c(0,0)) +
+  facet_wrap(~enum_strata)
+```
+
+We can see, that the hazard for the first event is high in the beginning and declines over time, as most children will have had the first infection after one year of life.  Consequently, the hazard for recurrence is low in the beginning and increases over time before it flattens out after about two months.
+
+Calculation of survival probabilities works equivalently, except that we use the
+`add_surv_prob` function instead of `add_hazard`. Note that calculating the survival probability involves calculating a cumulative hazard. Thus, when there is a grouping structure in the data (here the different strata), we have to group by this variable before we calculate cumulative hazards or survival probabilities. Note also,
+that we use `geom_surv` in order to force the function to start at a survival probability of 1.
+
+```{r}
+newdata <-newdata %>%
+  group_by(enum_strata) %>%
+  add_surv_prob(pamm0)
+
+ggplot(newdata, aes(x = tend/(365.25/12), y = surv_prob)) +
+  geom_surv() +
+  geom_ribbon(aes(ymin  = surv_lower, ymax = surv_upper), alpha = .3) +
+  ylab(expression(hat(S)(t))) + xlab("Time (months)") +
+  scale_x_continuous(limits = c(0, 12.1)) +
+  facet_wrap(~enum_strata)
+```
+
+
+## Modeling the effects of HIV assuming proportional hazards
+
+The HIV exposure variable indicates whether children were HIV exposed and uninfected (HEU) by being born to HIV positive mothers or HIV uninfected (HU). We will fit this model in the PAMM framework to evaluate the effect of HIV exposure while assuming proportional hazards. This means that the effects of HIV shift the log-hazard by some constant over time. We fit two models. In the first model, we assume that the hazard ratio is the same for first and recurrent infections. In the second model, we allow different hazard ratios for first and recurrent infections, but we still assume both these hazard ratios are proportional over time.
+
+###  Model 1
+
+```{r}
+pamm1 <- pamm(
+  formula  = ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv,
+  data     = ped,
+  engine   = "bam",
+  method   = "fREML",
+  discrete = TRUE)
+
+summary(pamm1)
+```
+
+We can see that estimated effect of HIV exposure in terms of the hazard ratio is
+$HR=\exp(0.2681)=1.31\;(p=0.062)$.
+
+### Model 2
+
+```{r}
+pamm2 <- pamm(
+  formula  = ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv:enum_strata,
+  data     = ped,
+  engine   = "bam",
+  method   = "fREML",
+  discrete = TRUE)
+
+summary(pam2)
+```
+
+We can see that estimated effect of HIV exposure in terms of the hazard ratio is
+$HR=\exp(-0.0201)=0.98\;(p=0.925)$ for the first infection and $HR=\exp(0.5427)=1.72\;(p=0.006)$ for recurrent infections.
+
+
+These models can also easily be fitted using the popular survival functions in `R` like `coxph()`. Here we showed how they can be fitted using PAMMs.
+
+
+## References
