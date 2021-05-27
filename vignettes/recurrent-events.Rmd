@@ -24,18 +24,16 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction
-We illustrate application of PAMMs in the analysis of the effect of HIV exposure on the time to staphylococcus aureaus infection in children, with possible recurrences. This guide is setup to make the code used for the manuscript results available. The children are anonymized and random `id`s were generated.
+We illustrate application of PAMMs in the analysis of the effect of HIV exposure on the time to staphylococcus aureaus infection in children, with possible recurrences. The children are anonymized and random `id`s were generated.
+The following packages are used in this analysis:
 
-## Packages
-See the package page for more details. The package **`mgcv`** is used for building the actual PAMM. We also use additional packages for data wrangling and visualization.
 
 ```{r}
 library(mgcv)
-# library(pammtools)
-devtools::load_all()
+library(pammtools)
 library(dplyr) #data wrangling
 library(ggplot2) #visualization
-library(ggpubr) #visualization
+theme_set(theme_bw())
 ```
 
 ## Time until staphylococcus aureaus infection in children
@@ -100,7 +98,7 @@ ped %>%
 
 ### Model specification
 
-We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced more than 3 events. So we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use `enum_strata` for stratification when estimating the baseline hazard.
+We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced 3 or more events. Therefore, we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use `enum_strata` for stratification when estimating the baseline hazard.
 
 ```{r}
 ped <- ped %>%
@@ -121,19 +119,19 @@ we use the `pamm` function to fit the model, which is a wrapper to `mgcv::gam` o
 
 In the formula argument,
 
-- `s(tend, by = enum_strata)` indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using `by=enum_strata` inside `s()` and including `enum_strata` in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and
+- `s(tend, by = enum_strata)` indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using `by=enum_strata` inside `s()` and including `enum_strata` as a fixed effect in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and
 - `s(id, bs = "re")` indicates a random effect (frailty) for each child.
 
 ```{r}
 pamm0 <- pamm(
-  ped_status ~ enum_strata + s(tend, by = enum_strata) + s(id, bs = "re"),
+  formula  = ped_status ~ enum_strata + s(tend, by = enum_strata) + s(id, bs = "re"),
   data     = ped,
   engine   = "bam",
   method   = "fREML",
   discrete = TRUE)
 ```
 
-The resulting model summary output shown below is separated into two parts, one for the "parametric coefficients" and one for the "smooth terms". In case of smooth terms, the estimated degrees of freedom (edf) gives us an idea of how "wiggly" the respective smooth functions are, and the p-values test whether overall these are different from a flat line [@wood_p-values_2013]. For the random effects terms, we report their estimated variances and p-values. From the output, we see that the random effects are statistically insignificant $(p=0.249)$.
+As usual for **`mgcv`** objects, the resulting model summary output shown below is separated into two parts, one for the "parametric coefficients" and one for the "smooth terms". In case of smooth terms, the estimated degrees of freedom (edf) gives us an idea of how "wiggly" the respective smooth functions are, and the p-values test whether overall these are different from a flat line [@wood_p-values_2013]. For the random effects terms, we report their estimated variances (`gam.vcomp`) and p-values (summary output). From the output, we see that the random effects are statistically insignificant $(p=0.249)$.
 
 ```{r}
 summary(pamm0)
@@ -145,14 +143,13 @@ The standard deviation of the random effects is also relatively small and can be
 gam.vcomp(pamm0)
 ```
 
-In total, this indicates, that random effects are not required in this model.
+The results indicate that random effects are not required in this model.
 We therefore omit the random effects in the following.
 
 ```{r}
 pamm0 <- update(pamm0, .~. - s(id, bs = "re"))
 summary(pamm0)
 ```
-The results are very similar to the ones obtained previously.
 
 
 ### Estimates over time and visualization
@@ -237,9 +234,6 @@ summary(pam2)
 
 We can see that estimated effect of HIV exposure in terms of the hazard ratio is
 $HR=\exp(-0.0201)=0.98\;(p=0.925)$ for the first infection and $HR=\exp(0.5427)=1.72\;(p=0.006)$ for recurrent infections.
-
-
-These models can also easily be fitted using the popular survival functions in `R` like `coxph()`. Here we showed how they can be fitted using PAMMs.
 
 
 ## References
