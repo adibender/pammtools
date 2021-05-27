@@ -147,8 +147,8 @@ The results indicate that random effects are not required in this model.
 We therefore omit the random effects in the following.
 
 ```{r}
-pamm0 <- update(pamm0, .~. - s(id, bs = "re"))
-summary(pamm0)
+pam0 <- update(pamm0, .~. - s(id, bs = "re"))
+summary(pam0)
 ```
 
 
@@ -206,14 +206,14 @@ The HIV exposure variable indicates whether children were HIV exposed and uninfe
 ###  Model 1
 
 ```{r}
-pamm1 <- pamm(
+pam1 <- pamm(
   formula  = ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv,
   data     = ped,
   engine   = "bam",
   method   = "fREML",
   discrete = TRUE)
 
-summary(pamm1)
+summary(pam1)
 ```
 
 We can see that estimated effect of HIV exposure in terms of the hazard ratio is
@@ -222,7 +222,7 @@ $HR=\exp(0.2681)=1.31\;(p=0.062)$.
 ### Model 2
 
 ```{r}
-pamm2 <- pamm(
+pam2 <- pamm(
   formula  = ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv:enum_strata,
   data     = ped,
   engine   = "bam",
