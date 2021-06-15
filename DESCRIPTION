@@ -35,7 +35,7 @@ Suggests:
     testthat
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/adibender/pammtools
+URL: https://adibender.github.io/pammtools/
 BugReports: https://github.com/adibender/pammtools/issues
 RoxygenNote: 7.1.1
 Encoding: UTF-8
