@@ -74,6 +74,7 @@ articles:
     - cumulative-effects
     - convenience
     - competing-risks
+    - recurrent-events
     - smj-tutorial
 
 navbar:
