@@ -32,7 +32,13 @@ Imports:
     pec,
     vctrs (>= 0.3.0)
 Suggests:
-    testthat
+    TBFmultinomial,
+    etm,
+    testthat,
+    scam,
+    coxme,
+    eha,
+    timereg
 License: MIT + file LICENSE
 LazyData: true
 URL: https://adibender.github.io/pammtools/
