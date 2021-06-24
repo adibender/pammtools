@@ -36,6 +36,13 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("pkgdown")
+          # Vignette dependencies
+          remotes::install_cran("TBFmultinomial")
+          remotes::install_cran("etm")
+          remotes::install_cran("scam")
+          remotes::install_cran("coxme")
+          remotes::install_cran("eha")
+          remotes::install_cran("timereg")
         shell: Rscript {0}
 
       - name: Install package
