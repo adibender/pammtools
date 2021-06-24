@@ -22,11 +22,11 @@ library(ggplot2)
 theme_set(theme_bw())
 ```
 
-In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a seperate model.
+In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a separate model.
 However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equally to the hazard of multiple event types).
 
 For illustration we use the `fourD` data set from the **`etm`** package. The data set contains time-constant covariates like `age` and `sex` as
-well as time-to-event (`time`) and event type indicator `status` (0 = censored, 1 = death from cariovascular events, 2 = death from other causes).
+well as time-to-event (`time`) and event type indicator `status` (0 = censored, 1 = death from cardiovascular events, 2 = death from other causes).
 
 ```{r}
 library(survival)
@@ -122,7 +122,7 @@ ggplot(ndf, aes(x = tend, y = cif)) +
 ```
 
 
-Similarl to other applications of `add_*` functions, we can additionally group by other covariate values:
+Similar to other applications of `add_*` functions, we can additionally group by other covariate values:
 
 ```{r}
 ndf <- ped_stacked %>%
