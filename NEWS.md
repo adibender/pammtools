@@ -1,3 +1,5 @@
+# pammtools 0.5.7
++ added staph data with recurrent events
 # pammtools 0.5.6
 + maintenance fix
 + fixes to URLs and DOIs

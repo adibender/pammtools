@@ -94,3 +94,17 @@
 
 #' @rdname extub_event
 "extub_tdc"
+
+
+#' Time until staphylococcus aureaus infection in children, with possible recurrence
+#'
+#' This dataset originates from the Drakenstein child health study.
+#' The data contains the following variables:
+#' \describe{
+#'  \item{id}{Randomly generated unique child ID}
+#'  \item{t.start}{The time at which the child enters the risk set for the $k$-th event}
+#'  \item{t.stop}{Time of $k$-th infection or censoring}.
+#'  \item{enum}{Event number. Maximum of 6.}
+#'  \item{hiv}{}
+#' }
+"staph"
