@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Baseline Hazard</h1>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/baseline.Rmd"><code>vignettes/baseline.Rmd</code></a></small>
       <div class="hidden name"><code>baseline.Rmd</code></div>
@@ -163,7 +163,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 9
+<pre><code>## # A tibble: 6 × 9
 ##    days status charlson_score   age sex    transfusion complications metastases
 ##   &lt;dbl&gt;  &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;         &lt;fct&gt;     
 ## 1   579      0              2    58 female yes         no            yes       
@@ -177,7 +177,7 @@
 <code class="sourceCode R"><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span>,<span class="op">]</span></code></pre></div>
 <p>The below graph depicts the estimated cumulative hazard using the Nelson-Aalen estimator:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">base_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/basehaz.html">basehaz</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">tumor</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">base_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/basehaz.html">basehaz</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">tumor</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">rename</a></span><span class="op">(</span>nelson_aalen <span class="op">=</span> <span class="va">hazard</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">base_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">nelson_aalen</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="../reference/geom_hazard.html">geom_stephazard</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -190,7 +190,7 @@
 <p>To fit a PAM, we first we need to bring the data in a suitable format (see <a href="data-transformation.html">vignette on data transformation</a>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Use unique event times as interval break points</span>
-<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
+<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <pre><code>##   id tstart tend interval    offset ped_status charlson_score age    sex
 ## 1  1      0    5    (0,5] 1.6094379          0              2  58 female
@@ -245,7 +245,7 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Create new data set with one row per unique interval</span>
 <span class="co"># and add information about the cumulative hazard estimate</span>
-<span class="va">int_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span><span class="va">ped</span>, tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">int_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span><span class="va">ped</span>, tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span>
 
 <span class="va">gg_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">int_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>

@@ -96,7 +96,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -218,16 +218,18 @@
     <div class='dont-index'><p><code><a href='tidy_re.html'>tidy_re</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://adibender.github.io/pammtools/'>pammtools</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"patient"</span><span class='op'>)</span>
-<span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>patient</span> <span class='op'>%&gt;%</span>
- <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>Survdays</span>, <span class='va'>PatientDied</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>ApacheIIScore</span> <span class='op'>+</span> <span class='va'>CombinedicuID</span>, id<span class='op'>=</span><span class='st'>"CombinedID"</span><span class='op'>)</span>
-<span class='va'>pam</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span> <span class='op'>~</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>ApacheIIScore</span> <span class='op'>+</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>CombinedicuID</span>, bs<span class='op'>=</span><span class='st'>"re"</span><span class='op'>)</span>,
- data<span class='op'>=</span><span class='va'>ped</span>, family<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span>
-<span class='fu'>gg_re</span><span class='op'>(</span><span class='va'>pam</span><span class='op'>)</span>
-</div><div class='img'><img src='gg_re-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>pam</span>, select <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='img'><img src='gg_re-2.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://adibender.github.io/pammtools/'>pammtools</a></span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"patient"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>patient</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>Survdays</span>, <span class='va'>PatientDied</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>ApacheIIScore</span> <span class='op'>+</span> <span class='va'>CombinedicuID</span>, id<span class='op'>=</span><span class='st'>"CombinedID"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>pam</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span> <span class='op'>~</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>ApacheIIScore</span> <span class='op'>+</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>CombinedicuID</span>, bs<span class='op'>=</span><span class='st'>"re"</span><span class='op'>)</span>,</span>
+<span class='r-in'> data<span class='op'>=</span><span class='va'>ped</span>, family<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>gg_re</span><span class='op'>(</span><span class='va'>pam</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='gg_re-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>pam</span>, select <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='gg_re-2.png' alt='' width='700' height='433' /></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

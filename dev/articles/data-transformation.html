@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Transformation</h1>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/data-transformation.Rmd"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -172,11 +172,11 @@
 <p>As an example data set we first consider a data set of a stomach area tumor available from the <strong><code>pammtools</code></strong> package. Patients were operated on to remove the tumor. Some patients experienced complications during the operation:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span>
-<span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 10
+<pre><code>## # A tibble: 6 × 10
 ##      id  days status charlson_score   age sex    transfusion complications
 ##   &lt;int&gt; &lt;dbl&gt;  &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;        
 ## 1     1   579      0              2    58 female yes         no           
@@ -195,7 +195,7 @@
 <p>Using the <code>pammtools</code> package this is easily achieved with the <code>as_ped</code> function as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">ped</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></code></pre></div>
 <pre><code>##     id tstart tend interval    offset ped_status age  sex complications
 ## 1  132      0    1    (0,1] 0.0000000          0  78 male           yes
@@ -247,8 +247,8 @@
 <p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 3, \kappa_2 = 7, \kappa_3 = 15\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ped2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">15</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">ped2</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">ped2</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></code></pre></div>
 <pre><code>##    id tstart tend interval    offset ped_status age  sex complications
 ## 1 132      0    3    (0,3] 1.0986123          0  78 male           yes
@@ -261,8 +261,8 @@
 ## 8 145      7   15   (7,15] 0.0000000          1  60 male           yes</code></pre>
 <p>Note that now subjects <code>141</code> and <code>145</code> have both three rows in the data set. The fact that subject <code>141</code> was in the risk set of the last interval for a longer time than subject <code>145</code> is, however, still accounted for by the <code>offset</code> variable. Note that the <code>offset</code> for subject <code>145</code> is only <code>0</code>, because the last interval for this subject starts at <span class="math inline">\(t=7\)</span> and the subject experienced and event at <span class="math inline">\(t=8\)</span>, thus <span class="math inline">\(\log(8-7) = 0\)</span></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tumor</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 2 x 10
+<code class="sourceCode R"><span class="va">tumor</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## # A tibble: 2 × 10
 ##      id  days status charlson_score   age sex    transfusion complications
 ##   &lt;int&gt; &lt;dbl&gt;  &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;fct&gt;  &lt;fct&gt;       &lt;fct&gt;        
 ## 1    85   126      1              2    64 female yes         no           
@@ -288,7 +288,7 @@
 <p>As children were included in the study after death of their mother, their survival time is left-truncated at the entry time (variable <code>enter</code>). When transforming such data to the PED format, we need to create a interval cut-point at each entry time. In general, each interval has to be constructed such that only subjects already at risk have an entry in the PED data. The previously introduced function <code>as_ped</code> can be also used for this setting, however, the LHS of the formula must be in start-stop format:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">infants_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">mother</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span>
-<span class="va">infants_ped</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></code></pre></div>
+<span class="va">infants_ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></code></pre></div>
 <pre><code>##    id tstart tend interval    offset ped_status mother age
 ## 1   4     13   14  (13,14] 0.0000000          0   dead  23
 ## 2   4     14   16  (14,16] 0.6931472          0   dead  23
@@ -317,10 +317,10 @@
 <p>For illustration, we use the <code>pbc</code> data from the <code>survival</code> package. Before the actual data transformation we perform the data preprocessing in <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf">vignette("timedep", package="survival")</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pbc"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># loads pbc and pbcseq</span>
-<span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>status <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>status <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span>, <span class="va">bili</span>, <span class="va">protime</span><span class="op">)</span></code></pre></div>
-<p>We want to transform the data such that we could fit a concurrent effect of the time-dependent covariates <code>bili</code> and <code>protime</code>, therefore, the RHS of the formula passed to <code>as_ped</code> needs to contain an additional component, separated by <code><a href="https://rdrr.io/r/base/Logic.html">|</a></code> and all variables for which should be transformed to the concurrent format specified within the <code>concurrent</code> special. The data sets are provided within a list. In <code>concurrent</code>, we also have to specify the name of the variable which stores information on the time points at which the TDCs are updated.</p>
+<p>We want to transform the data such that we could fit a concurrent effect of the time-dependent covariates <code>bili</code> and <code>protime</code>, therefore, the RHS of the formula passed to <code>as_ped</code> needs to contain an additional component, separated by <code>|</code> and all variables for which should be transformed to the concurrent format specified within the <code>concurrent</code> special. The data sets are provided within a list. In <code>concurrent</code>, we also have to specify the name of the variable which stores information on the time points at which the TDCs are updated.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ped_pbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
   data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,
@@ -371,15 +371,15 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <tbody>
 <tr class="odd">
 <td><span class="math inline">\(\int_{\mathcal{T}_1}h(t-t_z, z_1(t_z))\)</span></td>
-<td><code><a href="../reference/cumulative.html">cumulative(latency(tz1), z1, tz_var= "tz1")</a></code></td>
+<td><code>cumulative(latency(tz1), z1, tz_var= "tz1")</code></td>
 </tr>
 <tr class="even">
 <td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t-t_z, z_1(t_z))\)</span></td>
-<td><code><a href="../reference/cumulative.html">cumulative(time, latency(tz1), z1, tz_var="tz1")</a></code></td>
+<td><code>cumulative(time, latency(tz1), z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="odd">
 <td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z))\)</span></td>
-<td><code><a href="../reference/cumulative.html">cumulative(time, tz1, z1, tz_var="tz1")</a></code></td>
+<td><code>cumulative(time, tz1, z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="even">
 <td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z)) + \int_{\mathcal{T}_2}h(t-s_z, z_2(s_z))\)</span></td>
@@ -423,7 +423,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ## 6           Medical            21 45.00622       Respiratory</code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">daily</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 4
+<pre><code>## # A tibble: 6 × 4
 ##   CombinedID Study_Day caloriesPercentage proteinGproKG
 ##        &lt;int&gt;     &lt;int&gt;              &lt;dbl&gt;         &lt;dbl&gt;
 ## 1       1110         1               0            0    
@@ -530,7 +530,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">simdf_elra</span></code></pre></div>
-<pre><code>## # A tibble: 250 x 9
+<pre><code>## # A tibble: 250 × 9
 ##       id   time status      x1    x2 tz1        z.tz1      tz2        z.tz2     
 ##  * &lt;int&gt;  &lt;dbl&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;list&gt;     &lt;list&gt;    
 ##  1     1  3.22       1  1.59   4.61  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl [11]&gt;
@@ -545,10 +545,10 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ## 10    10  6.61       1  1.79   1.06  &lt;int [10]&gt; &lt;dbl [10]&gt; &lt;int [11]&gt; &lt;dbl [11]&gt;
 ## # … with 240 more rows</code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning: `cols` is now required when using unnest().
 ## Please use `cols = c(tz1)`</code></pre>
-<pre><code>## # A tibble: 10 x 2
+<pre><code>## # A tibble: 10 × 2
 ##       id   tz1
 ##    &lt;int&gt; &lt;int&gt;
 ##  1     1     1
@@ -562,10 +562,10 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 ##  9     1     9
 ## 10     1    10</code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning: `cols` is now required when using unnest().
 ## Please use `cols = c(tz2)`</code></pre>
-<pre><code>## # A tibble: 11 x 2
+<pre><code>## # A tibble: 11 × 2
 ##       id   tz2
 ##    &lt;int&gt; &lt;int&gt;
 ##  1     1    -5

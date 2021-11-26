@@ -98,7 +98,7 @@ variables and modus for non-numeric variables in the data set." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -225,13 +225,14 @@ variables and modus for non-numeric variables in the data set.</p>
     <div class='dont-index'><p><code><a href='int_info.html'>int_info</a></code>, <code><a href='sample_info.html'>sample_info</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>,<span class='op'>]</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>sex</span> <span class='op'>+</span> <span class='va'>age</span><span class='op'>)</span>
-<span class='fu'>ped_info</span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 2 x 7</span>
-#&gt;   tstart  tend intlen intmid interval sex     age
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>      0    33     33   16.5 (0,33]   male   60.2
-#&gt; <span style='color: #BCBCBC;'>2</span>     33   308    275  170.  (33,308] male   60.2</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>,<span class='op'>]</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>sex</span> <span class='op'>+</span> <span class='va'>age</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>ped_info</span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 2 × 7</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   tstart  tend intlen intmid interval sex     age</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>      0    33     33   16.5 (0,33]   male   60.2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     33   308    275  170.  (33,308] male   60.2</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

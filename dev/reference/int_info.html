@@ -99,7 +99,7 @@ ped is provided, extracts unique interval information from object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -247,19 +247,21 @@ length, interval mid-point and a factor variable indicating the intervals.</p>
     <div class='dont-index'><p>as_ped ped_info</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## create interval information from cut points</span>
-<span class='fu'>int_info</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2.3</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   tstart tend intlen intmid interval
-#&gt; 1    0.0  1.0    1.0   0.50    (0,1]
-#&gt; 2    1.0  2.3    1.3   1.65  (1,2.3]
-#&gt; 3    2.3  5.0    2.7   3.65  (2.3,5]</div><div class='input'>
-<span class='co'>## extract interval information used to create ped object</span>
-<span class='va'>tdf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>time<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2.3</span>, <span class='fl'>5</span><span class='op'>)</span>, status<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tdf</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span><span class='va'>.</span>, id<span class='op'>=</span><span class='st'>"id"</span><span class='op'>)</span>
-<span class='fu'>int_info</span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   tstart tend intlen intmid interval
-#&gt; 1      0  2.3    2.3   1.15  (0,2.3]</div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'>## create interval information from cut points</span></span>
+<span class='r-in'><span class='fu'>int_info</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2.3</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   tstart tend intlen intmid interval</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1    0.0  1.0    1.0   0.50    (0,1]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2    1.0  2.3    1.3   1.65  (1,2.3]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3    2.3  5.0    2.7   3.65  (2.3,5]</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## extract interval information used to create ped object</span></span>
+<span class='r-in'><span class='va'>tdf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>time<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2.3</span>, <span class='fl'>5</span><span class='op'>)</span>, status<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tdf</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>time</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span><span class='va'>.</span>, id<span class='op'>=</span><span class='st'>"id"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>int_info</span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   tstart tend intlen intmid interval</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1      0  2.3    2.3   1.15  (0,2.3]</span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -107,7 +107,7 @@ vignette for details." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -325,34 +325,37 @@ variables that were used to create the PED object (codedata).</p></td>
     <p>A data frame class <code>ped</code> in piece-wise exponential data format.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 3 x 9</span>
-#&gt;    days status charlson_score   age sex    transfusion complications metastases
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>          <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     
-#&gt; <span style='color: #BCBCBC;'>1</span>   579      0              2    58 female yes         no            yes       
-#&gt; <span style='color: #BCBCBC;'>2</span>  <span style='text-decoration: underline;'>1</span>192      0              2    52 male   no          yes           yes       
-#&gt; <span style='color: #BCBCBC;'>3</span>   308      1              2    74 female yes         no            yes       
-#&gt; <span style='color: #949494;'># … with 1 more variable: resection &lt;fct&gt;</span></div><div class='input'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span> <span class='op'>%&gt;%</span> <span class='fu'>as_ped</span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>sex</span>, cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   id tstart tend   interval   offset ped_status age    sex
-#&gt; 1  1      0  500    (0,500] 6.214608          0  58 female
-#&gt; 2  1    500 1000 (500,1000] 4.369448          0  58 female
-#&gt; 3  2      0  500    (0,500] 6.214608          0  52   male
-#&gt; 4  2    500 1000 (500,1000] 6.214608          0  52   male
-#&gt; 5  3      0  500    (0,500] 5.730100          1  74 female</div><div class='input'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span> <span class='op'>%&gt;%</span> <span class='fu'>as_ped</span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>sex</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   id tstart tend interval offset ped_status age    sex
-#&gt; 1  1      0  308  (0,308] 5.7301          0  58 female
-#&gt; 2  2      0  308  (0,308] 5.7301          0  52   male
-#&gt; 3  3      0  308  (0,308] 5.7301          1  74 female</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"cgd"</span>, package <span class='op'>=</span> <span class='st'>"frailtyHL"</span><span class='op'>)</span>
-<span class='va'>cgd2</span> <span class='op'>&lt;-</span> <span class='va'>cgd</span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='dplyr_verbs.html'>select</a></span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>tstart</span>, <span class='va'>tstop</span>, <span class='va'>enum</span>, <span class='va'>status</span>, <span class='va'>age</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
- <span class='fu'><a href='dplyr_verbs.html'>filter</a></span><span class='op'>(</span><span class='va'>enum</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>ped_re</span> <span class='op'>&lt;-</span> <span class='fu'>as_ped_recurrent</span><span class='op'>(</span>
-  formula <span class='op'>=</span> <span class='fu'>Surv</span><span class='op'>(</span><span class='va'>tstart</span>, <span class='va'>tstop</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>enum</span>,
-  data <span class='op'>=</span> <span class='va'>cgd2</span>,
- transition <span class='op'>=</span> <span class='st'>"enum"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 3 × 9</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    days status charlson_score   age sex    transfusion complications metastases</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>          <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>   579      0              2    58 female yes         no            yes       </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>  <span style='text-decoration: underline;'>1</span>192      0              2    52 male   no          yes           yes       </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>   308      1              2    74 female yes         no            yes       </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 1 more variable: resection &lt;fct&gt;</span></span>
+<span class='r-in'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'>as_ped</span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>sex</span>, cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>500</span>, <span class='fl'>1000</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   id tstart tend   interval   offset ped_status age    sex</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  1      0  500    (0,500] 6.214608          0  58 female</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  1    500 1000 (500,1000] 4.369448          0  58 female</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  2      0  500    (0,500] 6.214608          0  52   male</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4  2    500 1000 (500,1000] 6.214608          0  52   male</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5  3      0  500    (0,500] 5.730100          1  74 female</span>
+<span class='r-in'><span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, <span class='op'>]</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'>as_ped</span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>sex</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   id tstart tend interval offset ped_status age    sex</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  1      0  308  (0,308] 5.7301          0  58 female</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  2      0  308  (0,308] 5.7301          0  52   male</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  3      0  308  (0,308] 5.7301          1  74 female</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"cgd"</span>, package <span class='op'>=</span> <span class='st'>"frailtyHL"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>cgd2</span> <span class='op'>&lt;-</span> <span class='va'>cgd</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'> <span class='fu'><a href='dplyr_verbs.html'>select</a></span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>tstart</span>, <span class='va'>tstop</span>, <span class='va'>enum</span>, <span class='va'>status</span>, <span class='va'>age</span><span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'> <span class='fu'><a href='dplyr_verbs.html'>filter</a></span><span class='op'>(</span><span class='va'>enum</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>ped_re</span> <span class='op'>&lt;-</span> <span class='fu'>as_ped_recurrent</span><span class='op'>(</span></span>
+<span class='r-in'>  formula <span class='op'>=</span> <span class='fu'>Surv</span><span class='op'>(</span><span class='va'>tstart</span>, <span class='va'>tstop</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>age</span> <span class='op'>+</span> <span class='va'>enum</span>,</span>
+<span class='r-in'>  data <span class='op'>=</span> <span class='va'>cgd2</span>,</span>
+<span class='r-in'> transition <span class='op'>=</span> <span class='st'>"enum"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

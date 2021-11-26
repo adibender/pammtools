@@ -95,7 +95,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -211,7 +211,7 @@
 <a href="#pammtools-054" class="anchor"></a>pammtools 0.5.4<small> 2020-12-18 </small>
 </h1>
 <ul>
-<li>updates to the <code>split_data</code> function that now accepts <code><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv(start, stop, event)</a></code> type inputs, e.g., to construct left-truncated data.</li>
+<li>updates to the <code>split_data</code> function that now accepts <code>Surv(start, stop, event)</code> type inputs, e.g., to construct left-truncated data.</li>
 <li>Support and <a href="https://adibender.github.io/pammtools/articles/left-truncation.html">vignette for left truncated data</a>
 </li>
 <li>Support and <a href="https://adibender.github.io/pammtools/articles/competing-risks.html">vignette for competing risks data</a>
@@ -265,7 +265,7 @@
 <a href="#pammtools-0115" class="anchor"></a>pammtools 0.1.15<small> Unreleased </small>
 </h1>
 <ul>
-<li>Interface for specification of data transformation in <code>as_ped</code> changed. The vertical bar <code><a href="https://rdrr.io/r/base/Logic.html">|</a></code> is no longer necessary to indicate concurrent or cumulative effects</li>
+<li>Interface for specification of data transformation in <code>as_ped</code> changed. The vertical bar <code>|</code> is no longer necessary to indicate concurrent or cumulative effects</li>
 </ul>
 </div>
     <div id="pammtools-0114" class="section level1">
@@ -431,7 +431,7 @@
 </ul>
 </li>
 <li>
-<p>Added convenience <code>geom</code>s for piece-wise constant hazards (see examples in <code><a href="../reference/geom_hazard.html">?geom_hazard</a></code>, cumulative hazards and survival probabilities (usually <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes(x=time, y = surv_prob)</a></code>, but data set doesn’t contain extra row for <code>time = 0</code>), thus</p>
+<p>Added convenience <code>geom</code>s for piece-wise constant hazards (see examples in <code><a href="../reference/geom_hazard.html">?geom_hazard</a></code>, cumulative hazards and survival probabilities (usually <code>aes(x=time, y = surv_prob)</code>, but data set doesn’t contain extra row for <code>time = 0</code>), thus</p>
 <ul>
 <li>
 <code>geom_stephazard</code> adds row (x=0, y = y[1]) to the data before plotting</li>

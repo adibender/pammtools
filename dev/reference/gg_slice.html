@@ -98,7 +98,7 @@ a comparison specification." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -234,7 +234,7 @@ the time argument, but see "Details" an "Examples" below.</p></td>
     <tr>
       <th>reference</th>
       <td><p>If specified, should be a list with covariate value pairs,
-e.g. <code><a href='https://rdrr.io/r/base/list.html'>list(x1 = 1, x2=50)</a></code>. The calculated partial effect will be relative
+e.g. <code>list(x1 = 1, x2=50)</code>. The calculated partial effect will be relative
 to an observation specified in <code>reference</code>.</p></td>
     </tr>
     <tr>
@@ -246,97 +246,101 @@ of interest should be calculated/plotted. Defaults to <code>TRUE</code>.</p></td
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>200</span>, <span class='op'>]</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>)</span>
-<span class='va'>model</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span><span class='op'>~</span><span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>age</span>, by <span class='op'>=</span> <span class='va'>complications</span><span class='op'>)</span>, data<span class='op'>=</span><span class='va'>ped</span>,
-  family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span>
-<span class='fu'><a href='make_newdata.html'>make_newdata</a></span><span class='op'>(</span><span class='va'>ped</span>, age <span class='op'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    tstart tend intlen interval       id   offset ped_status charlson_score
-#&gt; 1       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 2       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 3       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 4       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 5       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 6       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 7       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 8       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 9       0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 10      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 11      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 12      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 13      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 14      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 15      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 16      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 17      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 18      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 19      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 20      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 21      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 22      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 23      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 24      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 25      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 26      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 27      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 28      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 29      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 30      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 31      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 32      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 33      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 34      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 35      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 36      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 37      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 38      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 39      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt; 40      0    5      5    (0,5] 100.5648 1.609438          0       2.709355
-#&gt;         age  sex transfusion complications metastases resection
-#&gt; 1  16.00000 male          no            no        yes        no
-#&gt; 2  19.89474 male          no            no        yes        no
-#&gt; 3  23.78947 male          no            no        yes        no
-#&gt; 4  27.68421 male          no            no        yes        no
-#&gt; 5  31.57895 male          no            no        yes        no
-#&gt; 6  35.47368 male          no            no        yes        no
-#&gt; 7  39.36842 male          no            no        yes        no
-#&gt; 8  43.26316 male          no            no        yes        no
-#&gt; 9  47.15789 male          no            no        yes        no
-#&gt; 10 51.05263 male          no            no        yes        no
-#&gt; 11 54.94737 male          no            no        yes        no
-#&gt; 12 58.84211 male          no            no        yes        no
-#&gt; 13 62.73684 male          no            no        yes        no
-#&gt; 14 66.63158 male          no            no        yes        no
-#&gt; 15 70.52632 male          no            no        yes        no
-#&gt; 16 74.42105 male          no            no        yes        no
-#&gt; 17 78.31579 male          no            no        yes        no
-#&gt; 18 82.21053 male          no            no        yes        no
-#&gt; 19 86.10526 male          no            no        yes        no
-#&gt; 20 90.00000 male          no            no        yes        no
-#&gt; 21 16.00000 male          no           yes        yes        no
-#&gt; 22 19.89474 male          no           yes        yes        no
-#&gt; 23 23.78947 male          no           yes        yes        no
-#&gt; 24 27.68421 male          no           yes        yes        no
-#&gt; 25 31.57895 male          no           yes        yes        no
-#&gt; 26 35.47368 male          no           yes        yes        no
-#&gt; 27 39.36842 male          no           yes        yes        no
-#&gt; 28 43.26316 male          no           yes        yes        no
-#&gt; 29 47.15789 male          no           yes        yes        no
-#&gt; 30 51.05263 male          no           yes        yes        no
-#&gt; 31 54.94737 male          no           yes        yes        no
-#&gt; 32 58.84211 male          no           yes        yes        no
-#&gt; 33 62.73684 male          no           yes        yes        no
-#&gt; 34 66.63158 male          no           yes        yes        no
-#&gt; 35 70.52632 male          no           yes        yes        no
-#&gt; 36 74.42105 male          no           yes        yes        no
-#&gt; 37 78.31579 male          no           yes        yes        no
-#&gt; 38 82.21053 male          no           yes        yes        no
-#&gt; 39 86.10526 male          no           yes        yes        no
-#&gt; 40 90.00000 male          no           yes        yes        no</div><div class='input'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='gg_slice-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span>,
- ci <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-</div><div class='img'><img src='gg_slice-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span>,
-  reference<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>age <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='gg_slice-3.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>200</span>, <span class='op'>]</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/survival/man/Surv.html'>Surv</a></span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>)</span></span>
+<span class='r-in'><span class='va'>model</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span><span class='op'>~</span><span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>age</span>, by <span class='op'>=</span> <span class='va'>complications</span><span class='op'>)</span>, data<span class='op'>=</span><span class='va'>ped</span>,</span>
+<span class='r-in'>  family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='make_newdata.html'>make_newdata</a></span><span class='op'>(</span><span class='va'>ped</span>, age <span class='op'>=</span> <span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    tstart tend intlen interval       id   offset ped_status charlson_score</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9       0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40      0    5      5    (0,5] 100.5648 1.609438          0       2.709355</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         age  sex transfusion complications metastases resection</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1  16.00000 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2  19.89474 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3  23.78947 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4  27.68421 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5  31.57895 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6  35.47368 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7  39.36842 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8  43.26316 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9  47.15789 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10 51.05263 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11 54.94737 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12 58.84211 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13 62.73684 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14 66.63158 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15 70.52632 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16 74.42105 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17 78.31579 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18 82.21053 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19 86.10526 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20 90.00000 male          no            no        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21 16.00000 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22 19.89474 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23 23.78947 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24 27.68421 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25 31.57895 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26 35.47368 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27 39.36842 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28 43.26316 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29 47.15789 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30 51.05263 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31 54.94737 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32 58.84211 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33 62.73684 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34 66.63158 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35 70.52632 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36 74.42105 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37 78.31579 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38 82.21053 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39 86.10526 male          no           yes        yes        no</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40 90.00000 male          no           yes        yes        no</span>
+<span class='r-in'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='gg_slice-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span>,</span>
+<span class='r-in'> ci <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='gg_slice-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'>gg_slice</span><span class='op'>(</span><span class='va'>ped</span>, <span class='va'>model</span>, <span class='st'>"age"</span>, age<span class='op'>=</span><span class='fu'><a href='seq_range.html'>seq_range</a></span><span class='op'>(</span><span class='va'>age</span>, <span class='fl'>20</span><span class='op'>)</span>, complications<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/levels.html'>levels</a></span><span class='op'>(</span><span class='va'>complications</span><span class='op'>)</span>,</span>
+<span class='r-in'>  reference<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>age <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='gg_slice-3.png' alt='' width='700' height='433' /></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

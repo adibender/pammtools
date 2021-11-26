@@ -99,7 +99,7 @@ surv_lower, surv_upper if ci=TRUE)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -244,7 +244,7 @@ the confidence intervals.</p></td>
       <th>overwrite</th>
       <td><p>Should hazard columns be overwritten if already present in
 the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with names
-<code><a href='https://rdrr.io/r/base/c.html'>c("hazard", "se", "lower", "upper")</a></code> will be overwritten.</p></td>
+<code>c("hazard", "se", "lower", "upper")</code> will be overwritten.</p></td>
     </tr>
     <tr>
       <th>time_var</th>
@@ -271,23 +271,24 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 <code>add_surv_prob</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>50</span>,<span class='op'>]</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span><span class='op'>)</span>
-<span class='va'>pam</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span> <span class='op'>~</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span><span class='op'>+</span><span class='va'>age</span>, data<span class='op'>=</span><span class='va'>ped</span>, family<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span>
-<span class='fu'><a href='ped_info.html'>ped_info</a></span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'>add_surv_prob</span><span class='op'>(</span><span class='va'>pam</span>, ci<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 22 x 9</span>
-#&gt;    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower
-#&gt;     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span>      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950
-#&gt; <span style='color: #BCBCBC;'> 2</span>     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939
-#&gt; <span style='color: #BCBCBC;'> 3</span>     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904
-#&gt; <span style='color: #BCBCBC;'> 4</span>     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893
-#&gt; <span style='color: #BCBCBC;'> 5</span>     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803
-#&gt; <span style='color: #BCBCBC;'> 6</span>    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739
-#&gt; <span style='color: #BCBCBC;'> 7</span>    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734
-#&gt; <span style='color: #BCBCBC;'> 8</span>    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700
-#&gt; <span style='color: #BCBCBC;'> 9</span>    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667
-#&gt; <span style='color: #BCBCBC;'>10</span>    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665
-#&gt; <span style='color: #949494;'># … with 12 more rows</span></div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>ped</span> <span class='op'>&lt;-</span> <span class='va'>tumor</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>50</span>,<span class='op'>]</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'><a href='as_ped.html'>as_ped</a></span><span class='op'>(</span><span class='fu'>Surv</span><span class='op'>(</span><span class='va'>days</span>, <span class='va'>status</span><span class='op'>)</span><span class='op'>~</span> <span class='va'>age</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>pam</span> <span class='op'>&lt;-</span> <span class='fu'>mgcv</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/mgcv/man/gam.html'>gam</a></span><span class='op'>(</span><span class='va'>ped_status</span> <span class='op'>~</span> <span class='fu'>s</span><span class='op'>(</span><span class='va'>tend</span><span class='op'>)</span><span class='op'>+</span><span class='va'>age</span>, data<span class='op'>=</span><span class='va'>ped</span>, family<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>poisson</a></span><span class='op'>(</span><span class='op'>)</span>, offset<span class='op'>=</span><span class='va'>offset</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='ped_info.html'>ped_info</a></span><span class='op'>(</span><span class='va'>ped</span><span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span> <span class='fu'>add_surv_prob</span><span class='op'>(</span><span class='va'>pam</span>, ci<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 22 × 9</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span>      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 2</span>     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 3</span>     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 4</span>     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 5</span>     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 6</span>    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 7</span>    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 8</span>    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span>    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span>    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 12 more rows</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

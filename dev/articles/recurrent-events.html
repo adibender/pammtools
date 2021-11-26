@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@
       <h1 data-toc-skip>Recurrent Events</h1>
                         <h4 class="author">Jordache Ramjith, Andreas Bender, Kit C.B. Roes &amp; Marianne A. Jonker</h4>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/recurrent-events.Rmd"><code>vignettes/recurrent-events.Rmd</code></a></small>
       <div class="hidden name"><code>recurrent-events.Rmd</code></div>
@@ -180,7 +180,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"staph"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">staph</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 6
+<pre><code>## # A tibble: 6 × 6
 ##   id    t.start t.stop event  enum   hiv
 ##   &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ## 1 1           0     16     1     1     0
@@ -191,8 +191,8 @@
 ## 6 2         157    227     1     3     1</code></pre>
 <p>The data for the first two children are</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">staph</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 7 x 6
+<code class="sourceCode R"><span class="va">staph</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## # A tibble: 7 × 6
 ##   id    t.start t.stop event  enum   hiv
 ##   &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ## 1 1           0     16     1     1     0
@@ -234,11 +234,11 @@
   max_time    <span class="op">=</span> <span class="fl">366</span><span class="op">)</span></code></pre></div>
 <p>The resulting data for the first two infants is indicated below (we show the first and last observation of each infant for each event number they were at risk):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">enum</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">enum</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 14 x 8
+<pre><code>## # A tibble: 14 × 8
 ## # Groups:   id, enum [7]
 ##    id    tstart  tend interval  offset ped_status   hiv  enum
 ##    &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -265,7 +265,7 @@
 <a href="#model-specification" class="anchor"></a>Model specification</h3>
 <p>We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced 3 or more events. Therefore, we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use <code>enum_strata</code> for stratification when estimating the baseline hazard.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">enum</span> <span class="op">&gt;</span> <span class="fl">1</span>,<span class="st">"recurrent"</span>,<span class="st">"first"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Using this data, we fit the following model</p>
 <p><span class="math display">\[
@@ -280,9 +280,9 @@
 <p>In the formula argument,</p>
 <ul>
 <li>
-<code><a href="https://rdrr.io/pkg/mgcv/man/s.html">s(tend, by = enum_strata)</a></code> indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using <code>by=enum_strata</code> inside <code><a href="https://rdrr.io/pkg/mgcv/man/s.html">s()</a></code> and including <code>enum_strata</code> as a fixed effect in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and</li>
+<code>s(tend, by = enum_strata)</code> indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using <code>by=enum_strata</code> inside <code><a href="https://rdrr.io/pkg/mgcv/man/s.html">s()</a></code> and including <code>enum_strata</code> as a fixed effect in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and</li>
 <li>
-<code><a href="https://rdrr.io/pkg/mgcv/man/s.html">s(id, bs = "re")</a></code> indicates a random effect (frailty) for each child.</li>
+<code>s(id, bs = "re")</code> indicates a random effect (frailty) for each child.</li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pamm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
@@ -371,10 +371,10 @@
 </ul>
 <p>Once the data is created and augmented with the predicted hazard, we can use standard visualization function to create the graphics:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span>
     tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>,
-    enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/add_hazard.html">add_hazard</a></span><span class="op">(</span><span class="va">pamm0</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">hazard</span><span class="op">*</span><span class="fl">365.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
@@ -387,8 +387,8 @@
 <p>We can see, that the hazard for the first event is high in the beginning and declines over time, as most children will have had the first infection after one year of life. Consequently, the hazard for recurrence is low in the beginning and increases over time before it flattens out after about two months.</p>
 <p>Calculation of survival probabilities works equivalently, except that we use the <code>add_surv_prob</code> function instead of <code>add_hazard</code>. Note that calculating the survival probability involves calculating a cumulative hazard. Thus, when there is a grouping structure in the data (here the different strata), we have to group by this variable before we calculate cumulative hazards or survival probabilities. Note also, that we use <code>geom_surv</code> in order to force the function to start at a survival probability of 1.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span><span class="va">newdata</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span><span class="va">newdata</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/add_surv_prob.html">add_surv_prob</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">surv_prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>

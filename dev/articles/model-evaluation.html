@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Model evaluation</h1>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/model-evaluation.Rmd"><code>vignettes/model-evaluation.Rmd</code></a></small>
       <div class="hidden name"><code>model-evaluation.Rmd</code></div>
@@ -205,10 +205,10 @@
 ## Integrated Brier score (crps):
 ## 
 ##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)
-## Reference              0.068              0.125               0.178
-## pam1                   0.066              0.125               0.183
-## pam2                   0.062              0.118               0.178
-## pam3                   0.059              0.116               0.179</code></pre>
+## Reference              0.063              0.118               0.173
+## pam1                   0.060              0.114               0.171
+## pam2                   0.057              0.108               0.163
+## pam3                   0.054              0.105               0.167</code></pre>
 </div>
 <div id="c-index" class="section level2">
 <h2 class="hasAnchor">
@@ -234,8 +234,8 @@
 ## 
 ## Pattern:
 ##                 Freq
-##  event          195 
-##  right.censored 181 
+##  event          179 
+##  right.censored 197 
 ## 
 ## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) 
 ## 
@@ -245,9 +245,9 @@
 ## 
 ## $AppCindex
 ##      time=203 time=533 time=1120
-## pam1     63.9     54.6      53.3
-## pam2     76.1     63.2      59.5
-## pam3     77.0     60.6      51.9</code></pre>
+## pam1     66.1     61.4      57.6
+## pam2     74.5     67.3      62.9
+## pam3     77.1     65.8      54.8</code></pre>
 <pre><code>## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.
 ## 
 ## Consider using time-dependent AUC instead: riskRegression::Score</code></pre>

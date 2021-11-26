@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic Modeling</h1>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/basics.Rmd"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
@@ -177,7 +177,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># remove ties to illustrate equivalence with Cox approach</span>
 <span class="va">vetu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">veteran</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ped_vetu</span> <span class="op">&lt;-</span> <span class="va">vetu</span> <span class="op">%&gt;%</span>
+<span class="va">ped_vetu</span> <span class="op">&lt;-</span> <span class="va">vetu</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">vetu</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
 <span class="va">pem_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,
     family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
@@ -197,7 +197,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Using the full data set (with ties) yields slightly different results</span>
 <span class="co"># when comparing PEM to Cox-PH</span>
-<span class="va">ped_vet</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op">%&gt;%</span>
+<span class="va">ped_vet</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
 <span class="va">pem2_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vet</span>,
     family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>

@@ -47,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Frailty and random effects</h1>
             
-            <h4 class="date">2021-06-24</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/frailty.Rmd"><code>vignettes/frailty.Rmd</code></a></small>
       <div class="hidden name"><code>frailty.Rmd</code></div>
@@ -167,8 +167,8 @@
 <p>For illustration we look at the survival of patients in the ICU. In this data set we have multiple observations from each ICU. The ICUs are identified by the <code>CombinedicuID</code> variable:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"patient"</span><span class="op">)</span>
-<span class="va">patient</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">CombinedicuID</span>, <span class="va">Survdays</span>, <span class="va">PatientDied</span>, <span class="va">ApacheIIScore</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">patient</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">CombinedicuID</span>, <span class="va">Survdays</span>, <span class="va">PatientDied</span>, <span class="va">ApacheIIScore</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></code></pre></div>
 <pre><code>##    CombinedicuID Survdays PatientDied ApacheIIScore
 ## 1           1114     30.1           0            20
@@ -183,8 +183,8 @@
 ## 10           980     30.1           0            16</code></pre>
 <p>To fit a PAMM with random effects we includ an <code>s</code> term with <code>bs="re"</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">patient</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">300</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">patient</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">300</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">Survdays</span>, <span class="va">PatientDied</span><span class="op">)</span><span class="op">~</span><span class="va">ApacheIIScore</span> <span class="op">+</span> <span class="va">CombinedicuID</span><span class="op">)</span>
 <span class="va">pamm_icu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
   <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">ApacheIIScore</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">CombinedicuID</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,
