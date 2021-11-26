@@ -258,14 +258,14 @@ split_data_multistate <- function(
   attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
-  dots_in$transition <- transition
-  dots_in$timescale <- timescale
-  dots_in$cut <- sort(unique(cuts))
-  dots_in$max_time <- max_time
-  dots_in$event  <- event
-  dots_in$min_events <- min_events
+  dots_in$transition           <- transition
+  dots_in$timescale            <- timescale
+  dots_in$cut                  <- sort(unique(cuts))
+  dots_in$max_time             <- max_time
+  dots_in$event                <- event
+  dots_in$min_events           <- min_events
   attr(split_df, "trafo_args") <- dots_in
-  class(split_df) <- unique(class(split_df))
+  class(split_df)              <- unique(class(split_df))
 
   split_df
 
