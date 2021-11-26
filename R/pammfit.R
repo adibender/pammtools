@@ -21,10 +21,9 @@ append_ped_attr <- function(pamm, ped) {
 #'
 #' A thin wrapper around \code{\link[mgcv]{gam}}, however, some arguments are
 #' prespecified:
-#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}.
-#' The first two can not be overwritten. The \code{method} argument
-#' can be specified as usual, but defaults to \code{GCV.cp} in
-#' \code{\link[mgcv]{gam}}.
+#' \code{family=poisson()} and \code{offset=data$offset}.
+#' These two can not be overwritten. In many cases it will also be advisable to
+#' set \code{method="REML"}.
 #'
 #' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{engine}.
@@ -51,7 +50,6 @@ append_ped_attr <- function(pamm, ped) {
 pamm <- function(
   formula,
   data       = list(),
-  method     = "REML",
   ...,
   trafo_args = NULL,
   engine     = "gam") {
