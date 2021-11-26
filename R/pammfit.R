@@ -22,7 +22,8 @@ append_ped_attr <- function(pamm, ped) {
 #' A thin wrapper around \code{\link[mgcv]{gam}}, however, some arguments are
 #' prespecified:
 #' \code{family=poisson()} and \code{offset=data$offset}.
-#' These two can not be overwritten. 
+#' These two can not be overwritten. In many cases it will also be advisable to
+#' set \code{method="REML"}.
 #'
 #' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{engine}.
