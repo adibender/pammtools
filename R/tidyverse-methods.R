@@ -9,7 +9,7 @@ reped <- function(.data) {
 }
 
 ped_attr <- function(ped) {
-  attributes(ped)[c("breaks", "id_var", "intvars")]
+  attributes(ped)[c("breaks", "id_var", "intvars", "combine", "censor_code", "risks")]
 }
 
 unfped <- function(fped) {

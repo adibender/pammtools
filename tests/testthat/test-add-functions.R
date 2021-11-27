@@ -261,7 +261,7 @@ test_that("survival probabilities functions work for PAM", {
 test_that("CIF works", {
 
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = T))
+  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = TRUE))
   ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
     mutate(cause = as.factor(cause))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
