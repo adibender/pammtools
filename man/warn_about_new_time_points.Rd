@@ -2,9 +2,12 @@
 % Please edit documentation in R/warnings.R
 \name{warn_about_new_time_points}
 \alias{warn_about_new_time_points}
+\alias{warn_about_new_time_points.pamm}
 \title{Warn if new t_j are used}
 \usage{
-warn_about_new_time_points(newdata, object, time_var)
+warn_about_new_time_points(object, newdata, ...)
+
+\method{warn_about_new_time_points}{pamm}(object, newdata, ...)
 }
 \description{
 Warn if new t_j are used

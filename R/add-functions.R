@@ -72,10 +72,13 @@ add_term <- function(
 }
 
 make_X <- function(object, ...) {
+
   UseMethod("make_X", object)
+
 }
 
 make_X.default <- function(object, newdata, ...) {
+
   X <- model.matrix(object$formula[-2], data = newdata, ...)
 
 }
@@ -239,7 +242,7 @@ get_hazard.default <- function(
   # throw warning or error if evaluation time points/intervals do not correspond
   # to evaluation time-points/intervals do not correspond to the ones used for
   # estimation
-  warn_about_new_time_points(newdata, object, time_var)
+  warn_about_new_time_points(object, newdata, time_var)
 
   X <- prep_X(object, newdata, reference, ...)
   coefs <- coef(object)
