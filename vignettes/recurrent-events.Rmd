@@ -203,7 +203,7 @@ ggplot(newdata, aes(x = tend/(365.25/12), y = surv_prob)) +
 
 The HIV exposure variable indicates whether children were HIV exposed and uninfected (HEU) by being born to HIV positive mothers or HIV uninfected (HU). We will fit this model in the PAMM framework to evaluate the effect of HIV exposure while assuming proportional hazards. This means that the effects of HIV shift the log-hazard by some constant over time. We fit two models. In the first model, we assume that the hazard ratio is the same for first and recurrent infections. In the second model, we allow different hazard ratios for first and recurrent infections, but we still assume both these hazard ratios are proportional over time.
 
-###  Model 1
+### Model 1
 
 ```{r}
 pam1 <- pamm(
