@@ -1,11 +1,37 @@
-#' @importFrom purrr discard
-unped <- function(ped) {
-  class(ped) <- class(ped) %>% discard(~.=="ped")
-  ped
+ped_classes <- function(ped) {
+
+  ind_ped <- class(ped) %in% c("ped", "ped_cr", "ped_cr_union", "fped", "nested_fdf")
+  class(ped)[ind_ped]
+
 }
-reped <- function(.data) {
-  class(.data) <- c("ped", class(.data))
+
+re_attribute <- function(.data, attr2) {
+
+  attr1 <- attributes(.data)
+  attributes(.data) <- c(attr1,
+    attr2[setdiff(names(attr1), names(attr2))])
+
   .data
+
+}
+
+
+
+
+#' @importFrom purrr discard
+unped <- function(ped, classes_ped = "ped") {
+
+  class(ped) <- setdiff(class(ped), classes_ped)
+
+  ped
+
+}
+
+reped <- function(.data, ped_classes = "ped") {
+
+  class(.data) <- c(ped_classes, class(.data))
+  .data
+
 }
 
 ped_attr <- function(ped) {
@@ -16,6 +42,7 @@ unfped <- function(fped) {
   class(fped) <- class(fped) %>% discard(~.=="fped")
   fped
 }
+
 refped <- function(.data) {
   class(.data) <- c("fped", class(.data))
   .data
@@ -50,11 +77,12 @@ NULL
 #' @rdname dplyr_verbs
 arrange.ped <- function(.data, ...) {
 
-  class_data <- class(.data)
-  .data <- arrange(unped(.data), ...)
-  class(.data) <- class_data
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- arrange(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
 
-  return(.data)
+  re_attribute(.data, attr_ped)
 
 }
 
@@ -63,7 +91,14 @@ arrange.ped <- function(.data, ...) {
 #' @export group_by
 #' @rdname dplyr_verbs
 group_by.ped <- function(.data, ..., .add = FALSE) {
-  reped(group_by(unped(.data), ..., .add = .add))
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- dplyr::group_by(unped(.data, classes_ped), ..., .add = .add)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 
@@ -73,13 +108,12 @@ group_by.ped <- function(.data, ..., .add = FALSE) {
 #' @rdname dplyr_verbs
 ungroup.ped <- function(x, ...) {
 
-  class_data <- class(x)
-  attr_data <- attributes(x)
-  x <- ungroup(unped(x), ...)
-  attr_data[["class"]] <- c("ped", class(x))
-  attributes(x) <- attr_data[setdiff(names(attr_data), c("groups"))]
+  classes_ped <- ped_classes(x)
+  attr_ped <- attributes(x)
+  x <- ungroup(unped(x, classes_ped), ...)
+  x <- reped(x, classes_ped)
 
-  return(x)
+  re_attribute(x, attr_ped)
 
 }
 
@@ -90,6 +124,7 @@ ungroup.ped <- function(x, ...) {
 #' @export filter
 #' @rdname dplyr_verbs
 filter.ped <- function(.data, ...) {
+
   reped(filter(unped(.data), ...))
 }
 
@@ -140,34 +175,80 @@ select.ped <- function(.data, ...) {
 #' @export
 #' @export mutate
 #' @rdname dplyr_verbs
-mutate.ped <- function(.data, ..., keep_attributes = TRUE) {
-  if (keep_attributes) {
-    data_attr   <- ped_attr(.data)
-    data_class <- class(.data)
-  }
-  .data <- mutate(unped(.data), ...)
-  if (keep_attributes) {
-    attributes(.data) <- c(attributes(.data), data_attr)
-  }
-  class(.data) <- data_class
-  return(.data)
+mutate.ped <- function(.data, ...) {
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- mutate(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
+
+## ' @param keep_attributes conserve attributes? defaults to \code{TRUE}
+## ' @export
+## ' @export mutate
+## ' @rdname dplyr_verbs
+## mutate.ped_cr <- function(.data, ..., keep_attributes = TRUE) {
+#   if (keep_attributes) {
+#     data_attr   <- ped_attr(.data)
+#     data_class <- class(.data)
+#   }
+#   .data <- mutate(unped(.data), ...)
+#   if (keep_attributes) {
+#     attributes(.data) <- c(attributes(.data), data_attr)
+#   }
+#   class(.data) <- data_class
+
+#   return(.data)
+
+# }
+##' @param keep_attributes conserve attributes? defaults to \code{TRUE}
+##' @export
+##' @export mutate
+##' @rdname dplyr_verbs
+# mutate.ped_cr_union <- function(.data, ..., keep_attributes = TRUE) {
+#   if (keep_attributes) {
+#     data_attr   <- ped_attr(.data)
+#     data_class <- class(.data)
+#   }
+#   .data <- mutate(unped(.data), ...)
+#   if (keep_attributes) {
+#     attributes(.data) <- c(attributes(.data), data_attr)
+#   }
+#   class(.data) <- data_class
+
+#   return(.data)
+
+# }
 
 #' @export
 #' @export rename
 #' @rdname dplyr_verbs
 rename.ped <- function(.data, ...) {
-  class_data <- class(.data)
-  .data <- rename(unped(.data), ...)
-  class(.data) <- class_data
-  return(.data)
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- rename(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 #' @export
 #' @export summarise
 #' @rdname dplyr_verbs
 summarise.ped <- function(.data, ...) {
-  reped(summarise(unped(.data), ...))
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- summarise(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 #' @export
 #' @rdname dplyr_verbs
@@ -177,7 +258,14 @@ summarize.ped <- summarise.ped
 #' @export transmute
 #' @rdname dplyr_verbs
 transmute.ped <- function(.data, ...) {
-  reped(transmute(unped(.data), ...))
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- transmute(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 #-------------------------------------------------------------------------------
@@ -189,8 +277,15 @@ transmute.ped <- function(.data, ...) {
 #' @rdname dplyr_verbs
 inner_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   ...) {
-  #FIXME?
-  reped(inner_join(unped(x), y, by, copy, suffix, ...))
+
+  classes_ped_x <- ped_classes(x)
+  classes_ped_y <- ped_classes(y)
+  attr_ped_x    <- attributes(x)
+  .data         <- inner_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
+  .data         <- reped(.data, classes_ped_x)
+
+  re_attribute(.data, attr_ped_x)
+
 }
 
 #' @inheritParams dplyr::full_join
@@ -199,8 +294,15 @@ inner_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
 #' @rdname dplyr_verbs
 full_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
   ...) {
-  #FIXME?
-  reped(full_join(unped(x), y, by, copy, suffix, ...))
+
+  classes_ped_x <- ped_classes(x)
+  classes_ped_y <- ped_classes(y)
+  attr_ped_x    <- attributes(x)
+  .data         <- full_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
+  .data         <- reped(.data, classes_ped_x)
+
+  re_attribute(.data, attr_ped_x)
+
 }
 
 #' @inheritParams dplyr::left_join
@@ -208,19 +310,15 @@ full_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 #' @export left_join
 #' @rdname dplyr_verbs
 left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., keep_attributes=TRUE) {
+  ...) {
 
-  if (keep_attributes) {
-    data_attr   <- ped_attr(x)
-  }
-  #FIXME?
-  tbl <- reped(left_join(unped(x), y, by, copy, suffix, ...))
+  classes_ped_x <- ped_classes(x)
+  classes_ped_y <- ped_classes(y)
+  attr_ped_x    <- attributes(x)
+  .data         <- left_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
+  .data         <- reped(.data, classes_ped_x)
 
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-
-  return(tbl)
+  re_attribute(.data, attr_ped_x)
 
 }
 
@@ -229,20 +327,16 @@ left_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
 #' @export right_join
 #' @rdname dplyr_verbs
 right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., keep_attributes=TRUE) {
+  ...) {
 
-  data_class <- class <- class(y)
-  if (keep_attributes) {
-    data_attr   <- ped_attr(y)
-  }
-  #FIXME?
-  tbl <- right_join(unped(x), y, by, copy, suffix, ...)
+  classes_ped_x <- ped_classes(x)
+  classes_ped_y <- ped_classes(y)
+  attr_ped_x    <- attributes(x)
+  .data         <- inner_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
+  .data         <- reped(.data, classes_ped_x)
 
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  class(tbl) <- data_class
-  return(tbl)
+  re_attribute(.data, attr_ped_x)
+
 }
 
 
@@ -305,7 +399,14 @@ nested_fdf_attr <- function(nested_fdf) {
 #' @rdname dplyr_verbs
 #' @keywords internal
 arrange.nested_fdf <- function(.data, ...) {
-  re_nested_df(arrange(un_nested_df(.data), ...))
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- arrange(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 
@@ -323,12 +424,12 @@ group_by.nested_fdf <- ifelse(
   }
 )
 
-#' @export
-#' @export ungroup
-#' @rdname dplyr_verbs
-ungroup.nested_fdf <- function(x, ...) {
-  re_nested_df(ungroup(un_nested_df(x), ...))
-}
+# #' @export
+# #' @export ungroup
+# #' @rdname dplyr_verbs
+# ungroup.nested_fdf <- function(x, ...) {
+#   re_nested_df(ungroup(un_nested_df(x), ...))
+# }
 
 #-------------------------------------------------------------------------------
 # single table: row ops

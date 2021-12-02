@@ -38,7 +38,6 @@
 \alias{right_join.ped}
 \alias{arrange.nested_fdf}
 \alias{group_by.nested_fdf}
-\alias{ungroup.nested_fdf}
 \alias{filter.nested_fdf}
 \alias{sample_n.nested_fdf}
 \alias{sample_frac.nested_fdf}
@@ -71,7 +70,7 @@
 
 \method{select}{ped}(.data, ...)
 
-\method{mutate}{ped}(.data, ..., keep_attributes = TRUE)
+\method{mutate}{ped}(.data, ...)
 
 \method{rename}{ped}(.data, ...)
 
@@ -85,31 +84,13 @@
 
 \method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{left_join}{ped}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
+\method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{right_join}{ped}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
+\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
 \method{arrange}{nested_fdf}(.data, ...)
 
 \method{group_by}{nested_fdf}(.data, ..., .add = FALSE)
-
-\method{ungroup}{nested_fdf}(x, ...)
 
 \method{filter}{nested_fdf}(.data, ...)
 
@@ -177,8 +158,6 @@ the input. Weights are automatically standardised to sum to 1.}
 
 \item{.env}{DEPRECATED.}
 
-\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
-
 \item{y}{A pair of data frames, data frame extensions (e.g. a tibble), or
 lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
 more details.}
@@ -209,6 +188,8 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
+
+\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 
 \item{funs}{see \code{\link[dplyr]{summarize_all}}}
 

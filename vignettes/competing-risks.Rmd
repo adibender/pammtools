@@ -59,6 +59,7 @@ head(ped[[1]])
 # data set for event type 2 (death from other causes)
 head(ped[[2]])
 ```
+
 To fit the model, we could loop through the list entries and fit the model of interest, however, there is also a convenience function, that recognizes the
 data type and fits the models accordingly:
 
