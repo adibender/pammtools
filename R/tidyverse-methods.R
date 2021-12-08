@@ -125,32 +125,57 @@ ungroup.ped <- function(x, ...) {
 #' @rdname dplyr_verbs
 filter.ped <- function(.data, ...) {
 
-  reped(filter(unped(.data), ...))
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- filter(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 #' @export
 #' @export sample_n
 #' @inheritParams dplyr::sample_n
 #' @rdname dplyr_verbs
-sample_n.ped <- function(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL, ...) {
-  reped(sample_n(unped(tbl), size, replace, weight, .env, ...))
+sample_n.ped <- function(tbl, size, replace = FALSE, weight = NULL, .env = NULL, ...) {
+
+  classes_ped <- ped_classes(tbl)
+  attr_ped    <- attributes(tbl)
+  tbl         <- sample_n(unped(tbl, classes_ped), size, replace, weight, .env, ...)
+  tbl         <- reped(tbl, classes_ped)
+
+  re_attribute(tbl, attr_ped)
+
 }
 
 #' @export
 #' @export sample_frac
 #' @inheritParams dplyr::sample_frac
 #' @rdname dplyr_verbs
-sample_frac.ped <- function(tbl, size = 1, replace = FALSE, weight = NULL,
-  .env = NULL, ...) {
-  reped(sample_frac(unped(tbl), size, replace, weight, .env, ...))
+sample_frac.ped <- function(tbl, size = 1, replace = FALSE, weight = NULL, .env = NULL, ...) {
+
+  classes_ped <- ped_classes(tbl)
+  attr_ped    <- attributes(tbl)
+  tbl         <- sample_n(unped(tbl, classes_ped), size, replace, weight, .env, ...)
+  tbl         <- reped(tbl, classes_ped)
+
+  re_attribute(tbl, attr_ped)
+
 }
 
 #' @export
 #' @export slice
 #' @rdname dplyr_verbs
 slice.ped <- function(.data, ...) {
-  reped(slice(unped(.data), ...))
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- slice(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
+
 }
 
 #-------------------------------------------------------------------------------
@@ -160,15 +185,14 @@ slice.ped <- function(.data, ...) {
 #' @export select
 #' @rdname dplyr_verbs
 select.ped <- function(.data, ...) {
-  out <- NextMethod()
 
-  # I don't know if this is the correct thing to do here; you'll
-  # need to think about what attributes should be preserved
-  attr <- attributes(.data)
-  attr$names <- names(out)
-  attributes(out) <- attr
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data       <- select(unped(.data, classes_ped), ...)
+  .data       <- reped(.data, classes_ped)
 
-  out
+  re_attribute(.data, attr_ped)
+
 }
 
 #' @param keep_attributes conserve attributes? defaults to \code{TRUE}
@@ -186,42 +210,6 @@ mutate.ped <- function(.data, ...) {
 
 }
 
-## ' @param keep_attributes conserve attributes? defaults to \code{TRUE}
-## ' @export
-## ' @export mutate
-## ' @rdname dplyr_verbs
-## mutate.ped_cr <- function(.data, ..., keep_attributes = TRUE) {
-#   if (keep_attributes) {
-#     data_attr   <- ped_attr(.data)
-#     data_class <- class(.data)
-#   }
-#   .data <- mutate(unped(.data), ...)
-#   if (keep_attributes) {
-#     attributes(.data) <- c(attributes(.data), data_attr)
-#   }
-#   class(.data) <- data_class
-
-#   return(.data)
-
-# }
-##' @param keep_attributes conserve attributes? defaults to \code{TRUE}
-##' @export
-##' @export mutate
-##' @rdname dplyr_verbs
-# mutate.ped_cr_union <- function(.data, ..., keep_attributes = TRUE) {
-#   if (keep_attributes) {
-#     data_attr   <- ped_attr(.data)
-#     data_class <- class(.data)
-#   }
-#   .data <- mutate(unped(.data), ...)
-#   if (keep_attributes) {
-#     attributes(.data) <- c(attributes(.data), data_attr)
-#   }
-#   class(.data) <- data_class
-
-#   return(.data)
-
-# }
 
 #' @export
 #' @export rename
@@ -365,7 +353,7 @@ fill.ped <- function(
   data_class <- class(data)
 
   if (keep_attributes) {
-    data_attr   <- ped_attr(data)
+    data_attr <- ped_attr(data)
   }
   .direction = match.arg(.direction)
   tbl <- fill(unped(data), ..., .direction = .direction)
@@ -377,259 +365,3 @@ fill.ped <- function(
   return(tbl)
 
 }
-
-#' @importFrom purrr discard
-un_nested_df <- function(nested_fdf) {
-  class(nested_fdf) <- class(nested_fdf) %>% discard(~.=="nested_fdf")
-  nested_fdf
-}
-re_nested_df <- function(.data) {
-  class(.data) <- c("nested_fdf", class(.data))
-  .data
-}
-
-nested_fdf_attr <- function(nested_fdf) {
-  attributes(nested_fdf)[c("breaks", "id_var", "intvars")]
-}
-
-
-
-#' @export
-#' @export arrange
-#' @rdname dplyr_verbs
-#' @keywords internal
-arrange.nested_fdf <- function(.data, ...) {
-
-  classes_ped <- ped_classes(.data)
-  attr_ped    <- attributes(.data)
-  .data       <- arrange(unped(.data, classes_ped), ...)
-  .data       <- reped(.data, classes_ped)
-
-  re_attribute(.data, attr_ped)
-
-}
-
-
-
-#' @export
-#' @export group_by
-#' @rdname dplyr_verbs
-group_by.nested_fdf <- ifelse(
-  utils::packageVersion("dplyr") > "0.8.5",
-  function(.data, ..., .add = FALSE) {
-    re_nested_df(group_by(un_nested_df(.data), ..., .add = .add))
-  },
-  function(.data, ..., add = FALSE) {
-    re_nested_df(group_by(un_nested_df(.data), ..., add = add))
-  }
-)
-
-# #' @export
-# #' @export ungroup
-# #' @rdname dplyr_verbs
-# ungroup.nested_fdf <- function(x, ...) {
-#   re_nested_df(ungroup(un_nested_df(x), ...))
-# }
-
-#-------------------------------------------------------------------------------
-# single table: row ops
-
-#' @export
-#' @export filter
-#' @rdname dplyr_verbs
-filter.nested_fdf <- function(.data, ...) {
-  re_nested_df(filter(un_nested_df(.data), ...))
-}
-
-#' @export
-#' @export sample_n
-#' @inheritParams dplyr::sample_n
-#' @rdname dplyr_verbs
-sample_n.nested_fdf <- function(tbl, size, replace = FALSE, weight = NULL,
-  .env = NULL, ...) {
-  re_nested_df(sample_n(un_nested_df(tbl), size, replace, weight, .env, ...))
-}
-
-#' @export
-#' @export sample_frac
-#' @inheritParams dplyr::sample_frac
-#' @rdname dplyr_verbs
-sample_frac.nested_fdf <- function(tbl, size = 1, replace = FALSE, weight = NULL,
-  .env = NULL, ...) {
-  re_nested_df(sample_frac(un_nested_df(tbl), size, replace, weight, .env, ...))
-}
-
-#' @export
-#' @export slice
-#' @rdname dplyr_verbs
-slice.nested_fdf <- function(.data, ...) {
-  re_nested_df(slice(un_nested_df(.data), ...))
-}
-
-#-------------------------------------------------------------------------------
-# single table: column ops
-
-#' @export
-#' @export select
-#' @rdname dplyr_verbs
-select.nested_fdf <- function(.data, ...) {
-  re_nested_df(select(un_nested_df(.data), ...))
-}
-
-
-#' @param keep_attributes conserve attributes? defaults to \code{TRUE}
-#' @export
-#' @export mutate
-#' @rdname dplyr_verbs
-mutate.nested_fdf <- function(.data, ..., keep_attributes=TRUE) {
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(.data)
-  }
-  .data <- re_nested_df(mutate(un_nested_df(.data), ...))
-  if (keep_attributes) {
-    attributes(.data) <- c(attributes(.data), data_attr)
-  }
-  return(.data)
-}
-
-#' @export
-#' @export rename
-#' @rdname dplyr_verbs
-rename.nested_fdf <- function(.data, ...) {
-  re_nested_df(rename(un_nested_df(.data), ...))
-}
-
-
-#' @export
-#' @export summarise
-#' @rdname dplyr_verbs
-summarise.nested_fdf <- function(.data, ...) {
-  re_nested_df(summarise(un_nested_df(.data), ...))
-}
-#' @export
-#' @rdname dplyr_verbs
-summarize.nested_fdf <- summarise.nested_fdf
-
-#' @export
-#' @export transmute
-#' @rdname dplyr_verbs
-transmute.nested_fdf <- function(.data, ...) {
-  re_nested_df(transmute(un_nested_df(.data), ...))
-}
-
-#-------------------------------------------------------------------------------
-# joins
-
-#' @inheritParams dplyr::inner_join
-#' @export
-#' @export inner_join
-#' @rdname dplyr_verbs
-inner_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...) {
-  #FIXME?
-  re_nested_df(inner_join(un_nested_df(x), y, by, copy, suffix, ...))
-}
-
-#' @inheritParams dplyr::full_join
-#' @export
-#' @export full_join
-#' @rdname dplyr_verbs
-full_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...) {
-  #FIXME?
-  re_nested_df(full_join(un_nested_df(x), y, by, copy, suffix, ...))
-}
-
-#' @inheritParams dplyr::left_join
-#' @export
-#' @export left_join
-#' @rdname dplyr_verbs
-left_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., keep_attributes=TRUE) {
-
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(x)
-  }
-  #FIXME?
-  tbl <- re_nested_df(left_join(un_nested_df(x), y, by, copy, suffix, ...))
-
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-
-  return(tbl)
-
-}
-
-#' @inheritParams dplyr::right_join
-#' @export
-#' @export right_join
-#' @rdname dplyr_verbs
-right_join.nested_fdf <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
-  ..., keep_attributes=TRUE) {
-
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(y)
-  }
-  #FIXME?
-  tbl <- re_nested_df(right_join(un_nested_df(x), y, by, copy, suffix, ...))
-
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-
-  return(tbl)
-}
-
-
-#' @inheritParams tidyr::fill
-#' @inheritParams dplyr::filter
-#' @export
-#' @export fill
-#' @rdname tidyr_verbs
-#' @keywords internal
-fill.nested_fdf <- function(
-  data,
-  ...,
-  .direction = c("down", "up"),
-  keep_attributes = TRUE) {
-  if (keep_attributes) {
-    data_attr   <- nested_fdf_attr(data)
-  }
-  tbl <- re_nested_df(fill(un_nested_df(data), ..., .direction = .direction))
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-
-  return(tbl)
-
-}
-
-
-# vectrs methods ----------------------------------------------------------
-
-#' @importFrom vctrs vec_cast vec_ptype2
-NULL
-
-ped_ptype2 <- function(x, y, ...) {
-  reped(vctrs::df_ptype2(x, y, ...))
-}
-ped_cast <- function(x, y, ...) {
-  reped(vctrs::df_cast(x, y, ...))
-}
-
-#' @export
-vec_ptype2.ped.ped <- function(x, y, ...)        ped_ptype2(x, y, ...)
-#' @export
-vec_ptype2.ped.data.frame <- function(x, y, ...) ped_ptype2(x, y, ...)
-#' @export
-vec_ptype2.data.frame.ped <- function(x, y, ...) ped_ptype2(x, y, ...)
-
-#' @export
-vec_cast.ped.ped <- function(x, y, ...)          ped_cast(x, y, ...)
-#' @export
-vec_cast.ped.data.frame <- function(x, y, ...)   ped_cast(x, y, ...)
-#' @export
-vec_cast.data.frame.ped <- function(x, y, ...)   vctrs::df_cast(x, y, ...)
