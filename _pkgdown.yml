@@ -69,6 +69,7 @@ reference:
       - get_laglead
       - add_tdc
       - pammtools
+      - get_terms
 articles:
   - title: "Articles"
     desc: "Several articles/vignettes that describe the usage of PAMMs"
