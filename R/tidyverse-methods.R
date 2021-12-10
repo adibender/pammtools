@@ -109,11 +109,26 @@ group_by.ped <- function(.data, ..., .add = FALSE) {
 ungroup.ped <- function(x, ...) {
 
   classes_ped <- ped_classes(x)
-  attr_ped <- attributes(x)
-  x <- ungroup(unped(x, classes_ped), ...)
-  x <- reped(x, classes_ped)
+  attr_ped    <- attributes(x)
+  x           <- ungroup(unped(x, classes_ped), ...)
+  x           <- reped(x, classes_ped)
 
   re_attribute(x, attr_ped)
+
+}
+
+
+#' @export
+#' @export distinct
+#' @rdname dplyr_verbs
+distinct.ped <- function(.data, ..., .keep_all = FALSE) {
+
+  classes_ped <- ped_classes(.data)
+  attr_ped    <- attributes(.data)
+  .data           <- distinct(unped(.data, classes_ped), ..., .keep_all = .keep_all)
+  .data           <- reped(.data, classes_ped)
+
+  re_attribute(.data, attr_ped)
 
 }
 
@@ -324,44 +339,5 @@ right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
   .data         <- reped(.data, classes_ped_x)
 
   re_attribute(.data, attr_ped_x)
-
-}
-
-
-
-#' @name tidyr_verbs
-#' @title \code{tidyr} Verbs for \code{ped}-Objects
-#' @param data an  object of class \code{ped}, see \code{\link{as_ped}}.
-#' @return A modified \code{ped} object.
-#' @importFrom tidyr fill fill_
-#' @description See \code{tidyr} documentation of the respective functions for
-#'   description and examples.
-#' @aliases fill fill_
-NULL
-
-#' @inheritParams tidyr::fill
-#' @param keep_attributes conserve attributes? defaults to \code{TRUE}.
-#' @export
-#' @export fill
-#' @rdname tidyr_verbs
-fill.ped <- function(
-  data,
-  ...,
-  .direction = c("down", "up", "downup", "updown"),
-  keep_attributes = TRUE) {
-
-  data_class <- class(data)
-
-  if (keep_attributes) {
-    data_attr <- ped_attr(data)
-  }
-  .direction = match.arg(.direction)
-  tbl <- fill(unped(data), ..., .direction = .direction)
-  if (keep_attributes) {
-    attributes(tbl) <- c(attributes(tbl), data_attr)
-  }
-  class(tbl) <- data_class
-
-  return(tbl)
 
 }
