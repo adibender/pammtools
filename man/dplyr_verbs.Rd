@@ -22,6 +22,7 @@
 \alias{arrange.ped}
 \alias{group_by.ped}
 \alias{ungroup.ped}
+\alias{distinct.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
 \alias{sample_frac.ped}
@@ -43,6 +44,8 @@
 \method{group_by}{ped}(.data, ..., .add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
+
+\method{distinct}{ped}(.data, ..., .keep_all = FALSE)
 
 \method{filter}{ped}(.data, ...)
 

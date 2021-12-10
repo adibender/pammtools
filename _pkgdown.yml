@@ -18,6 +18,7 @@ reference:
       - int_info
       - ped_info
       - make_newdata
+      - get_intervals
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
     e.g., smooth effects for plotting"
@@ -27,6 +28,8 @@ reference:
       - tidy_smooth2d
       - tidy_re
       - get_cumu_coef
+      - as.data.frame.crps
+      - predictSurvProb.pamm
   - title: "Augment functions"
     desc: "Functions that augment a data set by different quantaties like the
     hazard rate."
@@ -47,16 +50,25 @@ reference:
       - gg_partial_ll
       - gg_laglead
       - gg_cumu_eff
+      - geom_hazard
+      - geom_stepribbon
+      - get_plotinfo
   - title: "Data sets"
     desc: "Data sets contained in **`pammtools`**"
     contents:
       - tumor
+      - patient
+      - daily
+      - staph
+      - simdf_elra
   - title: "Utilities"
     desc: "Utility functions"
     contents:
       - seq_range
       - sim_pexp
       - get_laglead
+      - add_tdc
+      - pammtools
 articles:
   - title: "Articles"
     desc: "Several articles/vignettes that describe the usage of PAMMs"

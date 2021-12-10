@@ -5,7 +5,7 @@
 \alias{simdf_elra}
 \title{Simulated data with cumulative effects}
 \format{
-An object of class \code{nested_fdf} (inherits from \code{sim_sdf}, \code{ped}, \code{tbl_df}, \code{tbl}, \code{data.frame}) with 250 rows and 9 columns.
+An object of class \code{nested_fdf} (inherits from \code{sim_df}, \code{tbl_df}, \code{tbl}, \code{data.frame}) with 250 rows and 9 columns.
 }
 \usage{
 simdf_elra
