@@ -109,7 +109,7 @@ int_info.ped <- function(x, ...) {
 #' @keywords internal
 int_info.pamm <- function(x, ...) {
 
-  int_info(x[["trafo_args"]][["cut"]])
+  int_info(x[["attr_ped"]][["breaks"]],...)
 
 }
 

@@ -66,10 +66,10 @@ pamm <- function(
 
   pamm_fit        <- do.call(engine, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))
-  pamm_fit        <- append_ped_attr(pamm_fit, data)
+  # pamm_fit        <- append_ped_attr(pamm_fit, data)
   pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
   ind_attr_keep <- !(names(attributes(data)) %in%
-    c("names", "row.names", "breaks", "trafo_args", "class"))
+    c("names", "row.names", "trafo_args", "class"))
   pamm_fit[["attr_ped"]] <- attributes(data)[ind_attr_keep]
 
   pamm_fit

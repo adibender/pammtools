@@ -38,8 +38,7 @@ warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 warn_about_new_time_points.pamm <- function(object, newdata, ...) {
 
   if (inherits(object, "pamm")) {
-    cut <- object$trafo_args$cut
-    int_original <- int_info(cut)$interval
+    int_original <- int_info(object)
     if ("interval" %in% colnames(newdata)) {
       int_new <- unique(newdata[["interval"]])
       if(!all(int_new %in% int_original)) {
