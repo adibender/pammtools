@@ -34,8 +34,16 @@ reped <- function(.data, ped_classes = "ped") {
 
 }
 
-ped_attr <- function(ped) {
-  attributes(ped)[c("breaks", "id_var", "intvars", "combine", "censor_code", "risks")]
+ped_attr <- function(
+  ped,
+  ped_attributes = c("breaks", "id_var", "intvars", "combine", "censor_code", "risks")
+) {
+
+  attr_ped <- attributes(ped)
+  ped_attr_avail <- intersect(names(attr_ped), ped_attributes)
+
+  attr_ped[ped_attr_avail]
+
 }
 
 unfped <- function(fped) {
