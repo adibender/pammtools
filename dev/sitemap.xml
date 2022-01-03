@@ -1,7 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://adibender.github.io/pammtools/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/baseline.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/basics.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/competing-risks.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/convenience.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/cumulative-effects.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/data-transformation.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/frailty.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/left-truncation.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/model-evaluation.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/recurrent-events.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/smj-tutorial.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/splines.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/strata.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/tdcovar.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/articles/tveffects.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/authors.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/index.html</loc>
+  </url>
+  <url>
+    <loc>https://adibender.github.io/pammtools/news/index.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/add_cif.html</loc>
@@ -47,9 +107,6 @@
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/elra_matrix.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/reference/extub_event.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/fcumu.html</loc>
@@ -139,6 +196,9 @@
     <loc>https://adibender.github.io/pammtools/reference/has_tdc.html</loc>
   </url>
   <url>
+    <loc>https://adibender.github.io/pammtools/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/int_info.html</loc>
   </url>
   <url>
@@ -211,57 +271,9 @@
     <loc>https://adibender.github.io/pammtools/reference/tidy_smooth2d.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/tidyr_verbs.html</loc>
-  </url>
-  <url>
     <loc>https://adibender.github.io/pammtools/reference/tumor.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/warn_about_new_time_points.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/baseline.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/basics.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/competing-risks.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/convenience.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/cumulative-effects.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/data-transformation.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/frailty.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/left-truncation.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/model-evaluation.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/recurrent-events.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/smj-tutorial.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/splines.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/strata.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/tdcovar.html</loc>
-  </url>
-  <url>
-    <loc>https://adibender.github.io/pammtools/articles/tveffects.html</loc>
   </url>
 </urlset>

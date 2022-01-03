@@ -41,6 +41,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -53,7 +55,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.5.7.904</span>
       </span>
     </div>
 
@@ -122,7 +124,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -147,23 +149,21 @@
   <div class="contents col-md-9">
 
 
-<div id="pammtools-piece-wise-exponential-additive-mixed-modeling-tools" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#pammtools-piece-wise-exponential-additive-mixed-modeling-tools" class="anchor"></a><strong><code>pammtools</code></strong>: Piece-Wise Exponential Additive Mixed Modeling Tools</h1></div>
-<div id="installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h3>
+<div class="section level1">
+<div class="page-header"><h1 id="pammtools-piece-wise-exponential-additive-mixed-modeling-tools">
+<strong><code>pammtools</code></strong>: Piece-Wise Exponential Additive Mixed Modeling Tools<a class="anchor" aria-label="anchor" href="#pammtools-piece-wise-exponential-additive-mixed-modeling-tools"></a>
+</h1></div>
+<div class="section level3">
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
 <p>Install from CRAN or GitHub using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># CRAN</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"pammtools"</span><span class="op">)</span>
-
-<span class="co"># GitHub</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"adibender/pammtools"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pammtools"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="overview" class="section level3">
-<h3 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h3>
+<div class="section level3">
+<h3 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h3>
 <p><strong><code>pammtools</code></strong> facilitates the estimation of Piece-wise exponential Additive Mixed Models (PAMMs) for time-to-event data. PAMMs can be represented as generalized additive models and can therefore be estimated using GAM software (e.g. <strong><code>mgcv</code></strong>), which, compared to other packages for survival analysis, often offers more flexibility w.r.t. to the specification of covariate effects (e.g. non-linear, time-varying effects, cumulative effects, etc.).</p>
 <p>To get started, see the <a href="https://adibender.github.io/pammtools/articles/">Articles</a> section.</p>
 <!-- An overview over the packages functionality is given in
@@ -189,63 +189,67 @@ A general framework for the representation and estimation of cumulative effects
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=pammtools">https://​cloud.r-project.org/​package=pammtools</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/adibender/pammtools/">https://​github.com/​adibender/​pammtools/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/adibender/pammtools/issues">https://​github.com/​adibender/​pammtools/​issues</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
-</ul>
-</div>
-<div class="citation">
-<h2>Citation</h2>
-<ul class="list-unstyled">
-<li><a href="authors.html">Citing pammtools</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Andreas Bender <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5628-8611" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Fabian Scheipl <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8172-3603" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Philipp Kopper <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5037-7135" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="https://cloud.r-project.org/package=pammtools" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/adibender/pammtools/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/adibender/pammtools/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/adibender/pammtools/actions"><img src="https://github.com/adibender/pammtools/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://cran.r-project.org/web/checks/check_results_pammtools.html"><img src="https://cranchecks.info/badges/worst/pammtools" alt="cran checks"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="lifecycle"></a></li>
-<li><a href="https://travis-ci.org/adibender/pammtools"><img src="https://travis-ci.org/adibender/pammtools.svg?branch=master" alt="Build Status"></a></li>
-<li><a href="https://ci.appveyor.com/project/adibender/pammtools/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&amp;svg=true" alt="Build Status"></a></li>
-<li><a href="https://codecov.io/github/adibender/pammtools/branch/master"><img src="https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master" alt="codecov.io"></a></li>
-<li><a href="https://cran.r-project.org/package=pammtools"><img src="https://www.r-pkg.org/badges/version-ago/pammtools" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://cran.r-project.org/package=pammtools"><img src="https://cranlogs.r-pkg.org/badges/pammtools" alt="CRAN_Download_Badge"></a></li>
-<li><a href="http://opensource.org/licenses/MIT"><img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT license"></a></li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing pammtools</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Andreas Bender <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5628-8611" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Fabian Scheipl <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8172-3603" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Philipp Kopper <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5037-7135" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/adibender/pammtools/actions" class="external-link"><img src="https://github.com/adibender/pammtools/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://cran.r-project.org/web/checks/check_results_pammtools.html" class="external-link"><img src="https://cranchecks.info/badges/worst/pammtools" alt="cran checks"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg" alt="lifecycle"></a></li>
+<li><a href="https://travis-ci.org/adibender/pammtools" class="external-link"><img src="https://travis-ci.org/adibender/pammtools.svg?branch=master" alt="Build Status"></a></li>
+<li><a href="https://ci.appveyor.com/project/adibender/pammtools/branch/master" class="external-link"><img src="https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&amp;svg=true" alt="Build Status"></a></li>
+<li><a href="https://codecov.io/github/adibender/pammtools/branch/master" class="external-link"><img src="https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master" alt="codecov.io"></a></li>
+<li><a href="https://cran.r-project.org/package=pammtools" class="external-link"><img src="https://www.r-pkg.org/badges/version-ago/pammtools" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cran.r-project.org/package=pammtools" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/pammtools" alt="CRAN_Download_Badge"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT license"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>

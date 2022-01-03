@@ -35,6 +35,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.5.7.904</span>
       </span>
     </div>
 
@@ -116,7 +118,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -142,9 +144,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Model evaluation</h1>
             
-            <h4 class="date">2021-11-26</h4>
+            <h4 data-toc-skip class="date">2022-01-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/model-evaluation.Rmd"><code>vignettes/model-evaluation.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/model-evaluation.Rmd" class="external-link"><code>vignettes/model-evaluation.Rmd</code></a></small>
       <div class="hidden name"><code>model-evaluation.Rmd</code></div>
 
     </div>
@@ -152,112 +154,112 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pec</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pec</span><span class="op">)</span></code></pre></div>
 <p>In this vignette we illustrate how to obtain model performance measures for PAMMs, specifically the C-Index and (Integrated) Brier Score (IBS). Both is achieved by providing an <code>predictSurvProb</code> extension for PAMMs, which allows the usage of the <strong><code>pec</code></strong> package <span class="citation">(Mogensen, Ishwaran, and Gerds <a href="#ref-mogensen_evaluating_2012" role="doc-biblioref">2012</a>)</span> for model evaluation.</p>
 <p>Below we split the <code>tumor</code> data contained within the package and split it into a training and a test data set. The former is used to train the models, the latter to obtain out of sample performance measures.</p>
-<p>In order to work with the <code>pec</code> or <code>cindex</code> functions from the <strong><code>pec</code></strong> package, the models have to be fit using the <code>pamm</code> function (which is a thin wrapper around <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html">mgcv::gam</a></code>). Once the models are fit, the prediction error curves (PEC) and C-Index can be computed similar to any other model (see respective help pages <code><a href="https://rdrr.io/pkg/pec/man/pec.html">?pec::pec</a></code> and <code><a href="https://rdrr.io/pkg/pec/man/cindex.html">?pec::cindex</a></code>). Note that for technical reasons, evaluation of <code>pamm</code> objects should not start at exact 0 (see <code>times</code> and <code>start</code> arguments below).</p>
-<div id="prediction-error-curves-pec-and-integrated-brier-score-ibs" class="section level2">
-<h2 class="hasAnchor">
-<a href="#prediction-error-curves-pec-and-integrated-brier-score-ibs" class="anchor"></a>Prediction error curves (PEC) and Integrated Brier Score (IBS)</h2>
+<p>In order to work with the <code>pec</code> or <code>cindex</code> functions from the <strong><code>pec</code></strong> package, the models have to be fit using the <code>pamm</code> function (which is a thin wrapper around <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>). Once the models are fit, the prediction error curves (PEC) and C-Index can be computed similar to any other model (see respective help pages <code><a href="https://rdrr.io/pkg/pec/man/pec.html" class="external-link">?pec::pec</a></code> and <code><a href="https://rdrr.io/pkg/pec/man/cindex.html" class="external-link">?pec::cindex</a></code>). Note that for technical reasons, evaluation of <code>pamm</code> objects should not start at exact 0 (see <code>times</code> and <code>start</code> arguments below).</p>
+<div class="section level2">
+<h2 id="prediction-error-curves-pec-and-integrated-brier-score-ibs">Prediction error curves (PEC) and Integrated Brier Score (IBS)<a class="anchor" aria-label="anchor" href="#prediction-error-curves-pec-and-integrated-brier-score-ibs"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span>
 <span class="co">## split data into train and test data</span>
 <span class="va">n_train</span>   <span class="op">&lt;-</span> <span class="fl">400</span>
-<span class="va">train_idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span><span class="op">)</span>, <span class="va">n_train</span><span class="op">)</span>
-<span class="va">test_idx</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span><span class="op">)</span>, <span class="va">train_idx</span><span class="op">)</span>
+<span class="va">train_idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span><span class="op">)</span>, <span class="va">n_train</span><span class="op">)</span>
+<span class="va">test_idx</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span><span class="op">)</span>, <span class="va">train_idx</span><span class="op">)</span>
 <span class="co">## data transformation</span>
-<span class="va">tumor_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">[</span><span class="va">train_idx</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span><span class="op">)</span>
+<span class="va">tumor_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">[</span><span class="va">train_idx</span>, <span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span><span class="op">)</span>
 <span class="co"># some simple models for comparison</span>
 <span class="va">pam1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span>,
+  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span>,
   data <span class="op">=</span> <span class="va">tumor_ped</span><span class="op">)</span>
 <span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">metastases</span> <span class="op">+</span> <span class="va">complications</span>,
+  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">metastases</span> <span class="op">+</span> <span class="va">complications</span>,
   data <span class="op">=</span> <span class="va">tumor_ped</span><span class="op">)</span>
 <span class="va">pam3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">complications</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span>
+  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">complications</span><span class="op">)</span> <span class="op">+</span> <span class="va">charlson_score</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span>
     <span class="va">metastases</span>,
   data <span class="op">=</span> <span class="va">tumor_ped</span><span class="op">)</span>
 <span class="co"># calculate prediction error curves (on test data)</span>
-<span class="va">pec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pec/man/pec.html">pec</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pam1 <span class="op">=</span> <span class="va">pam1</span>, pam2 <span class="op">=</span> <span class="va">pam2</span>, pam3 <span class="op">=</span> <span class="va">pam3</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, <span class="co"># formula for IPCW</span>
+<span class="va">pec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pec/man/pec.html" class="external-link">pec</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pam1 <span class="op">=</span> <span class="va">pam1</span>, pam2 <span class="op">=</span> <span class="va">pam2</span>, pam3 <span class="op">=</span> <span class="va">pam3</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, <span class="co"># formula for IPCW</span>
   data <span class="op">=</span> <span class="va">tumor</span><span class="op">[</span><span class="va">test_idx</span>, <span class="op">]</span>, <span class="co"># new data not used for model fit</span>
-  times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">.01</span>, <span class="fl">1200</span>, by <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,
+  times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">.01</span>, <span class="fl">1200</span>, by <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,
   start <span class="op">=</span> <span class="fl">.01</span>,
   exact <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
 <p>The results illustrate that no one model is not necessarily better w.r.t. the prediction error for all time-points. For example <code>pam3</code> is better than <code>pam2</code> in the beginning and worse towards the end. Similarly, the integrated brier score (IBS) also depends on the evaluation time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># plot prediction error curve</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pec</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pec</span><span class="op">)</span></code></pre></div>
 <p><img src="model-evaluation_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># calculate integrated brier score</span>
-<span class="fu"><a href="https://rdrr.io/pkg/pec/man/crps.html">crps</a></span><span class="op">(</span><span class="va">pec</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">$</span><span class="va">days</span><span class="op">[</span><span class="va">tumor</span><span class="op">$</span><span class="va">status</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Integrated Brier score (crps):
-## 
-##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)
-## Reference              0.063              0.118               0.173
-## pam1                   0.060              0.114               0.171
-## pam2                   0.057              0.108               0.163
-## pam3                   0.054              0.105               0.167</code></pre>
+<span class="fu"><a href="https://rdrr.io/pkg/pec/man/crps.html" class="external-link">crps</a></span><span class="op">(</span><span class="va">pec</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">$</span><span class="va">days</span><span class="op">[</span><span class="va">tumor</span><span class="op">$</span><span class="va">status</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Integrated Brier score (crps):</span>
+<span class="co">## </span>
+<span class="co">##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)</span>
+<span class="co">## Reference              0.068              0.123               0.177</span>
+<span class="co">## pam1                   0.067              0.122               0.179</span>
+<span class="co">## pam2                   0.063              0.115               0.170</span>
+<span class="co">## pam3                   0.058              0.112               0.172</span></code></pre>
 </div>
-<div id="c-index" class="section level2">
-<h2 class="hasAnchor">
-<a href="#c-index" class="anchor"></a>C-Index</h2>
+<div class="section level2">
+<h2 id="c-index">C-Index<a class="anchor" aria-label="anchor" href="#c-index"></a>
+</h2>
 <p>Exemplary, we calculate the C-Index, however, note the warning message and the cited literature.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/pec/man/cindex.html">cindex</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pam1 <span class="op">=</span> <span class="va">pam1</span>, pam2 <span class="op">=</span> <span class="va">pam2</span>, pam3 <span class="op">=</span> <span class="va">pam3</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/pec/man/cindex.html" class="external-link">cindex</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pam1 <span class="op">=</span> <span class="va">pam1</span>, pam2 <span class="op">=</span> <span class="va">pam2</span>, pam3 <span class="op">=</span> <span class="va">pam3</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>,
   data <span class="op">=</span> <span class="va">tumor</span><span class="op">[</span><span class="va">test_idx</span>, <span class="op">]</span>,
-  eval.times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">$</span><span class="va">days</span><span class="op">[</span><span class="va">tumor</span><span class="op">$</span><span class="va">status</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## The c-index for right censored event times
-## 
-## Prediction models:
-## 
-## pam1 pam2 pam3 
-## pam1 pam2 pam3 
-## 
-## Right-censored response of a survival model
-## 
-## No.Observations: 376 
-## 
-## Pattern:
-##                 Freq
-##  event          179 
-##  right.censored 197 
-## 
-## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) 
-## 
-## No data splitting: either apparent or independent test sample performance
-## 
-## Estimated C-index in %
-## 
-## $AppCindex
-##      time=203 time=533 time=1120
-## pam1     66.1     61.4      57.6
-## pam2     74.5     67.3      62.9
-## pam3     77.1     65.8      54.8</code></pre>
-<pre><code>## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.
-## 
-## Consider using time-dependent AUC instead: riskRegression::Score</code></pre>
+  eval.times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">$</span><span class="va">days</span><span class="op">[</span><span class="va">tumor</span><span class="op">$</span><span class="va">status</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## The c-index for right censored event times</span>
+<span class="co">## </span>
+<span class="co">## Prediction models:</span>
+<span class="co">## </span>
+<span class="co">## pam1 pam2 pam3 </span>
+<span class="co">## pam1 pam2 pam3 </span>
+<span class="co">## </span>
+<span class="co">## Right-censored response of a survival model</span>
+<span class="co">## </span>
+<span class="co">## No.Observations: 376 </span>
+<span class="co">## </span>
+<span class="co">## Pattern:</span>
+<span class="co">##                 Freq</span>
+<span class="co">##  event          182 </span>
+<span class="co">##  right.censored 194 </span>
+<span class="co">## </span>
+<span class="co">## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) </span>
+<span class="co">## </span>
+<span class="co">## No data splitting: either apparent or independent test sample performance</span>
+<span class="co">## </span>
+<span class="co">## Estimated C-index in %</span>
+<span class="co">## </span>
+<span class="co">## $AppCindex</span>
+<span class="co">##      time=203 time=533 time=1120</span>
+<span class="co">## pam1     63.3     58.3      56.2</span>
+<span class="co">## pam2     75.2     65.6      61.9</span>
+<span class="co">## pam3     79.7     65.4      56.2</span></code></pre>
+<pre><code><span class="co">## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.</span>
+<span class="co">## </span>
+<span class="co">## Consider using time-dependent AUC instead: riskRegression::Score</span></code></pre>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-mogensen_evaluating_2012">
-<p>Mogensen, Ulla B., Hemant Ishwaran, and Thomas A. Gerds. 2012. “Evaluating Random Forests for Survival Analysis Using Prediction Error Curves.” <em>Journal of Statistical Software</em> 50 (11): 1–23. <a href="http://www.jstatsoft.org/v50/i11">http://www.jstatsoft.org/v50/i11</a>.</p>
+<p>Mogensen, Ulla B., Hemant Ishwaran, and Thomas A. Gerds. 2012. “Evaluating Random Forests for Survival Analysis Using Prediction Error Curves.” <em>Journal of Statistical Software</em> 50 (11): 1–23. <a href="http://www.jstatsoft.org/v50/i11" class="external-link">http://www.jstatsoft.org/v50/i11</a>.</p>
 </div>
 </div>
 </div>
@@ -274,11 +276,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>

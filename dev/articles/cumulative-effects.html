@@ -35,6 +35,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.5.7.904</span>
       </span>
     </div>
 
@@ -116,7 +118,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -142,9 +144,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cumulative Effects</h1>
             
-            <h4 class="date">2021-11-26</h4>
+            <h4 data-toc-skip class="date">2022-01-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/cumulative-effects.Rmd"><code>vignettes/cumulative-effects.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/cumulative-effects.Rmd" class="external-link"><code>vignettes/cumulative-effects.Rmd</code></a></small>
       <div class="hidden name"><code>cumulative-effects.Rmd</code></div>
 
     </div>
@@ -154,15 +156,15 @@
 <p>This vignette provides a short reference for the estimation and interpretation of cumulative effects using <strong><code>pammtools</code></strong>. For a more detailed overview see <span class="citation">Bender and Scheipl (<a href="#ref-Bender2018f" role="doc-biblioref">2018</a>)</span>. In the <a href="cumulative-effects.html#introduction">first section</a>, a short introduction to cumulative effects is provided. In the <a href="cumulative-effects.html#example-sofa-score-and-extubation">second section</a>, we present a worked example on a real data set, including necessary data transformation, model estimation and visualization.</p>
 <details><p><summary>R Setup</summary></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></code></pre></div>
-</details><div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></code></pre></div>
+</details><div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>Cumulative effects can be thought of as an extension to the modeling of time-constant effects of time-dependent covariates (TDCs; see vignette on <a href="./tdcovar.html">time-dependent covariates</a>). Standard modeling of TDCs assumes that only the current (or one lagged) value of the covariate can affect the hazard at time <span class="math inline">\(t\)</span>, i.e., <span class="math display">\[\lambda(t|z(t)) = \lambda_0(t)\exp(\beta z(t)).\]</span></p>
 <p>Cumulative effects on the other hand allow the hazard at time <span class="math inline">\(t\)</span> to depend on multiple past observations of the covariate, such that the effect at time <span class="math inline">\(t\)</span> is the sum of all weighted effects of past observations (partial effects). to make this more concrete, consider the following quantities:</p>
 <ul>
@@ -220,9 +222,9 @@ Illustration of two different lag-lead windows.
 <li><p>The right panel illustrates that a “standard” model for time-to-event data with a constant effect follows as a special case of the general definition of the cumulative effect with lag-lead window <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z = t\}\)</span> and <span class="math inline">\(h(t, t_z, z(t_z)) \equiv \beta z(t)\)</span></p></li>
 </ul>
 </div>
-<div id="example-sofa-score-and-extubation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example-sofa-score-and-extubation" class="anchor"></a>Example: SOFA-score and extubation</h2>
+<div class="section level2">
+<h2 id="example-sofa-score-and-extubation">Example: SOFA-score and extubation<a class="anchor" aria-label="anchor" href="#example-sofa-score-and-extubation"></a>
+</h2>
 <p>For an illustration of the functionality that <strong><code>pammtools</code></strong> provides to work with cumulative effects, we use (a sample) of the data analyzed in <span class="citation">Heyard et al. (<a href="#ref-Heyard2018" role="doc-biblioref">2018</a>)</span> and provided in the package <strong><code>TBFmultinomial</code></strong> (note that their analyses had a totally different goal, including modeling of competing risks; here we simply use the data for illustrative purposes).</p>
 <p>In the following analysis, we will model the (cause-specific) hazard for the event <code>extubation</code>, considering all competing events as censoring events. Covariates include <code>gender</code>, <code>type</code> (admission type), <code>SAPSadmission</code> (SAPS score at admission) and the time-dependent covariate <code>SOFA</code> score (lower scores indicate better health).</p>
 <p>To use the data for our purposes, we first perform some preprocessing, which produces two data sets:</p>
@@ -235,67 +237,67 @@ Illustration of two different lag-lead windows.
 </ul>
 <details><p><summary>R-Code data preprocessing</summary></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">VAP_data</span>, package <span class="op">=</span> <span class="st">"TBFmultinomial"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">VAP_data</span>, package <span class="op">=</span> <span class="st">"TBFmultinomial"</span><span class="op">)</span>
 <span class="co"># create unique IDs</span>
-<span class="va">VAP_data</span> <span class="op">&lt;-</span> <span class="va">VAP_data</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>tmp_id <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">day</span>, sep <span class="op">=</span> <span class="st">"."</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>csdup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">tmp_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">csdup</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">ID</span> <span class="op">+</span> <span class="fl">1000</span>, <span class="va">ID</span><span class="op">)</span><span class="op">)</span>
+<span class="va">VAP_data</span> <span class="op">&lt;-</span> <span class="va">VAP_data</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>tmp_id <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">day</span>, sep <span class="op">=</span> <span class="st">"."</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>csdup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="va">tmp_id</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">csdup</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">ID</span> <span class="op">+</span> <span class="fl">1000</span>, <span class="va">ID</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># assume constant SOFA score between updates</span>
-<span class="va">VAP_complete</span> <span class="op">&lt;-</span> <span class="va">VAP_data</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">day</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">ID</span>, day <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/full_seq.html">full_seq</a></span><span class="op">(</span><span class="va">day</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/tidyr_verbs.html">fill</a></span><span class="op">(</span><span class="va">gender</span>, <span class="va">type</span>, <span class="va">SAPSadmission</span>, <span class="va">SOFA</span>, <span class="va">outcome</span>, <span class="va">time</span>, .direction <span class="op">=</span> <span class="st">"down"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<span class="va">VAP_complete</span> <span class="op">&lt;-</span> <span class="va">VAP_data</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">day</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span><span class="va">ID</span>, day <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/full_seq.html" class="external-link">full_seq</a></span><span class="op">(</span><span class="va">day</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/fill.html" class="external-link">fill</a></span><span class="op">(</span><span class="va">gender</span>, <span class="va">type</span>, <span class="va">SAPSadmission</span>, <span class="va">SOFA</span>, <span class="va">outcome</span>, <span class="va">time</span>, .direction <span class="op">=</span> <span class="st">"down"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">day</span> <span class="op">&lt;=</span> <span class="va">time</span><span class="op">)</span>
 
-<span class="va">event_df</span> <span class="op">&lt;-</span> <span class="va">VAP_complete</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">gender</span>, <span class="va">type</span>, <span class="va">SAPSadmission</span>, <span class="va">outcome</span>, <span class="va">time</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>outcome <span class="op">=</span> <span class="fl">1</span> <span class="op">*</span> <span class="op">(</span><span class="va">outcome</span> <span class="op">==</span> <span class="st">"extubated"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<span class="va">event_df</span> <span class="op">&lt;-</span> <span class="va">VAP_complete</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">gender</span>, <span class="va">type</span>, <span class="va">SAPSadmission</span>, <span class="va">outcome</span>, <span class="va">time</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>outcome <span class="op">=</span> <span class="fl">1</span> <span class="op">*</span> <span class="op">(</span><span class="va">outcome</span> <span class="op">==</span> <span class="st">"extubated"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="va">tdc_df</span> <span class="op">&lt;-</span> <span class="va">VAP_complete</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">day</span>, <span class="va">SOFA</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>day <span class="op">=</span> <span class="va">day</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="co"># assume that SOFA available at the beginning of the day</span>
+<span class="va">tdc_df</span> <span class="op">&lt;-</span> <span class="va">VAP_complete</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">ID</span>, <span class="va">day</span>, <span class="va">SOFA</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>day <span class="op">=</span> <span class="va">day</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="co"># assume that SOFA available at the beginning of the day</span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">day</span> <span class="op">&lt;=</span> <span class="fl">49</span><span class="op">)</span></code></pre></div>
 </details><p> </p>
 <p>An overview of the preprocessed data is given below:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">event_df</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 6
-##      ID gender type    SAPSadmission outcome  time
-##   &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;           &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;
-## 1     2 0      Medical            50       0     5
-## 2     3 1      Medical            34       1     9
-## 3     4 0      Medical            45       0     7
-## 4     5 1      Medical            21       0    15
-## 5     6 1      Medical            50       0     6
-## 6     8 0      Medical            54       1     3</code></pre>
+<code class="sourceCode R"><span class="va">event_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span>
+<span class="co">##      ID gender type    SAPSadmission outcome  time</span>
+<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;">1</span>     2 0      Medical            50       0     5</span>
+<span class="co">## <span style="color: #BCBCBC;">2</span>     3 1      Medical            34       1     9</span>
+<span class="co">## <span style="color: #BCBCBC;">3</span>     4 0      Medical            45       0     7</span>
+<span class="co">## <span style="color: #BCBCBC;">4</span>     5 1      Medical            21       0    15</span>
+<span class="co">## <span style="color: #BCBCBC;">5</span>     6 1      Medical            50       0     6</span>
+<span class="co">## <span style="color: #BCBCBC;">6</span>     8 0      Medical            54       1     3</span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tdc_df</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 3
-##      ID   day  SOFA
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
-## 1     2     0     9
-## 2     2     1     8
-## 3     2     2     9
-## 4     2     3     9
-## 5     2     4     8
-## 6     3     0    10</code></pre>
+<code class="sourceCode R"><span class="va">tdc_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span>
+<span class="co">##      ID   day  SOFA</span>
+<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;">1</span>     2     0     9</span>
+<span class="co">## <span style="color: #BCBCBC;">2</span>     2     1     8</span>
+<span class="co">## <span style="color: #BCBCBC;">3</span>     2     2     9</span>
+<span class="co">## <span style="color: #BCBCBC;">4</span>     2     3     9</span>
+<span class="co">## <span style="color: #BCBCBC;">5</span>     2     4     8</span>
+<span class="co">## <span style="color: #BCBCBC;">6</span>     3     0    10</span></code></pre>
 <div class="figure" style="text-align: center">
 <img src="cumulative-effects_files/figure-html/unnamed-chunk-7-1.png" alt="SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement." width="600px"><p class="caption">
 SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement.
 </p>
 </div>
-<div id="data-transformation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#data-transformation" class="anchor"></a>Data transformation</h3>
+<div class="section level3">
+<h3 id="data-transformation">Data transformation<a class="anchor" aria-label="anchor" href="#data-transformation"></a>
+</h3>
 <p>For illustration, we fit a DLNM <span class="citation">(Gasparrini et al. <a href="#ref-Gasparrini2017" role="doc-biblioref">2017</a>)</span> with cumulative effect of the SOFA score (<span class="math inline">\(z\)</span>) as defined below:</p>
 <p><span class="math display">\[
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
@@ -304,8 +306,8 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
 <p><a href="https://adibender.github.io/pammtools/articles/data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects">Remember</a> that the specification of the partial effect <span class="math inline">\(h(t,t_z, z(t_z))\)</span> as well as the definition of the lag-lead window are important parts of the analysis and need to be considered at the beginning of the analysis as this information goes into the code for the data transformation:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">event_df</span>, <span class="va">tdc_df</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">outcome</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/cumulative.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">day</span><span class="op">)</span>, <span class="va">SOFA</span>, tz_var <span class="op">=</span> <span class="st">"day"</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">event_df</span>, <span class="va">tdc_df</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">outcome</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">day</span><span class="op">)</span>, <span class="va">SOFA</span>, tz_var <span class="op">=</span> <span class="st">"day"</span>,
       ll_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">&amp;</span>  <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">5</span><span class="op">)</span>,
   cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">49</span>, <span class="co"># administrative censoring at t = 49</span>
   id <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span>
@@ -320,65 +322,65 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
 </ul>
 <p>Note that the data now contains 3 matrix columns (<code>day_latency</code>, <code>SOFA</code> and <code>LL</code>; the latter stores the lag-lead matrix <span class="math inline">\(\mathcal{T}(t)\)</span>):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code>## Classes 'fped', 'ped' and 'data.frame':  1514 obs. of  12 variables:
-##  $ ID           : num  2 2 2 2 2 3 3 3 3 3 ...
-##  $ tstart       : num  0 1 2 3 4 0 1 2 3 4 ...
-##  $ tend         : int  1 2 3 4 5 1 2 3 4 5 ...
-##  $ SAPSadmission: int  50 50 50 50 50 34 34 34 34 34 ...
-##  $ day_latency  : num [1:1514, 1:50] 0 1 2 3 4 0 1 2 3 4 ...
-##  $ SOFA         : num [1:1514, 1:50] 9 9 9 9 9 10 10 10 10 10 ...
-##   ..- attr(*, "dimnames")=List of 2
-...</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Classes 'fped', 'ped' and 'data.frame':  1514 obs. of  12 variables:</span>
+<span class="co">##  $ ID           : num  2 2 2 2 2 3 3 3 3 3 ...</span>
+<span class="co">##  $ tstart       : num  0 1 2 3 4 0 1 2 3 4 ...</span>
+<span class="co">##  $ tend         : int  1 2 3 4 5 1 2 3 4 5 ...</span>
+<span class="co">##  $ SAPSadmission: int  50 50 50 50 50 34 34 34 34 34 ...</span>
+<span class="co">##  $ day_latency  : num [1:1514, 1:50] 0 1 2 3 4 0 1 2 3 4 ...</span>
+<span class="co">##  $ SOFA         : num [1:1514, 1:50] 9 9 9 9 9 10 10 10 10 10 ...</span>
+<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
+<span class="va">...</span></code></pre>
 <div class="figure" style="text-align: center">
 <img src="cumulative-effects_files/figure-html/unnamed-chunk-10-1.png" alt="Lag-lead window for the first 10 days of the follow-up." width="400px"><p class="caption">
 Lag-lead window for the first 10 days of the follow-up.
 </p>
 </div>
 </div>
-<div id="model-estimation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model-estimation" class="anchor"></a>Model estimation</h3>
-<p>After successful data transformation with <code>as_ped</code>, the model can be estimated directly using <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html">mgcv::gam</a></code>. Including matrix columns into the model specification will inform <code>gam</code> to estimate cumulative effects. In our case the the following call estimates the DLNM with a cumulative effect (of the SOFA score) as specified above:</p>
+<div class="section level3">
+<h3 id="model-estimation">Model estimation<a class="anchor" aria-label="anchor" href="#model-estimation"></a>
+</h3>
+<p>After successful data transformation with <code>as_ped</code>, the model can be estimated directly using <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>. Including matrix columns into the model specification will inform <code>gam</code> to estimate cumulative effects. In our case the the following call estimates the DLNM with a cumulative effect (of the SOFA score) as specified above:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">type</span> <span class="op">+</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">SAPSadmission</span> <span class="op">+</span>
-   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html">te</a></span><span class="op">(</span><span class="va">day_latency</span>, <span class="va">SOFA</span>, by <span class="op">=</span> <span class="va">LL</span><span class="op">)</span>,
-  method <span class="op">=</span> <span class="st">"REML"</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ped</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## ped_status ~ s(tend) + type + gender + SAPSadmission + te(day_latency, 
-##     SOFA, by = LL)
-## 
-## Parametric coefficients:
-##                 Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)   -1.423e+01  4.304e+00  -3.307 0.000943 ***
-## typeSurgical  -6.229e-01  2.751e-01  -2.264 0.023551 *  
-## gender1       -2.211e-01  2.354e-01  -0.939 0.347707    
-## SAPSadmission -3.738e-04  7.893e-03  -0.047 0.962226    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                           edf Ref.df Chi.sq p-value    
-## s(tend)                 1.000  1.000  2.269   0.132    
-## te(day_latency,SOFA):LL 5.395  6.046 65.433  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  0.121   Deviance explained = 22.5%
-## -REML =  258.2  Scale est. = 1         n = 1514</code></pre>
+<code class="sourceCode R"><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">type</span> <span class="op">+</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">SAPSadmission</span> <span class="op">+</span>
+   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">te</a></span><span class="op">(</span><span class="va">day_latency</span>, <span class="va">SOFA</span>, by <span class="op">=</span> <span class="va">LL</span><span class="op">)</span>,
+  method <span class="op">=</span> <span class="st">"REML"</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ped</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Family: poisson </span>
+<span class="co">## Link function: log </span>
+<span class="co">## </span>
+<span class="co">## Formula:</span>
+<span class="co">## ped_status ~ s(tend) + type + gender + SAPSadmission + te(day_latency, </span>
+<span class="co">##     SOFA, by = LL)</span>
+<span class="co">## </span>
+<span class="co">## Parametric coefficients:</span>
+<span class="co">##                 Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">## (Intercept)   -1.423e+01  4.304e+00  -3.307 0.000943 ***</span>
+<span class="co">## typeSurgical  -6.229e-01  2.751e-01  -2.264 0.023551 *  </span>
+<span class="co">## gender1       -2.211e-01  2.354e-01  -0.939 0.347707    </span>
+<span class="co">## SAPSadmission -3.738e-04  7.893e-03  -0.047 0.962226    </span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## Approximate significance of smooth terms:</span>
+<span class="co">##                           edf Ref.df Chi.sq p-value    </span>
+<span class="co">## s(tend)                 1.000  1.000  2.269   0.132    </span>
+<span class="co">## te(day_latency,SOFA):LL 5.395  6.046 65.433  &lt;2e-16 ***</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## R-sq.(adj) =  0.121   Deviance explained = 22.5%</span>
+<span class="co">## -REML =  258.2  Scale est. = 1         n = 1514</span></code></pre>
 </div>
-<div id="interpretation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#interpretation" class="anchor"></a>Interpretation</h3>
+<div class="section level3">
+<h3 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
+</h3>
 <p>Interpretation of the estimated cumulative effects is best performed by visualization of either the partial effects or the cumulative effect. <strong><code>pammtools</code></strong> provides a couple of convenience functions that facilitate this process:</p>
 <ul>
 <li>
-<code>gg_tensor</code>: This visualizes 2D effect surfaces as heat maps/contour plots and is based on the output of <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html">mgcv::plot.gam</a></code>
+<code>gg_tensor</code>: This visualizes 2D effect surfaces as heat maps/contour plots and is based on the output of <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code>
 </li>
 <li>
 <code>gg_partial</code> and <code>gg_partial_ll</code>: The former visualizes the estimated partial effect, e.g., <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each combination of the (specified) input, the latter visualizes the partial effects as a heat-map within the specified lag-lead window (this makes it easier to see which partial effects actually contribute to the cumulative effect in a specific interval)</li>
@@ -389,36 +391,36 @@ Lag-lead window for the first 10 days of the follow-up.
 </li>
 </ul>
 <p>Note that for each of these plot functions there are respective functions to retrieve the data used for plotting such that the plots can be generated and customized manually (see especially examples in <code>make_newdata</code>).</p>
-<div id="d-partial-effect-surface" class="section level4">
-<h4 class="hasAnchor">
-<a href="#d-partial-effect-surface" class="anchor"></a>2D partial effect surface</h4>
+<div class="section level4">
+<h4 id="d-partial-effect-surface">2D partial effect surface<a class="anchor" aria-label="anchor" href="#d-partial-effect-surface"></a>
+</h4>
 <p>The code below visualizes the estimated 2D partial effect <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each combination of latency and SOFA score (including confidence intervals). The gray areas indicate combinations that did not occur in the data.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">mod</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"SOFA"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"latency (day)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">mod</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"SOFA"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"latency (day)"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-12-1.png" width="650px" style="display: block; margin: auto;"></p>
 <p>This illustrates that a low SOFA score substantially increases the log-hazard if it was observed recently (latency <span class="math inline">\(&lt;\)</span> 2 days), while partial effects of the SOFA score observed further in the past (latency <span class="math inline">\(&gt;\)</span> 3 days) go towards zero (the event of interest is “extubation”, therefore increased (log-)hazards imply increased probabilities of extubation). Note that for this graphic, the function <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> is evaluated at values of <span class="math inline">\(t-t_z\)</span> (<code>day_latency</code>) that are not present in the data.</p>
 <p>Alternatively, the function <code>gg_partial</code> can be used to produce similar visualizations and allows more control over the inputs. For example, the following code produces the partial effect surface plot evaluated only at latencies 0 through 5 and calculates the partial effects relative to a patient with SOFA score 10 (everything else being equal):</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/gg_partial.html">gg_partial</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>, day_latency <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">5</span>,
-  SOFA <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">SOFA</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, LL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>SOFA <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  SOFA <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">SOFA</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, LL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SOFA <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-13-1.png" width="400px" style="display: block; margin: auto;"> See also <code>gg_partial_ll</code> that shows the lag-lead window and partial effects that contribute to the cumulative effect in each interval. Due to the definition of the partial effect, however, these are constant in this case, as no time-variation was specified.</p>
 </div>
-<div id="d-conditional-effects-slices-through-the-2d-surface" class="section level4">
-<h4 class="hasAnchor">
-<a href="#d-conditional-effects-slices-through-the-2d-surface" class="anchor"></a>1D conditional effects (slices through the 2D surface):</h4>
+<div class="section level4">
+<h4 id="d-conditional-effects-slices-through-the-2d-surface">1D conditional effects (slices through the 2D surface):<a class="anchor" aria-label="anchor" href="#d-conditional-effects-slices-through-the-2d-surface"></a>
+</h4>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p_slice_latency</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gg_slice.html">gg_slice</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>,
-  day_latency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">day_latency</span><span class="op">)</span>, SOFA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+  day_latency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">day_latency</span><span class="op">)</span>, SOFA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p_slice_sofa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gg_slice.html">gg_slice</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>,
-  day_latency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, SOFA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">SOFA</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span><span class="va">p_slice_latency</span>, <span class="va">p_slice_sofa</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+  day_latency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, SOFA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">SOFA</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p_slice_latency</span>, <span class="va">p_slice_sofa</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-14-1.png" width="650px" style="display: block; margin: auto;"></p>
 <p>These plots contain essentially the same information as the 2D surface, but focus on isolating the effects of the individual variables. This can be especially useful for three-dimensional partial effects which are hard to visualize otherwise.</p>
 </div>
-<div id="cumulative-effects" class="section level4">
-<h4 class="hasAnchor">
-<a href="#cumulative-effects" class="anchor"></a>Cumulative effects</h4>
+<div class="section level4">
+<h4 id="cumulative-effects">Cumulative effects<a class="anchor" aria-label="anchor" href="#cumulative-effects"></a>
+</h4>
 <p>Since it can be difficult to assess how the estimated partial effects actually affect estimated hazard rates, <strong><code>pammtools</code></strong> provides additional functions to visualize and compare estimated cumulative effects on the level of the (log-)hazard rates for given TDCs <span class="math inline">\(\mathbf{z}\)</span>.</p>
 <p>Below, we visualize the cumulative effect in each interval of the follow-up. Since the effect depends on a TDC <span class="math inline">\(\mathbf{z}\)</span>, its values must be provided in the call to <code>gg_cumu_eff</code> as <code>z1</code> argument (either length 1 for time-constant values or length equal to maximum number of times <span class="math inline">\(z(t_z)\)</span> was observed). If <code>z2</code> is additionally specified, the log-hazard ratio is calculated as <span class="math inline">\(\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)\)</span>. Below, two such log-hazard ratios are visualized for two different comparisons of SOFA score profiles:</p>
 <ul>
@@ -427,32 +429,32 @@ Lag-lead window for the first 10 days of the follow-up.
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p_cumu1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>,
-  z1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">0</span>, length.out <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>, z2 <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">rel</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">25</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+  z1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">0</span>, length.out <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>, z2 <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">rel</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">25</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">p_cumu2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>,
-    z1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">20</span>, length.out <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>,
-    z2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">rel</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span><span class="va">p_cumu1</span>, <span class="va">p_cumu2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+    z1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">20</span>, length.out <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>,
+    z2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">rel</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p_cumu1</span>, <span class="va">p_cumu2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-15-1.png" width="650px" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-Bender2018f">
-<p>Bender, Andreas, and Fabian Scheipl. 2018. “Pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.” <em>arXiv:1806.01042 [Stat]</em>. <a href="http://arxiv.org/abs/1806.01042">http://arxiv.org/abs/1806.01042</a>.</p>
+<p>Bender, Andreas, and Fabian Scheipl. 2018. “Pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.” <em>arXiv:1806.01042 [Stat]</em>. <a href="http://arxiv.org/abs/1806.01042" class="external-link">http://arxiv.org/abs/1806.01042</a>.</p>
 </div>
 <div id="ref-Gasparrini2017">
-<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645">https://doi.org/10.1111/biom.12645</a>.</p>
+<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="external-link">https://doi.org/10.1111/biom.12645</a>.</p>
 </div>
 <div id="ref-Heyard2018">
-<p>Heyard, Rachel, Jean-François Timsit, Wafa Ibn Essaied, and Leonhard Held. 2018. “Dynamic Clinical Prediction Models for Discrete Time-to-Event Data with Competing Risks—A Case Study on the OUTCOMEREA Database.” <em>Biometrical Journal</em> 0 (0). <a href="https://doi.org/10.1002/bimj.201700259">https://doi.org/10.1002/bimj.201700259</a>.</p>
+<p>Heyard, Rachel, Jean-François Timsit, Wafa Ibn Essaied, and Leonhard Held. 2018. “Dynamic Clinical Prediction Models for Discrete Time-to-Event Data with Competing Risks—A Case Study on the OUTCOMEREA Database.” <em>Biometrical Journal</em> 0 (0). <a href="https://doi.org/10.1002/bimj.201700259" class="external-link">https://doi.org/10.1002/bimj.201700259</a>.</p>
 </div>
 <div id="ref-Sylvestre2009">
-<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701">https://doi.org/10.1002/sim.3701</a>.</p>
+<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="external-link">https://doi.org/10.1002/sim.3701</a>.</p>
 </div>
 </div>
 </div>
@@ -469,11 +471,13 @@ Lag-lead window for the first 10 days of the follow-up.
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>

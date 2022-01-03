@@ -35,6 +35,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.5.7.904</span>
       </span>
     </div>
 
@@ -116,7 +118,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -142,9 +144,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Non-linear effects (penalized splines)</h1>
             
-            <h4 class="date">2021-11-26</h4>
+            <h4 data-toc-skip class="date">2022-01-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/splines.Rmd"><code>vignettes/splines.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/splines.Rmd" class="external-link"><code>vignettes/splines.Rmd</code></a></small>
       <div class="hidden name"><code>splines.Rmd</code></div>
 
     </div>
@@ -152,34 +154,34 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span>
-<span class="va">Set1</span> <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Set1"</span><span class="op">)</span></code></pre></div>
-<div id="veterans-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#veterans-data" class="anchor"></a>Veteran’s data</h2>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span>
+<span class="va">Set1</span> <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Set1"</span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="veterans-data">Veteran’s data<a class="anchor" aria-label="anchor" href="#veterans-data"></a>
+</h2>
 <p>We first illustrate the estimation on non-linear smooth effects using the <code>veteran</code> data from the survival package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package<span class="op">=</span><span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran package</span></code></pre></div>
-<pre><code>## Warning in data("veteran", package = "survival"): data set 'veteran' not found</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package<span class="op">=</span><span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran package</span></code></pre></div>
+<pre><code><span class="co">## Warning in data("veteran", package = "survival"): data set 'veteran' not found</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>
     trt   <span class="op">=</span> <span class="fl">1</span><span class="op">+</span><span class="op">(</span><span class="va">trt</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,
-    prior <span class="op">=</span> <span class="fl">1</span><span class="op">*</span><span class="op">(</span><span class="va">prior</span><span class="op">==</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+    prior <span class="op">=</span> <span class="fl">1</span><span class="op">*</span><span class="op">(</span><span class="va">prior</span><span class="op">==</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">time</span> <span class="op">&lt;</span> <span class="fl">400</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">)</span></code></pre></div>
-<pre><code>##   trt celltype time status karno diagtime age prior
-## 1   1 squamous   72      1    60        7  69     0
-## 3   1 squamous  228      1    60        3  38     0
-## 4   1 squamous  126      1    60        9  63     1
-## 5   1 squamous  118      1    70       11  65     1
-## 6   1 squamous   10      1    20        5  49     0
-## 7   1 squamous   82      1    40       10  69     1</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##   trt celltype time status karno diagtime age prior</span>
+<span class="co">## 1   1 squamous   72      1    60        7  69     0</span>
+<span class="co">## 3   1 squamous  228      1    60        3  38     0</span>
+<span class="co">## 4   1 squamous  126      1    60        9  63     1</span>
+<span class="co">## 5   1 squamous  118      1    70       11  65     1</span>
+<span class="co">## 6   1 squamous   10      1    20        5  49     0</span>
+<span class="co">## 7   1 squamous   82      1    40       10  69     1</span></code></pre>
 <p>There are two continuous covariates in the data set that could potentially exhibit non-linear effects, <code>age</code> and <code>karno</code>. We fit a Cox-PH model and a PAM of the form</p>
 <p><span class="math display">\[
 \lambda(t|x) = \lambda_0(t)\exp(f(x_{karno}))
@@ -190,147 +192,147 @@
 \]</span> respectively:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Cox-PH</span>
-<span class="va">cph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html">pspline</a></span><span class="op">(</span><span class="va">karno</span>, df<span class="op">=</span><span class="fl">0</span><span class="op">)</span>, data<span class="op">=</span><span class="va">veteran</span><span class="op">)</span>
+<span class="va">cph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">karno</span>, df<span class="op">=</span><span class="fl">0</span><span class="op">)</span>, data<span class="op">=</span><span class="va">veteran</span><span class="op">)</span>
 <span class="co">## PAM</span>
-<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, id<span class="op">=</span><span class="st">"id"</span><span class="op">)</span>
-<span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">karno</span>, bs<span class="op">=</span><span class="st">"ps"</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>,
+<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, id<span class="op">=</span><span class="st">"id"</span><span class="op">)</span>
+<span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">karno</span>, bs<span class="op">=</span><span class="st">"ps"</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,
   offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></code></pre></div>
 <p>The Figure below visualizes the smooth estimates from both models:</p>
 <details><p><summary><em>Expand here to see R-Code</em></summary></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># crate data set with varying karno values (from min to max in 100 steps)</span>
 <span class="co"># and add term contribution of karno from PAM and Cox-PH models</span>
-<span class="va">karno_df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span>karno <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">karno</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/add_term.html">add_term</a></span><span class="op">(</span><span class="va">pam</span>, term<span class="op">=</span><span class="st">"karno"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<span class="va">karno_df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>karno <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">karno</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/add_term.html">add_term</a></span><span class="op">(</span><span class="va">pam</span>, term<span class="op">=</span><span class="st">"karno"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>
-    cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">cph</span>, newdata<span class="op">=</span><span class="va">.</span>, type<span class="op">=</span><span class="st">"terms"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"pspline(karno, df = 0)"</span><span class="op">]</span> <span class="op">-</span>
-      <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">cph</span>, newdata<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>karno<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">$</span><span class="va">karno</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">gg_karno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">karno_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">karno</span>, ymin<span class="op">=</span><span class="va">ci_lower</span>, ymax<span class="op">=</span><span class="va">ci_upper</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">fit</span>, col<span class="op">=</span><span class="st">"PAM"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cox</span>, col<span class="op">=</span><span class="st">"Cox PH"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Method"</span>,values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Cox PH"</span><span class="op">=</span><span class="va">Set1</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="st">"PAM"</span><span class="op">=</span><span class="st">"black"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">plain</a></span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">plain</a></span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+    cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">cph</span>, newdata<span class="op">=</span><span class="va">.</span>, type<span class="op">=</span><span class="st">"terms"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"pspline(karno, df = 0)"</span><span class="op">]</span> <span class="op">-</span>
+      <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">cph</span>, newdata<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>karno<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">$</span><span class="va">karno</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">gg_karno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">karno_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">karno</span>, ymin<span class="op">=</span><span class="va">ci_lower</span>, ymax<span class="op">=</span><span class="va">ci_upper</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">fit</span>, col<span class="op">=</span><span class="st">"PAM"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">cox</span>, col<span class="op">=</span><span class="st">"Cox PH"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"Method"</span>,values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cox PH"</span><span class="op">=</span><span class="va">Set1</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="st">"PAM"</span><span class="op">=</span><span class="st">"black"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">plain</a></span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">plain</a></span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="co"># gg_karno</span></code></pre></div>
 </details><p><img src="splines_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky-Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see the <a href="tveffects.html">time-varying effects vignette</a>.</p>
 </div>
-<div id="mgus-data-age-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#mgus-data-age-example" class="anchor"></a>MGUS data: age example</h2>
-<p>In the following we consider another example using using data presented in the respective vignette in the <code>survival</code> package (see <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/splines.pdf">vignette("splines", package = "survival")</a></code>).</p>
-<div id="cox-ph-workflow" class="section level3">
-<h3 class="hasAnchor">
-<a href="#cox-ph-workflow" class="anchor"></a>Cox PH workflow</h3>
+<div class="section level2">
+<h2 id="mgus-data-age-example">MGUS data: age example<a class="anchor" aria-label="anchor" href="#mgus-data-age-example"></a>
+</h2>
+<p>In the following we consider another example using using data presented in the respective vignette in the <code>survival</code> package (see <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/splines.pdf" class="external-link">vignette("splines", package = "survival")</a></code>).</p>
+<div class="section level3">
+<h3 id="cox-ph-workflow">Cox PH workflow<a class="anchor" aria-label="anchor" href="#cox-ph-workflow"></a>
+</h3>
 <p>The example presented in the vignette goes as follows, using the standard base R workflow and <code>termplot</code> for visualization:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"mgus"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in data("mgus", package = "survival"): data set 'mgus' not found</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"mgus"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Warning in data("mgus", package = "survival"): data set 'mgus' not found</span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html">pspline</a></span><span class="op">(</span><span class="va">age</span>, df <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">mfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">age</span>, df <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus</span><span class="op">)</span>
 <span class="va">mfit</span></code></pre></div>
-<pre><code>## Call:
-## coxph(formula = Surv(futime, death) ~ sex + pspline(age, df = 4), 
-##     data = mgus)
-## 
-##                               coef se(coef)      se2    Chisq   DF      p
-## sexmale                    0.22784  0.13883  0.13820  2.69335 1.00   0.10
-## pspline(age, df = 4), lin  0.06682  0.00703  0.00703 90.22974 1.00 &lt;2e-16
-## pspline(age, df = 4), non                             3.44005 3.05   0.34
-## 
-## Iterations: 5 outer, 16 Newton-Raphson
-##      Theta= 0.851 
-## Degrees of freedom for terms= 1.0 4.1 
-## Likelihood ratio test=108  on 5.04 df, p=&lt;2e-16
-## n= 241, number of events= 225</code></pre>
+<pre><code><span class="co">## Call:</span>
+<span class="co">## coxph(formula = Surv(futime, death) ~ sex + pspline(age, df = 4), </span>
+<span class="co">##     data = mgus)</span>
+<span class="co">## </span>
+<span class="co">##                               coef se(coef)      se2    Chisq   DF      p</span>
+<span class="co">## sexmale                    0.22784  0.13883  0.13820  2.69335 1.00   0.10</span>
+<span class="co">## pspline(age, df = 4), lin  0.06682  0.00703  0.00703 90.22974 1.00 &lt;2e-16</span>
+<span class="co">## pspline(age, df = 4), non                             3.44005 3.05   0.34</span>
+<span class="co">## </span>
+<span class="co">## Iterations: 5 outer, 16 Newton-Raphson</span>
+<span class="co">##      Theta= 0.851 </span>
+<span class="co">## Degrees of freedom for terms= 1.0 4.1 </span>
+<span class="co">## Likelihood ratio test=108  on 5.04 df, p=&lt;2e-16</span>
+<span class="co">## n= 241, number of events= 225</span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html">termplot</a></span><span class="op">(</span><span class="va">mfit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mfit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="splines_files/figure-html/figcox-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
-<div id="pam-workflow" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pam-workflow" class="anchor"></a>PAM workflow</h3>
-<p>The equivalent fit using PAMs requires the additional step of transforming the data into a suitable format. We then use <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html">mgcv::gam</a></code> to fit the model:</p>
+<div class="section level3">
+<h3 id="pam-workflow">PAM workflow<a class="anchor" aria-label="anchor" href="#pam-workflow"></a>
+</h3>
+<p>The equivalent fit using PAMs requires the additional step of transforming the data into a suitable format. We then use <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> to fit the model:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mgus.ped</span> <span class="op">&lt;-</span> <span class="va">mgus</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">sex</span> <span class="op">+</span> <span class="va">age</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">mgus.ped</span><span class="op">)</span></code></pre></div>
-<pre><code>##   id tstart tend interval   offset ped_status    sex age
-## 1  1      0    6    (0,6] 1.791759          0 female  78
-## 2  1      6    7    (6,7] 0.000000          0 female  78
-## 3  1      7   31   (7,31] 3.178054          0 female  78
-## 4  1     31   32  (31,32] 0.000000          0 female  78
-## 5  1     32   39  (32,39] 1.945910          0 female  78
-## 6  1     39   60  (39,60] 3.044522          0 female  78</code></pre>
+<code class="sourceCode R"><span class="va">mgus.ped</span> <span class="op">&lt;-</span> <span class="va">mgus</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">sex</span> <span class="op">+</span> <span class="va">age</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mgus.ped</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##   id tstart tend interval   offset ped_status    sex age</span>
+<span class="co">## 1  1      0    6    (0,6] 1.791759          0 female  78</span>
+<span class="co">## 2  1      6    7    (6,7] 0.000000          0 female  78</span>
+<span class="co">## 3  1      7   31   (7,31] 3.178054          0 female  78</span>
+<span class="co">## 4  1     31   32  (31,32] 0.000000          0 female  78</span>
+<span class="co">## 5  1     32   39  (32,39] 1.945910          0 female  78</span>
+<span class="co">## 6  1     39   60  (39,60] 3.044522          0 female  78</span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pamfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">age</span>, bs <span class="op">=</span> <span class="st">"ps"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus.ped</span>,
-  method <span class="op">=</span> <span class="st">"REML"</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">pamfit</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## ped_status ~ s(tend) + sex + s(age, bs = "ps")
-## 
-## Parametric coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)  -9.1597     0.1194 -76.685   &lt;2e-16 ***
-## sexmale       0.2461     0.1362   1.807   0.0708 .  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##           edf Ref.df Chi.sq p-value    
-## s(tend) 1.001  1.002  67.11  &lt;2e-16 ***
-## s(age)  1.001  1.002  90.01  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  0.000299   Deviance explained = 5.19%
-## -REML = 1350.2  Scale est. = 1         n = 28326</code></pre>
-<p>For visualization of the smooth effects we can use the default <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html">mgcv::plot.gam</a></code> function:</p>
+<code class="sourceCode R"><span class="va">pamfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">age</span>, bs <span class="op">=</span> <span class="st">"ps"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus.ped</span>,
+  method <span class="op">=</span> <span class="st">"REML"</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pamfit</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Family: poisson </span>
+<span class="co">## Link function: log </span>
+<span class="co">## </span>
+<span class="co">## Formula:</span>
+<span class="co">## ped_status ~ s(tend) + sex + s(age, bs = "ps")</span>
+<span class="co">## </span>
+<span class="co">## Parametric coefficients:</span>
+<span class="co">##             Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">## (Intercept)  -9.1597     0.1194 -76.685   &lt;2e-16 ***</span>
+<span class="co">## sexmale       0.2461     0.1362   1.807   0.0708 .  </span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## Approximate significance of smooth terms:</span>
+<span class="co">##           edf Ref.df Chi.sq p-value    </span>
+<span class="co">## s(tend) 1.001  1.002  67.11  &lt;2e-16 ***</span>
+<span class="co">## s(age)  1.001  1.002  90.01  &lt;2e-16 ***</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## R-sq.(adj) =  0.000299   Deviance explained = 5.19%</span>
+<span class="co">## -REML = 1350.2  Scale est. = 1         n = 28326</span></code></pre>
+<p>For visualization of the smooth effects we can use the default <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code> function:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/termplot.html">termplot</a></span><span class="op">(</span><span class="va">mfit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pamfit</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mfit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pamfit</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="splines_files/figure-html/figpam1-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>In this example the PAM approach estimates a linear effect of age, which is consistent with the estimation using <code>coxph</code>, as there is only weak non-linearity.</p>
 </div>
-<div id="mgus-data-hemoglobin-example" class="section level3">
-<h3 class="hasAnchor">
-<a href="#mgus-data-hemoglobin-example" class="anchor"></a>MGUS data: Hemoglobin example</h3>
+<div class="section level3">
+<h3 id="mgus-data-hemoglobin-example">MGUS data: Hemoglobin example<a class="anchor" aria-label="anchor" href="#mgus-data-hemoglobin-example"></a>
+</h3>
 <p>Another example from the same vignette shows that estimated effects are very similar if the effect of the covariate is in fact strongly non-linear:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html">pspline</a></span><span class="op">(</span><span class="va">hgb</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">mgus2</span><span class="op">)</span>
-<span class="va">mgus2.ped</span> <span class="op">&lt;-</span> <span class="va">mgus2</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">age</span> <span class="op">+</span> <span class="va">hgb</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">pamfit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">ped_status</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">hgb</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus2.ped</span>,
-    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">hgb</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">mgus2</span><span class="op">)</span>
+<span class="va">mgus2.ped</span> <span class="op">&lt;-</span> <span class="va">mgus2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">age</span> <span class="op">+</span> <span class="va">hgb</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
+<span class="va">pamfit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">hgb</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus2.ped</span>,
+    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/termplot.html">termplot</a></span><span class="op">(</span><span class="va">fit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pamfit2</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">fit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pamfit2</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="splines_files/figure-html/figpam-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
-<div id="monotonicity-constraints" class="section level3">
-<h3 class="hasAnchor">
-<a href="#monotonicity-constraints" class="anchor"></a>Monotonicity constraints</h3>
+<div class="section level3">
+<h3 id="monotonicity-constraints">Monotonicity constraints<a class="anchor" aria-label="anchor" href="#monotonicity-constraints"></a>
+</h3>
 <p>The vignette in the <code>survival</code> package further discusses enforcing monotonicity constraints on the effect of <code>hgb</code>. These can be achieved here more easily using the functionality provided in the <code>scam</code> package (see also <span class="citation">Pya and Wood (2015)</span>). The usage is exactly the same as before, replacing the call to <code>gam</code> with a call to <code>scam</code> and specifying <code>bs = "mpd"</code>. Note that the fit using constraints takes considerably longer compared to the unconstrained fit.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">scam</span><span class="op">)</span>
-<span class="va">mpam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scam/man/scam.html">scam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">hgb</span>, bs <span class="op">=</span> <span class="st">"mpd"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus2.ped</span>,
-  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scam</span><span class="op">)</span>
+<span class="va">mpam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scam/man/scam.html" class="external-link">scam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">hgb</span>, bs <span class="op">=</span> <span class="st">"mpd"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus2.ped</span>,
+  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pamfit2</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.75</span>, <span class="fl">2</span><span class="op">)</span>, main<span class="op">=</span><span class="st">"Unconstrained fit"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pamfit2</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.75</span>, <span class="fl">2</span><span class="op">)</span>, main<span class="op">=</span><span class="st">"Unconstrained fit"</span><span class="op">)</span>
 <span class="co"># 1.72 = intercept difference between pamfit2 and mpam</span>
-<span class="va">const</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">pamfit2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mpam</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mpam</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.75</span>, <span class="fl">2</span><span class="op">)</span>, main<span class="op">=</span><span class="st">"Fit with monotonicity constraint"</span><span class="op">)</span></code></pre></div>
+<span class="va">const</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pamfit2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">mpam</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mpam</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.75</span>, <span class="fl">2</span><span class="op">)</span>, main<span class="op">=</span><span class="st">"Fit with monotonicity constraint"</span><span class="op">)</span></code></pre></div>
 <p><img src="splines_files/figure-html/figscam-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-pya2015">
 <p>Pya, Natalya, and Simon N Wood. 2015. “Shape Constrained Additive Models.” <em>Statistics and Computing</em> 25 (3): 543–59.</p>
@@ -350,11 +352,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>

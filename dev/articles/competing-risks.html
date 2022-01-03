@@ -35,6 +35,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -47,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.7.901</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.5.7.904</span>
       </span>
     </div>
 
@@ -116,7 +118,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
+  <a href="https://github.com/adibender/pammtools" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -141,11 +143,11 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Competing Risks</h1>
-                        <h4 class="author">Andreas Bender</h4>
+                        <h4 data-toc-skip class="author">Andreas Bender</h4>
             
-            <h4 class="date">2021-11-26</h4>
+            <h4 data-toc-skip class="date">2022-01-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/competing-risks.Rmd"><code>vignettes/competing-risks.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/competing-risks.Rmd" class="external-link"><code>vignettes/competing-risks.Rmd</code></a></small>
       <div class="hidden name"><code>competing-risks.Rmd</code></div>
 
     </div>
@@ -155,21 +157,21 @@
 <p>In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a separate model. However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equally to the hazard of multiple event types).</p>
 <p>For illustration we use the <code>fourD</code> data set from the <strong><code>etm</code></strong> package. The data set contains time-constant covariates like <code>age</code> and <code>sex</code> as well as time-to-event (<code>time</code>) and event type indicator <code>status</code> (0 = censored, 1 = death from cardiovascular events, 2 = death from other causes).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"fourD"</span>, package <span class="op">=</span> <span class="st">"etm"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fourD</span><span class="op">)</span></code></pre></div>
-<pre><code>##      id    sex age medication status      time treated
-## 1  5002   Male  60    Placebo      0 5.8480493       0
-## 4  5006 Female  68    Placebo      0 5.2539357       0
-## 7  5011 Female  70    Placebo      1 2.9541410       0
-## 9  5014   Male  69    Placebo      1 0.9856263       0
-## 10 5017 Female  58    Placebo      1 0.2902122       0
-## 11 5018   Male  63    Placebo      1 3.9452430       0</code></pre>
-<div id="data-transformation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#data-transformation" class="anchor"></a>Data transformation</h2>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"fourD"</span>, package <span class="op">=</span> <span class="st">"etm"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fourD</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##      id    sex age medication status      time treated</span>
+<span class="co">## 1  5002   Male  60    Placebo      0 5.8480493       0</span>
+<span class="co">## 4  5006 Female  68    Placebo      0 5.2539357       0</span>
+<span class="co">## 7  5011 Female  70    Placebo      1 2.9541410       0</span>
+<span class="co">## 9  5014   Male  69    Placebo      1 0.9856263       0</span>
+<span class="co">## 10 5017 Female  58    Placebo      1 0.2902122       0</span>
+<span class="co">## 11 5018   Male  63    Placebo      1 3.9452430       0</span></code></pre>
+<div class="section level2">
+<h2 id="data-transformation">Data transformation<a class="anchor" aria-label="anchor" href="#data-transformation"></a>
+</h2>
 <p>The data transformation required to fit PAMMs to competing risks data is similar to the transformation in the single event case (see the <a href="https://adibender.github.io/pammtools/articles/data-transformation.html">data transformation vignette</a> for details). In fact, internally the standard transformation is applied to each event type using <code>as_ped</code>, however, some choices have to be made</p>
 <ul>
 <li>use the same or different interval split points for the different event types?</li>
@@ -177,240 +179,240 @@
 </ul>
 <p>For cause specific hazards without shared effects the combination of cause specific interval split points and list output is usually sufficient. For models with shared effects we need to stack the individual data sets and use split points common for all event types.</p>
 </div>
-<div id="cause-specific-hazards-model-without-shared-effects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#cause-specific-hazards-model-without-shared-effects" class="anchor"></a>Cause specific hazards model without shared effects</h2>
+<div class="section level2">
+<h2 id="cause-specific-hazards-model-without-shared-effects">Cause specific hazards model without shared effects<a class="anchor" aria-label="anchor" href="#cause-specific-hazards-model-without-shared-effects"></a>
+</h2>
 <p>Below we transform the data set for the case without shared effects. By specifying <code>cobmine = FALSE</code>, the individual data sets are not stacked but rather returned in a list.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cut</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">fourD</span><span class="op">$</span><span class="va">time</span>, <span class="fl">100</span><span class="op">)</span>
-<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">fourD</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">medication</span>, <span class="op">-</span> <span class="va">treated</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span>, combine <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code>## List of 2
-##  $ cause = 1:Classes 'ped' and 'data.frame': 33323 obs. of  9 variables:
-##   ..- attr(*, "breaks")= num [1:100] 0.00821 0.27379 0.282 0.33676 0.39699 ...
-##   ..- attr(*, "id_var")= chr "id"
-##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...
-##   ..- attr(*, "trafo_args")=List of 3
-##   ..- attr(*, "time_var")= chr "time"
-##   ..- attr(*, "status_var")= chr "status"
-##  $ cause = 2:Classes 'ped' and 'data.frame': 33323 obs. of  9 variables:
-##   ..- attr(*, "breaks")= num [1:100] 0.00821 0.27379 0.282 0.33676 0.39699 ...
-##   ..- attr(*, "id_var")= chr "id"
-##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...
-##   ..- attr(*, "trafo_args")=List of 3
-##   ..- attr(*, "time_var")= chr "time"
-##   ..- attr(*, "status_var")= chr "status"
-##  - attr(*, "class")= chr [1:4] "ped_cr_list" "ped_cr" "ped" "list"
-##  - attr(*, "trafo_args")=List of 5
-##  - attr(*, "risks")= int [1:2] 1 2</code></pre>
+<code class="sourceCode R"><span class="va">cut</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">fourD</span><span class="op">$</span><span class="va">time</span>, <span class="fl">100</span><span class="op">)</span>
+<span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">fourD</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">medication</span>, <span class="op">-</span> <span class="va">treated</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span>, combine <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## List of 2</span>
+<span class="co">##  $ cause = 1:Classes 'ped' and 'data.frame': 33098 obs. of  9 variables:</span>
+<span class="co">##   ..- attr(*, "breaks")= num [1:100] 0.0602 0.1643 0.3094 0.3203 0.3231 ...</span>
+<span class="co">##   ..- attr(*, "id_var")= chr "id"</span>
+<span class="co">##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span>
+<span class="co">##   ..- attr(*, "trafo_args")=List of 3</span>
+<span class="co">##   ..- attr(*, "time_var")= chr "time"</span>
+<span class="co">##   ..- attr(*, "status_var")= chr "status"</span>
+<span class="co">##  $ cause = 2:Classes 'ped' and 'data.frame': 33098 obs. of  9 variables:</span>
+<span class="co">##   ..- attr(*, "breaks")= num [1:100] 0.0602 0.1643 0.3094 0.3203 0.3231 ...</span>
+<span class="co">##   ..- attr(*, "id_var")= chr "id"</span>
+<span class="co">##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span>
+<span class="co">##   ..- attr(*, "trafo_args")=List of 3</span>
+<span class="co">##   ..- attr(*, "time_var")= chr "time"</span>
+<span class="co">##   ..- attr(*, "status_var")= chr "status"</span>
+<span class="co">##  - attr(*, "class")= chr [1:4] "ped_cr_list" "ped_cr" "ped" "list"</span>
+<span class="co">##  - attr(*, "trafo_args")=List of 5</span>
+<span class="co">##  - attr(*, "risks")= int [1:2] 1 2</span></code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># data set for event type 1 (death from cardiovascular events)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<pre><code>##     id      tstart        tend                    interval    offset ped_status
-## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0
-## 2 5002 0.008213552 0.273785079 (0.0082135524,0.2737850787] -1.325871          0
-## 3 5002 0.273785079 0.281998631 (0.2737850787,0.2819986311] -4.801970          0
-## 4 5002 0.281998631 0.336755647 (0.2819986311,0.3367556468] -2.904850          0
-## 5 5002 0.336755647 0.396988364 (0.3367556468,0.3969883641] -2.809540          0
-## 6 5002 0.396988364 0.399726215 (0.3969883641,0.3997262149] -5.900582          0
-##    sex age cause
-## 1 Male  60     1
-## 2 Male  60     1
-## 3 Male  60     1
-## 4 Male  60     1
-## 5 Male  60     1
-## 6 Male  60     1</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##     id     tstart       tend                    interval    offset ped_status</span>
+<span class="co">## 1 5002 0.00000000 0.06023272            (0,0.0602327173] -2.809540          0</span>
+<span class="co">## 2 5002 0.06023272 0.16427105 (0.0602327173,0.1642710472] -2.262996          0</span>
+<span class="co">## 3 5002 0.16427105 0.30937714 (0.1642710472,0.3093771389] -1.930290          0</span>
+<span class="co">## 4 5002 0.30937714 0.32032854 (0.3093771389,0.3203285421] -4.514288          0</span>
+<span class="co">## 5 5002 0.32032854 0.32306639 (0.3203285421,0.3230663929] -5.900582          0</span>
+<span class="co">## 6 5002 0.32306639 0.37508556 (0.3230663929,0.3750855578] -2.956143          0</span>
+<span class="co">##    sex age cause</span>
+<span class="co">## 1 Male  60     1</span>
+<span class="co">## 2 Male  60     1</span>
+<span class="co">## 3 Male  60     1</span>
+<span class="co">## 4 Male  60     1</span>
+<span class="co">## 5 Male  60     1</span>
+<span class="co">## 6 Male  60     1</span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># data set for event type 2 (death from other causes)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<pre><code>##     id      tstart        tend                    interval    offset ped_status
-## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0
-## 2 5002 0.008213552 0.273785079 (0.0082135524,0.2737850787] -1.325871          0
-## 3 5002 0.273785079 0.281998631 (0.2737850787,0.2819986311] -4.801970          0
-## 4 5002 0.281998631 0.336755647 (0.2819986311,0.3367556468] -2.904850          0
-## 5 5002 0.336755647 0.396988364 (0.3367556468,0.3969883641] -2.809540          0
-## 6 5002 0.396988364 0.399726215 (0.3969883641,0.3997262149] -5.900582          0
-##    sex age cause
-## 1 Male  60     2
-## 2 Male  60     2
-## 3 Male  60     2
-## 4 Male  60     2
-## 5 Male  60     2
-## 6 Male  60     2</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##     id     tstart       tend                    interval    offset ped_status</span>
+<span class="co">## 1 5002 0.00000000 0.06023272            (0,0.0602327173] -2.809540          0</span>
+<span class="co">## 2 5002 0.06023272 0.16427105 (0.0602327173,0.1642710472] -2.262996          0</span>
+<span class="co">## 3 5002 0.16427105 0.30937714 (0.1642710472,0.3093771389] -1.930290          0</span>
+<span class="co">## 4 5002 0.30937714 0.32032854 (0.3093771389,0.3203285421] -4.514288          0</span>
+<span class="co">## 5 5002 0.32032854 0.32306639 (0.3203285421,0.3230663929] -5.900582          0</span>
+<span class="co">## 6 5002 0.32306639 0.37508556 (0.3230663929,0.3750855578] -2.956143          0</span>
+<span class="co">##    sex age cause</span>
+<span class="co">## 1 Male  60     2</span>
+<span class="co">## 2 Male  60     2</span>
+<span class="co">## 3 Male  60     2</span>
+<span class="co">## 4 Male  60     2</span>
+<span class="co">## 5 Male  60     2</span>
+<span class="co">## 6 Male  60     2</span></code></pre>
 <p>To fit the model, we could loop through the list entries and fit the model of interest, however, there is also a convenience function, that recognizes the data type and fits the models accordingly:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="va">pam_csh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">ped</span>, <span class="op">~</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">pam_csh</span>, <span class="va">summary</span><span class="op">)</span></code></pre></div>
-<pre><code>## $`cause = 1`
-## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## ped_status ~ s(tend) + sex + age
-## 
-## Parametric coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -3.197486   0.573790  -5.573 2.51e-08 ***
-## sexMale     -0.083139   0.129948  -0.640    0.522    
-## age          0.019967   0.008292   2.408    0.016 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##           edf Ref.df Chi.sq p-value   
-## s(tend) 1.011  1.023  7.643 0.00597 **
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  -0.00939   Deviance explained = 0.501%
-## UBRE = -0.91806  Scale est. = 1         n = 33323
-## 
-## $`cause = 2`
-## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## ped_status ~ s(tend) + sex + age
-## 
-## Parametric coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -6.93895    0.87468  -7.933 2.14e-15 ***
-## sexMale      0.11750    0.17786   0.661    0.509    
-## age          0.06399    0.01232   5.195 2.05e-07 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##           edf Ref.df Chi.sq p-value   
-## s(tend) 1.015  1.029  10.24 0.00145 **
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  -0.00436   Deviance explained = 2.32%
-## UBRE = -0.95388  Scale est. = 1         n = 33323</code></pre>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
+<span class="va">pam_csh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">ped</span>, <span class="op">~</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">pam_csh</span>, <span class="va">summary</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## $`cause = 1`</span>
+<span class="co">## </span>
+<span class="co">## Family: poisson </span>
+<span class="co">## Link function: log </span>
+<span class="co">## </span>
+<span class="co">## Formula:</span>
+<span class="co">## ped_status ~ s(tend) + sex + age</span>
+<span class="co">## </span>
+<span class="co">## Parametric coefficients:</span>
+<span class="co">##              Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">## (Intercept) -2.933247   0.568381  -5.161 2.46e-07 ***</span>
+<span class="co">## sexMale     -0.159229   0.129464  -1.230   0.2187    </span>
+<span class="co">## age          0.016638   0.008235   2.020   0.0433 *  </span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## Approximate significance of smooth terms:</span>
+<span class="co">##           edf Ref.df Chi.sq p-value   </span>
+<span class="co">## s(tend) 1.004  1.008  8.292 0.00407 **</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## R-sq.(adj) =  -0.00704   Deviance explained = 0.524%</span>
+<span class="co">## UBRE = -0.91848  Scale est. = 1         n = 33098</span>
+<span class="co">## </span>
+<span class="co">## $`cause = 2`</span>
+<span class="co">## </span>
+<span class="co">## Family: poisson </span>
+<span class="co">## Link function: log </span>
+<span class="co">## </span>
+<span class="co">## Formula:</span>
+<span class="co">## ped_status ~ s(tend) + sex + age</span>
+<span class="co">## </span>
+<span class="co">## Parametric coefficients:</span>
+<span class="co">##             Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">## (Intercept) -6.85964    0.86096  -7.967 1.62e-15 ***</span>
+<span class="co">## sexMale      0.15505    0.17626   0.880    0.379    </span>
+<span class="co">## age          0.06266    0.01213   5.168 2.37e-07 ***</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## Approximate significance of smooth terms:</span>
+<span class="co">##          edf Ref.df Chi.sq  p-value    </span>
+<span class="co">## s(tend) 1.01   1.02   13.5 0.000253 ***</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## R-sq.(adj) =  -0.00492   Deviance explained = 2.36%</span>
+<span class="co">## UBRE = -0.95186  Scale est. = 1         n = 33098</span></code></pre>
 </div>
-<div id="cause-specific-hazards-with-shared-effects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#cause-specific-hazards-with-shared-effects" class="anchor"></a>Cause specific hazards with shared effects</h2>
+<div class="section level2">
+<h2 id="cause-specific-hazards-with-shared-effects">Cause specific hazards with shared effects<a class="anchor" aria-label="anchor" href="#cause-specific-hazards-with-shared-effects"></a>
+</h2>
 <p>The data transformation is performed as before, but setting <code>combine=TRUE</code> (the default), the interval cut points are created based on all event times (event times of all event types, here) and stacked:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped_stacked</span> <span class="op">&lt;-</span> <span class="va">fourD</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">medication</span>, <span class="op">-</span> <span class="va">treated</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ped_stacked</span><span class="op">)</span></code></pre></div>
-<pre><code>##     id      tstart        tend                    interval    offset ped_status
-## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0
-## 2 5002 0.008213552 0.273785079 (0.0082135524,0.2737850787] -1.325871          0
-## 3 5002 0.273785079 0.281998631 (0.2737850787,0.2819986311] -4.801970          0
-## 4 5002 0.281998631 0.336755647 (0.2819986311,0.3367556468] -2.904850          0
-## 5 5002 0.336755647 0.396988364 (0.3367556468,0.3969883641] -2.809540          0
-## 6 5002 0.396988364 0.399726215 (0.3969883641,0.3997262149] -5.900582          0
-##    sex age cause
-## 1 Male  60     1
-## 2 Male  60     1
-## 3 Male  60     1
-## 4 Male  60     1
-## 5 Male  60     1
-## 6 Male  60     1</code></pre>
+<code class="sourceCode R"><span class="va">ped_stacked</span> <span class="op">&lt;-</span> <span class="va">fourD</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">medication</span>, <span class="op">-</span> <span class="va">treated</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped_stacked</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##     id     tstart       tend                    interval    offset ped_status</span>
+<span class="co">## 1 5002 0.00000000 0.06023272            (0,0.0602327173] -2.809540          0</span>
+<span class="co">## 2 5002 0.06023272 0.16427105 (0.0602327173,0.1642710472] -2.262996          0</span>
+<span class="co">## 3 5002 0.16427105 0.30937714 (0.1642710472,0.3093771389] -1.930290          0</span>
+<span class="co">## 4 5002 0.30937714 0.32032854 (0.3093771389,0.3203285421] -4.514288          0</span>
+<span class="co">## 5 5002 0.32032854 0.32306639 (0.3203285421,0.3230663929] -5.900582          0</span>
+<span class="co">## 6 5002 0.32306639 0.37508556 (0.3230663929,0.3750855578] -2.956143          0</span>
+<span class="co">##    sex age cause</span>
+<span class="co">## 1 Male  60     1</span>
+<span class="co">## 2 Male  60     1</span>
+<span class="co">## 3 Male  60     1</span>
+<span class="co">## 4 Male  60     1</span>
+<span class="co">## 5 Male  60     1</span>
+<span class="co">## 6 Male  60     1</span></code></pre>
 <p>Model for cause specific hazards with shared effects is performed by inclusion of interaction effects:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pam_csh_shared</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">cause</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">sex</span><span class="op">:</span><span class="va">cause</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">age</span><span class="op">:</span><span class="va">cause</span>,
+  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">cause</span><span class="op">)</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">sex</span><span class="op">:</span><span class="va">cause</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">age</span><span class="op">:</span><span class="va">cause</span>,
   data <span class="op">=</span> <span class="va">ped_stacked</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">pam_csh_shared</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause
-## 
-## Parametric coefficients:
-##                   Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)      -3.172901   0.584218  -5.431  5.6e-08 ***
-## sexMale          -0.130751   0.132004  -0.991 0.321927    
-## age               0.019818   0.008447   2.346 0.018964 *  
-## sexFemale:cause2 -3.807677   1.059226  -3.595 0.000325 ***
-## sexMale:cause2   -3.508525   1.012836  -3.464 0.000532 ***
-## age:cause2        0.044387   0.015034   2.952 0.003153 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                  edf Ref.df Chi.sq p-value   
-## s(tend):cause1 1.011  1.023  8.185 0.00444 **
-## s(tend):cause2 1.041  1.082 10.074 0.00172 **
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  -0.00708   Deviance explained = 2.05%
-## UBRE = -0.93633  Scale est. = 1         n = 64908</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam_csh_shared</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Family: poisson </span>
+<span class="co">## Link function: log </span>
+<span class="co">## </span>
+<span class="co">## Formula:</span>
+<span class="co">## ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause</span>
+<span class="co">## </span>
+<span class="co">## Parametric coefficients:</span>
+<span class="co">##                   Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">## (Intercept)      -3.166806   0.584052  -5.422 5.89e-08 ***</span>
+<span class="co">## sexMale          -0.130698   0.132010  -0.990 0.322145    </span>
+<span class="co">## age               0.019754   0.008445   2.339 0.019329 *  </span>
+<span class="co">## sexFemale:cause2 -3.818628   1.059250  -3.605 0.000312 ***</span>
+<span class="co">## sexMale:cause2   -3.519351   1.012812  -3.475 0.000511 ***</span>
+<span class="co">## age:cause2        0.044517   0.015035   2.961 0.003067 ** </span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## Approximate significance of smooth terms:</span>
+<span class="co">##                  edf Ref.df Chi.sq p-value   </span>
+<span class="co">## s(tend):cause1 1.007  1.015  8.003 0.00482 **</span>
+<span class="co">## s(tend):cause2 1.037  1.073 10.692 0.00123 **</span>
+<span class="co">## ---</span>
+<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">## </span>
+<span class="co">## R-sq.(adj) =  -0.00589   Deviance explained = 2.06%</span>
+<span class="co">## UBRE = -0.93442  Scale est. = 1         n = 62942</span></code></pre>
 <p>The results indicate that cause specific terms (interactions) are necessary in this case and the two models largely agree. For example, the age effect for the two causes are very similar for both models:</p>
 <ul>
-<li>cause1: 0.02 (<code>pamm_csh1</code>) vs. 0.02 (<code>pamm_csh_shared</code>)</li>
-<li>cause2: 0.064 (<code>pamm_csh2</code>) vs. 0.02 + 0.044= 0.064 (<code>pamm_csh_shared</code>)</li>
+<li>cause1: 0.017 (<code>pamm_csh1</code>) vs. 0.02 (<code>pamm_csh_shared</code>)</li>
+<li>cause2: 0.063 (<code>pamm_csh2</code>) vs. 0.02 + 0.045= 0.065 (<code>pamm_csh_shared</code>)</li>
 </ul>
 </div>
-<div id="cumulative-incidence-function-cif" class="section level2">
-<h2 class="hasAnchor">
-<a href="#cumulative-incidence-function-cif" class="anchor"></a>Cumulative Incidence Function (CIF)</h2>
+<div class="section level2">
+<h2 id="cumulative-incidence-function-cif">Cumulative Incidence Function (CIF)<a class="anchor" aria-label="anchor" href="#cumulative-incidence-function-cif"></a>
+</h2>
 <p>Finally, in many cases we will want to calculate and visualize the cumulative incidence functions for different covariate combinations. In <strong><code>pammtools</code></strong> this can be again achieved using <code>make_newdata</code> and using the appropriate <code>add_*</code> function, here <code>add_cif</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/add_cif.html">add_cif</a></span><span class="op">(</span><span class="va">pam_csh_shared</span><span class="op">)</span>
-<span class="va">ndf</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span>, <span class="va">cif</span>, <span class="va">cif_lower</span>, <span class="va">cif_upper</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<span class="va">ndf</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span>, <span class="va">cif</span>, <span class="va">cif_lower</span>, <span class="va">cif_upper</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 5
-## # Groups:   cause [2]
-##      tend cause      cif cif_lower cif_upper
-##     &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 0.00821 1     0.000859  0.000641  0.00111 
-## 2 0.274   1     0.0284    0.0219    0.0359  
-## 3 0.282   1     0.0293    0.0226    0.0370  
-## 4 0.00821 2     0.000418  0.000293  0.000596
-## 5 0.274   2     0.0141    0.0102    0.0192  
-## 6 0.282   2     0.0145    0.0105    0.0197</code></pre>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 5</span></span>
+<span class="co">## <span style="color: #949494;"># Groups:   cause [2]</span></span>
+<span class="co">##     tend cause     cif cif_lower cif_upper</span>
+<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;">1</span> 0.060<span style="text-decoration: underline;">2</span> 1     0.006<span style="text-decoration: underline;">36</span>   0.004<span style="text-decoration: underline;">82</span>   0.008<span style="text-decoration: underline;">03</span></span>
+<span class="co">## <span style="color: #BCBCBC;">2</span> 0.164  1     0.017<span style="text-decoration: underline;">3</span>    0.013<span style="text-decoration: underline;">2</span>    0.021<span style="text-decoration: underline;">8</span> </span>
+<span class="co">## <span style="color: #BCBCBC;">3</span> 0.309  1     0.032<span style="text-decoration: underline;">5</span>    0.025<span style="text-decoration: underline;">0</span>    0.040<span style="text-decoration: underline;">7</span> </span>
+<span class="co">## <span style="color: #BCBCBC;">4</span> 0.060<span style="text-decoration: underline;">2</span> 2     0.003<span style="text-decoration: underline;">06</span>   0.002<span style="text-decoration: underline;">13</span>   0.004<span style="text-decoration: underline;">39</span></span>
+<span class="co">## <span style="color: #BCBCBC;">5</span> 0.164  2     0.008<span style="text-decoration: underline;">37</span>   0.005<span style="text-decoration: underline;">89</span>   0.011<span style="text-decoration: underline;">9</span> </span>
+<span class="co">## <span style="color: #BCBCBC;">6</span> 0.309  2     0.015<span style="text-decoration: underline;">8</span>    0.011<span style="text-decoration: underline;">3</span>    0.022<span style="text-decoration: underline;">2</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">cause</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">cause</span><span class="op">)</span>,
     alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span></code></pre></div>
 <p><img src="competing-risks_files/figure-html/unnamed-chunk-8-1.png" width="500px" style="display: block; margin: auto;"></p>
 <p>Similar to other applications of <code>add_*</code> functions, we can additionally group by other covariate values:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/make_newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span>, sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ndf</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span>, <span class="va">sex</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span>, sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span>
+<span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ndf</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span>, <span class="va">sex</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/add_cif.html">add_cif</a></span><span class="op">(</span><span class="va">pam_csh_shared</span><span class="op">)</span></code></pre></div>
 <p>The estimated CIFs can then be compared w.r.t. to <code>cause</code> for each category of <code>sex</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">cause</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">cause</span><span class="op">)</span>,
     alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">sex</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">sex</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span></code></pre></div>
 <p><img src="competing-risks_files/figure-html/unnamed-chunk-10-1.png" width="700px" style="display: block; margin: auto;"></p>
 <p>or w.r.t. to <code>sex</code> for each cause:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cif_lower</span>, ymax <span class="op">=</span> <span class="va">cif_upper</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span>,
     alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cause</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cause</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span></code></pre></div>
 <p><img src="competing-risks_files/figure-html/unnamed-chunk-11-1.png" width="700px" style="display: block; margin: auto;"></p>
 </div>
   </div>
@@ -426,11 +428,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
