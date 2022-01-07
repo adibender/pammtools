@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.5.7.904
-Date: 2021-11-26
+Version: 0.5.8
+Date: 2021-01-04
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut"), comment = c(ORCID = "0000-0001-8172-3603")),
