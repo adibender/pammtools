@@ -34,6 +34,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -46,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Version">0.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
       </span>
     </div>
 
@@ -115,8 +117,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/adibender/pammtools">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/adibender/pammtools" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,14 +138,14 @@
 
       
 
-      </header><div class="row">
+      </header><script src="basics_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic Modeling</h1>
             
-            <h4 class="date">2021-05-27</h4>
+            <h4 data-toc-skip class="date">2022-01-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/basics.Rmd"><code>vignettes/basics.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
 
     </div>
@@ -152,67 +154,67 @@
     
 <p>In this article we present basic examples for the estimation of PAMs using <strong><code>pammtools</code></strong> and compare the results to estimates obtained using the <code>coxph</code> function from the <strong><code>survival</code></strong> package.</p>
 <p>In the following two sections, we first describe the classical piece-wise exponential model (PEM) and after that the extension to piece-wise exponential additive models (PAM).</p>
-<div id="piece-wise-exponential-model-pem" class="section level2">
-<h2 class="hasAnchor">
-<a href="#piece-wise-exponential-model-pem" class="anchor"></a>Piece-wise exponential model (PEM)</h2>
+<div class="section level2">
+<h2 id="piece-wise-exponential-model-pem">Piece-wise exponential model (PEM)<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-model-pem"></a>
+</h2>
 <p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields coefficient estimates that are equivalent to the estimates obtained from <em>Cox Proportional Hazards</em> models if</p>
 <ol style="list-style-type: decimal">
 <li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
 <li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/as_ped.html">?as_ped</a></code> and the <a href="data-transformation.html">vignette on data transformation</a>).</p></li>
 </ol>
-<p>Estimates can differ between the two approaches due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead <a href="#ref-whitehead1980">1980</a>)</span>. In practice these differences are usually negligible (see examples below).</p>
-<div id="subset-with-unique-event-times" class="section level3">
-<h3 class="hasAnchor">
-<a href="#subset-with-unique-event-times" class="anchor"></a>Subset with unique event times</h3>
-<p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice <a href="#ref-Kalbfleisch1980">1980</a>)</span> provided in the <code>survival</code> package:</p>
+<p>Estimates can differ between the two approaches due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead <a href="#ref-whitehead1980" role="doc-biblioref">1980</a>)</span>. In practice these differences are usually negligible (see examples below).</p>
+<div class="section level3">
+<h3 id="subset-with-unique-event-times">Subset with unique event times<a class="anchor" aria-label="anchor" href="#subset-with-unique-event-times"></a>
+</h3>
+<p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice <a href="#ref-Kalbfleisch1980" role="doc-biblioref">1980</a>)</span> provided in the <code>survival</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/adibender/pammtools">pammtools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran data</span></code></pre></div>
-<pre><code>## Warning in data("veteran", package = "survival"): data set 'veteran' not found</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran data</span></code></pre></div>
+<pre><code><span class="co">## Warning in data("veteran", package = "survival"): data set 'veteran' not found</span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># remove ties to illustrate equivalence with Cox approach</span>
-<span class="va">vetu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">veteran</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ped_vetu</span> <span class="op">&lt;-</span> <span class="va">vetu</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">vetu</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">pem_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,
-    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
+<span class="va">vetu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">veteran</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span>
+<span class="va">ped_vetu</span> <span class="op">&lt;-</span> <span class="va">vetu</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">vetu</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
+<span class="va">pem_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,
+    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
 <span class="co">## cox model for comparison</span>
-<span class="va">cph_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">vetu</span><span class="op">)</span>
+<span class="va">cph_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">vetu</span><span class="op">)</span>
 <span class="co">## compare coefficients</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
-  pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">pem_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
-  cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">cph_age</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##             pem         cox
-## age 0.006413903 0.006413903</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>
+  pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pem_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
+  cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">cph_age</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##             pem         cox</span>
+<span class="co">## age 0.006413903 0.006413903</span></code></pre>
 <p>In this case both models yield equivalent estimates.</p>
 </div>
-<div id="full-data-set" class="section level3">
-<h3 class="hasAnchor">
-<a href="#full-data-set" class="anchor"></a>Full data set</h3>
+<div class="section level3">
+<h3 id="full-data-set">Full data set<a class="anchor" aria-label="anchor" href="#full-data-set"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Using the full data set (with ties) yields slightly different results</span>
 <span class="co"># when comparing PEM to Cox-PH</span>
-<span class="va">ped_vet</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">pem2_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vet</span>,
-    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
-<span class="va">cph2_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">veteran</span><span class="op">)</span>
+<span class="va">ped_vet</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
+<span class="va">pem2_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">interval</span> <span class="op">-</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vet</span>,
+    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
+<span class="va">cph2_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">veteran</span><span class="op">)</span>
 <span class="co">## compare coefficient estimate to Cox-PH estimate</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
-  pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">pem2_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
-  cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">cph2_age</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##             pem         cox
-## age 0.007470507 0.007499866</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>
+  pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pem2_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
+  cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">cph2_age</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##             pem         cox</span>
+<span class="co">## age 0.007470507 0.007499866</span></code></pre>
 </div>
 </div>
-<div id="piece-wise-exponential-additive-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#piece-wise-exponential-additive-model" class="anchor"></a>Piece-wise exponential additive model</h2>
-<p>PAMs have two main advantages over PEMs <span class="citation">(Bender, Groll, and Scheipl <a href="#ref-Bender2018a">2018</a>)</span>:</p>
+<div class="section level2">
+<h2 id="piece-wise-exponential-additive-model">Piece-wise exponential additive model<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-additive-model"></a>
+</h2>
+<p>PAMs have two main advantages over PEMs <span class="citation">(Bender, Groll, and Scheipl <a href="#ref-Bender2018a" role="doc-biblioref">2018</a>)</span>:</p>
 <ul>
 <li><p>PAM estimation scales better when the number of intervals becomes large: PEMs need to estimate one parameter per interval for the baseline hazard, while the number of parameters in PAMs only depends on the number of basis functions used for the spline estimate of the baseline hazard.</p></li>
 <li><p>In PEMs, baseline hazard estimates for each interval can vary a lot between neighboring intervals, especially when intervals only contain few events. For PAMs on the other hand estimates of the baseline hazard in neighboring intervals are similar due to penalization unless the data provides very strong evidence for large changes between neighboring intervals.</p></li>
@@ -221,27 +223,27 @@
 <p>Using the example above (data without ties) we get:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## compare to PAM</span>
-<span class="va">pam_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,
+<span class="va">pam_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,
     family <span class="op">=</span> <span class="st">"poisson"</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
-    pam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">pam_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
-    pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">pem_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
-    cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">cph_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<pre><code>##             pam         pem         cox
-## age 0.007543308 0.006413903 0.006413903</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>
+    pam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
+    pem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pem_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span>,
+    cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">cph_age</span><span class="op">)</span><span class="op">[</span><span class="st">"age"</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##             pam         pem         cox</span>
+<span class="co">## age 0.007543308 0.006413903 0.006413903</span></code></pre>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<div class="section level1 unnumbered">
+<h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h1>
 <div id="refs" class="references">
 <div id="ref-Bender2018a">
-<p>Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” <em>Statistical Modelling</em> 18 (3-4): 299–321. <a href="https://doi.org/10.1177/1471082X17748083" class="uri">https://doi.org/10.1177/1471082X17748083</a>.</p>
+<p>Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” <em>Statistical Modelling</em> 18 (3-4): 299–321. <a href="https://doi.org/10.1177/1471082X17748083" class="external-link">https://doi.org/10.1177/1471082X17748083</a>.</p>
 </div>
 <div id="ref-Kalbfleisch1980">
 <p>Kalbfleisch, J., and R. Prentice. 1980. <em>The Statistical Analysis of Failure Time Data</em>. New York: Wiley.</p>
 </div>
 <div id="ref-whitehead1980">
-<p>Whitehead, John. 1980. “Fitting Cox’s Regression Model to Survival Data Using GLIM.” <em>Applied Statistics</em> 29 (3). JSTOR: 268–75.</p>
+<p>Whitehead, John. 1980. “Fitting Cox’s Regression Model to Survival Data Using GLIM.” <em>Applied Statistics</em> 29 (3): 268–75.</p>
 </div>
 </div>
 </div>
@@ -258,11 +260,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
+  <p></p>
+<p>Developed by Andreas Bender, Fabian Scheipl, Philipp Kopper.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
