@@ -8,14 +8,7 @@
 \alias{plot.pamm}
 \title{Fit a piece-wise exponential additive model}
 \usage{
-pamm(
-  formula,
-  data = list(),
-  method = "REML",
-  ...,
-  trafo_args = NULL,
-  engine = "gam"
-)
+pamm(formula, data = list(), ..., trafo_args = NULL, engine = "gam")
 
 is.pamm(x)
 
@@ -36,12 +29,6 @@ covariates required by the formula. By default the variables are taken
 from \code{environment(formula)}: typically the environment from 
 which \code{gam} is called.}
 
-\item{method}{The smoothing parameter estimation method. \code{"GCV.Cp"} to use GCV for unknown scale parameter and
-Mallows' Cp/UBRE/AIC for known scale. \code{"GACV.Cp"} is equivalent, but using GACV in place of GCV. \code{"REML"} 
-for REML estimation, including of unknown scale, \code{"P-REML"} for REML estimation, but using a Pearson estimate 
-of the scale. \code{"ML"} and \code{"P-ML"} are similar, but using maximum likelihood in place of REML. Beyond the 
-exponential family \code{"REML"} is the default, and the only other option is \code{"ML"}.}
-
 \item{...}{Further arguments passed to \code{engine}.}
 
 \item{trafo_args}{A named list. If data is not in PED format, \code{as_ped}
@@ -58,10 +45,9 @@ model. The intended entries are either \code{"gam"} or \code{"bam"}
 \description{
 A thin wrapper around \code{\link[mgcv]{gam}}, however, some arguments are
 prespecified:
-\code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}.
-The first two can not be overwritten. The \code{method} argument
-can be specified as usual, but defaults to \code{GCV.cp} in
-\code{\link[mgcv]{gam}}.
+\code{family=poisson()} and \code{offset=data$offset}.
+These two can not be overwritten. In many cases it will also be advisable to
+set \code{method="REML"}.
 }
 \examples{
 ped <- tumor[1:100, ] \%>\%

@@ -22,6 +22,7 @@
 \alias{arrange.ped}
 \alias{group_by.ped}
 \alias{ungroup.ped}
+\alias{distinct.ped}
 \alias{filter.ped}
 \alias{sample_n.ped}
 \alias{sample_frac.ped}
@@ -36,23 +37,6 @@
 \alias{full_join.ped}
 \alias{left_join.ped}
 \alias{right_join.ped}
-\alias{arrange.nested_fdf}
-\alias{group_by.nested_fdf}
-\alias{ungroup.nested_fdf}
-\alias{filter.nested_fdf}
-\alias{sample_n.nested_fdf}
-\alias{sample_frac.nested_fdf}
-\alias{slice.nested_fdf}
-\alias{select.nested_fdf}
-\alias{mutate.nested_fdf}
-\alias{rename.nested_fdf}
-\alias{summarise.nested_fdf}
-\alias{summarize.nested_fdf}
-\alias{transmute.nested_fdf}
-\alias{inner_join.nested_fdf}
-\alias{full_join.nested_fdf}
-\alias{left_join.nested_fdf}
-\alias{right_join.nested_fdf}
 \title{\code{dplyr} Verbs for \code{ped}-Objects}
 \usage{
 \method{arrange}{ped}(.data, ...)
@@ -60,6 +44,8 @@
 \method{group_by}{ped}(.data, ..., .add = FALSE)
 
 \method{ungroup}{ped}(x, ...)
+
+\method{distinct}{ped}(.data, ..., .keep_all = FALSE)
 
 \method{filter}{ped}(.data, ...)
 
@@ -71,7 +57,7 @@
 
 \method{select}{ped}(.data, ...)
 
-\method{mutate}{ped}(.data, ..., keep_attributes = TRUE)
+\method{mutate}{ped}(.data, ...)
 
 \method{rename}{ped}(.data, ...)
 
@@ -85,75 +71,9 @@
 
 \method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{left_join}{ped}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
+\method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 
-\method{right_join}{ped}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
-
-\method{arrange}{nested_fdf}(.data, ...)
-
-\method{group_by}{nested_fdf}(.data, ..., .add = FALSE)
-
-\method{ungroup}{nested_fdf}(x, ...)
-
-\method{filter}{nested_fdf}(.data, ...)
-
-\method{sample_n}{nested_fdf}(tbl, size, replace = FALSE, weight = NULL, .env = NULL, ...)
-
-\method{sample_frac}{nested_fdf}(tbl, size = 1, replace = FALSE, weight = NULL, .env = NULL, ...)
-
-\method{slice}{nested_fdf}(.data, ...)
-
-\method{select}{nested_fdf}(.data, ...)
-
-\method{mutate}{nested_fdf}(.data, ..., keep_attributes = TRUE)
-
-\method{rename}{nested_fdf}(.data, ...)
-
-\method{summarise}{nested_fdf}(.data, ...)
-
-\method{summarize}{nested_fdf}(.data, ...)
-
-\method{transmute}{nested_fdf}(.data, ...)
-
-\method{inner_join}{nested_fdf}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
-
-\method{full_join}{nested_fdf}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
-
-\method{left_join}{nested_fdf}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
-
-\method{right_join}{nested_fdf}(
-  x,
-  y,
-  by = NULL,
-  copy = FALSE,
-  suffix = c(".x", ".y"),
-  ...,
-  keep_attributes = TRUE
-)
+\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
 }
 \arguments{
 \item{.data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
@@ -176,8 +96,6 @@ This must evaluate to a vector of non-negative numbers the same length as
 the input. Weights are automatically standardised to sum to 1.}
 
 \item{.env}{DEPRECATED.}
-
-\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 
 \item{y}{A pair of data frames, data frame extensions (e.g. a tibble), or
 lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
@@ -213,6 +131,8 @@ Should be a character vector of length 2.}
 \item{funs}{see \code{\link[dplyr]{summarize_all}}}
 
 \item{.dots}{see \code{dplyr} documentation}
+
+\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 }
 \value{
 a modified \code{ped} object (except for \code{do})

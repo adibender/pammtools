@@ -4,7 +4,7 @@
 [![R-CMD-check](https://github.com/adibender/pammtools/workflows/R-CMD-check/badge.svg)](https://github.com/adibender/pammtools/actions)
 [![cran
 checks](https://cranchecks.info/badges/worst/pammtools)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
-[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Build
 Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://travis-ci.org/adibender/pammtools)
 [![Build
@@ -13,7 +13,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?b
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-ago/pammtools)](https://cran.r-project.org/package=pammtools)
 [![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
 [![MIT
-license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+license](http://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
 # **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools
@@ -25,9 +25,6 @@ Install from CRAN or GitHub using:
 ``` r
 # CRAN
 install.packages("pammtools")
-
-# GitHub
-devtools::install_github("adibender/pammtools")
 ```
 
 ### Overview

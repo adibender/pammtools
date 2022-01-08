@@ -174,8 +174,8 @@ test_that("adding terms works for PEM", {
 test_that("warns about / aborts for unknown intervals", {
 
   weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
-  expect_warning(add_hazard(weird, pam), "not used in original fit")
-  expect_error(add_hazard(weird, pem), "not used in original fit")
+  expect_warning(add_hazard(weird, pam), "not equivalent")
+  expect_error(add_hazard(weird, pem), "not equivalent")
 
 })
 
@@ -261,7 +261,7 @@ test_that("survival probabilities functions work for PAM", {
 test_that("CIF works", {
 
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = T))
+  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = TRUE))
   ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
     mutate(cause = as.factor(cause))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)

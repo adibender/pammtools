@@ -208,7 +208,7 @@ split_data_multistate <- function(
   cuts <- get_cut(data_list, formula, cut = cut, max_time = max_time,
     event = event, timescale = timescale)
 
-  ## create argument list to be passed to survSplit
+  ## create argument list to be passed to split_data
   dots <- list(...)
   dots$multiple_id <- TRUE # possible in case of multi-state models with back transitions
 

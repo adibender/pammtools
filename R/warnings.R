@@ -1,9 +1,20 @@
 #' Warn if new t_j are used
 #'
 #' @keywords internal
-warn_about_new_time_points <- function(newdata, object, time_var) {
+warn_about_new_time_points <- function(object, newdata, ...) {
+
+  UseMethod("warn_about_new_time_points", object)
+
+}
+
+
+warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
   is_pam <- inherits(object, "gam")
+
+  if(is_pam & is.null(object$model)){
+    return(invisible())
+  }
 
   original_intervals <- if (is_pam) {
     unique(model.frame(object)[[time_var]])
@@ -14,15 +25,36 @@ warn_about_new_time_points <- function(newdata, object, time_var) {
   new_ints <- which(!(prediction_intervals %in% original_intervals))
   n_out <- pmin(10, length(new_ints))
   if (length(new_ints)) {
-   message <- paste0("Intervals in <newdata> contain values (",
-     paste(prediction_intervals[new_ints[1:n_out]], collapse = ","),
-     " ...) not used in original fit.",
-     " Setting intervals to values not used for original fit in <object>",
-     "can invalidate the PEM assumption and yield incorrect predictions.")
+   message <- paste0(
+    "Time points/intervals in new data not equivalent to time points/intervals during model fit.",
+    " Setting intervals to values not used for original fit",
+    "can invalidate the PEM assumption and yield incorrect predictions.")
    if (is_pam) warning(message) else stop(message)
   }
 }
 
+
+#' @rdname warn_about_new_time_points
+warn_about_new_time_points.pamm <- function(object, newdata, ...) {
+
+  if (inherits(object, "pamm")) {
+    int_original <- int_info(object)
+    if ("interval" %in% colnames(newdata)) {
+      int_new <- unique(newdata[["interval"]])
+      if(!all(int_new %in% int_original)) {
+        warning(
+          paste0(
+            "Time points/intervals in new data not equivalent to time points/intervals during model fit.",
+            " Setting intervals to values not used for original fit",
+            "can invalidate the PEM assumption and yield incorrect predictions."
+          )
+        )
+      }
+
+    }
+  }
+
+}
 
 # #' @keywords internal
 # #' @importFrom dplyr intersect union setequal

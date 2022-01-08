@@ -1,5 +1,11 @@
+# pammtools 0.5.8
++ removed argument `methods` from `pamm`. Can be specified via `...`. Fixes #200
++ adapted `warn_about_new_time_points` when original data not stored in model object. Fixes #203
++ Fixed issue where not all ped attributes were retained when applying dplyr functions #202
+
 # pammtools 0.5.7
 + added staph data with recurrent events
+
 # pammtools 0.5.6
 + maintenance fix
 + fixes to URLs and DOIs

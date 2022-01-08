@@ -47,8 +47,9 @@ predictSurvProb.pamm <- function(
 
   id <- unique(newdata[[id_var]])
   pred_list <- map(
-    id,
-    ~ newdata[newdata[[id_var]] == .x, "pred"] %>% pull("pred"))
+      id,
+      ~ newdata[newdata[[id_var]] == .x, "pred"] %>%
+    pull("pred"))
 
   do.call(rbind, pred_list)
 
