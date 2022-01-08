@@ -3,7 +3,6 @@
 * R release with Travis CI
 * Appveyor (patched)
 * win-builder
-* R-hub
 
 ## R CMD check results
 
