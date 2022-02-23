@@ -395,7 +395,7 @@ sim_pexp_msm <- function(
   t_mat,
   data,
   cut,
-  proportoin_censoring = 0.3,
+  proportion_censoring = 0.3,
   keep_transitions_at_risk = FALSE ) {
 
   # Aus der Transition Matrix können die Transition-States abgelesen werden
@@ -486,13 +486,14 @@ sim_pexp_msm <- function(
     mutate(
       status = status * (time <= max(cut)),
       time   = pmin(time, max(cut)),
+      # to     = ifelse(status, to, from),
       tstart = t,
       tstop  = time,
       gap    = tstop - tstart,
       time   = NULL,
       t      = NULL,
       type   = NULL,
-      transition = as.numeric(paste0(from, to))
+      transition = as.factor(paste0(from, "->", to))
     ) %>%
     relocate(to, .after = from)
 

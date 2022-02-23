@@ -11,7 +11,7 @@ sim_pexp_msm(
   t_mat,
   data,
   cut,
-  proportoin_censoring = 0.3,
+  proportion_censoring = 0.3,
   keep_transitions_at_risk = FALSE
 )
 }
@@ -27,13 +27,13 @@ below.}
 
 \item{cut}{A sequence of time-points starting with 0.}
 
+\item{proportion_censoring}{The proportion of censored observations}
+
 \item{keep_transitions_at_risk}{Logical. If \code{TRUE} (default), all transitions
 for which a subject was at risk will be included in the data set.}
 
 \item{tmat}{Transition matrix containing the log-hazard definition for each transition.
 Transitions that can not occurr should contain a \code{NA}.}
-
-\item{proportion_censoring}{The proportion of censored observations}
 }
 \description{
 Simulate survival times from the piece-wise exponential distribution
