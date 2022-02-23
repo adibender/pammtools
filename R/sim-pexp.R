@@ -283,14 +283,13 @@ eta_cumu <- function(data, fcumu, cut, ...) {
 #'
 #' @keywords internal
 sim_pexp_cr <- function(formula, data, cut) {
-  # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
-  Form <- Formula(formula)
-  # Extract the right handside of the Formula
-  F_rhs <- attr(Form, "rhs")
-  l_rhs <- length(F_rhs)
-  seq_rhs <- seq_len(l_rhs)
 
-  # Andreas: Bekomme das mit dplyr nicht vernünftig hin, geht das irgendwie schöner?
+  # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
+  Form    <- Formula(formula)
+  # Extract the right handside of the Formula
+  F_rhs   <- attr(Form, "rhs")
+  l_rhs   <- length(F_rhs)
+  seq_rhs <- seq_len(l_rhs)
 
   if (!("id" %in% names(data))) {
     data$id <- 1:(nrow(data))
@@ -319,9 +318,6 @@ sim_pexp_cr <- function(formula, data, cut) {
     )
 
   # calculate cause specific hazards
-  # ped = environment, t von ped wird according formula ausgewertet
-  # TVE: association of the feature with the outcome changes over time ~ x2*(t^2)
-  # TVF: features can change their value during the observation period e.g: ~ sin(x2)*t
 
   for (i in seq_rhs) {
     ped[[paste0("hazard", i)]] <-  exp(eval(F_rhs[[i]], ped))
@@ -333,8 +329,6 @@ sim_pexp_cr <- function(formula, data, cut) {
   sim_df <- ped %>%
     group_by(id) %>%
     mutate(
-      # Wenn eine Zeit größer als der maximale Beobachtungszeitraum gezogen wurde, dann wird der Status auf 0 gesetzt und die maximale Beobachtungszeit als time verwendet
-      # tstart statt t
       time   = rpexp(rate = .data$rate, t = .data$tstart),
       status = 1L * (.data$time <= max(cut)),
       time   = pmin(.data$time, max(cut)),
@@ -500,16 +494,3 @@ sim_pexp_msm <- function(
   return(sim_df)
 
 }
-
-
-# #' Add censoring to a time-to-event data set
-# #'
-# #'
-# add_censoring <- function(
-#   data,
-#   formula,
-#   x,
-#   ...
-# ) {
-#     UseMethod("add_censoring", x)
-# }
