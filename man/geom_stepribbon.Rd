@@ -71,7 +71,9 @@ to the paired geom/stat.}
 \description{
 \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
-or a confidence band.
+or a confidence band. The default \code{direction}-argument \code{"hv"} is
+appropriate for right-continuous step functions like the hazard rates etc
+returned by \code{pammtools}.
 }
 \examples{
 library(ggplot2)

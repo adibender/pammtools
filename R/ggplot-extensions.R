@@ -62,7 +62,6 @@ GeomStepribbon <- ggproto(
     if (na.rm) data <- data[complete.cases(data[c("x", "ymin", "ymax")]), ]
     data   <- rbind(data, data)
     data   <- data[order(data$x), ]
-    data$x <- c(data$x[2:nrow(data)], NA)
     data   <- ggplot2_stairstep(data[complete.cases(data["x"]), ], 
                                direction = direction)
     GeomRibbon$draw_group(data, panel_scales, coord, na.rm = na.rm)
