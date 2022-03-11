@@ -4,7 +4,9 @@
 #'
 #' \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
 #' is optimized for Kaplan-Meier plots with pointwise confidence intervals
-#' or a confidence band.
+#' or a confidence band. The default \code{direction}-argument \code{"hv"} is 
+#' appropriate for right-continuous step functions like the hazard rates etc 
+#' returned by \code{pammtools}.
 #'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
@@ -50,7 +52,6 @@ geom_stepribbon <- function(
 #' @format NULL
 #' @usage NULL
 #' @export
-
 GeomStepribbon <- ggproto(
   "GeomStepribbon", GeomRibbon,
 
@@ -72,9 +73,8 @@ GeomStepribbon <- ggproto(
 
 # code adapted from 
 # https://github.com/tidyverse/ggplot2/blob/9741da5050f81b7b5c012c56d02f45fc93d68f89/R/geom-path.r#L320
-ggplot2_stairstep <- function(data, direction = "hv") 
-{
-  direction <- match.arg(direction, c("hv", "vh", "mid"))
+ggplot2_stairstep <- function(data, direction =  c("hv", "vh", "mid")) {
+  direction <- match.arg(direction)
   data <- as.data.frame(data)[order(data$x), ]
   n <- nrow(data)
   if (n <= 1) {
@@ -84,27 +84,24 @@ ggplot2_stairstep <- function(data, direction = "hv")
     xs <- rep(1:n, each = 2)[-2 * n]
     ys <- c(1, rep(2:n, each = 2))
   }
-  else if (direction == "hv") {
-    ys <- rep(1:n, each = 2)[-2 * n]
+  if (direction == "hv") {
     xs <- c(1, rep(2:n, each = 2))
+    ys <- rep(1:n, each = 2)[-2 * n]
   }
-  else if (direction == "mid") {
+  if (direction == "mid") {
     xs <- rep(1:(n - 1), each = 2)
     ys <- rep(1:n, each = 2)
   }
-  else {
-    abort("Parameter `direction` is invalid.")
-  }
+  
+  ymin <- c(data$ymin[ys])
+  ymax <- c(data$ymax[ys])
   if (direction == "mid") {
     gaps <- data$x[-1] - data$x[-n]
     mid_x <- data$x[-n] + gaps/2
     x <- c(data$x[1], mid_x[xs], data$x[n])
-    ymin <- c(data$ymin[ys])
-    ymax <- c(data$ymax[ys])
     data_attr <- data[c(1, xs, n), 
                       setdiff(names(data), c("x", "ymin", "ymax"))]
-  }
-  else {
+  } else {
     x <- data$x[xs]
     ymin <- data$ymin[ys]
     ymax <- data$ymax[ys]
