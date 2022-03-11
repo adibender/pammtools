@@ -237,7 +237,7 @@ make_newdata.ped <- function(x, ...) {
   if (any(names(int_df) %in% names(ndf))) {
     int_tend <- get_intervals(x, ndf$tend)$tend
     if (!all(ndf$tend == int_tend)) {
-      message("Some values of 'tend' have been set to the respecitve interval end-points")
+      message("Some values of 'tend' have been set to the respective interval end-points")
     }
     ndf$tend <- int_tend
     suppressMessages(

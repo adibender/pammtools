@@ -21,10 +21,9 @@ append_ped_attr <- function(pamm, ped) {
 #'
 #' A thin wrapper around \code{\link[mgcv]{gam}}, however, some arguments are
 #' prespecified:
-#' \code{family=poisson()}, \code{offset=data$offset} and \code{method="REML"}.
-#' The first two can not be overwritten. The \code{method} argument
-#' can be specified as usual, but defaults to \code{GCV.cp} in
-#' \code{\link[mgcv]{gam}}.
+#' \code{family=poisson()} and \code{offset=data$offset}.
+#' These two can not be overwritten. In many cases it will also be advisable to
+#' set \code{method="REML"}.
 #'
 #' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{engine}.
@@ -51,7 +50,6 @@ append_ped_attr <- function(pamm, ped) {
 pamm <- function(
   formula,
   data       = list(),
-  method     = "REML",
   ...,
   trafo_args = NULL,
   engine     = "gam") {
@@ -68,10 +66,10 @@ pamm <- function(
 
   pamm_fit        <- do.call(engine, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))
-  pamm_fit        <- append_ped_attr(pamm_fit, data)
+  # pamm_fit        <- append_ped_attr(pamm_fit, data)
   pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
   ind_attr_keep <- !(names(attributes(data)) %in%
-    c("names", "row.names", "breaks", "trafo_args", "class"))
+    c("names", "row.names", "trafo_args", "class"))
   pamm_fit[["attr_ped"]] <- attributes(data)[ind_attr_keep]
 
   pamm_fit

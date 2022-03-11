@@ -24,49 +24,6 @@ test_that("ped class is preserved after dplyr operations", {
 })
 
 
-
-test_that("ped class is preserved after tidyr operations", {
-
-  data("pbc", package = "survival")
-  tdc_df <- pbcseq %>%
-    filter(id %in% 1:5) %>%
-    select(id, day, chol)
-  class(tdc_df) <- c("ped", class(tdc_df))
-
-  ## standard version
-  temp <- tidyr::fill(tdc_df, chol)
-  expect_is(temp, "ped")
-  expect_identical(sum(is.na(temp)), 0L)
-
-  ## non standard evaluation
-  temp <- tidyr::fill(tdc_df, c("chol"))
-  expect_is(temp, "ped")
-  expect_identical(sum(is.na(temp)), 0L)
-
-})
-
-test_that("nested_fdf class is preserved after tidyr operations", {
-
-  expect_is(sim_df <- filter(simdf_elra, id %in% c(1:2)), "nested_fdf")
-  expect_is(arrange(sim_df, id), "nested_fdf")
-  expect_is(group_by(sim_df, id), "nested_fdf")
-  expect_is(distinct(sim_df, id), "nested_fdf")
-  expect_is(sample_n(sim_df, 2), "nested_fdf")
-  expect_is(sample_frac(sim_df, .1), "nested_fdf")
-  expect_is(select(sim_df, id), "nested_fdf")
-  expect_is(mutate(sim_df, id = id + 1), "nested_fdf")
-  expect_is(rename(sim_df, ID = id), "nested_fdf")
-  expect_is(summarise(sim_df, id = mean(id)), "nested_fdf")
-  expect_is(left_join(sim_df, distinct(sim_df, id)), "nested_fdf")
-  expect_is(right_join(distinct(sim_df, id), sim_df), "nested_fdf")
-  expect_is(full_join(distinct(sim_df, id), sim_df), "nested_fdf")
-  expect_is(inner_join(distinct(sim_df, id), sim_df), "nested_fdf")
-  sim_df$id[1] <- NA
-  expect_is(fill(sim_df, id, .direction = "up"), "nested_fdf")
-
-})
-
-
 test_that("attributes are preserved", {
   # recurrent events data
   test_df <- data.frame(
