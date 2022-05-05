@@ -11,6 +11,7 @@ geom_stepribbon(
   data = NULL,
   stat = "identity",
   position = "identity",
+  direction = "hv",
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -44,6 +45,10 @@ layer, as a string.}
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
 
+\item{direction}{direction of stairs: 'vh' for vertical then horizontal,
+'hv' for horizontal then vertical, or 'mid' for step half-way between
+adjacent x-values.}
+
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
 
@@ -66,7 +71,9 @@ to the paired geom/stat.}
 \description{
 \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
-or a confidence band.
+or a confidence band. The default \code{direction}-argument \code{"hv"} is
+appropriate for right-continuous step functions like the hazard rates etc
+returned by \code{pammtools}.
 }
 \examples{
 library(ggplot2)
