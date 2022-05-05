@@ -58,7 +58,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic Modeling</h1>
             
-            <h4 data-toc-skip class="date">2022-01-08</h4>
+            <h4 data-toc-skip class="date">2022-05-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
@@ -154,18 +154,18 @@
     
 <p>In this article we present basic examples for the estimation of PAMs using <strong><code>pammtools</code></strong> and compare the results to estimates obtained using the <code>coxph</code> function from the <strong><code>survival</code></strong> package.</p>
 <p>In the following two sections, we first describe the classical piece-wise exponential model (PEM) and after that the extension to piece-wise exponential additive models (PAM).</p>
-<div class="section level2">
-<h2 id="piece-wise-exponential-model-pem">Piece-wise exponential model (PEM)<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-model-pem"></a>
-</h2>
+<div class="section level3">
+<h3 id="piece-wise-exponential-model-pem">Piece-wise exponential model (PEM)<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-model-pem"></a>
+</h3>
 <p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields coefficient estimates that are equivalent to the estimates obtained from <em>Cox Proportional Hazards</em> models if</p>
 <ol style="list-style-type: decimal">
 <li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
 <li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/as_ped.html">?as_ped</a></code> and the <a href="data-transformation.html">vignette on data transformation</a>).</p></li>
 </ol>
 <p>Estimates can differ between the two approaches due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead <a href="#ref-whitehead1980" role="doc-biblioref">1980</a>)</span>. In practice these differences are usually negligible (see examples below).</p>
-<div class="section level3">
-<h3 id="subset-with-unique-event-times">Subset with unique event times<a class="anchor" aria-label="anchor" href="#subset-with-unique-event-times"></a>
-</h3>
+<div class="section level4">
+<h4 id="subset-with-unique-event-times">Subset with unique event times<a class="anchor" aria-label="anchor" href="#subset-with-unique-event-times"></a>
+</h4>
 <p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice <a href="#ref-Kalbfleisch1980" role="doc-biblioref">1980</a>)</span> provided in the <code>survival</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span>
@@ -192,9 +192,9 @@
 <span class="co">## age 0.006413903 0.006413903</span></code></pre>
 <p>In this case both models yield equivalent estimates.</p>
 </div>
-<div class="section level3">
-<h3 id="full-data-set">Full data set<a class="anchor" aria-label="anchor" href="#full-data-set"></a>
-</h3>
+<div class="section level4">
+<h4 id="full-data-set">Full data set<a class="anchor" aria-label="anchor" href="#full-data-set"></a>
+</h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Using the full data set (with ties) yields slightly different results</span>
 <span class="co"># when comparing PEM to Cox-PH</span>
@@ -211,9 +211,9 @@
 <span class="co">## age 0.007470507 0.007499866</span></code></pre>
 </div>
 </div>
-<div class="section level2">
-<h2 id="piece-wise-exponential-additive-model">Piece-wise exponential additive model<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-additive-model"></a>
-</h2>
+<div class="section level3">
+<h3 id="piece-wise-exponential-additive-model">Piece-wise exponential additive model<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-additive-model"></a>
+</h3>
 <p>PAMs have two main advantages over PEMs <span class="citation">(Bender, Groll, and Scheipl <a href="#ref-Bender2018a" role="doc-biblioref">2018</a>)</span>:</p>
 <ul>
 <li><p>PAM estimation scales better when the number of intervals becomes large: PEMs need to estimate one parameter per interval for the baseline hazard, while the number of parameters in PAMs only depends on the number of basis functions used for the spline estimate of the baseline hazard.</p></li>
@@ -232,9 +232,9 @@
 <pre><code><span class="co">##             pam         pem         cox</span>
 <span class="co">## age 0.007543308 0.006413903 0.006413903</span></code></pre>
 </div>
-<div class="section level1 unnumbered">
-<h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-Bender2018a">
 <p>Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” <em>Statistical Modelling</em> 18 (3-4): 299–321. <a href="https://doi.org/10.1177/1471082X17748083" class="external-link">https://doi.org/10.1177/1471082X17748083</a>.</p>
@@ -266,7 +266,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

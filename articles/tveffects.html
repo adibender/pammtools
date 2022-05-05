@@ -58,7 +58,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time-varying effects</h1>
             
-            <h4 data-toc-skip class="date">2022-01-08</h4>
+            <h4 data-toc-skip class="date">2022-05-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/tveffects.Rmd" class="external-link"><code>vignettes/tveffects.Rmd</code></a></small>
       <div class="hidden name"><code>tveffects.Rmd</code></div>
@@ -244,9 +244,9 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
   pam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,
   cox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##                      pam         cox</span>
-<span class="co">## trt           0.04795137  0.07914694</span>
-<span class="co">## prior         0.11689785  0.12051224</span>
-<span class="co">## karno        -0.15921723 -0.15466404</span>
+<span class="co">## trt           0.04795134  0.07914694</span>
+<span class="co">## prior         0.11689786  0.12051224</span>
+<span class="co">## karno        -0.15921724 -0.15466404</span>
 <span class="co">## karno:logt20  0.03049036  0.02930082</span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compare fits</span>
@@ -426,7 +426,7 @@ The figure below visualizes the estimate of the time-varying effect of <code>kar
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
