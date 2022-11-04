@@ -39,6 +39,6 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://adibender.github.io/pammtools/
 BugReports: https://github.com/adibender/pammtools/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
