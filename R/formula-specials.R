@@ -264,14 +264,30 @@ add_concurrent <- function(ped, data, id_var, ...) {
   if (any(dots$transition %in% names(ped))) {
     if(dots$timescale == "gap") {
       ## create an auxiliary 'tend_aux' column, the not reset 'tend' 
-      ped <- ped %>%
+      tend_aux <- ped %>%
         group_by(.data[[id_var]]) %>%
         mutate(tend_aux = lag(.data$tend, default = 0)) %>%
-        ungroup() %>% 
+        ungroup() %>%
         group_by(.data[[id_var]], .data[[dots$transition]]) %>%
-        mutate(tend_aux = first(.data$tend_aux), 
-               tend_aux = .data$tend + .data$tend_aux) %>%
-        ungroup()
+        mutate(tend_aux = first(.datatend_aux)) %>%
+        ungroup() %>% 
+        select(id_var, "tend_aux") %>% unique() %>% 
+        group_by(.data[[id_var]]) %>% 
+        mutate(tend_aux = cumsum(.data$tend_aux)) %>% 
+        ungroup() %>% 
+        pull("tend_aux") %>% 
+        rep(., attr(data, "id_n_i"))
+      
+      ped <- mutate(ped, tend_aux = .data$tend + .data$tend_aux)
+      
+      # ped <- ped %>%
+      #   group_by(.data[[id_var]]) %>%
+      #   mutate(tend_aux = lag(.data$tend, default = 0)) %>%
+      #   ungroup() %>% 
+      #   group_by(.data[[id_var]], .data[[dots$transition]]) %>%
+      #   mutate(tend_aux = first(.data$tend_aux), 
+      #          tend_aux = .data$tend + .data$tend_aux) %>%
+      #   ungroup()
     } else {
       ped <- mutate(ped, tend_aux = .data$tend)
     }
