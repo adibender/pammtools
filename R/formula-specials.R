@@ -66,7 +66,7 @@ concurrent <- function(...,
                        suffix = NULL) {
   
   assert_number(lag, lower = 0)
-  ll_fun = function(t, tz) {t >= tz + lag}  
+  ll_fun = function(t, tz) {t > tz + lag}  ## Question: t >= tz + lag?
   vars     <- as.list(substitute(list(...)))[-1]
   vars_chr <- vars %>% map(~as.character(.)) %>% unlist()
   
