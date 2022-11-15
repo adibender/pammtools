@@ -31,14 +31,14 @@
 #' @export
 #' @keywords internal
 cumulative <- function(...,
-  tz_var,
-  ll_fun = function(t, tz) t >= tz,
-  suffix = NULL) {
-
+                       tz_var,
+                       ll_fun = function(t, tz) t >= tz,
+                       suffix = NULL) {
+  
   vars        <- as.list(substitute(list(...)))[-1]
   vars_chr    <- vars %>% map(~as.character(.))
   lgl_latency <- map_lgl(vars_chr, ~any(. %in% "latency"))
-
+  
   if (any(lgl_latency)) {
     latency_var <- unlist(vars_chr)[unlist(vars_chr) != "latency"][lgl_latency]
     col_vars    <- unlist(vars_chr)[unlist(vars_chr) != "latency"]
@@ -46,14 +46,14 @@ cumulative <- function(...,
     latency_var <- ""
     col_vars    <- unlist(vars_chr)
   }
-
+  
   list(
     col_vars    = col_vars,
     latency_var = latency_var,
     tz_var      = tz_var,
     suffix      = suffix,
     ll_fun      = ll_fun)
-
+  
 }
 
 
@@ -61,23 +61,23 @@ cumulative <- function(...,
 #' @inherit cumulative
 #' @keywords internal
 concurrent <- function(...,
-  tz_var,
-  lag = 0,
-  suffix = NULL) {
-
+                       tz_var,
+                       lag = 0,
+                       suffix = NULL) {
+  
   assert_number(lag, lower = 0)
-  ll_fun = function(t, tz) {t > tz + lag}
+  ll_fun = function(t, tz) {t >= tz + lag}  
   vars     <- as.list(substitute(list(...)))[-1]
   vars_chr <- vars %>% map(~as.character(.)) %>% unlist()
-
-
+  
+  
   list(
     col_vars    = vars_chr,
     tz_var      = tz_var,
     suffix      = suffix,
     ll_fun      = ll_fun,
     lag         = lag)
-
+  
 }
 
 
@@ -97,35 +97,35 @@ concurrent <- function(...,
 #' @importFrom stats terms
 #' @keywords internal
 get_cumulative <- function(data, formula) {
-
+  
   stopifnot(has_tdc_form(formula))
-
+  
   func_list <- eval_special(get_tdc_form(formula, data = data), data = data)
-
+  
   n_func <- length(func_list)
   ll_funs <- map(func_list, ~.x[["ll_fun"]])
   tz_vars <- map(func_list, ~.x[["tz_var"]])
   tz <- map(tz_vars, ~pull(data, .x) %>% unlist() %>% unique() %>% sort())
-
+  
   names(tz) <- names(tz_vars) <- names(ll_funs) <- tz_vars
-
+  
   ## create matrices
   func_mats <- map(func_list,
-      ~ expand_cumulative(data = data, ., n_func = n_func)) %>%
+                   ~ expand_cumulative(data = data, ., n_func = n_func)) %>%
     flatten()
-
+  
   list(
     func_list = func_list,
     func_mats = func_mats,
     ll_funs   = ll_funs,
     tz_vars   = tz_vars,
     tz        = tz)
-
+  
 }
 
 #' @keywords internal
 eval_special <- function(formula, special="cumulative", data = NULL) {
-
+  
   tf  <- terms(formula, specials = special, data = data)
   ind_special <- attr(tf, "specials")[[special]]
   # extract components
@@ -135,7 +135,7 @@ eval_special <- function(formula, special="cumulative", data = NULL) {
   } else {
     NULL
   }
-
+  
 }
 
 
@@ -145,9 +145,9 @@ eval_special <- function(formula, special="cumulative", data = NULL) {
 #' \code{formula} should be checked
 #' @keywords internal
 has_special <- function(formula, special = "cumulative") {
-
+  
   has_tdc_form(formula, tdc_specials = special)
-
+  
 }
 
 #' @rdname get_cumulative
@@ -156,7 +156,7 @@ has_special <- function(formula, special = "cumulative") {
 #' @importFrom purrr map invoke_map
 #' @keywords internal
 expand_cumulative <- function(data, func, n_func) {
-
+  
   col_vars <- func$col_vars
   tz_var   <- func$tz_var
   tz       <- pull(data, tz_var) %>% unlist() %>% unique() %>% sort()
@@ -175,7 +175,7 @@ expand_cumulative <- function(data, func, n_func) {
   } else {
     nz <- ncols_vars[1]
   }
-
+  
   # create list of matrices for covariates/time matrices provided in func
   hist_mats <- list()
   for (i in seq_along(col_vars)) {
@@ -187,21 +187,21 @@ expand_cumulative <- function(data, func, n_func) {
       make_z_mat(data, col_vars[i], nz)
     }
   }
-
+  
   if (any(c(time_var, tz_var) %in% col_vars)) {
     hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun)))
     names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
-      tz_var, func$suffix, n_func)
+                                       tz_var, func$suffix, n_func)
     time_mat_ind <- grepl(time_var, names(hist_mats))
     names(hist_mats)[time_mat_ind] <- paste0(names(hist_mats)[time_mat_ind],
-      "_mat")
+                                             "_mat")
   } else {
     names(hist_mats) <- make_mat_names(col_vars, func$latency_var, tz_var,
-      func$suffix, n_func)
+                                       func$suffix, n_func)
   }
-
+  
   hist_mats
-
+  
 }
 
 #' Extract information on concurrent effects
@@ -218,9 +218,9 @@ prep_concurrent <- function(x, formula, ...) {
 #' @inherit prep_concurrent
 #' @keywords internal
 prep_concurrent.list <- function(x, formula, ...) {
-
+  
   lgl_concurrent <- has_special(formula, "concurrent")
-
+  
   if (lgl_concurrent) {
     ccr_list    <- eval_special(formula, special = "concurrent", x[[2]])
     ccr_tz_vars <- map_chr(ccr_list, ~.x[["tz_var"]]) %>% unique()
@@ -236,11 +236,11 @@ prep_concurrent.list <- function(x, formula, ...) {
       # should just start modeling the hazard at t = lag?!?
       reduce(union) %>% sort()
   }
-
+  
   list(
     ccr_list = ccr_list,
     ccr_time = ccr_time)
-
+  
 }
 
 
@@ -256,40 +256,70 @@ get_tz <- function(data, tz_var) {
 
 #' @keywords internal
 #' @importFrom purrr map2
-add_concurrent <- function(ped, data, id_var) {
-
+add_concurrent <- function(ped, data, id_var, ...) {
+  
   ccr <- attr(data, "ccr")
-
-  ped_split <- split(ped$tend, f = ped[[id_var]])
-
+  
+  dots <- list(...)
+  if (any(dots$transition %in% names(ped))) {
+    if(dots$timescale == "gap") {
+      ## create an auxiliary 'tend_aux' column, the not reset 'tend' 
+      ped <- ped %>%
+        group_by(.data[[id_var]]) %>%
+        mutate(tend_aux = lag(tend, default = 0)) %>%
+        ungroup() %>% 
+        group_by(.data[[id_var]], .data[[dots$transition]]) %>%
+        mutate(tend_aux = first(tend_aux), 
+               tend_aux = tend + tend_aux) %>%
+        ungroup()
+    } else {
+      ped <- mutate(ped, tend_aux = tend)
+    }
+    ped_split <- split(ped$tend_aux, f = list(ped[[id_var]], ped[[transition]]), 
+                       drop = TRUE)
+  } else {
+    ped_split <- split(ped$tend, f = ped[[id_var]])
+  }
+  
   for (ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
     tz_var_i   <- ccr_i[["tz_var"]]
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
-    ccr_i_df   <- data %>%
-      select(one_of(c(id_var, ccr_vars_i)))
-    ccr_i_df <- ccr_i_df %>% unnest(cols = -one_of(id_var))
-
-    li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
-      function(.x, .y) {
-        ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
-        .y[ll_ind, tdc_vars_i]
-      }) %>% bind_rows() %>% as.data.frame()
-
+    if (any(dots$transition %in% names(ped))) {
+      ccr_i_df   <- data %>%
+        select(one_of(c(id_var, transition, ccr_vars_i))) %>% 
+        unnest(cols = -one_of(id_var))
+      ccr_i_df_split <- split(ccr_i_df, 
+                              f = list(ccr_i_df[[id_var]], 
+                                       ccr_i_df[[transition]]), drop = TRUE)
+    } else {
+      ccr_i_df   <- data %>%
+        select(one_of(c(id_var, ccr_vars_i))) %>% 
+        unnest(cols = -one_of(id_var))
+      
+      ccr_i_df_split <- split(ccr_i_df, f = ccr_i_df[[id_var]])
+    }
+    
+    li <- map2(ped_split, ccr_i_df_split,
+               function(.x, .y) {
+                 ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
+                 .y[ll_ind, tdc_vars_i]
+               }) %>% bind_rows() %>% as.data.frame()
+    
     ped <- ped %>% bind_cols(li)
-
+    if (any(dots$transition %in% names(ped))) ped$tend_aux <- NULL
   }
-
+  
   attr(ped, "ccr") <- ccr
-
+  
   ped
-
-
+  
+  
 }
 
 #' @keywords internal
 add_cumulative <- function(ped, data, formula) {
-
+  
   func_components <- get_cumulative(data, formula)
   func_matrices <- func_components$func_mats
   for (i in seq_along(func_matrices)) {
@@ -299,9 +329,9 @@ add_cumulative <- function(ped, data, formula) {
   attr(ped, "ll_funs")        <- func_components$ll_funs
   attr(ped, "tz")             <- func_components$tz
   attr(ped, "tz_vars")        <- func_components$tz_vars
-
+  
   ped
-
+  
 }
 
 make_mat_names <- function(x, ...) {
@@ -310,12 +340,12 @@ make_mat_names <- function(x, ...) {
 
 #' @keywords internal
 make_mat_names.default <- function(
-  col_vars,
-  latency_var = NULL,
-  tz_var      = NULL,
-  suffix      = NULL,
-  nfunc       = 1) {
-
+    col_vars,
+    latency_var = NULL,
+    tz_var      = NULL,
+    suffix      = NULL,
+    nfunc       = 1) {
+  
   if (!is.null(suffix)) {
     return(paste(col_vars, suffix, sep = "_"))
   } else {
@@ -326,28 +356,28 @@ make_mat_names.default <- function(
     if (!is.null(latency_var)) {
       latency_ind <- col_vars == latency_var
       col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency",
-        sep = "_")
+                                     sep = "_")
     }
   }
-
+  
   return(col_vars)
-
+  
 }
 
 #' @keywords internal
 make_mat_names.list <- function(func_list, time_var) {
   hist_names <- map(func_list, ~ make_mat_names(c(.x[["col_vars"]], "LL"),
-    .x[["latency_var"]], .x[["tz_var"]], .x[["suffix"]],
-    nfunc = length(func_list)))
-
+                                                .x[["latency_var"]], .x[["tz_var"]], .x[["suffix"]],
+                                                nfunc = length(func_list)))
+  
   time_mat_ind <- map(hist_names, ~grepl(time_var, .))
   for (i in seq_along(time_mat_ind)) {
     hist_names[[i]][time_mat_ind[[i]]] <-
       paste0(hist_names[[i]][time_mat_ind[[i]]], "_mat")
   }
-
+  
   hist_names
-
+  
 }
 
 #' Create matrix components for cumulative effects
@@ -360,42 +390,42 @@ make_mat_names.list <- function(func_list, time_var) {
 #'
 #' @keywords internal
 make_time_mat <- function(data, nz) {
-
+  
   brks    <- attr(data, "breaks")
   id_tseq <- attr(data, "id_tseq")
   Tmat    <- matrix(brks[id_tseq], nrow = length(id_tseq), ncol = nz)
   Tmat
-
+  
 }
 
 #' @rdname elra_matrix
 #' @inherit make_time_mat
 #' @keywords internal
 make_latency_mat <- function(data, tz) {
-
+  
   time        <- attr(data, "breaks")
   id_tseq     <- attr(data, "id_tseq")
   Latency_mat <- outer(time, tz, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
   Latency_mat[id_tseq, , drop = FALSE]
-
+  
 }
 
 #' @rdname elra_matrix
 #' @inherit make_time_mat
 #' @keywords internal
 make_lag_lead_mat <- function(
-  data,
-  tz,
-  ll_fun = function(t, tz) t >= tz) {
-
+    data,
+    tz,
+    ll_fun = function(t, tz) t >= tz) {
+  
   LL    <- outer(attr(data, "breaks"), tz, FUN = ll_fun) * 1L
   delta <- abs(diff(tz))
   IW    <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
-    byrow = TRUE)
+                  byrow = TRUE)
   LL    <- LL * IW
   LL[attr(data, "id_tseq"), , drop = FALSE]
-
+  
 }
 
 #' @rdname elra_matrix
@@ -406,20 +436,20 @@ make_lag_lead_mat <- function(
 #' @importFrom dplyr pull
 #' @keywords internal
 make_z_mat <- function(data, z_var, nz, ...) {
-
+  
   tz_ind <- seq_len(nz)
   Z <- map(data[[z_var]], .f = ~ unlist(.x)[tz_ind])
   Z <- do.call(rbind, Z)
   colnames(Z) <- paste0(z_var, tz_ind)
   Z[is.na(Z)] <- 0
   Z[attr(data, "id_tz_seq"), , drop = FALSE]
-
- }
+  
+}
 
 get_ncols <- function(data, col_vars) {
-
+  
   map(col_vars, ~pull(data, .x) %>% map_int(function(z)
     ifelse(is.atomic(z), length(z), nrow(z)))) %>%
-  map_int(max)
-
+    map_int(max)
+  
 }
