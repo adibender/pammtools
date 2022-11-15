@@ -142,7 +142,7 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
-  gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = "fit"))
+  gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = .data[["fit"]]))
   if (ci) {
     gg_out <- gg_out +
       geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]), alpha = 0.3)
