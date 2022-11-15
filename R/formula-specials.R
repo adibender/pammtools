@@ -266,16 +266,16 @@ add_concurrent <- function(ped, data, id_var, ...) {
       ## create an auxiliary 'tend_aux' column, the not reset 'tend' 
       ped <- ped %>%
         group_by(.data[[id_var]]) %>%
-        mutate(tend_aux = lag(tend, default = 0)) %>%
+        mutate(tend_aux = lag(.data$tend, default = 0)) %>%
         ungroup() %>% 
         group_by(.data[[id_var]], .data[[dots$transition]]) %>%
-        mutate(tend_aux = first(tend_aux), 
-               tend_aux = tend + tend_aux) %>%
+        mutate(tend_aux = first(.data$tend_aux), 
+               tend_aux = .data$tend + .data$tend_aux) %>%
         ungroup()
     } else {
-      ped <- mutate(ped, tend_aux = tend)
+      ped <- mutate(ped, tend_aux = .data$tend)
     }
-    ped_split <- split(ped$tend_aux, f = list(ped[[id_var]], ped[[transition]]), 
+    ped_split <- split(ped$tend_aux, f = list(ped[[id_var]], ped[[dots$transition]]), 
                        drop = TRUE)
   } else {
     ped_split <- split(ped$tend, f = ped[[id_var]])
@@ -287,11 +287,11 @@ add_concurrent <- function(ped, data, id_var, ...) {
     ccr_vars_i <- c(tz_var_i, tdc_vars_i)
     if (any(dots$transition %in% names(ped))) {
       ccr_i_df   <- data %>%
-        select(one_of(c(id_var, transition, ccr_vars_i))) %>% 
+        select(one_of(c(id_var, dots$transition, ccr_vars_i))) %>% 
         unnest(cols = -one_of(id_var))
       ccr_i_df_split <- split(ccr_i_df, 
                               f = list(ccr_i_df[[id_var]], 
-                                       ccr_i_df[[transition]]), drop = TRUE)
+                                       ccr_i_df[[dots$transition]]), drop = TRUE)
     } else {
       ccr_i_df   <- data %>%
         select(one_of(c(id_var, ccr_vars_i))) %>% 
