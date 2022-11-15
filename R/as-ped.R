@@ -130,8 +130,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var")), 
                                            .data[[dots$transition]]) %>% 
       summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
-    attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
-                                              .data[[dots$transition]]) %>%
+    attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% ## Do not group_by() by .data[[dots$transition]] 
       transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
     attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
                                    times = attr(data, "id_n"))
@@ -148,7 +147,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   
   
   if (has_special(formula, "concurrent")) {
-    ped <- ped %>% add_concurrent(data = data, id_var = dots$id)
+    ped <- ped %>% add_concurrent(data = data, id_var = dots$id, ...) ## NEW ----
   }
   
   if (has_special(formula, "cumulative")) {
@@ -380,6 +379,7 @@ as_ped_recurrent <- function(
   dots$timescale  <- timescale
   
   ped <- do.call(split_data_recurrent, dots)
+  # ped <- arrange(ped, .data[[dots$id]], .data[[transition]]) ## I find more intuitive arranging the data this way.. then some unit tests should be changed.. (test-as-ped.R:103) (test-as-ped.R:107) (test-as-ped.R:121) (test-as-ped.R:124) (test-as-ped.R:127) (test-as-ped.R:131)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
   
   return(ped)
