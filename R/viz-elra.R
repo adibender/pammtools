@@ -35,13 +35,13 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   gg_base <- ggplot(ndf, aes(x = .data[[vars[1]]])) + xlab(vars[1])
   if (n_vars == 1) {
     gg_out <- gg_base +
-      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"),
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
         alpha = 0.3) +
-      geom_line(aes_string(y = "fit"))
+      geom_line(aes(y = .data[["fit"]]))
   } else {
     # if (n_vars == 2) {
       gg_out <- gg_base + aes(y = .data[[vars[2]]], z = "fit") +
-        geom_tile(aes_string(fill = "fit")) +
+        geom_tile(aes(fill = .data[["fit"]])) +
         geom_contour(col = "grey30") +
         scale_y_continuous(expand = c(0, 0)) +
         scale_x_continuous(expand = c(0, 0)) +
@@ -95,7 +95,7 @@ gg_partial_ll <- function(
   }
 
   gg_base <- ggplot(ll_df, aes(x = .data[["intmid"]], y =  tz_var)) +
-    geom_tile(aes_string(fill = "fit"), colour = "grey30") +
+    geom_tile(aes(fill = .data[["fit"]]), colour = "grey30") +
     scale_fill_gradient2(high = "firebrick2", low = "steelblue",
       na.value = "grey30") +
     scale_x_continuous(expand = c(0, 0)) +
@@ -145,7 +145,7 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = "fit"))
   if (ci) {
     gg_out <- gg_out +
-      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3)
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]), alpha = 0.3)
   }
   gg_out <- gg_out + geom_line()
   if (n_vars > 1) {
