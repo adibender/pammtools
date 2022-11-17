@@ -130,8 +130,16 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var")), 
                                            .data[[dots$transition]]) %>% 
       summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
-    attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% ## Do not group_by() by .data[[dots$transition]] 
-      transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    ## Question: group_by() by .data[[dots$transition]]?
+    if (dots$timescale == "gap") {
+      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
+                                                .data[[dots$transition]]) %>% 
+        transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    } else { ## if calendar
+      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% 
+        transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    }
+
     attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
                                    times = attr(data, "id_n"))
   } else {
