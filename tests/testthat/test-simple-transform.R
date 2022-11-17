@@ -64,7 +64,7 @@ test_that("Error on wrong input", {
   expect_error(as_ped(tumor, x ~ y, cut = c(0:5, 10, 40)))
   expect_error(as_ped(tumor, Surv(days2, status) ~., cut = c(0:5, 10, 40)))
   expect_error(as_ped(
-    data = rename(tumor, ped_time = time),
+    data = rename(tumor, ped_time = "time"),
     formula = Surv(ped_time, status) ~.))
   # already in data set ped_time
 
