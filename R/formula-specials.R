@@ -269,16 +269,19 @@ add_concurrent <- function(ped, data, id_var, ...) {
         mutate(tend_aux = lag(.data$tend, default = 0)) %>%
         ungroup() %>%
         group_by(.data[[id_var]], .data[[dots$transition]]) %>%
-        mutate(tend_aux = first(.datatend_aux)) %>%
+        mutate(tend_aux = first(.data$tend_aux)) %>%
         ungroup() %>% 
         select(id_var, "tend_aux") %>% unique() %>% 
         group_by(.data[[id_var]]) %>% 
         mutate(tend_aux = cumsum(.data$tend_aux)) %>% 
         ungroup() %>% 
+        arrange(.data[[id_var]]) %>%   ## I suggest arranging this way in a previous step (in as_ped_recurrent() function) ----
         pull("tend_aux") %>% 
-        rep(., attr(data, "id_n_i"))
+        rep(., attr(data, "id_n"))
       
-      ped <- mutate(ped, tend_aux = .data$tend + .data$tend_aux)
+      ped <- arrange(ped, .data[[id_var]], .data[[dots$transition]]) %>% ## arrange 
+        mutate(tend_aux = .data$tend + tend_aux) %>% 
+        arrange(.data[[dots$transition]])            ## unmake previous arrangement (to hold the attributes order..) ---
       
       # ped <- ped %>%
       #   group_by(.data[[id_var]]) %>%
@@ -323,7 +326,7 @@ add_concurrent <- function(ped, data, id_var, ...) {
                }) %>% bind_rows() %>% as.data.frame()
     
     ped <- ped %>% bind_cols(li)
-    if (any(dots$transition %in% names(ped))) ped$tend_aux <- NULL
+    # if (any(dots$transition %in% names(ped))) ped$tend_aux <- NULL
   }
   
   attr(ped, "ccr") <- ccr
