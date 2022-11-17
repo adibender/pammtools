@@ -366,11 +366,12 @@ as_ped_recurrent <- function(
   if (!(transition %in% rhs_vars)) {
     formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials) ## NEW----
     formula <- add_to_rhs(formula, transition)
+  } else {
+    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
   }
   
   dots            <- list(...)
   dots$data       <- data
-  # dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
   dots$formula    <- formula
   dots$cut        <- cut
   dots$max_time   <- max_time
