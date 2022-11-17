@@ -271,7 +271,7 @@ add_concurrent <- function(ped, data, id_var, ...) {
         group_by(.data[[id_var]], .data[[dots$transition]]) %>%
         mutate(tend_aux = first(.data$tend_aux)) %>%
         ungroup() %>% 
-        select(id_var, "tend_aux") %>% unique() %>% 
+        select(id_var, dots$transition, "tend_aux") %>% unique() %>% 
         group_by(.data[[id_var]]) %>% 
         mutate(tend_aux = cumsum(.data$tend_aux)) %>% 
         ungroup() %>% 
