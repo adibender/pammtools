@@ -256,42 +256,33 @@ get_tz <- function(data, tz_var) {
 
 #' @keywords internal
 #' @importFrom purrr map2
+#' @importFrom tidyselect all_of
 add_concurrent <- function(ped, data, id_var, ...) {
   
   ccr <- attr(data, "ccr")
   
   dots <- list(...)
   if (any(dots$transition %in% names(ped))) {
+    
     if(dots$timescale == "gap") {
-      ## create an auxiliary 'tend_aux' column, the not reset 'tend' 
-      tend_aux <- ped %>%
-        group_by(.data[[id_var]]) %>%
-        mutate(tend_aux = lag(.data$tend, default = 0)) %>%
-        ungroup() %>%
+      ## create an auxiliary 'tend_aux' column, a not resetted copy of 'tend'
+      tend_aux_df <- ped %>% 
+        group_by(.data[[id_var]]) %>% 
+        mutate(tend_aux = lag(.data$tend, default = 0)) %>% 
+        ungroup() %>% 
         group_by(.data[[id_var]], .data[[dots$transition]]) %>%
         mutate(tend_aux = first(.data$tend_aux)) %>%
         ungroup() %>% 
-        select(id_var, dots$transition, "tend_aux") %>% unique() %>% 
+        select(all_of(c(id_var, dots$transition)), "tend_aux") %>% 
+        unique() %>%
         group_by(.data[[id_var]]) %>% 
         mutate(tend_aux = cumsum(.data$tend_aux)) %>% 
-        ungroup() %>% 
-        arrange(.data[[id_var]]) %>%   ## I suggest arranging this way in a previous step (in as_ped_recurrent() function) ----
-        pull("tend_aux") %>% 
-        rep(., attr(data, "id_n"))
+        ungroup()
       
-      ped <- arrange(ped, .data[[id_var]], .data[[dots$transition]]) %>% ## arrange 
-        mutate(tend_aux = .data$tend + tend_aux) %>% 
-        arrange(.data[[dots$transition]])            ## unmake previous arrangement (to hold the attributes order..) ---
+      ped <- left_join(ped, tend_aux_df, by = c(id_var, dots$transition)) %>% 
+        mutate(tend_aux = .data$tend + .data$tend_aux)
       
-      # ped <- ped %>%
-      #   group_by(.data[[id_var]]) %>%
-      #   mutate(tend_aux = lag(.data$tend, default = 0)) %>%
-      #   ungroup() %>% 
-      #   group_by(.data[[id_var]], .data[[dots$transition]]) %>%
-      #   mutate(tend_aux = first(.data$tend_aux), 
-      #          tend_aux = .data$tend + .data$tend_aux) %>%
-      #   ungroup()
-    } else {
+    } else {  ## if calendar
       ped <- mutate(ped, tend_aux = .data$tend)
     }
     ped_split <- split(ped$tend_aux, f = list(ped[[id_var]], ped[[dots$transition]]), 
@@ -325,6 +316,9 @@ add_concurrent <- function(ped, data, id_var, ...) {
                  .y[ll_ind, tdc_vars_i]
                }) %>% bind_rows() %>% as.data.frame()
     
+    ## check that data contains baseline value
+    if(nrow(ped) != nrow(li)) stop("Please, add baseline values to your data (i.e. TDC value at t = 0)")
+    
     ped <- ped %>% bind_cols(li)
     # if (any(dots$transition %in% names(ped))) ped$tend_aux <- NULL
   }
@@ -341,6 +335,17 @@ add_cumulative <- function(ped, data, formula) {
   
   func_components <- get_cumulative(data, formula)
   func_matrices <- func_components$func_mats
+  
+  ## check that all individuals share same tz pattern
+  tz_vars <- func_components$tz_vars ## a list
+  id_var <- attr(ped, "id_var")
+  has_common_tzset <- sapply(tz_vars, function(tz_var) 
+    eval_common_tzset(data, id_var, tz_var))
+  if (!all(has_common_tzset)) {
+    stop("TDC values should be recorded at same tz times for all individuals") 
+    ## if this error not fixed there will be problems with matrix dimensions
+  }
+  
   for (i in seq_along(func_matrices)) {
     ped[[names(func_matrices)[i]]] <- func_matrices[[i]]
   }
@@ -351,6 +356,29 @@ add_cumulative <- function(ped, data, formula) {
   
   ped
   
+}
+
+#' @keywords internal
+#' @importFrom purrr map
+#' @importFrom tibble is_tibble
+eval_common_tzset <- function(data, id_var, tz_var) {
+  tz_vectors <- data %>% 
+    split(data[[id_var]])
+  if (is_tibble(tz_vectors[[1]][[tz_var]][[1]])) {
+    tz_vectors <- sapply(tz_vectors, function(elem) as.vector(elem[[tz_var]][[1]]))
+  } else {
+    tz_vectors <- lapply(tz_vectors, function(elem) elem[[tz_var]][[1]])
+  }
+  
+  idx <- which.max(lapply(tz_vectors, length))
+  largest_tz_vector <- tz_vectors[[idx]]
+  
+  has_common_tzset <- map(.x = tz_vectors,
+                          .f = function(x) all(x == largest_tz_vector[seq_along(x)])) %>% 
+    reduce(c) %>% 
+    all()
+  
+  return(has_common_tzset)
 }
 
 make_mat_names <- function(x, ...) {

@@ -122,27 +122,26 @@ as_ped.nested_fdf <- function(data, formula, ...) {
       cut        = cut,
       max_time   = dots$max_time,
       transition = dots$transition,
-      timescale  = dots$timescale)  ## NEW ----
+      timescale  = dots$timescale)
   
   # replace updated attributes
   attr(data, "breaks") <- attr(ped, "breaks")
-  if (test_character(dots$transition, min.chars = 1L, min.len = 1L)) {
+  if (length(dots$transition) != 0) { ## if there are recurrent events (i.e. transition != character())
     attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var")), 
                                            .data[[dots$transition]]) %>% 
       summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
-    ## Question: group_by() by .data[[dots$transition]]?
-    if (dots$timescale == "gap") {
+    ## id_tseq attribute depends on timescale  
+    if (dots$timescale == "gap") {   ## if gap, then group_by() by "transition"
       attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
                                                 .data[[dots$transition]]) %>% 
         transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-    } else { ## if calendar
+    } else {                         ## if calendar
       attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% 
         transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
     }
-
     attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
                                    times = attr(data, "id_n"))
-  } else {
+  } else {                           ## if no recurrent events 
     attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
       summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
     attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
@@ -150,12 +149,9 @@ as_ped.nested_fdf <- function(data, formula, ...) {
     attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
                                    times = attr(data, "id_n"))
   }
-  ## NEW ----
-  ##
-  
   
   if (has_special(formula, "concurrent")) {
-    ped <- ped %>% add_concurrent(data = data, id_var = dots$id, ...) ## NEW ----
+    ped <- ped %>% add_concurrent(data = data, id_var = dots$id, ...)
   }
   
   if (has_special(formula, "cumulative")) {
@@ -370,9 +366,20 @@ as_ped_recurrent <- function(
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
   
+  ## check there is an event in the last transition
+  last_spell <- data %>%
+    filter(.data[[transition]] == max(.data[[transition]]))
+  lhs_vars   <- get_lhs_vars(formula)
+  status_var <- lhs_vars[[length(lhs_vars)]]
+  if (has_tdc_form(formula) & all(last_spell[[status_var]] == 0)) {
+    stop("All observations in the last transition are censored.
+         Please, filter those rows in order to properly transform the data
+         or specify a proper 'cut' argument.")
+  }
+  
   rhs_vars <- get_rhs_vars(formula)
   if (!(transition %in% rhs_vars)) {
-    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials) ## NEW----
+    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
     formula <- add_to_rhs(formula, transition)
   } else {
     formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
@@ -388,7 +395,6 @@ as_ped_recurrent <- function(
   dots$timescale  <- timescale
   
   ped <- do.call(split_data_recurrent, dots)
-  # ped <- arrange(ped, .data[[dots$id]], .data[[transition]]) ## I find more intuitive arranging the data this way.. then some unit tests should be changed.. (test-as-ped.R:103) (test-as-ped.R:107) (test-as-ped.R:121) (test-as-ped.R:124) (test-as-ped.R:127) (test-as-ped.R:131)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
   
   return(ped)
