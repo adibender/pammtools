@@ -27,7 +27,7 @@ to sim_pexp."><meta property="og:image" content="https://adibender.github.io/pam
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -124,24 +124,31 @@ to <code><a href="sim_pexp.html">sim_pexp</a></code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">add_tdc</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span>, <span class="va">rng_fun</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_tdc</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span>, <span class="va">rng_fun</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p>A data set with variables specified in <code>formula</code>.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>A numeric vector of exposure times (relative to the
 beginning of the follow-up time <code>t</code>)</p></dd>
+
+
 <dt>rng_fun</dt>
 <dd><p>A random number generating function that creates
 the time-dependent covariates at time points <code>tz</code>.
 First argument of the function should be <code>n</code>, the number of
 random numbers to generate. Within <code>add_tdc</code>, <code>n</code> will be set
 to <code>length(tz)</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Currently not used.</p></dd>
+
 </dl></div>
 
   </div>
@@ -156,7 +163,7 @@ to <code>length(tz)</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

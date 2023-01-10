@@ -31,7 +31,7 @@ errors are calculated using the delta method."><meta property="og:image" content
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -132,32 +132,41 @@ errors are calculated using the delta method.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for gam</span>
-<span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for aalen</span>
-<span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for cox.aalen</span>
-<span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for gam</span></span>
+<span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for aalen</span></span>
+<span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for cox.aalen</span></span>
+<span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>model</dt>
 <dd><p>Object from which to extract cumulative coefficients.</p></dd>
+
+
 <dt>data</dt>
 <dd><p>Additional data if necessary.</p></dd>
+
+
 <dt>terms</dt>
 <dd><p>A character vector of variables for which the cumulative
 coefficient should be calculated.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to methods.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>Logical. Indicates if confidence intervals should be returned as
 well.</p></dd>
+
 </dl></div>
 
   </div>
@@ -172,7 +181,7 @@ well.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

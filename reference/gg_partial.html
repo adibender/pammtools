@@ -24,7 +24,7 @@ bivariate surface or  (1D) cumulative effect."><meta property="og:image" content
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -118,39 +118,45 @@ bivariate surface or  (1D) cumulative effect.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gg_partial</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">...</span>, reference <span class="op">=</span> <span class="cn">NULL</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="fu">gg_partial_ll</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">model</span>,
-  <span class="va">term</span>,
-  <span class="va">...</span>,
-  reference <span class="op">=</span> <span class="cn">NULL</span>,
-  ci <span class="op">=</span> <span class="cn">FALSE</span>,
-  time_var <span class="op">=</span> <span class="st">"tend"</span>
-<span class="op">)</span>
-
-<span class="fu">get_partial_ll</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">model</span>,
-  <span class="va">term</span>,
-  <span class="va">...</span>,
-  reference <span class="op">=</span> <span class="cn">NULL</span>,
-  ci <span class="op">=</span> <span class="cn">FALSE</span>,
-  time_var <span class="op">=</span> <span class="st">"tend"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gg_partial</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">...</span>, reference <span class="op">=</span> <span class="cn">NULL</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">gg_partial_ll</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">term</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  reference <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="st">"tend"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_partial_ll</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">term</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  reference <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="st">"tend"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p>Data used to fit the <code>model</code>.</p></dd>
+
+
 <dt>model</dt>
 <dd><p>A suitable model object which will be used to estimate the
 partial effect of <code>term</code>.</p></dd>
+
+
 <dt>term</dt>
 <dd><p>A character string indicating the model term for which partial
 effects should be plotted.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Covariate specifications (expressions) that will be evaluated
 by looking for variables in <code>x</code>. Must be of the form <code>z = f(z)</code>
@@ -159,16 +165,23 @@ function that can be usefully applied to <code>z</code>. Note that this is also
 necessary for single value specifications (e.g. <code>age = c(50)</code>).
 For data in PED (piece-wise exponential data) format, one can also specify
 the time argument, but see "Details" an "Examples" below.</p></dd>
+
+
 <dt>reference</dt>
 <dd><p>If specified, should be a list with covariate value pairs,
 e.g. <code>list(x1 = 1, x2=50)</code>. The calculated partial effect will be relative
 to an observation specified in <code>reference</code>.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>Logical. Indicates if confidence intervals for the <code>term</code>
 of interest should be calculated/plotted. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>time_var</dt>
 <dd><p>The name of the variable that was used in <code>model</code> to
 represent follow-up time.</p></dd>
+
 </dl></div>
 
   </div>
@@ -183,7 +196,7 @@ represent follow-up time.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

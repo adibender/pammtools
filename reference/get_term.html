@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_term</span><span class="op">(</span><span class="va">data</span>, <span class="va">fit</span>, <span class="va">term</span>, n <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_term</span><span class="op">(</span><span class="va">data</span>, <span class="va">fit</span>, <span class="va">term</span>, n <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -124,18 +124,27 @@
     <dl><dt>data</dt>
 <dd><p>A data frame containing variables used to fit the model. Only
 first row will be used.</p></dd>
+
+
 <dt>fit</dt>
 <dd><p>A fitted object of class <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code>.</p></dd>
+
+
 <dt>term</dt>
 <dd><p>The (non-linear) model term of interest.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>Specify the output sequence either by supplying the
 length of the sequence with <code>n</code>, or the spacing between value
 with <code>by</code>. Specifying both is an error.</p>
 <p>I recommend that you name these arguments in order to make it clear to
 the reader.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="seq_range.html">seq_range</a></code>.</p></dd>
+
 </dl></div>
 
   </div>
@@ -150,7 +159,7 @@ the reader.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

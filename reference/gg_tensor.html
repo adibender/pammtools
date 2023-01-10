@@ -25,7 +25,7 @@ more than one 2d smooth term is present individual terms are faceted."><meta pro
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -120,18 +120,23 @@ more than one 2d smooth term is present individual terms are faceted.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">x</span>, ci <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">x</span>, ci <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">plot.gam</a></code></p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -140,16 +145,17 @@ calculated and returned. Defaults to <code>TRUE</code>.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="fu">te</span><span class="op">(</span><span class="va">Sepal.Width</span>, <span class="va">Petal.Length</span><span class="op">)</span>, data<span class="op">=</span><span class="va">iris</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 647 rows containing non-finite values (stat_contour).</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="fu">te</span><span class="op">(</span><span class="va">Sepal.Width</span>, <span class="va">Petal.Length</span><span class="op">)</span>, data<span class="op">=</span><span class="va">iris</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 647 rows containing non-finite values (`stat_contour()`).</span>
 <span class="r-plt img"><img src="gg_tensor-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">g</span>, ci<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1941 rows containing non-finite values (stat_contour).</span>
+<span class="r-in"><span><span class="fu">gg_tensor</span><span class="op">(</span><span class="va">g</span>, ci<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1941 rows containing non-finite values (`stat_contour()`).</span>
 <span class="r-plt img"><img src="gg_tensor-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu">gg_tensor</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">+</span> <span class="fu">te</span><span class="op">(</span><span class="va">Petal.Width</span>, <span class="va">Petal.Length</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1624 rows containing non-finite values (stat_contour).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Raster pixels are placed at uneven horizontal intervals and will be shifted. Consider using geom_tile() instead.</span>
+<span class="r-in"><span><span class="fu">gg_tensor</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">+</span> <span class="fu">te</span><span class="op">(</span><span class="va">Petal.Width</span>, <span class="va">Petal.Length</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1624 rows containing non-finite values (`stat_contour()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Raster pixels are placed at uneven horizontal intervals and will be shifted</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Consider using `geom_tile()` instead.</span>
 <span class="r-plt img"><img src="gg_tensor-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -165,7 +171,7 @@ calculated and returned. Defaults to <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

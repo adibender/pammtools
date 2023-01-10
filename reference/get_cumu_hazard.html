@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,17 +116,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_cumu_hazard</span><span class="op">(</span>
-  <span class="va">newdata</span>,
-  <span class="va">object</span>,
-  ci <span class="op">=</span> <span class="cn">TRUE</span>,
-  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"delta"</span>, <span class="st">"sim"</span><span class="op">)</span>,
-  time_var <span class="op">=</span> <span class="cn">NULL</span>,
-  se_mult <span class="op">=</span> <span class="fl">2</span>,
-  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,
-  nsim <span class="op">=</span> <span class="fl">100L</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumu_hazard</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"delta"</span>, <span class="st">"sim"</span><span class="op">)</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  se_mult <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">100L</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -137,11 +137,17 @@
                 original data are returned. If <code>newdata</code> is provided then
                 it should contain all the variables needed for prediction: a
                 warning is generated if not. See details for use with <code>link{linear.functional.terms}</code>.</p></dd>
+
+
 <dt>object</dt>
 <dd><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p><code>logical</code>. Indicates if confidence intervals should be
 calculated. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>ci_type</dt>
 <dd><p>The method by which standard errors/confidence intervals
 will be calculated. Default transforms the linear predictor at
@@ -150,20 +156,29 @@ error calculated by the Delta method. <code>"sim"</code> draws the
 property of interest from its posterior based on the normal distribution of
 the estimated coefficients. See <a href="https://adibender.github.io/simpamm/confidence-intervals.html" class="external-link">here</a>
 for details and empirical evaluation.</p></dd>
+
+
 <dt>time_var</dt>
 <dd><p>Name of the variable used for the baseline hazard. If
 not given, defaults to <code>"tend"</code> for <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code> fits, else
 <code>"interval"</code>. The latter is assumed to be a factor, the former
 numeric.</p></dd>
+
+
 <dt>se_mult</dt>
 <dd><p>Factor by which standard errors are multiplied for calculating
 the confidence intervals.</p></dd>
+
+
 <dt>interval_length</dt>
 <dd><p>The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code> and
 <code><a href="get_hazard.html">get_hazard</a></code></p></dd>
+
 </dl></div>
 
   </div>
@@ -178,7 +193,7 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

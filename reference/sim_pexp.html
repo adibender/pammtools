@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sim_pexp</span><span class="op">(</span><span class="va">formula</span>, <span class="va">data</span>, <span class="va">cut</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_pexp</span><span class="op">(</span><span class="va">formula</span>, <span class="va">data</span>, <span class="va">cut</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -128,16 +128,21 @@ or time-varying effects, use <code>t</code> within your formula as
 if it was a covariate in the data, although it is not and should not
 be included in the <code>data</code> provided to <code>sim_pexp</code>. See examples
 below.</p></dd>
+
+
 <dt>data</dt>
 <dd><p>A data set with variables specified in <code>formula</code>.</p></dd>
+
+
 <dt>cut</dt>
 <dd><p>A sequence of time-points starting with 0.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
@@ -146,21 +151,21 @@ below.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># set number of observations/subjects</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">250</span></span>
-<span class="r-in"><span class="co"># create data set with variables which will affect the hazard rate.</span></span>
-<span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind.data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in"> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># the formula which specifies how covariates affet the hazard rate</span></span>
-<span class="r-in"><span class="va">f0</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">t</span>, <span class="fl">8</span>, <span class="fl">2</span><span class="op">)</span> <span class="op">*</span><span class="fl">6</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3.5</span> <span class="op">+</span> <span class="fu">f0</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span><span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">24032018</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">sim_df</span> <span class="op">&lt;-</span> <span class="fu">sim_pexp</span><span class="op">(</span><span class="va">form</span>, <span class="va">df</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_df</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># set number of observations/subjects</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">250</span></span></span>
+<span class="r-in"><span><span class="co"># create data set with variables which will affect the hazard rate.</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind.data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># the formula which specifies how covariates affet the hazard rate</span></span></span>
+<span class="r-in"><span><span class="va">f0</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">t</span>, <span class="fl">8</span>, <span class="fl">2</span><span class="op">)</span> <span class="op">*</span><span class="fl">6</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3.5</span> <span class="op">+</span> <span class="fu">f0</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span><span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">24032018</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sim_df</span> <span class="op">&lt;-</span> <span class="fu">sim_pexp</span><span class="op">(</span><span class="va">form</span>, <span class="va">df</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_df</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      id  time status     x1    x2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -170,77 +175,77 @@ below.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     4  2.07      1  0.331  3.71</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     5  3.02      1  2.98   4.98</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>     6  2.32      1 -<span style="color: #BB0000;">1.91</span>   1.43</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">sim_df</span> <span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">sim_df</span> <span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># for control, estimate with Cox PH</span></span>
-<span class="r-in"><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sim_df</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># for control, estimate with Cox PH</span></span></span>
+<span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sim_df</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         x1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -0.5711059 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mod</span>, se <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mod</span>, se <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># and using PAMs</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">sim_df</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, max_time<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># and using PAMs</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">sim_df</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, max_time<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: nlme</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘nlme’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:dplyr’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     collapse</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This is mgcv 1.8-40. For overview type 'help("mgcv-package")'.</span>
-<span class="r-in"><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="va">poisson</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> This is mgcv 1.8-41. For overview type 'help("mgcv-package")'.</span>
+<span class="r-in"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="va">poisson</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         x1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -0.5534093 </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pam</span>, page<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pam</span>, page<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Example 2: Functional covariates/cumulative coefficients</span></span>
-<span class="r-in"><span class="co"># function to generate one exposure profile, tz is a vector of time points</span></span>
-<span class="r-in"><span class="co"># at which TDC z was observed</span></span>
-<span class="r-in"><span class="va">rng_z</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">nz</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/arima.sim.html" class="external-link">arima.sim</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">nz</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.8</span>, <span class="op">-</span><span class="fl">.6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="co"># two different exposure times  for two different exposures</span></span>
-<span class="r-in"><span class="va">tz1</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span></span>
-<span class="r-in"><span class="va">tz2</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span></span>
-<span class="r-in"><span class="co"># generate exposures and add to data set</span></span>
-<span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="add_tdc.html">add_tdc</a></span><span class="op">(</span><span class="va">tz1</span>, <span class="va">rng_z</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="add_tdc.html">add_tdc</a></span><span class="op">(</span><span class="va">tz2</span>, <span class="va">rng_z</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">df</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># define tri-variate function of time, exposure time and exposure z</span></span>
-<span class="r-in"><span class="va">ft</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tmax</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">t</span><span class="op">/</span><span class="va">tmax</span><span class="op">*</span><span class="va">pi</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">fdnorm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">1.5</span>,<span class="fl">2</span><span class="op">)</span><span class="op">+</span><span class="fl">1.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">7.5</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">wpeak2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lag</span><span class="op">)</span> <span class="fl">15</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">8</span>,<span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">wdnorm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lag</span><span class="op">)</span> <span class="fl">5</span><span class="op">*</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">25</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">f_xyz1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span>, <span class="va">z</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu">ft</span><span class="op">(</span><span class="va">t</span>, tmax<span class="op">=</span><span class="fl">10</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">*</span><span class="fu">fdnorm</span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">*</span> <span class="fu">wpeak2</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">tz</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">f_xyz2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span>, <span class="va">z</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu">wdnorm</span><span class="op">(</span><span class="va">t</span><span class="op">-</span><span class="va">tz</span><span class="op">)</span> <span class="op">*</span> <span class="va">z</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># define lag-lead window function</span></span>
-<span class="r-in"><span class="va">ll_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span><span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">}</span></span>
-<span class="r-in"><span class="va">ll_fun2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span><span class="va">t</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">}</span></span>
-<span class="r-in"><span class="co"># simulate data with cumulative effect</span></span>
-<span class="r-in"><span class="va">sim_df</span> <span class="op">&lt;-</span> <span class="fu">sim_pexp</span><span class="op">(</span></span>
-<span class="r-in">  formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3.5</span> <span class="op">+</span> <span class="fu">f0</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span><span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span><span class="op">|</span></span>
-<span class="r-in">     <span class="fu"><a href="fcumu.html">fcumu</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">tz1</span>, <span class="va">z.tz1</span>, f_xyz<span class="op">=</span><span class="va">f_xyz1</span>, ll_fun<span class="op">=</span><span class="va">ll_fun</span><span class="op">)</span> <span class="op">+</span></span>
-<span class="r-in">     <span class="fu"><a href="fcumu.html">fcumu</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">tz2</span>, <span class="va">z.tz2</span>, f_xyz<span class="op">=</span><span class="va">f_xyz2</span>, ll_fun<span class="op">=</span><span class="va">ll_fun2</span><span class="op">)</span>,</span>
-<span class="r-in">  data <span class="op">=</span> <span class="va">df</span>,</span>
-<span class="r-in">  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Functional covariates/cumulative coefficients</span></span></span>
+<span class="r-in"><span><span class="co"># function to generate one exposure profile, tz is a vector of time points</span></span></span>
+<span class="r-in"><span><span class="co"># at which TDC z was observed</span></span></span>
+<span class="r-in"><span><span class="va">rng_z</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">nz</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/arima.sim.html" class="external-link">arima.sim</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">nz</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.8</span>, <span class="op">-</span><span class="fl">.6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="co"># two different exposure times  for two different exposures</span></span></span>
+<span class="r-in"><span><span class="va">tz1</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span></span></span>
+<span class="r-in"><span><span class="va">tz2</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="co"># generate exposures and add to data set</span></span></span>
+<span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_tdc.html">add_tdc</a></span><span class="op">(</span><span class="va">tz1</span>, <span class="va">rng_z</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_tdc.html">add_tdc</a></span><span class="op">(</span><span class="va">tz2</span>, <span class="va">rng_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># define tri-variate function of time, exposure time and exposure z</span></span></span>
+<span class="r-in"><span><span class="va">ft</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tmax</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">t</span><span class="op">/</span><span class="va">tmax</span><span class="op">*</span><span class="va">pi</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">fdnorm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">1.5</span>,<span class="fl">2</span><span class="op">)</span><span class="op">+</span><span class="fl">1.5</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>,<span class="fl">7.5</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">wpeak2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lag</span><span class="op">)</span> <span class="fl">15</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">8</span>,<span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">wdnorm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lag</span><span class="op">)</span> <span class="fl">5</span><span class="op">*</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">lag</span>,<span class="fl">25</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">f_xyz1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span>, <span class="va">z</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">ft</span><span class="op">(</span><span class="va">t</span>, tmax<span class="op">=</span><span class="fl">10</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.8</span><span class="op">*</span><span class="fu">fdnorm</span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">*</span> <span class="fu">wpeak2</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">tz</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">f_xyz2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span>, <span class="va">z</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">wdnorm</span><span class="op">(</span><span class="va">t</span><span class="op">-</span><span class="va">tz</span><span class="op">)</span> <span class="op">*</span> <span class="va">z</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># define lag-lead window function</span></span></span>
+<span class="r-in"><span><span class="va">ll_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span><span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">ll_fun2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span><span class="va">t</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="co"># simulate data with cumulative effect</span></span></span>
+<span class="r-in"><span><span class="va">sim_df</span> <span class="op">&lt;-</span> <span class="fu">sim_pexp</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  formula <span class="op">=</span> <span class="op">~</span> <span class="op">-</span><span class="fl">3.5</span> <span class="op">+</span> <span class="fu">f0</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">*</span><span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span><span class="op">|</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="fcumu.html">fcumu</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">tz1</span>, <span class="va">z.tz1</span>, f_xyz<span class="op">=</span><span class="va">f_xyz1</span>, ll_fun<span class="op">=</span><span class="va">ll_fun</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>     <span class="fu"><a href="fcumu.html">fcumu</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">tz2</span>, <span class="va">z.tz2</span>, f_xyz<span class="op">=</span><span class="va">f_xyz2</span>, ll_fun<span class="op">=</span><span class="va">ll_fun2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">df</span>,</span></span>
+<span class="r-in"><span>  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -255,7 +260,7 @@ below.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

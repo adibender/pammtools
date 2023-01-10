@@ -25,7 +25,7 @@ by as_ped."><meta property="og:image" content="https://adibender.github.io/pammt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -120,32 +120,39 @@ by <code><a href="as_ped.html">as_ped</a></code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">tz</span>, <span class="va">ll_fun</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for data.frame</span>
-<span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">tz</span>, <span class="va">ll_fun</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for data.frame</span></span>
+<span><span class="fu">get_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Either a numeric vector of follow-up cut points or a suitable object.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to methods.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>A vector of exposure times</p></dd>
+
+
 <dt>ll_fun</dt>
 <dd><p>Function that specifies how the lag-lead matrix
 should be constructed. First argument is the follow up time
 second argument is the time of exposure.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">get_laglead</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_laglead</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 121 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        t    tz    LL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -160,7 +167,7 @@ second argument is the time of exposure.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     0     3     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     0     4     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 111 more rows</span></span>
-<span class="r-in"><span class="fu"><a href="gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>, ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="get_laglead-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -176,7 +183,7 @@ second argument is the time of exposure.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

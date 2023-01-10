@@ -27,7 +27,7 @@ set method="REML".'><meta property="og:image" content="https://adibender.github.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -124,18 +124,18 @@ set <code>method="REML"</code>.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pamm</span><span class="op">(</span><span class="va">formula</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, trafo_args <span class="op">=</span> <span class="cn">NULL</span>, engine <span class="op">=</span> <span class="st">"gam"</span><span class="op">)</span>
-
-<span class="fu">is.pamm</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="co"># S3 method for pamm</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for pamm</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for pamm</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pamm</span><span class="op">(</span><span class="va">formula</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span>, trafo_args <span class="op">=</span> <span class="cn">NULL</span>, engine <span class="op">=</span> <span class="st">"gam"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">is.pamm</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for pamm</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for pamm</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for pamm</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -144,24 +144,37 @@ set <code>method="REML"</code>.</p>
 <dd><p>A GAM formula, or a list of formulae (see <code><a href="https://rdrr.io/pkg/mgcv/man/formula.gam.html" class="external-link">formula.gam</a></code> and also <code><a href="https://rdrr.io/pkg/mgcv/man/gam.models.html" class="external-link">gam.models</a></code>). 
 These are exactly like the formula for a GLM except that smooth terms, <code><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></code>, <code><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">te</a></code>, <code><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">ti</a></code> 
 and <code><a href="https://rdrr.io/pkg/mgcv/man/t2.html" class="external-link">t2</a></code>, can be added to the right hand side to specify that the linear predictor depends on smooth functions of predictors (or linear functionals of these).</p></dd>
+
+
 <dt>data</dt>
 <dd><p>A data frame or list containing the model response variable and 
 covariates required by the formula. By default the variables are taken 
 from <code>environment(formula)</code>: typically the environment from 
 which <code>gam</code> is called.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code>engine</code>.</p></dd>
+
+
 <dt>trafo_args</dt>
 <dd><p>A named list. If data is not in PED format, <code>as_ped</code>
 will be called internally with arguments provided in <code>trafo_args</code>.</p></dd>
+
+
 <dt>engine</dt>
 <dd><p>Character name of the function that will be called to fit the
 model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 (both from package <code>mgcv</code>).</p></dd>
+
+
 <dt>x</dt>
 <dd><p>Any R object.</p></dd>
+
+
 <dt>object</dt>
 <dd><p>An object of class <code>pamm</code> as returned by <code>pamm</code>.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -170,10 +183,10 @@ model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in"> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">complications</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3000</span>, by <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu">pamm</span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>, data <span class="op">=</span> <span class="va">ped</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">complications</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3000</span>, by <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu">pamm</span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>, data <span class="op">=</span> <span class="va">ped</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Family: poisson </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Link function: log </span>
@@ -196,11 +209,11 @@ model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> R-sq.(adj) =  -0.0232   Deviance explained = 1.87%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UBRE = -0.79402  Scale est. = 1         n = 1937</span>
-<span class="r-in"><span class="co">## Alternatively</span></span>
-<span class="r-in"><span class="fu">pamm</span><span class="op">(</span></span>
-<span class="r-in"> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>,</span>
-<span class="r-in"> data <span class="op">=</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span>,</span>
-<span class="r-in">trafo_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">complications</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co">## Alternatively</span></span></span>
+<span class="r-in"><span><span class="fu">pamm</span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>,</span></span>
+<span class="r-in"><span> data <span class="op">=</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>trafo_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">complications</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Family: poisson </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Link function: log </span>
@@ -226,7 +239,7 @@ model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

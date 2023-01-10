@@ -25,7 +25,7 @@ ci_upper (upper 95\"><meta property="og:image" content="https://adibender.github
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -120,18 +120,23 @@ ci_upper (upper 95\"><meta property="og:image" content="https://adibender.github
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">x</span>, intercept <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">x</span>, intercept <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A model object.</p></dd>
+
+
 <dt>intercept</dt>
 <dd><p>Logical, indicating whether intercept term should be included.
 Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Currently not used.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -140,11 +145,11 @@ Defaults to <code>FALSE</code>.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">Sepal.Width</span> <span class="op">+</span> <span class="va">Petal.Length</span> <span class="op">+</span> <span class="va">Petal.Width</span> <span class="op">+</span> <span class="va">Species</span>,</span>
-<span class="r-in"> data<span class="op">=</span><span class="va">iris</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">g</span>, intercept<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">Sepal.Width</span> <span class="op">+</span> <span class="va">Petal.Length</span> <span class="op">+</span> <span class="va">Petal.Width</span> <span class="op">+</span> <span class="va">Species</span>,</span></span>
+<span class="r-in"><span> data<span class="op">=</span><span class="va">iris</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">g</span>, intercept<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="gg_fixed-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">gg_fixed</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="gg_fixed-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -160,7 +165,7 @@ Defaults to <code>FALSE</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

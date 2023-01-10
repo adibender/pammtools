@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -144,7 +144,7 @@
       <h1 data-toc-skip>Recurrent Events</h1>
                         <h4 data-toc-skip class="author">Jordache Ramjith, Andreas Bender, Kit C.B. Roes &amp; Marianne A. Jonker</h4>
             
-            <h4 data-toc-skip class="date">2022-05-05</h4>
+            <h4 data-toc-skip class="date">2023-01-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/recurrent-events.Rmd" class="external-link"><code>vignettes/recurrent-events.Rmd</code></a></small>
       <div class="hidden name"><code>recurrent-events.Rmd</code></div>
@@ -158,11 +158,11 @@
 </h2>
 <p>We illustrate application of PAMMs in the analysis of the effect of HIV exposure on the time to staphylococcus aureaus infection in children, with possible recurrences. The children are anonymized and random <code>id</code>s were generated. The following packages are used in this analysis:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co">#data wrangling</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co">#visualization</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co">#data wrangling</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co">#visualization</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="time-until-staphylococcus-aureaus-infection-in-children">Time until staphylococcus aureaus infection in children<a class="anchor" aria-label="anchor" href="#time-until-staphylococcus-aureaus-infection-in-children"></a>
 </h3>
@@ -179,30 +179,30 @@
 <code>HIVexposure</code> indicates whether the mother of the child was HIV positive (1 = yes, 0 = no)</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"staph"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">staph</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span>
-<span class="co">##   id    t.start t.stop event  enum   hiv</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span> 1           0     16     1     1     0</span>
-<span class="co">## <span style="color: #BCBCBC;">2</span> 1          16    324     1     2     0</span>
-<span class="co">## <span style="color: #BCBCBC;">3</span> 1         324    365     0     3     0</span>
-<span class="co">## <span style="color: #BCBCBC;">4</span> 2           0     59     1     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;">5</span> 2          59    157     1     2     1</span>
-<span class="co">## <span style="color: #BCBCBC;">6</span> 2         157    227     1     3     1</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"staph"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">staph</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">##   id    t.start t.stop event  enum   hiv</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1           0     16     1     1     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1          16    324     1     2     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1         324    365     0     3     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2           0     59     1     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2          59    157     1     2     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2         157    227     1     3     1</span></span></code></pre>
 <p>The data for the first two children are</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">staph</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 7 × 6</span></span>
-<span class="co">##   id    t.start t.stop event  enum   hiv</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span> 1           0     16     1     1     0</span>
-<span class="co">## <span style="color: #BCBCBC;">2</span> 1          16    324     1     2     0</span>
-<span class="co">## <span style="color: #BCBCBC;">3</span> 1         324    365     0     3     0</span>
-<span class="co">## <span style="color: #BCBCBC;">4</span> 2           0     59     1     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;">5</span> 2          59    157     1     2     1</span>
-<span class="co">## <span style="color: #BCBCBC;">6</span> 2         157    227     1     3     1</span>
-<span class="co">## <span style="color: #BCBCBC;">7</span> 2         227    368     0     4     1</span></code></pre>
+<code class="sourceCode R"><span><span class="va">staph</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 7 × 6</span></span></span>
+<span><span class="co">##   id    t.start t.stop event  enum   hiv</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1           0     16     1     1     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1          16    324     1     2     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1         324    365     0     3     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 2           0     59     1     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 2          59    157     1     2     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 2         157    227     1     3     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span> 2         227    368     0     4     1</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="transformation-to-ped-format">Transformation to PED format<a class="anchor" aria-label="anchor" href="#transformation-to-ped-format"></a>
@@ -226,37 +226,37 @@
 <code>cut</code>: This argument is unspecified here, but could be used to control the time points at which the follow-up is partitioned. If unspecified, all unique event times are used as cut points.</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  formula     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">t.start</span>,<span class="va">t.stop</span>,<span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">hiv</span>,
-  id          <span class="op">=</span> <span class="st">"id"</span>,
-  data        <span class="op">=</span> <span class="va">staph</span>,
-  transition  <span class="op">=</span> <span class="st">"enum"</span>,
-  timescale   <span class="op">=</span> <span class="st">"gap"</span>,
-  max_time    <span class="op">=</span> <span class="fl">366</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
+<span>  formula     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">t.start</span>,<span class="va">t.stop</span>,<span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">hiv</span>,</span>
+<span>  id          <span class="op">=</span> <span class="st">"id"</span>,</span>
+<span>  data        <span class="op">=</span> <span class="va">staph</span>,</span>
+<span>  transition  <span class="op">=</span> <span class="st">"enum"</span>,</span>
+<span>  timescale   <span class="op">=</span> <span class="st">"gap"</span>,</span>
+<span>  max_time    <span class="op">=</span> <span class="fl">366</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting data for the first two infants is indicated below (we show the first and last observation of each infant for each event number they were at risk):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">enum</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 14 × 8</span></span>
-<span class="co">## <span style="color: #949494;"># Groups:   id, enum [7]</span></span>
-<span class="co">##    id    tstart  tend interval  offset ped_status   hiv  enum</span>
-<span class="co">##  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span> 1          0     1 (0,1]      0              0     0     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span> 1         15    16 (15,16]    0              1     0     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span> 1          0     1 (0,1]      0              0     0     2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span> 1        295   308 (295,308]  2.56           1     0     2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span> 1          0     1 (0,1]      0              0     0     3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span> 1         40    41 (40,41]    0              0     0     3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span> 2          0     1 (0,1]      0              0     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span> 2         57    59 (57,59]    0.693          1     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span> 2          0     1 (0,1]      0              0     1     2</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span> 2         97    98 (97,98]    0              1     1     2</span>
-<span class="co">## <span style="color: #BCBCBC;">11</span> 2          0     1 (0,1]      0              0     1     3</span>
-<span class="co">## <span style="color: #BCBCBC;">12</span> 2         69    70 (69,70]    0              1     1     3</span>
-<span class="co">## <span style="color: #BCBCBC;">13</span> 2          0     1 (0,1]      0              0     1     4</span>
-<span class="co">## <span style="color: #BCBCBC;">14</span> 2        140   141 (140,141]  0              0     1     4</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">enum</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 14 × 8</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Groups:   id, enum [7]</span></span></span>
+<span><span class="co">##    id    tstart  tend interval  offset ped_status   hiv  enum</span></span>
+<span><span class="co">##  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 1          0     1 (0,1]      0              0     0     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> 1         15    16 (15,16]    0              1     0     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> 1          0     1 (0,1]      0              0     0     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> 1        295   308 (295,308]  2.56           1     0     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> 1          0     1 (0,1]      0              0     0     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> 1         40    41 (40,41]    0              0     0     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> 2          0     1 (0,1]      0              0     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> 2         57    59 (57,59]    0.693          1     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> 2          0     1 (0,1]      0              0     1     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> 2         97    98 (97,98]    0              1     1     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span> 2          0     1 (0,1]      0              0     1     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">12</span> 2         69    70 (69,70]    0              1     1     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">13</span> 2          0     1 (0,1]      0              0     1     4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">14</span> 2        140   141 (140,141]  0              0     1     4</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="id">Baseline model<a class="anchor" aria-label="anchor" href="#id"></a>
@@ -266,8 +266,8 @@
 </h4>
 <p>We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced 3 or more events. Therefore, we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use <code>enum_strata</code> for stratification when estimating the baseline hazard.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">enum</span> <span class="op">&gt;</span> <span class="fl">1</span>,<span class="st">"recurrent"</span>,<span class="st">"first"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">enum</span> <span class="op">&gt;</span> <span class="fl">1</span>,<span class="st">"recurrent"</span>,<span class="st">"first"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Using this data, we fit the following model</p>
 <p><span class="math display">\[
 \lambda(t,k|z_i) = \exp(\beta_{0k} + f_{0,k}(t) + z_i),
@@ -286,79 +286,79 @@
 <code>s(id, bs = "re")</code> indicates a random effect (frailty) for each child.</li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pamm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">id</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,
-  data     <span class="op">=</span> <span class="va">ped</span>,
-  engine   <span class="op">=</span> <span class="st">"bam"</span>,
-  method   <span class="op">=</span> <span class="st">"fREML"</span>,
-  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pamm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span></span>
+<span>  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">id</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,</span>
+<span>  data     <span class="op">=</span> <span class="va">ped</span>,</span>
+<span>  engine   <span class="op">=</span> <span class="st">"bam"</span>,</span>
+<span>  method   <span class="op">=</span> <span class="st">"fREML"</span>,</span>
+<span>  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>As usual for <strong><code>mgcv</code></strong> objects, the resulting model summary output shown below is separated into two parts, one for the “parametric coefficients” and one for the “smooth terms”. In case of smooth terms, the estimated degrees of freedom (edf) gives us an idea of how “wiggly” the respective smooth functions are, and the p-values test whether overall these are different from a flat line <span class="citation">(Wood <a href="#ref-wood_p-values_2013" role="doc-biblioref">2013</a>)</span>. For the random effects terms, we report their estimated variances (<code>gam.vcomp</code>) and p-values (summary output). From the output, we see that the random effects are statistically insignificant <span class="math inline">\((p=0.249)\)</span>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## </span>
-<span class="co">## Family: poisson </span>
-<span class="co">## Link function: log </span>
-<span class="co">## </span>
-<span class="co">## Formula:</span>
-<span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + s(id, </span>
-<span class="co">##     bs = "re")</span>
-<span class="co">## </span>
-<span class="co">## Parametric coefficients:</span>
-<span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span>
-<span class="co">## (Intercept)           -4.9287     0.1213  -40.62  &lt; 2e-16 ***</span>
-<span class="co">## enum_stratarecurrent  -1.0991     0.1857   -5.92 3.23e-09 ***</span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## Approximate significance of smooth terms:</span>
-<span class="co">##                                 edf  Ref.df Chi.sq p-value    </span>
-<span class="co">## s(tend):enum_stratafirst      1.995   2.487  35.69 &lt; 2e-16 ***</span>
-<span class="co">## s(tend):enum_stratarecurrent  6.101   7.240  33.49 3.7e-05 ***</span>
-<span class="co">## s(id)                        14.052 136.000  15.17   0.249    </span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## R-sq.(adj) =  -0.0265   Deviance explained = -0.97%</span>
-<span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Family: poisson </span></span>
+<span><span class="co">## Link function: log </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Formula:</span></span>
+<span><span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + s(id, </span></span>
+<span><span class="co">##     bs = "re")</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Parametric coefficients:</span></span>
+<span><span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)           -4.9287     0.1213  -40.62  &lt; 2e-16 ***</span></span>
+<span><span class="co">## enum_stratarecurrent  -1.0991     0.1857   -5.92 3.23e-09 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Approximate significance of smooth terms:</span></span>
+<span><span class="co">##                                 edf  Ref.df Chi.sq p-value    </span></span>
+<span><span class="co">## s(tend):enum_stratafirst      1.995   2.487  35.69 &lt; 2e-16 ***</span></span>
+<span><span class="co">## s(tend):enum_stratarecurrent  6.101   7.240  33.49 3.7e-05 ***</span></span>
+<span><span class="co">## s(id)                        14.052 136.000  15.17   0.249    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## R-sq.(adj) =  -0.0265   Deviance explained = -0.97%</span></span>
+<span><span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></span></code></pre>
 <p>The standard deviation of the random effects is also relatively small and can be extracted using the <code>gam.vcomp</code> command:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.vcomp.html" class="external-link">gam.vcomp</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## </span>
-<span class="co">## Standard deviations and 0.95 confidence intervals:</span>
-<span class="co">## </span>
-<span class="co">##                                   std.dev        lower       upper</span>
-<span class="co">## s(tend):enum_stratafirst     0.0005741588 8.308116e-05 0.003967907</span>
-<span class="co">## s(tend):enum_stratarecurrent 0.0062687807 2.563565e-03 0.015329284</span>
-<span class="co">## s(id)                        0.2565797067 4.015591e-02 1.639438617</span>
-<span class="co">## </span>
-<span class="co">## Rank: 3/3</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.vcomp.html" class="external-link">gam.vcomp</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Standard deviations and 0.95 confidence intervals:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                                   std.dev        lower       upper</span></span>
+<span><span class="co">## s(tend):enum_stratafirst     0.0005741588 8.308116e-05 0.003967907</span></span>
+<span><span class="co">## s(tend):enum_stratarecurrent 0.0062687807 2.563565e-03 0.015329284</span></span>
+<span><span class="co">## s(id)                        0.2565797067 4.015591e-02 1.639438617</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Rank: 3/3</span></span></code></pre>
 <p>The results indicate that random effects are not required in this model. We therefore omit the random effects in the following.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pam0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">pamm0</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">id</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam0</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## </span>
-<span class="co">## Family: poisson </span>
-<span class="co">## Link function: log </span>
-<span class="co">## </span>
-<span class="co">## Formula:</span>
-<span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata)</span>
-<span class="co">## </span>
-<span class="co">## Parametric coefficients:</span>
-<span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span>
-<span class="co">## (Intercept)           -5.0624     0.1231 -41.124  &lt; 2e-16 ***</span>
-<span class="co">## enum_stratarecurrent  -0.8860     0.1801  -4.919 8.71e-07 ***</span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## Approximate significance of smooth terms:</span>
-<span class="co">##                                edf Ref.df Chi.sq  p-value    </span>
-<span class="co">## s(tend):enum_stratafirst     2.099  2.616  41.71  &lt; 2e-16 ***</span>
-<span class="co">## s(tend):enum_stratarecurrent 6.099  7.238  33.07 3.98e-05 ***</span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## R-sq.(adj) =  -0.0276   Deviance explained = -2.34%</span>
-<span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></code></pre>
+<code class="sourceCode R"><span><span class="va">pam0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">pamm0</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">id</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam0</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Family: poisson </span></span>
+<span><span class="co">## Link function: log </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Formula:</span></span>
+<span><span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Parametric coefficients:</span></span>
+<span><span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)           -5.0624     0.1231 -41.124  &lt; 2e-16 ***</span></span>
+<span><span class="co">## enum_stratarecurrent  -0.8860     0.1801  -4.919 8.71e-07 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Approximate significance of smooth terms:</span></span>
+<span><span class="co">##                                edf Ref.df Chi.sq  p-value    </span></span>
+<span><span class="co">## s(tend):enum_stratafirst     2.099  2.616  41.71  &lt; 2e-16 ***</span></span>
+<span><span class="co">## s(tend):enum_stratarecurrent 6.099  7.238  33.07 3.98e-05 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## R-sq.(adj) =  -0.0276   Deviance explained = -2.34%</span></span>
+<span><span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="estimates-over-time-and-visualization">Estimates over time and visualization<a class="anchor" aria-label="anchor" href="#estimates-over-time-and-visualization"></a>
@@ -372,40 +372,42 @@
 </ul>
 <p>Once the data is created and augmented with the predicted hazard, we can use standard visualization function to create the graphics:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>
-    tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>,
-    enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/add_hazard.html">add_hazard</a></span><span class="op">(</span><span class="va">pamm0</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Warning in warn_about_new_time_points.pamm(object, newdata, time_var): Time</span>
-<span class="co">## points/intervals in new data not equivalent to time points/intervals during</span>
-<span class="co">## model fit. Setting intervals to values not used for original fitcan invalidate</span>
-<span class="co">## the PEM assumption and yield incorrect predictions.</span></code></pre>
+<code class="sourceCode R"><span><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span></span>
+<span>    tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>,</span>
+<span>    enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_hazard.html">add_hazard</a></span><span class="op">(</span><span class="va">pamm0</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in warn_about_new_time_points.pamm(object, newdata, time_var): Time</span></span>
+<span><span class="co">## points/intervals in new data not equivalent to time points/intervals during</span></span>
+<span><span class="co">## model fit. Setting intervals to values not used for original fitcan invalidate</span></span>
+<span><span class="co">## the PEM assumption and yield incorrect predictions.</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">hazard</span><span class="op">*</span><span class="fl">365.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin  <span class="op">=</span> <span class="va">ci_lower</span><span class="op">*</span><span class="fl">365.25</span>, ymax <span class="op">=</span> <span class="va">ci_upper</span><span class="op">*</span><span class="fl">365.25</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Time (months)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12.5</span><span class="op">)</span>,breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">12</span>,<span class="fl">2</span><span class="op">)</span>,expand<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">enum_strata</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">hazard</span><span class="op">*</span><span class="fl">365.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin  <span class="op">=</span> <span class="va">ci_lower</span><span class="op">*</span><span class="fl">365.25</span>, ymax <span class="op">=</span> <span class="va">ci_upper</span><span class="op">*</span><span class="fl">365.25</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Time (months)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12.5</span><span class="op">)</span>,breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">12</span>,<span class="fl">2</span><span class="op">)</span>,expand<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">enum_strata</span><span class="op">)</span></span></code></pre></div>
 <p><img src="recurrent-events_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
 <p>We can see, that the hazard for the first event is high in the beginning and declines over time, as most children will have had the first infection after one year of life. Consequently, the hazard for recurrence is low in the beginning and increases over time before it flattens out after about two months.</p>
 <p>Calculation of survival probabilities works equivalently, except that we use the <code>add_surv_prob</code> function instead of <code>add_hazard</code>. Note that calculating the survival probability involves calculating a cumulative hazard. Thus, when there is a grouping structure in the data (here the different strata), we have to group by this variable before we calculate cumulative hazards or survival probabilities. Note also, that we use <code>geom_surv</code> in order to force the function to start at a survival probability of 1.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">newdata</span> <span class="op">&lt;-</span><span class="va">newdata</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/add_surv_prob.html">add_surv_prob</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Warning in warn_about_new_time_points.pamm(object, newdata, time_var): Time</span>
-<span class="co">## points/intervals in new data not equivalent to time points/intervals during</span>
-<span class="co">## model fit. Setting intervals to values not used for original fitcan invalidate</span>
-<span class="co">## the PEM assumption and yield incorrect predictions.</span></code></pre>
+<code class="sourceCode R"><span><span class="va">newdata</span> <span class="op">&lt;-</span><span class="va">newdata</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_surv_prob.html">add_surv_prob</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in warn_about_new_time_points.pamm(object, newdata, time_var): Time</span></span>
+<span><span class="co">## points/intervals in new data not equivalent to time points/intervals during</span></span>
+<span><span class="co">## model fit. Setting intervals to values not used for original fitcan invalidate</span></span>
+<span><span class="co">## the PEM assumption and yield incorrect predictions.</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">surv_prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="../reference/geom_hazard.html">geom_surv</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin  <span class="op">=</span> <span class="va">surv_lower</span>, ymax <span class="op">=</span> <span class="va">surv_upper</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Time (months)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">enum_strata</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">newdata</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span><span class="op">/</span><span class="op">(</span><span class="fl">365.25</span><span class="op">/</span><span class="fl">12</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">surv_prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_hazard.html">geom_surv</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin  <span class="op">=</span> <span class="va">surv_lower</span>, ymax <span class="op">=</span> <span class="va">surv_upper</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Time (months)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">enum_strata</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Unknown or uninitialised column: `linewidth`.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Unknown or uninitialised column: `size`.</span></span></code></pre>
 <p><img src="recurrent-events_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -416,78 +418,78 @@
 <div class="section level4">
 <h4 id="model-1">Model 1<a class="anchor" aria-label="anchor" href="#model-1"></a>
 </h4>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pam1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="va">hiv</span>,
-  data     <span class="op">=</span> <span class="va">ped</span>,
-  engine   <span class="op">=</span> <span class="st">"bam"</span>,
-  method   <span class="op">=</span> <span class="st">"fREML"</span>,
-  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam1</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## </span>
-<span class="co">## Family: poisson </span>
-<span class="co">## Link function: log </span>
-<span class="co">## </span>
-<span class="co">## Formula:</span>
-<span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv</span>
-<span class="co">## </span>
-<span class="co">## Parametric coefficients:</span>
-<span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span>
-<span class="co">## (Intercept)           -5.1351     0.1303 -39.416  &lt; 2e-16 ***</span>
-<span class="co">## enum_stratarecurrent  -0.8779     0.1801  -4.874 1.09e-06 ***</span>
-<span class="co">## hiv                    0.2681     0.1434   1.870   0.0615 .  </span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## Approximate significance of smooth terms:</span>
-<span class="co">##                                edf Ref.df Chi.sq  p-value    </span>
-<span class="co">## s(tend):enum_stratafirst     2.121  2.643  41.78  &lt; 2e-16 ***</span>
-<span class="co">## s(tend):enum_stratarecurrent 6.084  7.224  33.22 3.71e-05 ***</span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## R-sq.(adj) =  -0.0279   Deviance explained = -2.18%</span>
-<span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pam1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span></span>
+<span>  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="va">hiv</span>,</span>
+<span>  data     <span class="op">=</span> <span class="va">ped</span>,</span>
+<span>  engine   <span class="op">=</span> <span class="st">"bam"</span>,</span>
+<span>  method   <span class="op">=</span> <span class="st">"fREML"</span>,</span>
+<span>  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Family: poisson </span></span>
+<span><span class="co">## Link function: log </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Formula:</span></span>
+<span><span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Parametric coefficients:</span></span>
+<span><span class="co">##                      Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)           -5.1351     0.1303 -39.416  &lt; 2e-16 ***</span></span>
+<span><span class="co">## enum_stratarecurrent  -0.8779     0.1801  -4.874 1.09e-06 ***</span></span>
+<span><span class="co">## hiv                    0.2681     0.1434   1.870   0.0615 .  </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Approximate significance of smooth terms:</span></span>
+<span><span class="co">##                                edf Ref.df Chi.sq  p-value    </span></span>
+<span><span class="co">## s(tend):enum_stratafirst     2.121  2.643  41.78  &lt; 2e-16 ***</span></span>
+<span><span class="co">## s(tend):enum_stratarecurrent 6.084  7.224  33.22 3.71e-05 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## R-sq.(adj) =  -0.0279   Deviance explained = -2.18%</span></span>
+<span><span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></span></code></pre>
 <p>We can see that estimated effect of HIV exposure in terms of the hazard ratio is <span class="math inline">\(HR=\exp(0.2681)=1.31\;(p=0.062)\)</span>.</p>
 </div>
 <div class="section level4">
 <h4 id="model-2">Model 2<a class="anchor" aria-label="anchor" href="#model-2"></a>
 </h4>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span>
-  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="va">hiv</span><span class="op">:</span><span class="va">enum_strata</span>,
-  data     <span class="op">=</span> <span class="va">ped</span>,
-  engine   <span class="op">=</span> <span class="st">"bam"</span>,
-  method   <span class="op">=</span> <span class="st">"fREML"</span>,
-  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam2</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## </span>
-<span class="co">## Family: poisson </span>
-<span class="co">## Link function: log </span>
-<span class="co">## </span>
-<span class="co">## Formula:</span>
-<span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv:enum_strata</span>
-<span class="co">## </span>
-<span class="co">## Parametric coefficients:</span>
-<span class="co">##                          Estimate Std. Error z value Pr(&gt;|z|)    </span>
-<span class="co">## (Intercept)              -5.05753    0.13330 -37.940  &lt; 2e-16 ***</span>
-<span class="co">## enum_stratarecurrent     -1.03583    0.19753  -5.244 1.57e-07 ***</span>
-<span class="co">## enum_stratafirst:hiv     -0.02007    0.21300  -0.094  0.92493    </span>
-<span class="co">## enum_stratarecurrent:hiv  0.54272    0.19553   2.776  0.00551 ** </span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## Approximate significance of smooth terms:</span>
-<span class="co">##                                edf Ref.df Chi.sq  p-value    </span>
-<span class="co">## s(tend):enum_stratafirst     2.098  2.615  41.71  &lt; 2e-16 ***</span>
-<span class="co">## s(tend):enum_stratarecurrent 6.067  7.208  33.42 3.24e-05 ***</span>
-<span class="co">## ---</span>
-<span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">## </span>
-<span class="co">## R-sq.(adj) =  -0.0274   Deviance explained = -2.01%</span>
-<span class="co">## fREML =  18451  Scale est. = 1         n = 18889</span></code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span></span>
+<span>  formula  <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">enum_strata</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">enum_strata</span><span class="op">)</span> <span class="op">+</span> <span class="va">hiv</span><span class="op">:</span><span class="va">enum_strata</span>,</span>
+<span>  data     <span class="op">=</span> <span class="va">ped</span>,</span>
+<span>  engine   <span class="op">=</span> <span class="st">"bam"</span>,</span>
+<span>  method   <span class="op">=</span> <span class="st">"fREML"</span>,</span>
+<span>  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam2</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Family: poisson </span></span>
+<span><span class="co">## Link function: log </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Formula:</span></span>
+<span><span class="co">## ped_status ~ enum_strata + s(tend, by = enum_strata) + hiv:enum_strata</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Parametric coefficients:</span></span>
+<span><span class="co">##                          Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)              -5.05753    0.13330 -37.940  &lt; 2e-16 ***</span></span>
+<span><span class="co">## enum_stratarecurrent     -1.03583    0.19753  -5.244 1.57e-07 ***</span></span>
+<span><span class="co">## enum_stratafirst:hiv     -0.02007    0.21300  -0.094  0.92493    </span></span>
+<span><span class="co">## enum_stratarecurrent:hiv  0.54272    0.19553   2.776  0.00551 ** </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Approximate significance of smooth terms:</span></span>
+<span><span class="co">##                                edf Ref.df Chi.sq  p-value    </span></span>
+<span><span class="co">## s(tend):enum_stratafirst     2.098  2.615  41.71  &lt; 2e-16 ***</span></span>
+<span><span class="co">## s(tend):enum_stratarecurrent 6.067  7.208  33.42 3.24e-05 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## R-sq.(adj) =  -0.0274   Deviance explained = -2.01%</span></span>
+<span><span class="co">## fREML =  18451  Scale est. = 1         n = 18889</span></span></code></pre>
 <p>We can see that estimated effect of HIV exposure in terms of the hazard ratio is <span class="math inline">\(HR=\exp(-0.0201)=0.98\;(p=0.925)\)</span> for the first infection and <span class="math inline">\(HR=\exp(0.5427)=1.72\;(p=0.006)\)</span> for recurrent infections.</p>
 </div>
 </div>
@@ -520,7 +522,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

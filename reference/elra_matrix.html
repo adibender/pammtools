@@ -24,7 +24,7 @@ should usually not be called directly."><meta property="og:image" content="https
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -118,13 +118,13 @@ should usually not be called directly.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">make_time_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">nz</span><span class="op">)</span>
-
-<span class="fu">make_latency_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span><span class="op">)</span>
-
-<span class="fu">make_lag_lead_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span>, ll_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">)</span>
-
-<span class="fu">make_z_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">z_var</span>, <span class="va">nz</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_time_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">nz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">make_latency_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">make_lag_lead_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">tz</span>, ll_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">make_z_mat</span><span class="op">(</span><span class="va">data</span>, <span class="va">z_var</span>, <span class="va">nz</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -132,9 +132,12 @@ should usually not be called directly.</p>
     <dl><dt>data</dt>
 <dd><p>A data set (or similar) from which meta information on cut-points,
 interval-specific time, covariates etc. can be obtained.</p></dd>
+
+
 <dt>z_var</dt>
 <dd><p>Which should be transformed into functional covariate format
 suitable to fit cumulative effects in <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>.</p></dd>
+
 </dl></div>
 
   </div>
@@ -149,7 +152,7 @@ suitable to fit cumulative effects in <code><a href="https://rdrr.io/pkg/mgcv/ma
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

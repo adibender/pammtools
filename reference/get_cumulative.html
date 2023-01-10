@@ -25,7 +25,7 @@ matrices for time/latency etc."><meta property="og:image" content="https://adibe
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -120,9 +120,9 @@ matrices for time/latency etc.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_cumulative</span><span class="op">(</span><span class="va">data</span>, <span class="va">formula</span><span class="op">)</span>
-
-<span class="fu">expand_cumulative</span><span class="op">(</span><span class="va">data</span>, <span class="va">func</span>, <span class="va">n_func</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumulative</span><span class="op">(</span><span class="va">data</span>, <span class="va">formula</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">expand_cumulative</span><span class="op">(</span><span class="va">data</span>, <span class="va">func</span>, <span class="va">n_func</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -130,12 +130,17 @@ matrices for time/latency etc.</p>
     <dl><dt>data</dt>
 <dd><p>Data frame (or similar) in which variables specified in ...
 will be looked for</p></dd>
+
+
 <dt>formula</dt>
 <dd><p>A formula containing <code>cumulative</code> specials,
 that specify the type of cumulative effect one wants to estimate. For details
 see the vignettes on data transformation and time-dependent covariates.</p></dd>
+
+
 <dt>func</dt>
 <dd><p>Single evaluated <code><a href="specials.html">cumulative</a></code> term.</p></dd>
+
 </dl></div>
 
   </div>
@@ -150,7 +155,7 @@ see the vignettes on data transformation and time-dependent covariates.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

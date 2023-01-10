@@ -24,7 +24,7 @@ ggplot2 object."><meta property="og:image" content="https://adibender.github.io/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -118,42 +118,55 @@ ggplot2 object."><meta property="og:image" content="https://adibender.github.io/
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">tz</span>, <span class="va">ll_fun</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for LL_df</span>
-<span class="fu">gg_laglead</span><span class="op">(</span>
-  <span class="va">x</span>,
-  high_col <span class="op">=</span> <span class="st">"grey20"</span>,
-  low_col <span class="op">=</span> <span class="st">"whitesmoke"</span>,
-  grid_col <span class="op">=</span> <span class="st">"lightgrey"</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for nested_fdf</span>
-<span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">tz</span>, <span class="va">ll_fun</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for LL_df</span></span>
+<span><span class="fu">gg_laglead</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  high_col <span class="op">=</span> <span class="st">"grey20"</span>,</span>
+<span>  low_col <span class="op">=</span> <span class="st">"whitesmoke"</span>,</span>
+<span>  grid_col <span class="op">=</span> <span class="st">"lightgrey"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for nested_fdf</span></span>
+<span><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Either a numeric vector of follow-up cut points or a suitable object.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to methods.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p>A vector of exposure times</p></dd>
+
+
 <dt>ll_fun</dt>
 <dd><p>Function that specifies how the lag-lead matrix
 should be constructed. First argument is the follow up time
 second argument is the time of exposure.</p></dd>
+
+
 <dt>high_col</dt>
 <dd><p>Color used to highlight exposure times within the lag-lead window.</p></dd>
+
+
 <dt>low_col</dt>
 <dd><p>Color of exposure times outside the lag-lead window.</p></dd>
+
+
 <dt>grid_col</dt>
 <dd><p>Color of grid lines.</p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -162,14 +175,14 @@ second argument is the time of exposure.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Example 1: supply t, tz, ll_fun directly</span></span>
-<span class="r-in"> <span class="fu">gg_laglead</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>,</span>
-<span class="r-in">  ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Example 1: supply t, tz, ll_fun directly</span></span></span>
+<span class="r-in"><span> <span class="fu">gg_laglead</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, tz<span class="op">=</span><span class="op">-</span><span class="fl">5</span><span class="op">:</span><span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  ll_fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">{</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="gg_laglead-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Example 2: extract information on t, tz, ll_from data with respective attributes</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"simdf_elra"</span>, package <span class="op">=</span> <span class="st">"pammtools"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">simdf_elra</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Example 2: extract information on t, tz, ll_from data with respective attributes</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"simdf_elra"</span>, package <span class="op">=</span> <span class="st">"pammtools"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">gg_laglead</span><span class="op">(</span><span class="va">simdf_elra</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="gg_laglead-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -185,7 +198,7 @@ second argument is the time of exposure.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

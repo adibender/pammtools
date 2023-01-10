@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,34 +116,47 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_cumu_eff</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">z1</span>, z2 <span class="op">=</span> <span class="cn">NULL</span>, se_mult <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-
-<span class="fu">gg_cumu_eff</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">z1</span>, z2 <span class="op">=</span> <span class="cn">NULL</span>, se_mult <span class="op">=</span> <span class="fl">2</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumu_eff</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">z1</span>, z2 <span class="op">=</span> <span class="cn">NULL</span>, se_mult <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">gg_cumu_eff</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, <span class="va">term</span>, <span class="va">z1</span>, z2 <span class="op">=</span> <span class="cn">NULL</span>, se_mult <span class="op">=</span> <span class="fl">2</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p>Data used to fit the <code>model</code>.</p></dd>
+
+
 <dt>model</dt>
 <dd><p>A suitable model object which will be used to estimate the
 partial effect of <code>term</code>.</p></dd>
+
+
 <dt>term</dt>
 <dd><p>A character string indicating the model term for which partial
 effects should be plotted.</p></dd>
+
+
 <dt>z1</dt>
 <dd><p>The exposure profile for which to calculate the cumulative effect.
 Can be either a single number or a vector of same length as unique observation
 time points.</p></dd>
+
+
 <dt>z2</dt>
 <dd><p>If provided, calculated cumulative effect is for the difference
 between the two exposure profiles (g(z1,t)-g(z2,t)).</p></dd>
+
+
 <dt>se_mult</dt>
 <dd><p>Multiplicative factor used to calculate confidence intervals
 (e.g., lower = fit - 2*se).</p></dd>
+
+
 <dt>ci</dt>
 <dd><p>Logical. Indicates if confidence intervals for the <code>term</code>
 of interest should be calculated/plotted. Defaults to <code>TRUE</code>.</p></dd>
+
 </dl></div>
 
   </div>
@@ -158,7 +171,7 @@ of interest should be calculated/plotted. Defaults to <code>TRUE</code>.</p></dd
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

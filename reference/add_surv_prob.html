@@ -26,7 +26,7 @@ surv_lower, surv_upper if ci=TRUE)."><meta property="og:image" content="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -122,16 +122,16 @@ for the specified covariate and follow-up information (and CIs
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">add_surv_prob</span><span class="op">(</span>
-  <span class="va">newdata</span>,
-  <span class="va">object</span>,
-  ci <span class="op">=</span> <span class="cn">TRUE</span>,
-  se_mult <span class="op">=</span> <span class="fl">2</span>,
-  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,
-  time_var <span class="op">=</span> <span class="cn">NULL</span>,
-  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_surv_prob</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  se_mult <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -142,29 +142,44 @@ for the specified covariate and follow-up information (and CIs
                 original data are returned. If <code>newdata</code> is provided then
                 it should contain all the variables needed for prediction: a
                 warning is generated if not. See details for use with <code>link{linear.functional.terms}</code>.</p></dd>
+
+
 <dt>object</dt>
 <dd><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></dd>
+
+
 <dt>ci</dt>
 <dd><p><code>logical</code>. Indicates if confidence intervals should be
 calculated. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>se_mult</dt>
 <dd><p>Factor by which standard errors are multiplied for calculating
 the confidence intervals.</p></dd>
+
+
 <dt>overwrite</dt>
 <dd><p>Should hazard columns be overwritten if already present in
 the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with names
 <code>c("hazard", "se", "lower", "upper")</code> will be overwritten.</p></dd>
+
+
 <dt>time_var</dt>
 <dd><p>Name of the variable used for the baseline hazard. If
 not given, defaults to <code>"tend"</code> for <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code> fits, else
 <code>"interval"</code>. The latter is assumed to be a factor, the former
 numeric.</p></dd>
+
+
 <dt>interval_length</dt>
 <dd><p>The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code> and
 <code><a href="get_hazard.html">get_hazard</a></code></p></dd>
+
 </dl></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -174,9 +189,9 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,<span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span> <span class="va">age</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">+</span><span class="va">age</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="ped_info.html">ped_info</a></span><span class="op">(</span><span class="va">ped</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">add_surv_prob</span><span class="op">(</span><span class="va">pam</span>, ci<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,<span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span> <span class="va">age</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">+</span><span class="va">age</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="ped_info.html">ped_info</a></span><span class="op">(</span><span class="va">ped</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">add_surv_prob</span><span class="op">(</span><span class="va">pam</span>, ci<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -205,7 +220,7 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,20 +116,20 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">add_cif</span><span class="op">(</span><span class="va">newdata</span>, <span class="va">object</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">add_cif</span><span class="op">(</span>
-  <span class="va">newdata</span>,
-  <span class="va">object</span>,
-  ci <span class="op">=</span> <span class="cn">TRUE</span>,
-  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,
-  alpha <span class="op">=</span> <span class="fl">0.05</span>,
-  n_sim <span class="op">=</span> <span class="fl">500L</span>,
-  cause_var <span class="op">=</span> <span class="st">"cause"</span>,
-  time_var <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_cif</span><span class="op">(</span><span class="va">newdata</span>, <span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">add_cif</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  n_sim <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  cause_var <span class="op">=</span> <span class="st">"cause"</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -140,31 +140,48 @@
                 original data are returned. If <code>newdata</code> is provided then
                 it should contain all the variables needed for prediction: a
                 warning is generated if not. See details for use with <code>link{linear.functional.terms}</code>.</p></dd>
+
+
 <dt>object</dt>
 <dd><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code> and
 <code><a href="get_hazard.html">get_hazard</a></code></p></dd>
+
+
 <dt>ci</dt>
 <dd><p><code>logical</code>. Indicates if confidence intervals should be
 calculated. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>overwrite</dt>
 <dd><p>Should hazard columns be overwritten if already present in
 the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with names
 <code>c("hazard", "se", "lower", "upper")</code> will be overwritten.</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>The alpha level for confidence/credible intervals.</p></dd>
+
+
 <dt>n_sim</dt>
 <dd><p>Number of simulations (draws from posterior of estimated coefficients)
 on which estimation of CIFs and their confidence/credible intervals will be
 based on.</p></dd>
+
+
 <dt>cause_var</dt>
 <dd><p>Character. Column name of the 'cause' variable.</p></dd>
+
+
 <dt>time_var</dt>
 <dd><p>Name of the variable used for the baseline hazard. If
 not given, defaults to <code>"tend"</code> for <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code> fits, else
 <code>"interval"</code>. The latter is assumed to be a factor, the former
 numeric.</p></dd>
+
 </dl></div>
 
   </div>
@@ -179,7 +196,7 @@ numeric.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

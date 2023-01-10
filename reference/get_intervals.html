@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -116,10 +116,10 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_intervals</span><span class="op">(</span><span class="va">x</span>, <span class="va">times</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="co"># S3 method for default</span>
-<span class="fu">get_intervals</span><span class="op">(</span><span class="va">x</span>, <span class="va">times</span>, left.open <span class="op">=</span> <span class="cn">TRUE</span>, rightmost.closed <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_intervals</span><span class="op">(</span><span class="va">x</span>, <span class="va">times</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">get_intervals</span><span class="op">(</span><span class="va">x</span>, <span class="va">times</span>, left.open <span class="op">=</span> <span class="cn">TRUE</span>, rightmost.closed <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -127,24 +127,35 @@
     <dl><dt>x</dt>
 <dd><p>An object from which interval information can be obtained,
 see <code><a href="int_info.html">int_info</a></code>.</p></dd>
+
+
 <dt>times</dt>
 <dd><p>A vector of times for which corresponding interval information
 should be returned.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Further arguments passed to <code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval</a></code>.</p></dd>
+
+
 <dt>left.open</dt>
 <dd><p>logical; if true all the intervals are open at left
     and closed at right; in the formulas below, \(\le\) should be
     swapped with \(&lt;\) (and \(&gt;\) with \(\ge\)), and
     <code>rightmost.closed</code> means ‘leftmost is closed’.  This may
     be useful, e.g., in survival analysis computations.</p></dd>
+
+
 <dt>rightmost.closed</dt>
 <dd><p>logical; if true, the rightmost interval,
     <code>vec[N-1] .. vec[N]</code> is treated as <em>closed</em>, see below.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>data.frame</code> containing information on intervals in which
+    
+
+<p>A <code>data.frame</code> containing information on intervals in which
 values of <code>times</code> fall.</p>
     </div>
     <div id="see-also">
@@ -154,18 +165,18 @@ values of <code>times</code> fall.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">111018</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">brks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="int_info.html">int_info</a></span><span class="op">(</span><span class="va">brks</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">111018</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">brks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">30</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="int_info.html">int_info</a></span><span class="op">(</span><span class="va">brks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   tstart tend intlen intmid interval</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    0.0  4.5    4.5   2.25  (0,4.5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    4.5  5.0    0.5   4.75  (4.5,5]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3    5.0 10.0    5.0   7.50   (5,10]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4   10.0 30.0   20.0  20.00  (10,30]</span>
-<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">30</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">x</span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span> <span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">30</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 23.240596 22.575389  3.691534</span>
-<span class="r-in"><span class="fu">get_intervals</span><span class="op">(</span><span class="va">brks</span>, <span class="va">x</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">get_intervals</span><span class="op">(</span><span class="va">brks</span>, <span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       times tstart tend intlen intmid interval</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 23.240596     10 30.0   20.0  20.00  (10,30]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 22.575389     10 30.0   20.0  20.00  (10,30]</span>
@@ -184,7 +195,7 @@ values of <code>times</code> fall.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

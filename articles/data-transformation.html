@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Transformation</h1>
             
-            <h4 data-toc-skip class="date">2022-05-05</h4>
+            <h4 data-toc-skip class="date">2023-01-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/data-transformation.Rmd" class="external-link"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -153,9 +153,9 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span></code></pre></div>
 <p>In this vignette we provide details on transforming data into a format suitable to fit piece-wise exponential (additive) models (PAM). Three main cases need to be distinguished</p>
 <ol style="list-style-type: decimal">
 <li><p><a href="data-transformation.html#standard-time-to-event-data">Data without time-dependent covariates</a></p></li>
@@ -172,21 +172,22 @@
 </h3>
 <p>As an example data set we first consider a data set of a stomach area tumor available from the <strong><code>pammtools</code></strong> package. Patients were operated on to remove the tumor. Some patients experienced complications during the operation:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span>
-<span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 10</span></span>
-<span class="co">##      id  days status charlson_score   age sex    transfusion complications</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        </span>
-<span class="co">## <span style="color: #BCBCBC;">1</span>     1   579      0              2    58 female yes         no           </span>
-<span class="co">## <span style="color: #BCBCBC;">2</span>     2  <span style="text-decoration: underline;">1</span>192      0              2    52 male   no          yes          </span>
-<span class="co">## <span style="color: #BCBCBC;">3</span>     3   308      1              2    74 female yes         no           </span>
-<span class="co">## <span style="color: #BCBCBC;">4</span>     4    33      1              2    57 male   yes         yes          </span>
-<span class="co">## <span style="color: #BCBCBC;">5</span>     5   397      1              2    30 female yes         no           </span>
-<span class="co">## <span style="color: #BCBCBC;">6</span>     6  <span style="text-decoration: underline;">1</span>219      0              2    66 female yes         no           </span>
-<span class="co">## <span style="color: #949494;"># … with 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span></span>
+<span><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 10</span></span></span>
+<span><span class="co">##      id  days status charlson_score   age sex    trans…¹ compl…² metas…³ resec…⁴</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1   579      0              2    58 female yes     no      yes     no     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>     2  <span style="text-decoration: underline;">1</span>192      0              2    52 male   no      yes     yes     no     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>     3   308      1              2    74 female yes     no      yes     no     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>     4    33      1              2    57 male   yes     yes     yes     yes    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>     5   397      1              2    30 female yes     no      yes     yes    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>     6  <span style="text-decoration: underline;">1</span>219      0              2    66 female yes     no      yes     yes    </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​transfusion, ²​complications, ³​metastases,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ⁴​resection</span></span></span></code></pre>
 <p>Each row contains information on the survival time (<code>days</code>), an event indicator (<code>status</code>) as well as information about comorbidities (<code>charlson_score</code>), <code>age</code>, <code>sex</code>, and covariates that might be relevant like whether or not complications occurred (<code>complications</code>) and whether the cancer metastasized (<code>metastases</code>).</p>
 <p>To transform the data into piece-wise exponential data (<code>ped</code>) format, we need to</p>
 <ul>
@@ -195,33 +196,33 @@
 </ul>
 <p>Using the <code>pammtools</code> package this is easily achieved with the <code>as_ped</code> function as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##     id tstart tend interval    offset ped_status age  sex complications</span>
-<span class="co">## 1  132      0    1    (0,1] 0.0000000          0  78 male           yes</span>
-<span class="co">## 2  132      1    2    (1,2] 0.0000000          0  78 male           yes</span>
-<span class="co">## 3  132      2    3    (2,3] 0.0000000          0  78 male           yes</span>
-<span class="co">## 4  132      3    5    (3,5] 0.6931472          1  78 male           yes</span>
-<span class="co">## 5  141      0    1    (0,1] 0.0000000          0  79 male           yes</span>
-<span class="co">## 6  141      1    2    (1,2] 0.0000000          0  79 male           yes</span>
-<span class="co">## 7  141      2    3    (2,3] 0.0000000          0  79 male           yes</span>
-<span class="co">## 8  141      3    5    (3,5] 0.6931472          0  79 male           yes</span>
-<span class="co">## 9  141      5    6    (5,6] 0.0000000          0  79 male           yes</span>
-<span class="co">## 10 141      6    7    (6,7] 0.0000000          0  79 male           yes</span>
-<span class="co">## 11 141      7    8    (7,8] 0.0000000          0  79 male           yes</span>
-<span class="co">## 12 141      8   10   (8,10] 0.6931472          0  79 male           yes</span>
-<span class="co">## 13 141     10   11  (10,11] 0.0000000          0  79 male           yes</span>
-<span class="co">## 14 141     11   12  (11,12] 0.0000000          0  79 male           yes</span>
-<span class="co">## 15 141     12   13  (12,13] 0.0000000          0  79 male           yes</span>
-<span class="co">## 16 141     13   14  (13,14] 0.0000000          1  79 male           yes</span>
-<span class="co">## 17 145      0    1    (0,1] 0.0000000          0  60 male           yes</span>
-<span class="co">## 18 145      1    2    (1,2] 0.0000000          0  60 male           yes</span>
-<span class="co">## 19 145      2    3    (2,3] 0.0000000          0  60 male           yes</span>
-<span class="co">## 20 145      3    5    (3,5] 0.6931472          0  60 male           yes</span>
-<span class="co">## 21 145      5    6    (5,6] 0.0000000          0  60 male           yes</span>
-<span class="co">## 22 145      6    7    (6,7] 0.0000000          0  60 male           yes</span>
-<span class="co">## 23 145      7    8    (7,8] 0.0000000          1  60 male           yes</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
+<span><span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##     id tstart tend interval    offset ped_status age  sex complications</span></span>
+<span><span class="co">## 1  132      0    1    (0,1] 0.0000000          0  78 male           yes</span></span>
+<span><span class="co">## 2  132      1    2    (1,2] 0.0000000          0  78 male           yes</span></span>
+<span><span class="co">## 3  132      2    3    (2,3] 0.0000000          0  78 male           yes</span></span>
+<span><span class="co">## 4  132      3    5    (3,5] 0.6931472          1  78 male           yes</span></span>
+<span><span class="co">## 5  141      0    1    (0,1] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 6  141      1    2    (1,2] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 7  141      2    3    (2,3] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 8  141      3    5    (3,5] 0.6931472          0  79 male           yes</span></span>
+<span><span class="co">## 9  141      5    6    (5,6] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 10 141      6    7    (6,7] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 11 141      7    8    (7,8] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 12 141      8   10   (8,10] 0.6931472          0  79 male           yes</span></span>
+<span><span class="co">## 13 141     10   11  (10,11] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 14 141     11   12  (11,12] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 15 141     12   13  (12,13] 0.0000000          0  79 male           yes</span></span>
+<span><span class="co">## 16 141     13   14  (13,14] 0.0000000          1  79 male           yes</span></span>
+<span><span class="co">## 17 145      0    1    (0,1] 0.0000000          0  60 male           yes</span></span>
+<span><span class="co">## 18 145      1    2    (1,2] 0.0000000          0  60 male           yes</span></span>
+<span><span class="co">## 19 145      2    3    (2,3] 0.0000000          0  60 male           yes</span></span>
+<span><span class="co">## 20 145      3    5    (3,5] 0.6931472          0  60 male           yes</span></span>
+<span><span class="co">## 21 145      5    6    (5,6] 0.0000000          0  60 male           yes</span></span>
+<span><span class="co">## 22 145      6    7    (6,7] 0.0000000          0  60 male           yes</span></span>
+<span><span class="co">## 23 145      7    8    (7,8] 0.0000000          1  60 male           yes</span></span></code></pre>
 <p>When no cut points are specified, the default is to use the unique event times. As can be seen from the above output, the function creates an <code>id</code> variable, indicating the subjects <span class="math inline">\(i = 1,\ldots,n\)</span>, with one row per interval that the subject “visited”. Thus,</p>
 <ul>
 <li>subject <code>132</code> was at risk during 4 intervals,</li>
@@ -247,28 +248,29 @@
 <p>Per default, the <code>as_ped</code> function uses all unique event times as cut points (which is a sensible default as for example the (cumulative) baseline hazard estimates in Cox-PH functions are also updated at event times). Also, PAMMs represent the baseline hazard via splines whose basis functions are evaluated at the cut points. Using unique events times automatically increases the density of cut points in relevant areas of the follow-up.</p>
 <p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 3, \kappa_2 = 7, \kappa_3 = 15\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">15</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="va">ped2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    id tstart tend interval    offset ped_status age  sex complications</span>
-<span class="co">## 1 132      0    3    (0,3] 1.0986123          0  78 male           yes</span>
-<span class="co">## 2 132      3    7    (3,7] 0.6931472          1  78 male           yes</span>
-<span class="co">## 3 141      0    3    (0,3] 1.0986123          0  79 male           yes</span>
-<span class="co">## 4 141      3    7    (3,7] 1.3862944          0  79 male           yes</span>
-<span class="co">## 5 141      7   15   (7,15] 1.9459101          1  79 male           yes</span>
-<span class="co">## 6 145      0    3    (0,3] 1.0986123          0  60 male           yes</span>
-<span class="co">## 7 145      3    7    (3,7] 1.3862944          0  60 male           yes</span>
-<span class="co">## 8 145      7   15   (7,15] 0.0000000          1  60 male           yes</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">15</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
+<span><span class="va">ped2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tstart</span>, <span class="va">tend</span>, <span class="va">interval</span>, <span class="va">offset</span>, <span class="va">ped_status</span>, <span class="va">age</span>, <span class="va">sex</span>, <span class="va">complications</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    id tstart tend interval    offset ped_status age  sex complications</span></span>
+<span><span class="co">## 1 132      0    3    (0,3] 1.0986123          0  78 male           yes</span></span>
+<span><span class="co">## 2 132      3    7    (3,7] 0.6931472          1  78 male           yes</span></span>
+<span><span class="co">## 3 141      0    3    (0,3] 1.0986123          0  79 male           yes</span></span>
+<span><span class="co">## 4 141      3    7    (3,7] 1.3862944          0  79 male           yes</span></span>
+<span><span class="co">## 5 141      7   15   (7,15] 1.9459101          1  79 male           yes</span></span>
+<span><span class="co">## 6 145      0    3    (0,3] 1.0986123          0  60 male           yes</span></span>
+<span><span class="co">## 7 145      3    7    (3,7] 1.3862944          0  60 male           yes</span></span>
+<span><span class="co">## 8 145      7   15   (7,15] 0.0000000          1  60 male           yes</span></span></code></pre>
 <p>Note that now subjects <code>141</code> and <code>145</code> have both three rows in the data set. The fact that subject <code>141</code> was in the risk set of the last interval for a longer time than subject <code>145</code> is, however, still accounted for by the <code>offset</code> variable. Note that the <code>offset</code> for subject <code>145</code> is only <code>0</code>, because the last interval for this subject starts at <span class="math inline">\(t=7\)</span> and the subject experienced and event at <span class="math inline">\(t=8\)</span>, thus <span class="math inline">\(\log(8-7) = 0\)</span></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 2 × 10</span></span>
-<span class="co">##      id  days status charlson_score   age sex    transfusion complications</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        </span>
-<span class="co">## <span style="color: #BCBCBC;">1</span>    85   126      1              2    64 female yes         no           </span>
-<span class="co">## <span style="color: #BCBCBC;">2</span>   112   888      0              5    71 male   yes         no           </span>
-<span class="co">## <span style="color: #949494;"># … with 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 10</span></span></span>
+<span><span class="co">##      id  days status charlson_score   age sex    trans…¹ compl…² metas…³ resec…⁴</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>    85   126      1              2    64 female yes     no      yes     no     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>   112   888      0              5    71 male   yes     no      yes     yes    </span></span>
+<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​transfusion, ²​complications, ³​metastases,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ⁴​resection</span></span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -277,37 +279,37 @@
 <p>In left truncated data, subjects enter the risk set at some time-point unequal to zero. Such data usually ships in the so called start-stop notation, where for each subject the start time specifies the left-truncation time (can also be 0) and the stop time the time-to-event, which can be right-censored.</p>
 <p>For an illustration, we use a data set on infant mortality and maternal death available in the <strong><code>eha</code></strong> package (see <code><a href="http://ehar.se/r/eha/reference/infants.html" class="external-link">?eha::infants</a></code>) for details.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">infants</span>, package <span class="op">=</span> <span class="st">"eha"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">infants</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##   stratum enter exit event mother age  sex      parish   civst    ses year</span>
-<span class="co">## 1       1    55  365     0   dead  26  boy Nedertornea married farmer 1877</span>
-<span class="co">## 2       1    55  365     0  alive  26  boy Nedertornea married farmer 1870</span>
-<span class="co">## 3       1    55  365     0  alive  26  boy Nedertornea married farmer 1882</span>
-<span class="co">## 4       2    13   76     1   dead  23 girl Nedertornea married  other 1847</span>
-<span class="co">## 5       2    13  365     0  alive  23 girl Nedertornea married  other 1847</span>
-<span class="co">## 6       2    13  365     0  alive  23 girl Nedertornea married  other 1848</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">infants</span>, package <span class="op">=</span> <span class="st">"eha"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">infants</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   stratum enter exit event mother age  sex      parish   civst    ses year</span></span>
+<span><span class="co">## 1       1    55  365     0   dead  26  boy Nedertornea married farmer 1877</span></span>
+<span><span class="co">## 2       1    55  365     0  alive  26  boy Nedertornea married farmer 1870</span></span>
+<span><span class="co">## 3       1    55  365     0  alive  26  boy Nedertornea married farmer 1882</span></span>
+<span><span class="co">## 4       2    13   76     1   dead  23 girl Nedertornea married  other 1847</span></span>
+<span><span class="co">## 5       2    13  365     0  alive  23 girl Nedertornea married  other 1847</span></span>
+<span><span class="co">## 6       2    13  365     0  alive  23 girl Nedertornea married  other 1848</span></span></code></pre>
 <p>As children were included in the study after death of their mother, their survival time is left-truncated at the entry time (variable <code>enter</code>). When transforming such data to the PED format, we need to create a interval cut-point at each entry time. In general, each interval has to be constructed such that only subjects already at risk have an entry in the PED data. The previously introduced function <code>as_ped</code> can be also used for this setting, however, the LHS of the formula must be in start-stop format:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">infants_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">mother</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span>
-<span class="va">infants_ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    id tstart tend interval    offset ped_status mother age</span>
-<span class="co">## 1   4     13   14  (13,14] 0.0000000          0   dead  23</span>
-<span class="co">## 2   4     14   16  (14,16] 0.6931472          0   dead  23</span>
-<span class="co">## 3   4     16   17  (16,17] 0.0000000          0   dead  23</span>
-<span class="co">## 4   4     17   18  (17,18] 0.0000000          0   dead  23</span>
-<span class="co">## 5   4     18   22  (18,22] 1.3862944          0   dead  23</span>
-<span class="co">## 6   4     22   24  (22,24] 0.6931472          0   dead  23</span>
-<span class="co">## 7   4     24   28  (24,28] 1.3862944          0   dead  23</span>
-<span class="co">## 8   4     28   29  (28,29] 0.0000000          0   dead  23</span>
-<span class="co">## 9   4     29   30  (29,30] 0.0000000          0   dead  23</span>
-<span class="co">## 10  4     30   31  (30,31] 0.0000000          0   dead  23</span>
-<span class="co">## 11  4     31   36  (31,36] 1.6094379          0   dead  23</span>
-<span class="co">## 12  4     36   39  (36,39] 1.0986123          0   dead  23</span>
-<span class="co">## 13  4     39   44  (39,44] 1.6094379          0   dead  23</span>
-<span class="co">## 14  4     44   53  (44,53] 2.1972246          0   dead  23</span>
-<span class="co">## 15  4     53   55  (53,55] 0.6931472          0   dead  23</span>
-<span class="co">## 16  4     55   62  (55,62] 1.9459101          0   dead  23</span>
-<span class="co">## 17  4     62   76  (62,76] 2.6390573          1   dead  23</span></code></pre>
+<code class="sourceCode R"><span><span class="va">infants_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">mother</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span></span>
+<span><span class="va">infants_ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##    id tstart tend interval    offset ped_status mother age</span></span>
+<span><span class="co">## 1   4     13   14  (13,14] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 2   4     14   16  (14,16] 0.6931472          0   dead  23</span></span>
+<span><span class="co">## 3   4     16   17  (16,17] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 4   4     17   18  (17,18] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 5   4     18   22  (18,22] 1.3862944          0   dead  23</span></span>
+<span><span class="co">## 6   4     22   24  (22,24] 0.6931472          0   dead  23</span></span>
+<span><span class="co">## 7   4     24   28  (24,28] 1.3862944          0   dead  23</span></span>
+<span><span class="co">## 8   4     28   29  (28,29] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 9   4     29   30  (29,30] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 10  4     30   31  (30,31] 0.0000000          0   dead  23</span></span>
+<span><span class="co">## 11  4     31   36  (31,36] 1.6094379          0   dead  23</span></span>
+<span><span class="co">## 12  4     36   39  (36,39] 1.0986123          0   dead  23</span></span>
+<span><span class="co">## 13  4     39   44  (39,44] 1.6094379          0   dead  23</span></span>
+<span><span class="co">## 14  4     44   53  (44,53] 2.1972246          0   dead  23</span></span>
+<span><span class="co">## 15  4     53   55  (53,55] 0.6931472          0   dead  23</span></span>
+<span><span class="co">## 16  4     55   62  (55,62] 1.9459101          0   dead  23</span></span>
+<span><span class="co">## 17  4     62   76  (62,76] 2.6390573          1   dead  23</span></span></code></pre>
 <p>For analysis of such data refer to the <a href="left-truncation.html">Left-truncation vignette</a></p>
 </div>
 <div class="section level2">
@@ -317,22 +319,22 @@
 <p>We assume that the data is provided in two data sets, one that contains time-to-event data and time-constant covariates and one data set that contains information of time-dependent covariates.</p>
 <p>For illustration, we use the <code>pbc</code> data from the <code>survival</code> package. Before the actual data transformation we perform the data preprocessing in <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package="survival")</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbc"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># loads pbc and pbcseq</span>
-<span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>status <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span>, <span class="va">bili</span>, <span class="va">protime</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbc"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># loads pbc and pbcseq</span></span>
+<span><span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>status <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span>, <span class="va">bili</span>, <span class="va">protime</span><span class="op">)</span></span></code></pre></div>
 <p>We want to transform the data such that we could fit a concurrent effect of the time-dependent covariates <code>bili</code> and <code>protime</code>, therefore, the RHS of the formula passed to <code>as_ped</code> needs to contain an additional component, separated by <code>|</code> and all variables for which should be transformed to the concurrent format specified within the <code>concurrent</code> special. The data sets are provided within a list. In <code>concurrent</code>, we also have to specify the name of the variable which stores information on the time points at which the TDCs are updated.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped_pbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,
-  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, <span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span>,
-  id      <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ped_pbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
+<span>  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, <span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span>,</span>
+<span>  id      <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span></code></pre></div>
 <p>Multiple data sets can be provided within the list and multiple <code>concurrent</code> terms with different <code>tz_var</code> arguments can be specified with different lags. This will increase the data set, as an (additional) split point will be generated for each (lagged) time-point at which the TDC was observed:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pbc_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,
-  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span>, lag <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,
-    id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbc_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span>, lag <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span></code></pre></div>
 <p>If different <code>tz_var</code> arguments are provided, the union of both will be used as cut points in addition to usual cut points.</p>
 <p><strong>Warning</strong>: For time-points on the follow up that have no observation of the TDC, the last observation will be carried forward until the next update is available.</p>
 </div>
@@ -407,73 +409,73 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </h3>
 <p>For illustration we use the ICU patients data sets <code>patient</code> and <code>daily</code> provided in the <strong><code>pammtools</code></strong> package, with follow-up time <code>survhosp</code> (<span class="math inline">\(t\)</span>), exposure time <code>Study_Day</code> (<span class="math inline">\(t_z\)</span>) and TDCs <code>caloriesPercentage</code> <span class="math inline">\(\mathbf{z}_1\)</span> and <code>proteinGproKG</code> (<span class="math inline">\(\mathbf{z}_2\)</span>):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">patient</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##   Year CombinedicuID CombinedID Survdays PatientDied survhosp Gender Age</span>
-<span class="co">## 1 2007          1114       1110     30.1           0     30.1   Male  68</span>
-<span class="co">## 2 2007          1114       1111     30.1           0     30.1 Female  57</span>
-<span class="co">## 3 2007          1114       1116      9.8           1      9.8 Female  68</span>
-<span class="co">## 4 2007           598       1316     30.1           0     30.1   Male  47</span>
-<span class="co">## 5 2007           365       1410     30.1           0     30.1   Male  69</span>
-<span class="co">## 6 2007           365       1414     30.1           0      5.4   Male  47</span>
-<span class="co">##            AdmCatID ApacheIIScore      BMI           DiagID2</span>
-<span class="co">## 1 Surgical Elective            20 31.60321   Cardio-Vascular</span>
-<span class="co">## 2           Medical            22 24.34176       Respiratory</span>
-<span class="co">## 3 Surgical Elective            25 17.99308   Cardio-Vascular</span>
-<span class="co">## 4           Medical            16 33.74653 Orthopedic/Trauma</span>
-<span class="co">## 5 Surgical Elective            20 38.75433       Respiratory</span>
-<span class="co">## 6           Medical            21 45.00622       Respiratory</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">patient</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   Year CombinedicuID CombinedID Survdays PatientDied survhosp Gender Age</span></span>
+<span><span class="co">## 1 2007          1114       1110     30.1           0     30.1   Male  68</span></span>
+<span><span class="co">## 2 2007          1114       1111     30.1           0     30.1 Female  57</span></span>
+<span><span class="co">## 3 2007          1114       1116      9.8           1      9.8 Female  68</span></span>
+<span><span class="co">## 4 2007           598       1316     30.1           0     30.1   Male  47</span></span>
+<span><span class="co">## 5 2007           365       1410     30.1           0     30.1   Male  69</span></span>
+<span><span class="co">## 6 2007           365       1414     30.1           0      5.4   Male  47</span></span>
+<span><span class="co">##            AdmCatID ApacheIIScore      BMI           DiagID2</span></span>
+<span><span class="co">## 1 Surgical Elective            20 31.60321   Cardio-Vascular</span></span>
+<span><span class="co">## 2           Medical            22 24.34176       Respiratory</span></span>
+<span><span class="co">## 3 Surgical Elective            25 17.99308   Cardio-Vascular</span></span>
+<span><span class="co">## 4           Medical            16 33.74653 Orthopedic/Trauma</span></span>
+<span><span class="co">## 5 Surgical Elective            20 38.75433       Respiratory</span></span>
+<span><span class="co">## 6           Medical            21 45.00622       Respiratory</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">daily</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span>
-<span class="co">##   CombinedID Study_Day caloriesPercentage proteinGproKG</span>
-<span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span>       <span style="text-decoration: underline;">1</span>110         1               0            0    </span>
-<span class="co">## <span style="color: #BCBCBC;">2</span>       <span style="text-decoration: underline;">1</span>110         2               0            0    </span>
-<span class="co">## <span style="color: #BCBCBC;">3</span>       <span style="text-decoration: underline;">1</span>110         3               4.05         0    </span>
-<span class="co">## <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">1</span>110         4              35.1          0.259</span>
-<span class="co">## <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">1</span>110         5              77.2          0.647</span>
-<span class="co">## <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">1</span>110         6              17.3          0</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">daily</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">##   CombinedID Study_Day caloriesPercentage proteinGproKG</span></span>
+<span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>       <span style="text-decoration: underline;">1</span>110         1               0            0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>       <span style="text-decoration: underline;">1</span>110         2               0            0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>       <span style="text-decoration: underline;">1</span>110         3               4.05         0    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">1</span>110         4              35.1          0.259</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">1</span>110         5              77.2          0.647</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">1</span>110         6              17.3          0</span></span></code></pre>
 <p>Below we illustrate the usage of <code>as_ped</code> and <code>cumulative</code> to obtain covariate matrices for the latency matrix of follow up time and exposure time and a matrix of the TDC (<code>caloriesPercentage</code>). The follow up will be split in 30 intervals with interval breaks points <code>0:30</code>. By default, the exposure time provided to <code>tz_var</code> will be used as a suffix for the names of the new matrix columns to indicate the exposure they refer to, however, you can override the suffix by specifying the <code>suffix</code> argument to <code>cumulative</code>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,
-  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="va">PatientDied</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span>
-    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">Study_Day</span><span class="op">)</span>, <span class="va">caloriesPercentage</span>, tz_var <span class="op">=</span> <span class="st">"Study_Day"</span><span class="op">)</span>,
-  cut     <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">30</span>,
-  id <span class="op">=</span> <span class="st">"CombinedID"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  18 variables:</span>
-<span class="co">##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...</span>
-<span class="co">##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...</span>
-<span class="co">##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...</span>
-<span class="co">##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...</span>
-<span class="co">##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...</span>
-<span class="co">##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...</span>
-<span class="co">##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...</span>
-<span class="co">##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...</span>
-<span class="co">##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...</span>
-<span class="co">##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...</span>
-<span class="co">##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
-<span class="co">##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...</span>
-<span class="co">##  - attr(*, "breaks")= int [1:31] 0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  - attr(*, "id_var")= chr "CombinedID"</span>
-<span class="co">##  - attr(*, "intvars")= chr [1:6] "CombinedID" "tstart" "tend" "interval" ...</span>
-<span class="co">##  - attr(*, "trafo_args")=List of 3</span>
-<span class="co">##  - attr(*, "time_var")= chr "survhosp"</span>
-<span class="co">##  - attr(*, "status_var")= chr "PatientDied"</span>
-<span class="co">##  - attr(*, "func")=List of 1</span>
-<span class="co">##  - attr(*, "ll_funs")=List of 1</span>
-<span class="co">##  - attr(*, "tz")=List of 1</span>
-<span class="co">##  - attr(*, "tz_vars")=List of 1</span>
-<span class="co">##  - attr(*, "ll_weights")=List of 1</span>
-<span class="co">##  - attr(*, "func_mat_names")=List of 1</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
+<span>  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="va">PatientDied</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">Study_Day</span><span class="op">)</span>, <span class="va">caloriesPercentage</span>, tz_var <span class="op">=</span> <span class="st">"Study_Day"</span><span class="op">)</span>,</span>
+<span>  cut     <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  id <span class="op">=</span> <span class="st">"CombinedID"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  18 variables:</span></span>
+<span><span class="co">##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...</span></span>
+<span><span class="co">##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...</span></span>
+<span><span class="co">##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...</span></span>
+<span><span class="co">##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...</span></span>
+<span><span class="co">##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...</span></span>
+<span><span class="co">##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...</span></span>
+<span><span class="co">##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...</span></span>
+<span><span class="co">##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
+<span><span class="co">##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  - attr(*, "breaks")= int [1:31] 0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  - attr(*, "id_var")= chr "CombinedID"</span></span>
+<span><span class="co">##  - attr(*, "intvars")= chr [1:6] "CombinedID" "tstart" "tend" "interval" ...</span></span>
+<span><span class="co">##  - attr(*, "trafo_args")=List of 3</span></span>
+<span><span class="co">##  - attr(*, "time_var")= chr "survhosp"</span></span>
+<span><span class="co">##  - attr(*, "status_var")= chr "PatientDied"</span></span>
+<span><span class="co">##  - attr(*, "func")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "ll_funs")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "tz")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "tz_vars")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "ll_weights")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "func_mat_names")=List of 1</span></span></code></pre>
 <p>As you can see, the data is transformed to the PED format as before and two additional matrix columns are added, <code>Study_Day_latency</code> and <code>caloriesPercentage</code>.<br> </p>
 </div>
 <div class="section level3">
@@ -481,105 +483,105 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </h3>
 <p>Using the same data, we show a slightly more complex example with two functional covariate terms with partial effects <span class="math inline">\(h(t, t-t_z, z_1(t_z))\)</span> and <span class="math inline">\(h(t-t_z, z_2(t_z))\)</span>. As in the case of ICU patient data, both TDCs were observed on the same exposure time grid, we want to use the same lag-lead window and the latency term <span class="math inline">\(t-t_z\)</span> occurs in both partial effects, we only need to specify one <code>cumulative</code> term.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,
-  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="va">PatientDied</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span>
-    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="fu">latency</span><span class="op">(</span><span class="va">Study_Day</span><span class="op">)</span>, <span class="va">caloriesPercentage</span>, <span class="va">proteinGproKG</span>,
-      tz_var <span class="op">=</span> <span class="st">"Study_Day"</span><span class="op">)</span>,
-  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">30</span>,
-  id <span class="op">=</span> <span class="st">"CombinedID"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  20 variables:</span>
-<span class="co">##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...</span>
-<span class="co">##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...</span>
-<span class="co">##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...</span>
-<span class="co">##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...</span>
-<span class="co">##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...</span>
-<span class="co">##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...</span>
-<span class="co">##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...</span>
-<span class="co">##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...</span>
-<span class="co">##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...</span>
-<span class="co">##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ survhosp_mat      : int [1:37258, 1:12] 0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...</span>
-<span class="co">##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
-<span class="co">##  $ proteinGproKG     : num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
-<span class="co">##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...</span>
-<span class="co">##  - attr(*, "breaks")= int [1:31] 0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  - attr(*, "id_var")= chr "CombinedID"</span>
-<span class="co">##  - attr(*, "intvars")= chr [1:6] "CombinedID" "tstart" "tend" "interval" ...</span>
-<span class="co">##  - attr(*, "trafo_args")=List of 3</span>
-<span class="co">##  - attr(*, "time_var")= chr "survhosp"</span>
-<span class="co">##  - attr(*, "status_var")= chr "PatientDied"</span>
-<span class="co">##  - attr(*, "func")=List of 1</span>
-<span class="co">##  - attr(*, "ll_funs")=List of 1</span>
-<span class="co">##  - attr(*, "tz")=List of 1</span>
-<span class="co">##  - attr(*, "tz_vars")=List of 1</span>
-<span class="co">##  - attr(*, "ll_weights")=List of 1</span>
-<span class="co">##  - attr(*, "func_mat_names")=List of 1</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="va">PatientDied</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="va">survhosp</span>, <span class="fu">latency</span><span class="op">(</span><span class="va">Study_Day</span><span class="op">)</span>, <span class="va">caloriesPercentage</span>, <span class="va">proteinGproKG</span>,</span>
+<span>      tz_var <span class="op">=</span> <span class="st">"Study_Day"</span><span class="op">)</span>,</span>
+<span>  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  id <span class="op">=</span> <span class="st">"CombinedID"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Classes 'fped', 'ped' and 'data.frame':  37258 obs. of  20 variables:</span></span>
+<span><span class="co">##  $ CombinedID        : int  1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 ...</span></span>
+<span><span class="co">##  $ tstart            : num  0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  $ tend              : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ interval          : Factor w/ 30 levels "(0,1]","(1,2]",..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ offset            : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ ped_status        : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ Year              : Factor w/ 4 levels "2007","2008",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ CombinedicuID     : Factor w/ 456 levels "21","24","25",..: 355 355 355 355 355 355 355 355 355 355 ...</span></span>
+<span><span class="co">##  $ Survdays          : num  30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 30.1 ...</span></span>
+<span><span class="co">##  $ Gender            : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ Age               : int  68 68 68 68 68 68 68 68 68 68 ...</span></span>
+<span><span class="co">##  $ AdmCatID          : Factor w/ 3 levels "Medical","Surgical Elective",..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ ApacheIIScore     : int  20 20 20 20 20 20 20 20 20 20 ...</span></span>
+<span><span class="co">##  $ BMI               : num  31.6 31.6 31.6 31.6 31.6 ...</span></span>
+<span><span class="co">##  $ DiagID2           : Factor w/ 9 levels "Gastrointestinal",..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ survhosp_mat      : int [1:37258, 1:12] 0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  $ Study_Day_latency : num [1:37258, 1:12] 0 0 1 2 3 4 5 6 7 8 ...</span></span>
+<span><span class="co">##  $ caloriesPercentage: num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
+<span><span class="co">##  $ proteinGproKG     : num [1:37258, 1:12] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
+<span><span class="co">##  $ LL                : num [1:37258, 1:12] 0 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  - attr(*, "breaks")= int [1:31] 0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  - attr(*, "id_var")= chr "CombinedID"</span></span>
+<span><span class="co">##  - attr(*, "intvars")= chr [1:6] "CombinedID" "tstart" "tend" "interval" ...</span></span>
+<span><span class="co">##  - attr(*, "trafo_args")=List of 3</span></span>
+<span><span class="co">##  - attr(*, "time_var")= chr "survhosp"</span></span>
+<span><span class="co">##  - attr(*, "status_var")= chr "PatientDied"</span></span>
+<span><span class="co">##  - attr(*, "func")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "ll_funs")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "tz")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "tz_vars")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "ll_weights")=List of 1</span></span>
+<span><span class="co">##  - attr(*, "func_mat_names")=List of 1</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="multiple-tdcs-observed-at-different-exposure-time-grids">Multiple TDCs observed at different exposure time grids<a class="anchor" aria-label="anchor" href="#multiple-tdcs-observed-at-different-exposure-time-grids"></a>
 </h3>
 <p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simdf_elra</span></code></pre></div>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 250 × 9</span></span>
-<span class="co">##       id   time status      x1    x2 tz1        z.tz1      tz2        z.tz2     </span>
-<span class="co">##  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    </span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>     1  3.22       1  1.59   4.61  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>     2 10          0 -<span style="color: #BB0000;">0.530</span>  0.178 <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>     3  0.808      1 -<span style="color: #BB0000;">2.43</span>   3.25  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>     4  3.04       1  0.696  1.26  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>     5  3.36       1  2.54   3.71  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>     6  4.07       1 -<span style="color: #BB0000;">0.023</span><span style="color: #BB0000; text-decoration: underline;">1</span> 0.607 <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>     7  0.534      1  1.68   1.74  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>     8  1.57       1 -<span style="color: #BB0000;">1.89</span>   2.51  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>     9  2.39       1  0.126  3.38  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>    10  6.61       1  1.79   1.06  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span>
-<span class="co">## <span style="color: #949494;"># … with 240 more rows</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">simdf_elra</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 250 × 9</span></span></span>
+<span><span class="co">##       id   time status      x1    x2 tz1        z.tz1      tz2        z.tz2     </span></span>
+<span><span class="co">##  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>     1  3.22       1  1.59   4.61  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>     2 10          0 -<span style="color: #BB0000;">0.530</span>  0.178 <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>     3  0.808      1 -<span style="color: #BB0000;">2.43</span>   3.25  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>     4  3.04       1  0.696  1.26  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>     5  3.36       1  2.54   3.71  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>     6  4.07       1 -<span style="color: #BB0000;">0.023</span><span style="color: #BB0000; text-decoration: underline;">1</span> 0.607 <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>     7  0.534      1  1.68   1.74  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>     8  1.57       1 -<span style="color: #BB0000;">1.89</span>   2.51  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     9  2.39       1  0.126  3.38  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>    10  6.61       1  1.79   1.06  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 240 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Warning: `cols` is now required when using unnest().</span>
-<span class="co">## Please use `cols = c(tz1)`</span></code></pre>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 10 × 2</span></span>
-<span class="co">##       id   tz1</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>     1     2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>     1     3</span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>     1     4</span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>     1     5</span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>     1     6</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>     1     7</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>     1     8</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     9</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>     1    10</span></code></pre>
+<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `cols` is now required when using unnest().</span></span>
+<span><span class="co">## Please use `cols = c(tz1)`</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
+<span><span class="co">##       id   tz1</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>     1     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>     1     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>     1     4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>     1     5</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>     1     6</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>     1     7</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>     1     8</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     9</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>     1    10</span></span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Warning: `cols` is now required when using unnest().</span>
-<span class="co">## Please use `cols = c(tz2)`</span></code></pre>
-<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 11 × 2</span></span>
-<span class="co">##       id   tz2</span>
-<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 1</span>     1    -<span style="color: #BB0000;">5</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 2</span>     1    -<span style="color: #BB0000;">4</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 3</span>     1    -<span style="color: #BB0000;">3</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 4</span>     1    -<span style="color: #BB0000;">2</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 5</span>     1    -<span style="color: #BB0000;">1</span></span>
-<span class="co">## <span style="color: #BCBCBC;"> 6</span>     1     0</span>
-<span class="co">## <span style="color: #BCBCBC;"> 7</span>     1     1</span>
-<span class="co">## <span style="color: #BCBCBC;"> 8</span>     1     2</span>
-<span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     3</span>
-<span class="co">## <span style="color: #BCBCBC;">10</span>     1     4</span>
-<span class="co">## <span style="color: #BCBCBC;">11</span>     1     5</span></code></pre>
+<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `cols` is now required when using unnest().</span></span>
+<span><span class="co">## Please use `cols = c(tz2)`</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 11 × 2</span></span></span>
+<span><span class="co">##       id   tz2</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>     1    -<span style="color: #BB0000;">5</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>     1    -<span style="color: #BB0000;">4</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>     1    -<span style="color: #BB0000;">3</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>     1    -<span style="color: #BB0000;">2</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>     1    -<span style="color: #BB0000;">1</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>     1     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>     1     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>     1     2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     3</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>     1     4</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span>     1     5</span></span></code></pre>
 <p>Note that <code>tz1</code> has a maximum length of 10, while <code>tz2</code> has a maximum length of <code>11</code> and while <code>tz1</code> was observed during the follow up, <code>tz2</code> was partially observed before the beginning of the follow up.</p>
 <p>If we wanted to estimate the following cumulative effects</p>
 <ul>
@@ -589,47 +591,47 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </ul>
 <p>with <span class="math inline">\(\mathcal{T}_1(t) = \{t_z: t \geq t_z + 2\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_z: t \geq s_z\}\)</span> the data transformation function must reflect the different exposure times as well as different lag-lead window specifications as illustrated below:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ped_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">simdf_elra</span>,
-  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span>
-    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="va">time</span>, <span class="fu">latency</span><span class="op">(</span><span class="va">tz1</span><span class="op">)</span>, <span class="va">z.tz1</span>, tz_var <span class="op">=</span> <span class="st">"tz1"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">tz2</span><span class="op">)</span>, <span class="va">z.tz2</span>, tz_var <span class="op">=</span> <span class="st">"tz2"</span><span class="op">)</span>,
-  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span>,
-  id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped_sim</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Classes 'fped', 'ped' and 'data.frame':  1004 obs. of  15 variables:</span>
-<span class="co">##  $ id          : int  1 1 1 1 2 2 2 2 2 2 ...</span>
-<span class="co">##  $ tstart      : num  0 1 2 3 0 1 2 3 4 5 ...</span>
-<span class="co">##  $ tend        : int  1 2 3 4 1 2 3 4 5 6 ...</span>
-<span class="co">##  $ interval    : Factor w/ 10 levels "(0,1]","(1,2]",..: 1 2 3 4 1 2 3 4 5 6 ...</span>
-<span class="co">##  $ offset      : num  0 0 0 -1.53 0 ...</span>
-<span class="co">##  $ ped_status  : num  0 0 0 1 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ x1          : num  1.59 1.59 1.59 1.59 -0.53 ...</span>
-<span class="co">##  $ x2          : num  4.612 4.612 4.612 4.612 0.178 ...</span>
-<span class="co">##  $ time_tz1_mat: int [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...</span>
-<span class="co">##  $ tz1_latency : num [1:1004, 1:10] 0 0 1 2 0 0 1 2 3 4 ...</span>
-<span class="co">##  $ z.tz1_tz1   : num [1:1004, 1:10] -2.014 -2.014 -2.014 -2.014 -0.978 ...</span>
-<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
-<span class="co">##  $ LL_tz1      : num [1:1004, 1:10] 0 1 1 1 0 1 1 1 1 1 ...</span>
-<span class="co">##  $ tz2_latency : num [1:1004, 1:11] 5 6 7 8 5 6 7 8 9 10 ...</span>
-<span class="co">##  $ z.tz2_tz2   : num [1:1004, 1:11] -0.689 -0.689 -0.689 -0.689 0.693 ...</span>
-<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
-<span class="co">##  $ LL_tz2      : num [1:1004, 1:11] 1 1 1 1 1 1 1 1 1 1 ...</span>
-<span class="co">##  - attr(*, "breaks")= int [1:11] 0 1 2 3 4 5 6 7 8 9 ...</span>
-<span class="co">##  - attr(*, "id_var")= chr "id"</span>
-<span class="co">##  - attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span>
-<span class="co">##  - attr(*, "trafo_args")=List of 3</span>
-<span class="co">##  - attr(*, "time_var")= chr "time"</span>
-<span class="co">##  - attr(*, "status_var")= chr "status"</span>
-<span class="co">##  - attr(*, "func")=List of 2</span>
-<span class="co">##  - attr(*, "ll_funs")=List of 2</span>
-<span class="co">##  - attr(*, "tz")=List of 2</span>
-<span class="co">##  - attr(*, "tz_vars")=List of 2</span>
-<span class="co">##  - attr(*, "ll_weights")=List of 2</span>
-<span class="co">##  - attr(*, "func_mat_names")=List of 2</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ped_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">simdf_elra</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="va">time</span>, <span class="fu">latency</span><span class="op">(</span><span class="va">tz1</span><span class="op">)</span>, <span class="va">z.tz1</span>, tz_var <span class="op">=</span> <span class="st">"tz1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/specials.html">cumulative</a></span><span class="op">(</span><span class="fu">latency</span><span class="op">(</span><span class="va">tz2</span><span class="op">)</span>, <span class="va">z.tz2</span>, tz_var <span class="op">=</span> <span class="st">"tz2"</span><span class="op">)</span>,</span>
+<span>  cut <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">10</span>,</span>
+<span>  id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped_sim</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Classes 'fped', 'ped' and 'data.frame':  1004 obs. of  15 variables:</span></span>
+<span><span class="co">##  $ id          : int  1 1 1 1 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ tstart      : num  0 1 2 3 0 1 2 3 4 5 ...</span></span>
+<span><span class="co">##  $ tend        : int  1 2 3 4 1 2 3 4 5 6 ...</span></span>
+<span><span class="co">##  $ interval    : Factor w/ 10 levels "(0,1]","(1,2]",..: 1 2 3 4 1 2 3 4 5 6 ...</span></span>
+<span><span class="co">##  $ offset      : num  0 0 0 -1.53 0 ...</span></span>
+<span><span class="co">##  $ ped_status  : num  0 0 0 1 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ x1          : num  1.59 1.59 1.59 1.59 -0.53 ...</span></span>
+<span><span class="co">##  $ x2          : num  4.612 4.612 4.612 4.612 0.178 ...</span></span>
+<span><span class="co">##  $ time_tz1_mat: int [1:1004, 1:10] 0 1 2 3 0 1 2 3 4 5 ...</span></span>
+<span><span class="co">##  $ tz1_latency : num [1:1004, 1:10] 0 0 1 2 0 0 1 2 3 4 ...</span></span>
+<span><span class="co">##  $ z.tz1_tz1   : num [1:1004, 1:10] -2.014 -2.014 -2.014 -2.014 -0.978 ...</span></span>
+<span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
+<span><span class="co">##  $ LL_tz1      : num [1:1004, 1:10] 0 1 1 1 0 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ tz2_latency : num [1:1004, 1:11] 5 6 7 8 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ z.tz2_tz2   : num [1:1004, 1:11] -0.689 -0.689 -0.689 -0.689 0.693 ...</span></span>
+<span><span class="co">##   ..- attr(*, "dimnames")=List of 2</span></span>
+<span><span class="co">##  $ LL_tz2      : num [1:1004, 1:11] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  - attr(*, "breaks")= int [1:11] 0 1 2 3 4 5 6 7 8 9 ...</span></span>
+<span><span class="co">##  - attr(*, "id_var")= chr "id"</span></span>
+<span><span class="co">##  - attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span></span>
+<span><span class="co">##  - attr(*, "trafo_args")=List of 3</span></span>
+<span><span class="co">##  - attr(*, "time_var")= chr "time"</span></span>
+<span><span class="co">##  - attr(*, "status_var")= chr "status"</span></span>
+<span><span class="co">##  - attr(*, "func")=List of 2</span></span>
+<span><span class="co">##  - attr(*, "ll_funs")=List of 2</span></span>
+<span><span class="co">##  - attr(*, "tz")=List of 2</span></span>
+<span><span class="co">##  - attr(*, "tz_vars")=List of 2</span></span>
+<span><span class="co">##  - attr(*, "ll_weights")=List of 2</span></span>
+<span><span class="co">##  - attr(*, "func_mat_names")=List of 2</span></span></code></pre>
 <p>Note how the matrix covariates associated with <code>tz1</code> have 10 columns while matrix covariates associated with <code>tz2</code> have 11 columns. Note also that the lag-lead matrices differ</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="va">ped_sim</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="va">ped_sim</span><span class="op">)</span></span></code></pre></div>
 <p><img src="data-transformation_files/figure-html/unnamed-chunk-17-1.png" width="600px" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -667,7 +669,7 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
