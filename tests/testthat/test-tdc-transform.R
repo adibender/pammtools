@@ -21,8 +21,8 @@ test_that("Concurrent TDC are transformed correctly", {
       concurrent(bili, protime, tz_var = "day"), id = "id")
   expect_equal(unique(ped$tend), c(176, 182, 192, 364, 365, 400, 743, 768, 1012))
   expect_equal(ped$bili,
-    c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
-      1.9, 1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
+               c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
+                 1.9, 1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
   # lag != 0
   ped <- as_ped(
     data    = list(event_df, tdc_df),
@@ -33,8 +33,8 @@ test_that("Concurrent TDC are transformed correctly", {
     unique(ped$tend),
     sort(c(time, tz + 10)))
   expect_equal(ped$bili,
-    c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
-      1.9, 1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
+               c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1, 3),
+                 1.9, 1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
   # unequal lags
   ped <- as_ped(
     data    = list(event_df, tdc_df),
@@ -51,7 +51,7 @@ test_that("Concurrent TDC are transformed correctly", {
   expect_equal(ped$protime,
                c(rep(12.2, 4), rep(11.2, 6), rep(10.6, 2), rep(11, 5),
                  rep(11.6, 6), rep(10.6, 2), rep(12, 11), rep(13.3, 4)))
-# when maxtime is set
+  # when maxtime is set
   ped <- as_ped(
     data    = list(event_df, tdc_df),
     formula = Surv(time, status)~. + concurrent(bili, protime, tz_var = "day"),
@@ -59,8 +59,8 @@ test_that("Concurrent TDC are transformed correctly", {
     max_time = 1400)
   expect_equal(unique(ped$tend), sort(c(time, tz, 1400)))
   expect_equal(ped$bili,
-    c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1.0, 3), rep(1.9, 2),
-      1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
+               c(rep(14.5, 3), rep(21.3, 3), rep(1.1, 2), rep(0.8, 3), rep(1.0, 3), rep(1.9, 2),
+                 1.4, rep(1.1, 3), rep(1.5, 3), rep(1.8, 2)))
 })
 
 test_that("Covariate matrices are created correctly", {
@@ -91,10 +91,62 @@ test_that("Covariate matrices are created correctly", {
   expect_equal(LLmat[3, ], c(rep(0, 2), rep(1, 6), rep(0, 3)))
   expect_equal(max(Ltmat * LLmat), 5)
   ped <- as_ped(data,
-      Surv(time, status) ~ . +
-      cumulative(z.tz2, latency(tz2), tz_var = "tz2",
-        ll_fun = function(t, tz) (t - tz) >= 0 & (t - tz) <= 5),
-      cut = 0:2)
+                Surv(time, status) ~ . +
+                  cumulative(z.tz2, latency(tz2), tz_var = "tz2",
+                             ll_fun = function(t, tz) (t - tz) >= 0 & (t - tz) <= 5),
+                cut = 0:2)
   expect_equal(max(ped$tz2_latency * ped$LL), 5)
-
+  
 })
+
+
+test_that("Concurrent TDC (for recurrent events) aborts when data has no baseline value", {
+  
+  test_event_df <- data.frame(
+    id     = c(1,1,1, 2,2),
+    tstart = c(0, 100, 250, 0, 300),
+    tstop  = c(100, 250, 600, 300, 750),
+    status = c(1, 1, 1, 1, 0),
+    enum   = c(1, 2, 3, 1, 2))
+  test_tdc_df <- data.frame(id  = rep(c(1, 2), times = c(6, 7)),
+                            tz  = c(seq(100, 600, by = 100),
+                                    seq(100, 700, by = 100)),
+                            ztz = c(5, 4, 6, 3, 8, 7,
+                                    3, 4, 4.5, 5, 6, 3, 4))
+  test_df <- list(test_event_df, test_tdc_df)
+  
+  expect_error(as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status) ~ enum + concurrent(ztz, tz_var = "tz"),
+    transition = "enum",
+    id         = "id",
+    timescale  = "gap"), "add baseline")         
+})
+
+test_that("Cumulative TDC (for recurrent events) aborts when TDCs are recorded 
+          at different tz times for each individual", {
+            
+            test_event_df <- data.frame(
+              id     = c(1,1,1, 2,2),
+              tstart = c(0, 100, 250, 0, 300),
+              tstop  = c(100, 250, 600, 300, 750),
+              status = c(1, 1, 1, 1, 0),
+              enum   = c(1, 2, 3, 1, 2))
+            test_tdc_df <- data.frame(id  = rep(c(1, 2), times = c(6, 7)),
+                                      tz  = c(seq(100, 600, by = 100),
+                                              seq(100, 400, by = 100), 450, 500,
+                                              600),
+                                      ztz = c(5, 4, 6, 3, 8, 7,
+                                              3, 4, 4.5, 5, 6, 3, 4))
+            test_df <- list(test_event_df, test_tdc_df)
+            test_formula <- Surv(tstart, tstop, status) ~ 
+              enum + cumulative(latency(tz), ztz, tz_var = "tz", 
+                                ll_fun = function(t, tz) t >= tz)
+            expect_error(as_ped(
+              data       = test_df,
+              formula    = test_formula,
+              transition = "enum",
+              id         = "id",
+              timescale  = "gap"), "at same tz times")         
+          }
+)
