@@ -3,19 +3,10 @@
 #' t_mat[1,2] <- "-1 - sin(x2)"
 #' t_mat[1,3] <- "-1.3 + 0.1*x2*x3"
 #' t_mat[2,3] <- "-1.5 + 0.8*x1 + 0.3*x2 - 0.1*x3"
-#' get_possible_transitions(t_mat)
 #' @keywords internal
 from_to_pairs <- function(t_mat) {
 
 
-  n         <- nrow(t_mat)
-  from      <- rep(seq_len(n), times = n)
-  to        <- rep(seq_len(n), each = n)
-  ind_avail <- which(!is.na(t_mat))
-  from      <- from[ind_avail]
-  to        <- to[ind_avail]
-
-  list(from = from[order(from)], to = to[order(from)])
 
 }
 
@@ -23,19 +14,27 @@ from_to_pairs <- function(t_mat) {
 #' ftp <- from_to_pairs2(t_mat)
 from_to_pairs2 <- function(t_mat) {
 
-  res <- apply(t_mat, 1, function(x) which(!is.na(x)))
-  names(res) <- rownames(t_mat)
+  res <- apply(t_mat, 1, function(x) which(x) - 1)
+  names(res) <- seq_len(nrow(t_mat)) - 1
+  res <- res[vapply(res, length, 0) != 0]
 
   res
 
 }
 
+from_to_pairs.data.frame <- function(data, from_col = "from", to_col = "to") {
 
-get_transitions <- function(from_to_list) {
-
-  map_chr(from_to_list, ~paste0(.x, " -> ", .y))
+  map(
+    .x = sort(unique(data[[from_col]])),
+    .f = ~{
+      data %>%
+        filter(.data[[from_col]] == .x) %>%
+        pull(to_col) %>%
+        unique()
+    })
 
 }
+
 
 #' Add counterfactual observations for possible transitions
 #'
@@ -62,16 +61,11 @@ add_counterfactual_transitions <- function(
   to_col         = "to",
   transition_col = "transition") {
 
-  if(length(from_to_pairs) == 0L) {
-    from_to_pairs <- map(
-      .x = unique(data[[from_col]]),
-      .f = ~{
-        data %>% filter(.data[[from_col]] == .x) %>%
-          pull(to_col) %>%
-          unique()
-      })
+
+  if(length(from_to_pairs) == 0) {
+    from_to_pairs <- from_to_pairs.data.frame(data, from_col, to_col) %>%
+      discard(~length(.x) == 0)
   }
-  from_to_pairs <- from_to_pairs %>% discard(~length(.x) == 0)
 
   l_from <- split(data, data[[from_col]])
 
