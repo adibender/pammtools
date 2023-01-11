@@ -18,7 +18,7 @@ citEntry(
   textVersion = "Andreas Bender, Andreas Groll and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling.",
   journal = "Statistical Modelling",
   year = "2018",
-  url = "https://journals.sagepub.com/doi/10.1177/1471082X17748083"
+  url = "https://doi.org/10.1177/1471082X17748083"
 )
 
 citEntry(

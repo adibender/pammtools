@@ -1,5 +1,5 @@
 ## Test environments
-* Local Ubuntu Linux R 4.1.2
+* Local Ubuntu Linux R 4.2.0
 * R release with Travis CI
 * Appveyor (patched)
 * win-builder
@@ -12,4 +12,4 @@
 No problems.
 
 ## Comments
-Some minor updates
+Fixed an issue were direction argument was ignored in geom_stepribbon
