@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Transformation</h1>
             
-            <h4 data-toc-skip class="date">2023-01-10</h4>
+            <h4 data-toc-skip class="date">2023-03-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/data-transformation.Rmd" class="external-link"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -174,20 +174,19 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span></span>
 <span><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ranking.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 10</span></span></span>
-<span><span class="co">##      id  days status charlson_score   age sex    trans…¹ compl…² metas…³ resec…⁴</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1   579      0              2    58 female yes     no      yes     no     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>     2  <span style="text-decoration: underline;">1</span>192      0              2    52 male   no      yes     yes     no     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>     3   308      1              2    74 female yes     no      yes     no     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>     4    33      1              2    57 male   yes     yes     yes     yes    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>     5   397      1              2    30 female yes     no      yes     yes    </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span>     6  <span style="text-decoration: underline;">1</span>219      0              2    66 female yes     no      yes     yes    </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​transfusion, ²​complications, ³​metastases,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ⁴​resection</span></span></span></code></pre>
+<span><span class="co">##      id  days status charlson_score   age sex    transfusion complications</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1   579      0              2    58 female yes         no           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>     2  <span style="text-decoration: underline;">1</span>192      0              2    52 male   no          yes          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>     3   308      1              2    74 female yes         no           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>     4    33      1              2    57 male   yes         yes          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>     5   397      1              2    30 female yes         no           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>     6  <span style="text-decoration: underline;">1</span>219      0              2    66 female yes         no           </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span></span></code></pre>
 <p>Each row contains information on the survival time (<code>days</code>), an event indicator (<code>status</code>) as well as information about comorbidities (<code>charlson_score</code>), <code>age</code>, <code>sex</code>, and covariates that might be relevant like whether or not complications occurred (<code>complications</code>) and whether the cancer metastasized (<code>metastases</code>).</p>
 <p>To transform the data into piece-wise exponential data (<code>ped</code>) format, we need to</p>
 <ul>
@@ -265,19 +264,18 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 10</span></span></span>
-<span><span class="co">##      id  days status charlson_score   age sex    trans…¹ compl…² metas…³ resec…⁴</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>    85   126      1              2    64 female yes     no      yes     no     </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>   112   888      0              5    71 male   yes     no      yes     yes    </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable names ¹​transfusion, ²​complications, ³​metastases,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   ⁴​resection</span></span></span></code></pre>
+<span><span class="co">##      id  days status charlson_score   age sex    transfusion complications</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>    85   126      1              2    64 female yes         no           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>   112   888      0              5    71 male   yes         no           </span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
 <h2 id="left-truncated-data">Left-truncated Data<a class="anchor" aria-label="anchor" href="#left-truncated-data"></a>
 </h2>
 <p>In left truncated data, subjects enter the risk set at some time-point unequal to zero. Such data usually ships in the so called start-stop notation, where for each subject the start time specifies the left-truncation time (can also be 0) and the stop time the time-to-event, which can be right-censored.</p>
-<p>For an illustration, we use a data set on infant mortality and maternal death available in the <strong><code>eha</code></strong> package (see <code><a href="http://ehar.se/r/eha/reference/infants.html" class="external-link">?eha::infants</a></code>) for details.</p>
+<p>For an illustration, we use a data set on infant mortality and maternal death available in the <strong><code>eha</code></strong> package (see <code><a href="https://ehar.se/r/eha/reference/infants.html" class="external-link">?eha::infants</a></code>) for details.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">infants</span>, package <span class="op">=</span> <span class="st">"eha"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">infants</span><span class="op">)</span></span></code></pre></div>
@@ -546,11 +544,11 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span>     8  1.57       1 -<span style="color: #BB0000;">1.89</span>   2.51  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     9  2.39       1  0.126  3.38  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>    10  6.61       1  1.79   1.06  <span style="color: #949494;">&lt;int [10]&gt;</span> <span style="color: #949494;">&lt;dbl [10]&gt;</span> <span style="color: #949494;">&lt;int [11]&gt;</span> <span style="color: #949494;">&lt;dbl [11]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 240 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 240 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: `cols` is now required when using unnest().</span></span>
-<span><span class="co">## Please use `cols = c(tz1)`</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `cols` is now required when using `unnest()`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Please use `cols = c(tz1)`.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
 <span><span class="co">##       id   tz1</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
@@ -565,9 +563,9 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     9</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>     1    10</span></span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: `cols` is now required when using unnest().</span></span>
-<span><span class="co">## Please use `cols = c(tz2)`</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">simdf_elra</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">tz2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `cols` is now required when using `unnest()`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Please use `cols = c(tz2)`.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 11 × 2</span></span></span>
 <span><span class="co">##       id   tz2</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>

@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Frailty and random effects</h1>
             
-            <h4 data-toc-skip class="date">2023-01-10</h4>
+            <h4 data-toc-skip class="date">2023-03-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/frailty.Rmd" class="external-link"><code>vignettes/frailty.Rmd</code></a></small>
       <div class="hidden name"><code>frailty.Rmd</code></div>
@@ -217,9 +217,6 @@
 <p>The <code>pammtools</code> package also provides a convenience function for a quantile-quantile plot of the estimated frailties to check the Gaussian assumption:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_re.html">gg_re</a></span><span class="op">(</span><span class="va">pamm_icu</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Computation failed in `stat_qq()`</span></span>
-<span><span class="co">## Caused by error in `distribution()`:</span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> could not find function "distribution"</span></span></code></pre>
 <p><img src="frailty_files/figure-html/unnamed-chunk-5-1.png" width="384" style="display: block; margin: auto;"></p>
 <p>Note that the <code>pamm</code> function calls <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> by default. Depending on the requirements for the random effect estimation, other mixed modeling software might be more appropriate/efficient, e.g. <strong><code>nlme</code></strong>, <strong><code>lme4</code></strong>, <strong><code>gamm4</code></strong> or for example using function <code><a href="https://rdrr.io/pkg/mgcv/man/gamm.html" class="external-link">mgcv::gamm</a></code>.</p>
 </div>
