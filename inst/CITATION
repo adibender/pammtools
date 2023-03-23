@@ -2,7 +2,7 @@ citHeader("Citation information for 1) the Software 2) the tutorial on PAMMs 3)
 paper on cumulative effects/exposure-lag-response associations:")
 
 
-citEntry(entry = "Article",
+bibentry(entry = "Article",
   author = "Andreas Bender and Fabian Scheipl",
   title = "pammtools: Piece-wise exponential Additive Mixed Modeling tools",
   year = "2018",
@@ -11,7 +11,7 @@ citEntry(entry = "Article",
   exponential additive mixed modeling tools. arXiv:1806.01042 [stat]",
   url = "https://arxiv.org/abs/1806.01042")
 
-citEntry(
+bibentry(
   entry = "Article",
   author = "Andreas Bender and Andreas Groll and Fabian Scheipl",
   title = "A generalized additive model approach to time-to-event analysis",
@@ -21,7 +21,7 @@ citEntry(
   url = "https://doi.org/10.1177/1471082X17748083"
 )
 
-citEntry(
+bibentry(
   entry = "Article",
   author = "Bender, Andreas and Scheipl, Fabian and Hartl, Wolfgang and Day, Andrew G and K\u00fcchenhoff, Helmut",
   title = "Penalized estimation of complex, non-linear exposure-lag-response associations",
