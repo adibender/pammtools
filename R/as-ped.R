@@ -53,57 +53,57 @@ as_ped <- function(data, ...) {
 #' @rdname as_ped
 #' @export
 as_ped.data.frame <- function(
-  data,
-  formula,
-  cut          = NULL,
-  max_time     = NULL,
-  tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  transition   = character(),
-  timescale    = c("gap", "calendar"),
-  min_events   = 1L,
-  ...) {
-
+    data,
+    formula,
+    cut          = NULL,
+    max_time     = NULL,
+    tdc_specials = c("concurrent", "cumulative"),
+    censor_code  = 0L,
+    transition   = character(),
+    timescale    = c("gap", "calendar"),
+    min_events   = 1L,
+    ...) {
+  
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
-
+  
   if (test_character(transition, min.chars = 1L, min.len = 1L)) {
     ped <- as_ped_recurrent(data = data, formula = formula, cut = cut,
-      max_time = max_time, tdc_specials = tdc_specials, censor_code = censor_code,
-      transition = transition, timescale = timescale, min_events = min_events, ... )
+                            max_time = max_time, tdc_specials = tdc_specials, censor_code = censor_code,
+                            transition = transition, timescale = timescale, min_events = min_events, ... )
     return(ped)
   }
-
+  
   event_types <- get_event_types(data, formula, censor_code)
   if (length(event_types) > 1) {
-
+    
     ped <- as_ped_cr(data = data, formula = formula, cut = cut, max_time = max_time,
-      tdc_specials = tdc_specials, censor_code = censor_code, ...)
-
+                     tdc_specials = tdc_specials, censor_code = censor_code, ...)
+    
   } else {
-
+    
     dots          <- list(...)
     dots$data     <- data
     dots$formula  <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
     dots$cut      <- cut
     dots$max_time <- max_time
-
+    
     ped <- do.call(split_data, dots)
     attr(ped, "time_var") <- get_lhs_vars(dots$formula)[1]
     attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
-
+    
   }
-
+  
   ped
-
+  
 }
 
 #' @rdname as_ped
 #' @export
 as_ped.nested_fdf <- function(data, formula, ...) {
-
+  
   status_error(data, formula)
-
+  
   dots <- list(...)
   # update interval break points (if necessary)
   cut <- dots$cut
@@ -112,80 +112,99 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   }
   ccr_breaks <- attr(data, "ccr_breaks")
   cut <- union(cut, ccr_breaks[ccr_breaks <= max(cut)]) %>% sort()
-
+  
   ped <- data %>%
     select_if(is.atomic) %>%
     as.data.frame() %>%
     as_ped(
-      formula  = formula,
-      id       = dots$id,
-      cut      = cut,
-      max_time = dots$max_time)
-
+      formula    = formula,
+      id         = dots$id,
+      cut        = cut,
+      max_time   = dots$max_time,
+      transition = dots$transition,
+      timescale  = dots$timescale)
+  
   # replace updated attributes
   attr(data, "breaks") <- attr(ped, "breaks")
-  attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
-    summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
-  attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
-    transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
-    times = attr(data, "id_n"))
-
-  if (has_special(formula, "concurrent")) {
-    ped <- ped %>% add_concurrent(data = data, id_var = dots$id)
+  if (length(dots$transition) != 0) { ## if there are recurrent events (i.e. transition != character())
+    attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var")), 
+                                           .data[[dots$transition]]) %>% 
+      summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
+    ## id_tseq attribute depends on timescale  
+    if (dots$timescale == "gap") {   ## if gap, then group_by() by "transition"
+      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
+                                                .data[[dots$transition]]) %>% 
+        transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    } else {                         ## if calendar
+      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% 
+        transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    }
+    attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
+                                   times = attr(data, "id_n"))
+  } else {                           ## if no recurrent events 
+    attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+      summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
+    attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
+      transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+    attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
+                                   times = attr(data, "id_n"))
   }
-
+  
+  if (has_special(formula, "concurrent")) {
+    ped <- ped %>% add_concurrent(data = data, id_var = dots$id, ...)
+  }
+  
   if (has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data = data, formula = formula)
     attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
-      ~bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x)))))
+                                    ~bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x)))))
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   attr(ped, "func_mat_names") <- make_mat_names(
-  attr(ped, "func"),
-  attr(ped, "time_var"))
-
+    attr(ped, "func"),
+    attr(ped, "time_var"))
+  
   ped
-
+  
 }
 
 #' @rdname as_ped
 #' @export
 as_ped.list <- function(
-  data,
-  formula,
-  tdc_specials = c("concurrent", "cumulative"),
-  ...) {
-
+    data,
+    formula,
+    tdc_specials = c("concurrent", "cumulative"),
+    ...) {
+  
   assert_class(data, "list")
   assert_class(formula, "formula")
-
+  
   status_error(data[[1]], formula)
-
+  
   nl    <- length(data)
   # form  <- Formula(formula)
   has_tdc <- has_tdc_form(formula, tdc_specials = tdc_specials)
-
+  
   if (nl == 1 & !has_tdc) {
     ped <- data[[1]] %>% as_ped(formula = formula, tdc_specials = tdc_specials, ...)
   } else {
     if (nl == 2 & !has_tdc) {
-    stop("Two data sets provided in 'data' but no specification of
+      stop("Two data sets provided in 'data' but no specification of
       time-dependent covariate effects in 'formula'")
     } else {
-
+      
       nested_fdf <- nest_tdc(data, formula, ...)
       ped <- as_ped(nested_fdf, formula, ...)
-
+      
     }
   }
   lhs_vars <- get_lhs_vars(formula)
   attr(ped, "time_var") <- lhs_vars[1]
   attr(ped, "trafo_args")$formula <- formula
-
+  
   ped
-
+  
 }
 
 #' @rdname as_ped
@@ -199,15 +218,15 @@ is.ped <- function(x) inherits(x, "ped")
 #' variables that were used to create the PED object (code{data}).
 #' @export
 as_ped.ped <- function(data, newdata, ...) {
-
+  
   if (is.ped(newdata)) {
     stop("newdata already in ped format.")
   }
-
+  
   trafo_args <- attr(data, "trafo_args")
   trafo_args[["data"]] <- newdata
   do.call(as_ped,  trafo_args)
-
+  
 }
 
 
@@ -215,14 +234,14 @@ as_ped.ped <- function(data, newdata, ...) {
 #' @rdname as_ped
 #' @export
 as_ped.pamm <- function(data, newdata, ...) {
-
+  
   if (is.ped(newdata)) {
     stop("newdata already in ped format.")
   }
   trafo_args      <- data[["trafo_args"]]
   trafo_args$data <- newdata
   do.call(split_data, trafo_args)
-
+  
 }
 
 
@@ -232,18 +251,18 @@ as_ped.pamm <- function(data, newdata, ...) {
 #'
 #' @keywords internal
 as_ped_cr <- function(
-  data,
-  formula,
-  cut          = NULL,
-  max_time     = NULL,
-  tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  combine      = TRUE,
-  ...) {
-
+    data,
+    formula,
+    cut          = NULL,
+    max_time     = NULL,
+    tdc_specials = c("concurrent", "cumulative"),
+    censor_code  = 0L,
+    combine      = TRUE,
+    ...) {
+  
   lhs_vars <- get_lhs_vars(formula)
   event_types <- get_event_types(data, formula, censor_code)
-
+  
   cut <- map2(
     event_types,
     if(is.list(cut)) cut else list(cut),
@@ -254,7 +273,7 @@ as_ped_cr <- function(
   if(length(cut) > 1 & combine) {
     cut <- list(reduce(cut, union))
   }
-
+  
   ped <- map2(
     event_types,
     cut,
@@ -270,7 +289,7 @@ as_ped_cr <- function(
       ped_i$cause <- .event
       ped_i
     })
-
+  
   if (combine) {
     ped <- do.call(rbind, ped)
     class(ped) <- c("ped_cr_union", "ped_cr", class(ped))
@@ -282,14 +301,14 @@ as_ped_cr <- function(
     attributes(ped)$trafo_args$id <- attributes(ped[[1]])$trafo_args$id
     attributes(ped)$trafo_args$formula <- formula
   }
-
+  
   attr(ped, "trafo_args")[["cut"]] <- if (length(cut) ==1) unlist(cut) else cut
   attr(ped, "trafo_args")[["combine"]] <- combine
   attr(ped, "trafo_args")[["censor_code"]] <- censor_code
   attr(ped, "risks") <- event_types
-
+  
   ped
-
+  
 }
 
 #' Exctract event types
@@ -302,11 +321,11 @@ as_ped_cr <- function(
 #'
 #' @keywords internal
 get_event_types <- function(data, formula, censor_code) {
-
+  
   lhs_vars <- get_lhs_vars(formula)
   status_values <- unique(data[[lhs_vars[length(lhs_vars)]]]) %>% sort()
   status_values[status_values != censor_code]
-
+  
 }
 
 
@@ -328,42 +347,56 @@ get_event_types <- function(data, formula, censor_code) {
 #' @export
 #' @keywords internal
 as_ped_recurrent <- function(
-  data,
-  formula,
-  cut          = NULL,
-  max_time     = NULL,
-  tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  transition  = character(),
-  timescale    = c("gap", "calendar"),
-  min_events   = 1L,
-  ...
+    data,
+    formula,
+    cut          = NULL,
+    max_time     = NULL,
+    tdc_specials = c("concurrent", "cumulative"),
+    censor_code  = 0L,
+    transition  = character(),
+    timescale    = c("gap", "calendar"),
+    min_events   = 1L,
+    ...
 ) {
-
+  
   assert_character(transition, min.chars = 1L, min.len = 1L, any.missing = FALSE,
-    len = 1L)
+                   len = 1L)
   assert_integer(min_events, lower = 1L, len = 1L)
-
+  
   status_error(data, formula)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
-
+  
+  ## check there is an event in the last transition
+  last_spell <- data %>%
+    filter(.data[[transition]] == max(.data[[transition]]))
+  lhs_vars   <- get_lhs_vars(formula)
+  status_var <- lhs_vars[[length(lhs_vars)]]
+  if (has_tdc_form(formula) & all(last_spell[[status_var]] == 0)) {
+    stop("All observations in the last transition are censored.
+         Please, filter those rows in order to properly transform the data
+         or specify a proper 'cut' argument.")
+  }
+  
   rhs_vars <- get_rhs_vars(formula)
   if (!(transition %in% rhs_vars)) {
+    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
     formula <- add_to_rhs(formula, transition)
+  } else {
+    formula <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
   }
-
+  
   dots            <- list(...)
   dots$data       <- data
-  dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+  dots$formula    <- formula
   dots$cut        <- cut
   dots$max_time   <- max_time
   dots$transition <- transition
   dots$min_events <- min_events
   dots$timescale  <- timescale
-
+  
   ped <- do.call(split_data_recurrent, dots)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
-
+  
   return(ped)
-
+  
 }
