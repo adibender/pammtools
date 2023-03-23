@@ -103,8 +103,8 @@ gg_laglead.LL_df <- function(
       tz = factor(.data$tz, levels = sort(unique(.data$tz),
         decreasing = FALSE)),
       interval = factor(.data$interval, levels = levels(.data$interval)) )
-  gg_ll <- ggplot(x, aes_string(x = "interval", y = "tz")) +
-    geom_tile(aes_string(fill = "LL"), colour = grid_col) +
+  gg_ll <- ggplot(x, aes(x = .data[["interval"]], y = .data[["tz"]])) +
+    geom_tile(aes(fill = .data[["LL"]]), colour = grid_col) +
     scale_fill_gradient(low = low_col, high = high_col) +
     scale_x_discrete(expand = c(0, 0)) +
     scale_y_discrete(expand = c(0, 0)) +

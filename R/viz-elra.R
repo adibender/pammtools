@@ -32,16 +32,16 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   # ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
-  gg_base <- ggplot(ndf, aes_string(x = vars[1])) + xlab(vars[1])
+  gg_base <- ggplot(ndf, aes(x = .data[[vars[1]]])) + xlab(vars[1])
   if (n_vars == 1) {
     gg_out <- gg_base +
-      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"),
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
         alpha = 0.3) +
-      geom_line(aes_string(y = "fit"))
+      geom_line(aes(y = .data[["fit"]]))
   } else {
     # if (n_vars == 2) {
-      gg_out <- gg_base + aes_string(y = vars[2], z = "fit") +
-        geom_tile(aes_string(fill = "fit")) +
+      gg_out <- gg_base + aes(y = vars[2], z = .data[["fit"]]) +
+        geom_tile(aes(fill = .data[["fit"]])) +
         geom_contour(col = "grey30") +
         scale_y_continuous(expand = c(0, 0)) +
         scale_x_continuous(expand = c(0, 0)) +
@@ -94,8 +94,8 @@ gg_partial_ll <- function(
         levels = c("ci_lower", "fit", "ci_upper")))
   }
 
-  gg_base <- ggplot(ll_df, aes_string(x = "intmid", y =  tz_var)) +
-    geom_tile(aes_string(fill = "fit"), colour = "grey30") +
+  gg_base <- ggplot(ll_df, aes(x = .data[["intmid"]], y =  tz_var)) +
+    geom_tile(aes(fill = .data[["fit"]]), colour = "grey30") +
     scale_fill_gradient2(high = "firebrick2", low = "steelblue",
       na.value = "grey30") +
     scale_x_continuous(expand = c(0, 0)) +
@@ -142,19 +142,19 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
-  gg_out <- ggplot(ndf, aes_string(x = vars[1], y = "fit"))
+  gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = .data[["fit"]]))
   if (ci) {
     gg_out <- gg_out +
-      geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.3)
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]), alpha = 0.3)
   }
   gg_out <- gg_out + geom_line()
   if (n_vars > 1) {
     if(ci) {
-      gg_out <- gg_out + aes_string(group = vars[2], fill = vars[2]) +
-      geom_line(aes_string(col = vars[2]))
+      gg_out <- gg_out + aes(group = .data[[vars[2]]], fill = .data[[vars[2]]]) +
+      geom_line(aes(col = .data[[vars[2]]]))
     } else {
-      gg_out <- gg_out + aes_string(group = vars[2]) +
-        geom_line(aes_string(col = vars[2]))
+      gg_out <- gg_out + aes(group = .data[[vars[2]]]) +
+        geom_line(aes(col = .data[[vars[2]]]))
     }
     if (n_vars > 2) {
       form   <- as.formula(paste0("~", vars[-1:-2], collapse = "+"))
@@ -176,10 +176,10 @@ gg_cumu_eff <- function(data, model, term, z1, z2=NULL, se_mult = 2, ci = TRUE) 
 
   cumu_eff_df <- get_cumu_eff(data, model, term, z1, z2, se_mult)
 
-  gg_out <- ggplot(cumu_eff_df, aes_string(x = "tend", y = "cumu_eff"))
+  gg_out <- ggplot(cumu_eff_df, aes(x = .data[["tend"]], y = .data[["cumu_eff"]]))
   if (ci) {
     gg_out <- gg_out +
-      geom_ribbon(aes_string(ymin = "cumu_eff_lower", ymax = "cumu_eff_upper"),
+      geom_ribbon(aes(ymin = .data[["cumu_eff_lower"]], ymax = .data[["cumu_eff_upper"]]),
         alpha = 0.3)
   }
 
