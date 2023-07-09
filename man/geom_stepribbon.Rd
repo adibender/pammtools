@@ -11,6 +11,7 @@ geom_stepribbon(
   data = NULL,
   stat = "identity",
   position = "identity",
+  direction = "hv",
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -18,10 +19,10 @@ geom_stepribbon(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.}
 
 \item{data}{The data to be displayed in this layer. There are three
 options:
@@ -39,10 +40,18 @@ will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
 \item{stat}{The statistical transformation to use on the data for this
-layer, as a string.}
+layer, either as a \code{ggproto} \code{Geom} subclass or as a string naming the
+stat stripped of the \code{stat_} prefix (e.g. \code{"count"} rather than
+\code{"stat_count"})}
 
-\item{position}{Position adjustment, either as a string, or the result of
-a call to a position adjustment function.}
+\item{position}{Position adjustment, either as a string naming the adjustment
+(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
+position adjustment function. Use the latter if you need to change the
+settings of the adjustment.}
+
+\item{direction}{direction of stairs: 'vh' for vertical then horizontal,
+'hv' for horizontal then vertical, or 'mid' for step half-way between
+adjacent x-values.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -66,7 +75,9 @@ to the paired geom/stat.}
 \description{
 \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
 is optimized for Kaplan-Meier plots with pointwise confidence intervals
-or a confidence band.
+or a confidence band. The default \code{direction}-argument \code{"hv"} is
+appropriate for right-continuous step functions like the hazard rates etc
+returned by \code{pammtools}.
 }
 \examples{
 library(ggplot2)

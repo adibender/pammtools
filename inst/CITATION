@@ -1,8 +1,9 @@
 citHeader("Citation information for 1) the Software 2) the tutorial on PAMMs 3)
-paper on cumulative effects/exposure-lag-response associations:")
+paper on cumulative effects/exposure-lag-response associations, 4) Recurrent events:")
 
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype = "Article",
   author = "Andreas Bender and Fabian Scheipl",
   title = "pammtools: Piece-wise exponential Additive Mixed Modeling tools",
   year = "2018",
@@ -11,21 +12,30 @@ citEntry(entry = "Article",
   exponential additive mixed modeling tools. arXiv:1806.01042 [stat]",
   url = "https://arxiv.org/abs/1806.01042")
 
-citEntry(
-  entry = "Article",
+bibentry(
+  bibtype = "Article",
   author = "Andreas Bender and Andreas Groll and Fabian Scheipl",
   title = "A generalized additive model approach to time-to-event analysis",
   textVersion = "Andreas Bender, Andreas Groll and Fabian Scheipl. 2018. A Generalized Additive Model Approach to Time-to-Event Analysis. Statistical Modelling.",
   journal = "Statistical Modelling",
   year = "2018",
-  url = "https://journals.sagepub.com/doi/10.1177/1471082X17748083"
+  url = "https://doi.org/10.1177/1471082X17748083"
 )
 
-citEntry(
-  entry = "Article",
+bibentry(
+  bibtype = "Article",
   author = "Bender, Andreas and Scheipl, Fabian and Hartl, Wolfgang and Day, Andrew G and K\u00fcchenhoff, Helmut",
   title = "Penalized estimation of complex, non-linear exposure-lag-response associations",
   textVersion = "Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut K\u00fcchenhoff; Penalized estimation of complex, non-linear exposure-lag-response associations, Biostatistics, , kxy003",
   journal = "Biostatistics",
   year = "2019"
+)
+
+bibentry(
+  bibtype = "Article",
+  author = "Ramjith Jordache, and Bender, Andreas and Roes, Kit C. B. and Jonker, Marianne A.",
+  title = "Recurrent events analysis with piece-wise exponential additive mixed models",
+  textVersion = "Ramjith J, Bender A, Roes KCB, Jonker MA. Recurrent events analysis with piece-wise exponential additive mixed models. 2022. Statistical Modelling., 2022",
+  journal = "Statistical Modelling",
+  year = "2022"
 )

@@ -24,10 +24,10 @@ gg_smooth.default <- function(x, fit, ...) {
 
   sobj <- get_terms(data = x, fit = fit, ...)
 
-  ggsmooth <- ggplot(sobj, aes_string(x = "x", y = "eff", group = "term")) +
+  ggsmooth <- ggplot(sobj, aes(x = .data[["x"]], y = .data[["eff"]], group = .data[["term"]])) +
     geom_hline(yintercept = 0, lty = 3) +
     geom_line() +
-    geom_ribbon(aes_string(ymin = "ci_lower", ymax = "ci_upper"), alpha = 0.2) +
+    geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]), alpha = 0.2) +
     facet_wrap(~term, scales = "free_x") +
     ylab(expression(f[p](x[p]))) + xlab(expression(x[p]))
 
@@ -60,8 +60,8 @@ gg_tensor <- function(x, ci = FALSE, ...) {
         levels = c("ci_lower", "fit", "ci_upper")))
   }
 
-  gg2d <- ggplot(df2d, aes_string(x = "x", y = "y", z = "fit")) +
-    geom_raster(aes_string(fill = "fit")) +
+  gg2d <- ggplot(df2d, aes(x = .data[["x"]], y = .data[["y"]], z = .data[["fit"]])) +
+    geom_raster(aes(fill = .data[["fit"]])) +
     scale_fill_gradient2(
       name = expression(f(list(x, y))),
       low  = "steelblue", high = "firebrick2") +
@@ -96,9 +96,9 @@ gg_tensor <- function(x, ci = FALSE, ...) {
 gg_re <- function(x, ...) {
 
   re <- tidy_re(x, ...)
-  ggplot(re, aes_string(sample = "fit")) +
-    geom_abline(aes_string(intercept = "qqintercept", slope = "qqslope")) +
-    geom_qq(distribution = "qnorm") +
+  ggplot(re, aes(sample = .data[["fit"]])) +
+    geom_abline(aes(intercept = .data[["qqintercept"]], slope = .data[["qqslope"]])) +
+    geom_qq(distribution = stats::qnorm) +
     facet_wrap(~main) +
     theme_set(theme_bw())
 
@@ -122,8 +122,8 @@ gg_fixed <- function(x, intercept=FALSE, ...) {
 
   fixed_df <- tidy_fixed(x, intercept = intercept, ...)
 
-  ggplot(fixed_df, aes_string(x = "variable", y = "coef", ymin = "ci_lower",
-      ymax = "ci_upper")) +
+  ggplot(fixed_df, aes(x = .data[["variable"]], y = .data[["coef"]], ymin = .data[["ci_lower"]],
+      ymax = .data[["ci_upper"]])) +
     geom_hline(yintercept = 0, lty = 3) +
     geom_pointrange() +
     coord_flip() +
