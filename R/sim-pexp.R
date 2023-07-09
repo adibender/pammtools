@@ -314,7 +314,7 @@ sim_pexp_cr <- function(formula, data, cut) {
     cut     = cut,
     id      = "id") %>%
     mutate(
-      t = t + tstart
+      t = t + .data$tstart
     )
 
   # calculate cause specific hazards
