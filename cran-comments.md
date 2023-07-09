@@ -12,4 +12,5 @@
 No problems.
 
 ## Comments
-Fix aes_string deprecation in ggplot2 + minor updates
+- Fixed data trafo for competing risks with more than two causes
+- maintenance updates
