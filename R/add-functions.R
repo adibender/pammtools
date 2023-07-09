@@ -63,8 +63,8 @@ add_term <- function(
     se <- unname(sqrt(rowSums( (X %*% cov.coefs) * X )))
     newdata <- newdata %>%
       mutate(
-        ci_lower = .data$fit - se_mult * se,
-        ci_upper = .data$fit + se_mult * se)
+        ci_lower = .data[["fit"]] - se_mult * se,
+        ci_upper = .data[["fit"]] + se_mult * se)
   }
 
   return(newdata)
@@ -252,7 +252,7 @@ get_hazard.default <- function(
       add_ci(object, X, type = type, ci_type = ci_type, se_mult = se_mult, ...)
   }
   if (type == "response") {
-    newdata <- newdata %>% mutate(hazard = exp(.data$hazard))
+    newdata <- newdata %>% mutate(hazard = exp(.data[["hazard"]]))
   }
 
   newdata %>% arrange(.data[[time_var]], .by_group = TRUE)
@@ -323,7 +323,7 @@ get_cumu_hazard <- function(
 
   interval_length <- sym(interval_length)
 
-  mutate_args  <- list(cumu_hazard = quo(cumsum(.data$hazard *
+  mutate_args  <- list(cumu_hazard = quo(cumsum(.data[["hazard"]] *
     (!!interval_length))))
   haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
     ~ grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
@@ -337,8 +337,8 @@ get_cumu_hazard <- function(
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
           append(list(
-            cumu_lower = quo(cumsum(.data$ci_lower * (!!interval_length))),
-            cumu_upper = quo(cumsum(.data$ci_upper * (!!interval_length)))))
+            cumu_lower = quo(cumsum(.data[["ci_lower"]] * (!!interval_length))),
+            cumu_upper = quo(cumsum(.data[["ci_upper"]] * (!!interval_length)))))
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -437,7 +437,7 @@ get_surv_prob <- function(
 
   interval_length <- sym(interval_length)
 
-  mutate_args  <- list(surv_prob = quo(exp(-cumsum(.data$hazard *
+  mutate_args  <- list(surv_prob = quo(exp(-cumsum(.data[["hazard"]] *
     (!!interval_length)))))
   haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
     ~grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
@@ -451,8 +451,8 @@ get_surv_prob <- function(
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
           append(list(
-            surv_upper = quo(exp(-cumsum(.data$ci_lower * (!!interval_length)))),
-            surv_lower = quo(exp(-cumsum(.data$ci_upper * (!!interval_length))))))
+            surv_upper = quo(exp(-cumsum(.data[["ci_lower"]] * (!!interval_length)))),
+            surv_lower = quo(exp(-cumsum(.data[["ci_upper"]] * (!!interval_length))))))
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -506,16 +506,16 @@ add_ci <- function(
   if (type == "link") {
     newdata <- newdata %>%
       mutate(
-        ci_lower = .data$hazard - se_mult * .data$se,
-        ci_upper = .data$hazard + se_mult * .data$se)
+        ci_lower = .data[["hazard"]] - se_mult * .data[["se"]],
+        ci_upper = .data[["hazard"]] + se_mult * .data[["se"]])
   }
 
   if (type != "link") {
     if (ci_type == "default") {
       newdata <- newdata %>%
         mutate(
-          ci_lower = exp(.data$hazard - se_mult * .data$se),
-          ci_upper = exp(.data$hazard + se_mult * .data$se))
+          ci_lower = exp(.data[["hazard"]] - se_mult * .data[["se"]]),
+          ci_upper = exp(.data[["hazard"]] + se_mult * .data[["se"]]))
     } else {
       if (ci_type == "delta") {
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -539,8 +539,8 @@ add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (Jacobi %*% V) * Jacobi )),
-      ci_lower = exp(.data$hazard) - .data$se * se_mult,
-      ci_upper = exp(.data$hazard) + .data$se * se_mult)
+      ci_lower = exp(.data[["hazard"]]) - .data[["se"]] * se_mult,
+      ci_upper = exp(.data[["hazard"]]) + .data[["se"]] * se_mult)
 
 }
 
@@ -554,8 +554,8 @@ add_delta_ci_cumu <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (LHS %*% V) * LHS )),
-      cumu_lower = cumsum(.data$intlen * .data$hazard) - .data$se * se_mult,
-      cumu_upper = cumsum(.data$intlen * .data$hazard) + .data$se * se_mult)
+      cumu_lower = cumsum(.data[["intlen"]] * .data[["hazard"]]) - .data[["se"]] * se_mult,
+      cumu_upper = cumsum(.data[["intlen"]] * .data[["hazard"]]) + .data[["se"]] * se_mult)
 
 }
 
@@ -570,8 +570,8 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (LHS %*% V) * LHS)),
-      surv_lower = exp(-cumsum(.data$hazard * .data$intlen)) - .data$se * se_mult,
-      surv_upper = exp(-cumsum(.data$hazard * .data$intlen)) + .data$se * se_mult)
+      surv_lower = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) - .data[["se"]] * se_mult,
+      surv_upper = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) + .data[["se"]] * se_mult)
 
 }
 
