@@ -1,3 +1,6 @@
+# pammtools 0.5.92
++ Fixed competing risks data trafo in case of more than 2 causes
+
 # pammtools 0.5.9
 + Fixes issue 154: direction argument to `geom_stepribbon`
 
