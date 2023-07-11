@@ -71,11 +71,14 @@ warn_about_new_time_points.pamm <- function(object, newdata, ...) {
 # }
 
 
-status_error <- function(data, formula) {
+status_error <- function(data, formula, censor_code = 0L) {
 
   outcome_vars <- get_lhs_vars(formula)
-  if (!any(1L * (unique(data[[outcome_vars[length(outcome_vars)]]])) == 1)) {
-    stop(paste("No events in data! Check your", outcome_vars[2], "variable."))
+  if (!any(unique(data[[outcome_vars[length(outcome_vars)]]]) != censor_code)) {
+    stop(paste(
+      "No events in data! Check your",
+      outcome_vars[length(outcome_vars)],
+      "variable."))
   }
 
 }

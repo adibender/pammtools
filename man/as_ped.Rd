@@ -8,7 +8,7 @@
 \alias{is.ped}
 \alias{as_ped.ped}
 \alias{as_ped.pamm}
-\alias{as_ped_recurrent}
+\alias{as_ped_multistate}
 \title{Transform data to Piece-wise Exponential Data (PED)}
 \usage{
 as_ped(data, ...)
@@ -28,7 +28,13 @@ as_ped(data, ...)
 
 \method{as_ped}{nested_fdf}(data, formula, ...)
 
-\method{as_ped}{list}(data, formula, tdc_specials = c("concurrent", "cumulative"), ...)
+\method{as_ped}{list}(
+  data,
+  formula,
+  tdc_specials = c("concurrent", "cumulative"),
+  censor_code = 0L,
+  ...
+)
 
 is.ped(x)
 
@@ -36,7 +42,7 @@ is.ped(x)
 
 \method{as_ped}{pamm}(data, newdata, ...)
 
-as_ped_recurrent(
+as_ped_multistate(
   data,
   formula,
   cut = NULL,
@@ -112,10 +118,11 @@ data("cgd", package = "frailtyHL")
 cgd2 <- cgd \%>\%
  select(id, tstart, tstop, enum, status, age) \%>\%
  filter(enum \%in\% c(1:2))
-ped_re <- as_ped_recurrent(
+ped_re <- as_ped_multistate(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2,
- transition = "enum")
+ transition = "enum",
+ timescale = "calendar")
 }
 }
 \keyword{internal}

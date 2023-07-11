@@ -6,10 +6,10 @@
 checks](https://badges.cranchecks.info/worst/pammtools.svg)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Build
-Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://travis-ci.org/adibender/pammtools)
+Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://app.travis-ci.com/adibender/pammtools)
 [![Build
 Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&svg=true)](https://ci.appveyor.com/project/adibender/pammtools/branch/master)
-[![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://codecov.io/github/adibender/pammtools/branch/master)
+[![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://app.codecov.io/github/adibender/pammtools/branch/master)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-ago/pammtools)](https://cran.r-project.org/package=pammtools)
 [![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
 [![MIT

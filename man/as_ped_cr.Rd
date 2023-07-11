@@ -73,10 +73,11 @@ data("cgd", package = "frailtyHL")
 cgd2 <- cgd \%>\%
  select(id, tstart, tstop, enum, status, age) \%>\%
  filter(enum \%in\% c(1:2))
-ped_re <- as_ped_recurrent(
+ped_re <- as_ped_multistate(
   formula = Surv(tstart, tstop, status) ~ age + enum,
   data = cgd2,
- transition = "enum")
+ transition = "enum",
+ timescale = "calendar")
 }
 }
 \keyword{internal}

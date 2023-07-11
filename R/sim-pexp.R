@@ -277,3 +277,74 @@ eta_cumu <- function(data, fcumu, cut, ...) {
       sum(.data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
 
 }
+
+#' Simulate data for competing risks scenario
+#'
+#'
+#' @keywords internal
+sim_pexp_cr <- function(formula, data, cut) {
+
+  # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
+  Form    <- Formula(formula)
+  # Extract the right handside of the Formula
+  F_rhs   <- attr(Form, "rhs")
+  l_rhs   <- length(F_rhs)
+  seq_rhs <- seq_len(l_rhs)
+
+  if (!("id" %in% names(data))) {
+    data$id <- 1:(nrow(data))
+  }
+
+  if (!("t" %in% names(data))) {
+    data$t <- 0
+  }
+
+  data <- data %>%
+    mutate(
+      time   = max(cut),
+      status = 1
+    )
+
+  # construct eta for time-constant part
+  # offset (the log of the duration during which the subject was under risk in that interval)
+
+  ped  <- split_data(
+    formula = Surv(time, status)~.,
+    data    = select_if(data, is_atomic),
+    cut     = cut,
+    id      = "id") %>%
+    mutate(
+      t = t + .data$tstart
+    )
+
+  # calculate cause specific hazards
+
+  for (i in seq_rhs) {
+    ped[[paste0("hazard", i)]] <-  exp(eval(F_rhs[[i]], ped))
+  }
+  ped[["rate"]] <- reduce(ped[paste0("hazard", seq_rhs)], `+`)
+
+  # simulate survival times
+
+  sim_df <- ped %>%
+    group_by(id) %>%
+    mutate(
+      time   = rpexp(rate = .data$rate, t = .data$tstart),
+      status = 1L * (.data$time <= max(cut)),
+      time   = pmin(.data$time, max(cut)),
+      # t wieder ins "Original" zurückrechnen, muss später auf die Waitingtime drauf gerechnet werden
+      t = .data$t - .data$tstart
+    ) %>%
+    filter(.data$tstart < .data$time & .data$time <= .data$tend)
+
+
+
+  # Ziehe aus den möglichen hazards eins mit den entsprechenden Wahrscheinlichkeiten
+  sim_df$type <- apply(sim_df[paste0("hazard", seq_rhs)], 1,
+    function(probs)
+      sample(seq_rhs, 1, prob = probs))
+
+  sim_df %>%
+    select(-one_of(c("tstart", "tend", "interval", "offset", "ped_status", "rate")))
+
+}
