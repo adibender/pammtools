@@ -174,7 +174,7 @@ legend(240, .6, c("death:female", "death:male", "pcm:female", "pcm:male"),
 dat <- mgus2
 dat$event <- as.numeric(event) - 1
 dat$time <- etime
-dat$sex <- as.factor(sex)
+dat$sex <- as.factor(dat$sex)
 ped <- dat %>%
   as_ped(Surv(time, event)~. - ptime - pstat - futime - death) %>%
   mutate(cause = as.factor(cause))
