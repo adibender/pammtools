@@ -40,7 +40,7 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
       geom_line(aes(y = .data[["fit"]]))
   } else {
     # if (n_vars == 2) {
-      gg_out <- gg_base + aes(y = vars[2], z = .data[["fit"]]) +
+      gg_out <- gg_base + aes(y = .data[[vars[2]]], z = .data[["fit"]]) +
         geom_tile(aes(fill = .data[["fit"]])) +
         geom_contour(col = "grey30") +
         scale_y_continuous(expand = c(0, 0)) +
