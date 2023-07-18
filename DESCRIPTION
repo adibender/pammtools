@@ -35,7 +35,9 @@ Imports:
     vctrs (>= 0.3.0)
 Suggests:
     testthat
-Config/Needs/website: etm
+Config/Needs/website: 
+  etm,
+  TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true
 URL: https://adibender.github.io/pammtools/
