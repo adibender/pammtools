@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for pamm</span></span>
-<span><span class="fu">predictSurvProb</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span>, <span class="va">times</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">predictSurvProb</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span>, <span class="va">times</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -136,6 +136,10 @@ which to compute predicted survival probabilities.</p></dd>
 <dd><p>A vector of times in the range of the response variable, e.g.
 times when the response is a survival object, at which to return the
 survival probabilities.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Additional arguments that are passed on to the current method.</p></dd>
 
 </dl></div>
 

@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="left-truncation_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Left Truncation</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/left-truncation.Rmd" class="external-link"><code>vignettes/left-truncation.Rmd</code></a></small>
       <div class="hidden name"><code>left-truncation.Rmd</code></div>
@@ -152,7 +152,10 @@
 
     
     
-<p>In this vignette we briefly illustrate how to fit PAMMs for left-truncated data. As an example we use the data already discussed in the <a href="data.transformation.html#left-truncated-data">left-truncation section</a> of the data transformation vignette.</p>
+<p>In this vignette we briefly illustrate how to fit PAMMs for
+left-truncated data. As an example we use the data already discussed in
+the <a href="data.transformation.html#left-truncated-data">left-truncation
+section</a> of the data transformation vignette.</p>
 <p>We first we load some libraries as well as the data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ehar.se/r/eha/" class="external-link">eha</a></span><span class="op">)</span></span>
@@ -168,8 +171,17 @@
 <span><span class="co">## 4       2    13   76     1   dead  23 girl Nedertornea married  other 1847</span></span>
 <span><span class="co">## 5       2    13  365     0  alive  23 girl Nedertornea married  other 1847</span></span>
 <span><span class="co">## 6       2    13  365     0  alive  23 girl Nedertornea married  other 1848</span></span></code></pre>
-<p>The header shows that we have information on entry (<code>enter</code>) and exit (<code>exit</code>) times into the riskset. Survival is indicated by the <code>event</code> variable. The variable of interest is <code>mother</code>, i.e., whether mother was alive or dead. For each child who’s mother died, 2 children of the same age and same values for the other covariates were included into the study who’s mother was still alive at inclusion age. The maximum follow up was 365 days.</p>
-<p>As a proof of concept we show that we can recreate the effects found by the Cox model for left truncated data as implemented in <code><a href="https://ehar.se/r/eha/reference/coxreg.html" class="external-link">eha::coxreg</a></code>:</p>
+<p>The header shows that we have information on entry
+(<code>enter</code>) and exit (<code>exit</code>) times into the
+riskset. Survival is indicated by the <code>event</code> variable. The
+variable of interest is <code>mother</code>, i.e., whether mother was
+alive or dead. For each child who’s mother died, 2 children of the same
+age and same values for the other covariates were included into the
+study who’s mother was still alive at inclusion age. The maximum follow
+up was 365 days.</p>
+<p>As a proof of concept we show that we can recreate the effects found
+by the Cox model for left truncated data as implemented in
+<code><a href="https://ehar.se/r/eha/reference/coxreg.html" class="external-link">eha::coxreg</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># fit cox model for left-truncated data</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ehar.se/r/eha/reference/coxreg.html" class="external-link">coxreg</a></span><span class="op">(</span></span>
@@ -185,7 +197,9 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               [,1]    [,2]</span></span>
 <span><span class="co">## motherdead 1.68071 1.69185</span></span></code></pre>
-<p>The coefficients of the <code>mother</code> variable are very similar and indicate that children with diseased mother’s are about 5.37 times as likely to die within one year after birth.</p>
+<p>The coefficients of the <code>mother</code> variable are very similar
+and indicate that children with diseased mother’s are about 5.37 times
+as likely to die within one year after birth.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## compare (baseline) cumulative hazard probabilities</span></span>
 <span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/basehaz.html" class="external-link">basehaz</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>

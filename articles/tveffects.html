@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="tveffects_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time-varying effects</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/tveffects.Rmd" class="external-link"><code>vignettes/tveffects.Rmd</code></a></small>
       <div class="hidden name"><code>tveffects.Rmd</code></div>
@@ -163,22 +163,51 @@
 <span><span class="va">Set1</span>    <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Set1"</span><span class="op">)</span></span>
 <span><span class="va">Greens</span>  <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Greens"</span><span class="op">)</span></span>
 <span><span class="va">Purples</span> <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Purples"</span><span class="op">)</span></span></code></pre></div>
-<p>In this vignette we show examples of how to fit time-varying effects of time-constant <strong>continuous</strong> covariates. Note that time-varying effects of time-constant <strong>categorical</strong> variables are analogous to stratified proportional hazards models, where observations from different levels of the categorical variable have different baseline hazards. That setting is described in the <a href="strata.html">stratification vignette</a>. <strong>Note that all time-varying effects in a PAM are still assumed to be piece-wise constant over the intervals used to specify the PAM!</strong></p>
+<p>In this vignette we show examples of how to fit time-varying effects
+of time-constant <strong>continuous</strong> covariates. Note that
+time-varying effects of time-constant <strong>categorical</strong>
+variables are analogous to stratified proportional hazards models, where
+observations from different levels of the categorical variable have
+different baseline hazards. That setting is described in the <a href="strata.html">stratification vignette</a>. <strong>Note that all
+time-varying effects in a PAM are still assumed to be piece-wise
+constant over the intervals used to specify the PAM!</strong></p>
 <div class="section level2">
 <h2 id="possible-specifications-of-time-variation">Possible specifications of time-variation<a class="anchor" aria-label="anchor" href="#possible-specifications-of-time-variation"></a>
 </h2>
-<p>In the following we denote the continuous time-constant covariate with <span class="math inline">\(x\)</span> and time with <span class="math inline">\(t\)</span>. A time-varying effect of <span class="math inline">\(x\)</span> can then be specified as an interaction term between <span class="math inline">\(x\)</span> and <span class="math inline">\(t\)</span>, where different levels of complexity and flexibility for this interaction are possible:</p>
+<p>In the following we denote the continuous time-constant covariate
+with <span class="math inline">\(x\)</span> and time with <span class="math inline">\(t\)</span>. A time-varying effect of <span class="math inline">\(x\)</span> can then be specified as an interaction
+term between <span class="math inline">\(x\)</span> and <span class="math inline">\(t\)</span>, where different levels of complexity
+and flexibility for this interaction are possible:</p>
 <ul>
-<li><p><span class="math inline">\(\beta_x\cdot x+\beta_{x:t}\cdot(x\cdot g(t))\)</span>: Linear effect of <span class="math inline">\(x\)</span> with time-variation given by <span class="math inline">\(g(t)\)</span>, where <span class="math inline">\(g(\cdot)\)</span> is a known or pre-specified transformation of time <span class="math inline">\(t\)</span>, e.g. the <span class="math inline">\(\log\)</span>-function.</p></li>
-<li><p><span class="math inline">\(f_x(x)\cdot g(t)\)</span>: Non-linear effect of <span class="math inline">\(x\)</span>, (linearly) time-varying with <span class="math inline">\(g(t)\)</span>, where <span class="math inline">\(g(t)\)</span> is a known or pre-specified transformation of time</p></li>
-<li><p><span class="math inline">\(f_t(t)\cdot x\)</span>: A <em>varying coefficient model</em> in <span class="math inline">\(x\)</span>, where time-variation is non-linear and estimated from the data. If <span class="math inline">\(x\)</span> is a dummy variable coding for levels of a categorical variable this constitutes a stratified model with a different “baseline” hazard for each category, see the <a href="strata.html"><em>strata</em> vignette</a>.</p></li>
-<li><p><span class="math inline">\(f_{x,t}(x,t)\)</span>: A non-linear effect of <span class="math inline">\(x\)</span> that varies non-linearly over time <span class="math inline">\(t\)</span>.</p></li>
+<li><p><span class="math inline">\(\beta_x\cdot
+x+\beta_{x:t}\cdot(x\cdot g(t))\)</span>: Linear effect of <span class="math inline">\(x\)</span> with time-variation given by <span class="math inline">\(g(t)\)</span>, where <span class="math inline">\(g(\cdot)\)</span> is a known or pre-specified
+transformation of time <span class="math inline">\(t\)</span>, e.g. the
+<span class="math inline">\(\log\)</span>-function.</p></li>
+<li><p><span class="math inline">\(f_x(x)\cdot g(t)\)</span>: Non-linear
+effect of <span class="math inline">\(x\)</span>, (linearly)
+time-varying with <span class="math inline">\(g(t)\)</span>, where <span class="math inline">\(g(t)\)</span> is a known or pre-specified
+transformation of time</p></li>
+<li><p><span class="math inline">\(f_t(t)\cdot x\)</span>: A <em>varying
+coefficient model</em> in <span class="math inline">\(x\)</span>, where
+time-variation is non-linear and estimated from the data. If <span class="math inline">\(x\)</span> is a dummy variable coding for levels
+of a categorical variable this constitutes a stratified model with a
+different “baseline” hazard for each category, see the <a href="strata.html"><em>strata</em> vignette</a>.</p></li>
+<li><p><span class="math inline">\(f_{x,t}(x,t)\)</span>: A non-linear
+effect of <span class="math inline">\(x\)</span> that varies
+non-linearly over time <span class="math inline">\(t\)</span>.</p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="veteran-data-example">Veteran Data example<a class="anchor" aria-label="anchor" href="#veteran-data-example"></a>
 </h2>
-<p>For illustration and comparison we use the <code>veteran</code> data presented in the vignette of the <code>survival</code> package (<code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package = "survival")</a></code>). Besides information on survival, the data set contains the Karnofsky performance scores <code>karno</code> (the higher the better), <code>age</code> and whether <code>prior</code> therapy occurred, along with some additional covariates, see <code><a href="https://rdrr.io/pkg/survival/man/veteran.html" class="external-link">help("veteran", package = "survival")</a></code> for details:</p>
+<p>For illustration and comparison we use the <code>veteran</code> data
+presented in the vignette of the <code>survival</code> package
+(<code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package = "survival")</a></code>). Besides
+information on survival, the data set contains the Karnofsky performance
+scores <code>karno</code> (the higher the better), <code>age</code> and
+whether <code>prior</code> therapy occurred, along with some additional
+covariates, see <code><a href="https://rdrr.io/pkg/survival/man/veteran.html" class="external-link">help("veteran", package = "survival")</a></code> for
+details:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># for some reason the prior variable is coded 0/10 instead of 0/1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></span></code></pre></div>
@@ -198,12 +227,16 @@
 <span><span class="co">## 6   0 squamous   10      1    20        5  49     0</span></span>
 <span><span class="co">## 7   0 squamous   82      1    40       10  69     1</span></span></code></pre>
 <div class="section level3">
-<h3 id="extended-cox-model-with-known-shape-of-time-variation-function">Extended Cox Model (with known shape of time-variation function)<a class="anchor" aria-label="anchor" href="#extended-cox-model-with-known-shape-of-time-variation-function"></a>
+<h3 id="extended-cox-model-with-known-shape-of-time-variation-function">Extended Cox Model (with known shape of time-variation
+function)<a class="anchor" aria-label="anchor" href="#extended-cox-model-with-known-shape-of-time-variation-function"></a>
 </h3>
-<p>To fit a time-varying effect of <code>karno</code> the authors suggest to use the function <span class="math display">\[
+<p>To fit a time-varying effect of <code>karno</code> the authors
+suggest to use the function <span class="math display">\[
 f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
   \beta_{\text{karno},t} \cdot x_{\text{karno}} \cdot \log(t+20).
-\]</span> This is an instance of the “known time-variation function” case above with <span class="math inline">\(g(t) = \log(t+20).\)</span></p>
+\]</span> This is an instance of the “known time-variation function”
+case above with <span class="math inline">\(g(t) =
+\log(t+20).\)</span></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span> <span class="op">+</span> <span class="fu">tt</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span>,</span>
@@ -212,7 +245,8 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
 <span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##         trt       prior       karno   tt(karno) </span></span>
 <span><span class="co">##  0.07914694  0.12051224 -0.15466404  0.02930082</span></span></code></pre>
-<p>Thus the time-varying component of the effect becomes <span class="math inline">\(\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20) = -0.155 + 0.029\cdot\log(t+20)\)</span>:</p>
+<p>Thus the time-varying component of the effect becomes <span class="math inline">\(\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20)
+= -0.155 + 0.029\cdot\log(t+20)\)</span>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">400</span>, by <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">t</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"karno"</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"tt(karno)"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">t</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span>,</span>
@@ -223,7 +257,8 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
 <div class="section level3">
 <h3 id="pam-with-known-shape-of-time-variation-function">PAM (with known shape of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-with-known-shape-of-time-variation-function"></a>
 </h3>
-<p>To fit a PAM with equivalent model specification (except for the baseline hazard) we can use</p>
+<p>To fit a PAM with equivalent model specification (except for the
+baseline hazard) we can use</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data transformation</span></span>
 <span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -256,19 +291,27 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
 <span><span class="va">t_pem</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/int_info.html">int_info</a></span><span class="op">(</span><span class="va">ped</span><span class="op">)</span><span class="op">$</span><span class="va">tend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">t_pem</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="st">"karno"</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="st">"karno:logt20"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">t_pem</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span>,</span>
 <span>  col <span class="op">=</span> <span class="va">Set1</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"s"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tveffects_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;"> Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.</p>
+<p><img src="tveffects_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;">
+Both methods yield very similar estimates of the time-varying effect of
+the Karnofsky-Score, with a reduced hazard for higher-scoring patients
+at the beginning of the follow-up that diminishes over time and turns
+into an increased hazard for higher-scoring patients after about day
+150.</p>
 </div>
 <div class="section level3">
 <h3 id="pam-penalized-estimation-of-time-variation-function">PAM (penalized estimation of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-penalized-estimation-of-time-variation-function"></a>
 </h3>
-<p>In case we don’t want to pre-specify which shape the time-dependency should have, we can specify the effect of <code>karno</code> as <span class="math inline">\(f(x_{\text{karno}},t) = f(t)\cdot x_{\text{karno}}\)</span>, where <span class="math inline">\(f(t)\)</span> is estimated from the data:</p>
+<p>In case we don’t want to pre-specify which shape the time-dependency
+should have, we can specify the effect of <code>karno</code> as <span class="math inline">\(f(x_{\text{karno}},t) = f(t)\cdot
+x_{\text{karno}}\)</span>, where <span class="math inline">\(f(t)\)</span> is estimated from the data:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># no need to specify main effect for karno here</span></span>
 <span><span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">karno</span><span class="op">)</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">ped</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-The figure below visualizes the estimate of the time-varying effect of <code>karno</code> for all three models
-<details><p><summary><em>Expand here to see R-Code</em></summary></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+The figure below visualizes the estimate of the time-varying effect of
+<code>karno</code> for all three models
+<details><summary><em>Expand here to see R-Code</em>
+</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">term.df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ped_info.html">ped_info</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_term.html">add_term</a></span><span class="op">(</span><span class="va">pam2</span>, term <span class="op">=</span> <span class="st">"karno"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_at</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fit"</span>, <span class="st">"ci_lower"</span>, <span class="st">"ci_upper"</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/funs.html" class="external-link">funs</a></span><span class="op">(</span><span class="va">.</span> <span class="op">/</span> <span class="va">.data</span><span class="op">$</span><span class="va">karno</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span></span>
@@ -293,14 +336,31 @@ The figure below visualizes the estimate of the time-varying effect of <code>kar
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Method"</span>, values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Set1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, <span class="st">"black"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"t"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details><p><img src="tveffects_files/figure-html/unnamed-chunk-8-1.png" width="624" style="display: block; margin: auto;"></p>
-<p>The semi-parametric PAM model estimate for <span class="math inline">\(f(t)\)</span> increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.</p>
+<p>The semi-parametric PAM model estimate for <span class="math inline">\(f(t)\)</span> increases fairly linearly up to day
+150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on
+the hazard) afterwards.</p>
 </div>
 <div class="section level3">
-<h3 id="pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score">PAM with smooth, smoothly time-varying effect of the Karnofsky Score<a class="anchor" aria-label="anchor" href="#pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score"></a>
+<h3 id="pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score">PAM with smooth, smoothly time-varying effect of the Karnofsky
+Score<a class="anchor" aria-label="anchor" href="#pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score"></a>
 </h3>
-<p>To fit a non-linear, non-linearly time-varying effect we can specify a two-dimensional interaction between the covariate of interest (here the Karnofsky-Score and a variable that represents time in the respective interval, e.g. interval end-points) using tensor product terms.</p>
-<p>In <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> such two-dimensional effects can be directly used either via <code>te</code> or <code>ti</code> terms in the model specification. The later is especially useful for disentangling the marginal (time-constant) and interaction (time-varying) effects of the respective covariate.</p>
-<p>Below we first fit a model using the <code>te</code> specification. Note that we did not include a <code>s(tend)</code> term here, as the time-variable <code>tend</code> is already present in the <code>te</code> term, thus the effect <code>te(tend, karno)</code> also includes the <em>shape</em> of the baseline hazard as well. The <em>level</em> of the baseline log hazard is given by the intercept of the model.</p>
+<p>To fit a non-linear, non-linearly time-varying effect we can specify
+a two-dimensional interaction between the covariate of interest (here
+the Karnofsky-Score and a variable that represents time in the
+respective interval, e.g. interval end-points) using tensor product
+terms.</p>
+<p>In <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> such two-dimensional effects can be
+directly used either via <code>te</code> or <code>ti</code> terms in the
+model specification. The later is especially useful for disentangling
+the marginal (time-constant) and interaction (time-varying) effects of
+the respective covariate.</p>
+<p>Below we first fit a model using the <code>te</code> specification.
+Note that we did not include a <code>s(tend)</code> term here, as the
+time-variable <code>tend</code> is already present in the
+<code>te</code> term, thus the effect <code>te(tend, karno)</code> also
+includes the <em>shape</em> of the baseline hazard as well. The
+<em>level</em> of the baseline log hazard is given by the intercept of
+the model.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Non-linear, non-linearly time-varying effects</span></span>
 <span><span class="va">pam3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span></span>
@@ -308,7 +368,10 @@ The figure below visualizes the estimate of the time-varying effect of <code>kar
 <span>  data   <span class="op">=</span> <span class="va">ped</span>,</span>
 <span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></span></code></pre></div>
-<p>The summary of the model indicates that the estimated bivariate function <span class="math inline">\(\hat{f}(x_{\text{karno}}, t)\)</span> is highly non-linear (<span class="math inline">\(edf \approx 8.9\)</span>):</p>
+<p>The summary of the model indicates that the estimated bivariate
+function <span class="math inline">\(\hat{f}(x_{\text{karno}},
+t)\)</span> is highly non-linear (<span class="math inline">\(edf
+\approx 8.9\)</span>):</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -335,14 +398,39 @@ The figure below visualizes the estimate of the time-varying effect of <code>kar
 <span><span class="co">## </span></span>
 <span><span class="co">## R-sq.(adj) =  0.00423   Deviance explained = 6.92%</span></span>
 <span><span class="co">## UBRE = -0.83464  Scale est. = 1         n = 5392</span></span></code></pre>
-<p>The 3D perspective plot can aid interpretation, where y- and x-axes depict the Karnofsky-Score and the time respectively and the z-axis displays the contribution of the effect to the log-hazard for each combination of <span class="math inline">\(x_{\text{karno}}\)</span> and <span class="math inline">\(t\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>The 3D perspective plot can aid interpretation, where y- and x-axes
+depict the Karnofsky-Score and the time respectively and the z-axis
+displays the contribution of the effect to the log-hazard for each
+combination of <span class="math inline">\(x_{\text{karno}}\)</span> and
+<span class="math inline">\(t\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pam3</span>, select <span class="op">=</span> <span class="fl">3</span>, scheme <span class="op">=</span> <span class="fl">1</span>, theta <span class="op">=</span> <span class="fl">120</span>, ticktype <span class="op">=</span> <span class="st">"detailed"</span><span class="op">)</span></span></code></pre></div>
-<p>Such 3D plots are sometimes difficult to interpret, thus we also provide a heat-/contourplot (left panel) with respective slices for fixed values of the Karnofsky-Score (middle panel) and fixed time-points/intervals (right panel) below.</p>
-<p>The left panel depicts the Karnofsky-Score on the y-axis and the time on the x-axis. The value of <span class="math inline">\(\hat{f}(x_{\text{karno}}, t)\)</span> is visualized using a color gradient, where blue colors indicate log-hazard decrease and red colors a log-hazard increase. The grayed out areas depict combinations of <code>karno</code> and <code>tend</code> that were not present in the data. Dotted horizontal and vertical lines indicate slices that are displayed in the middle and right panel. For fixed <span class="math inline">\(t=1\)</span>, we obtain the effect of the Karnofsky-Score on the log-hazard at the beginning of the follow-up (see also right panel for <span class="math inline">\(t=1\)</span>), which decreases strongly from low to high values of <span class="math inline">\(x_{\text{karno}}\)</span>.</p>
-<p>Holding the Karnofsky-Score constant, we can see how the log hazard changes over time for different <span class="math inline">\(x_{\text{karno}}\)</span> (middle panel). For larger values (<span class="math inline">\(x_{\text{karno}} \in \{75, 90\}\)</span>) the log-hazard is smaller at the beginning and increases over the course of the follow-up, while for small values (<span class="math inline">\(x_{\text{karno}} \in \{40\}\)</span>) the log-hazard is positive and decreases toward later time points. This could indicate that the effect of the Karnofsky-Score tends towards 0 over time as the information collected at the beginning of the follow-up becomes outdated (but see uncertainty).</p>
-<details><p><summary><em>Expand here to see R-Code</em></summary></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<p>Such 3D plots are sometimes difficult to interpret, thus we also
+provide a heat-/contourplot (left panel) with respective slices for
+fixed values of the Karnofsky-Score (middle panel) and fixed
+time-points/intervals (right panel) below.</p>
+<p>The left panel depicts the Karnofsky-Score on the y-axis and the time
+on the x-axis. The value of <span class="math inline">\(\hat{f}(x_{\text{karno}}, t)\)</span> is
+visualized using a color gradient, where blue colors indicate log-hazard
+decrease and red colors a log-hazard increase. The grayed out areas
+depict combinations of <code>karno</code> and <code>tend</code> that
+were not present in the data. Dotted horizontal and vertical lines
+indicate slices that are displayed in the middle and right panel. For
+fixed <span class="math inline">\(t=1\)</span>, we obtain the effect of
+the Karnofsky-Score on the log-hazard at the beginning of the follow-up
+(see also right panel for <span class="math inline">\(t=1\)</span>),
+which decreases strongly from low to high values of <span class="math inline">\(x_{\text{karno}}\)</span>.</p>
+<p>Holding the Karnofsky-Score constant, we can see how the log hazard
+changes over time for different <span class="math inline">\(x_{\text{karno}}\)</span> (middle panel). For
+larger values (<span class="math inline">\(x_{\text{karno}} \in \{75,
+90\}\)</span>) the log-hazard is smaller at the beginning and increases
+over the course of the follow-up, while for small values (<span class="math inline">\(x_{\text{karno}} \in \{40\}\)</span>) the
+log-hazard is positive and decreases toward later time points. This
+could indicate that the effect of the Karnofsky-Score tends towards 0
+over time as the information collected at the beginning of the follow-up
+becomes outdated (but see uncertainty).</p>
+<details><summary><em>Expand here to see R-Code</em>
+</summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># heat map/contour plot</span></span>
 <span><span class="va">te_gg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">pam3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">51</span>, <span class="fl">200</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
@@ -391,17 +479,30 @@ The figure below visualizes the estimate of the time-varying effect of <code>kar
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu">plain</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position  <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><p><img src="tveffects_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>The following figure shows the estimated effect (middle panel) along with a pointwise upper (right) and lower (left) CI. Note that we have to be somewhat cautious with interpretation, considering the large uncertainty of the effect estimate, especially for lower Karnofsky-Scores and later time-points. Also note that the estimate does not include the estimated average time-constant log-hazard (<code>coefficients(pam3)["(Intercept)"]=</code>-4.966) and its uncertainty.</p>
+<p>The following figure shows the estimated effect (middle panel) along
+with a pointwise upper (right) and lower (left) CI. Note that we have to
+be somewhat cautious with interpretation, considering the large
+uncertainty of the effect estimate, especially for lower
+Karnofsky-Scores and later time-points. Also note that the estimate does
+not include the estimated average time-constant log-hazard
+(<code>coefficients(pam3)["(Intercept)"]=</code>-4.966) and its
+uncertainty.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">pam3</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"t"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu">plain</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tveffects_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
-<li id="fn1"><p>Note that the graphical representation in the 3D wireframe plot as well as the heatmap/contour plots below are not exact – these effects are actually step functions over time, with steps at the interval end points <code>tend</code>, since a PAM implies that <em>all</em> time-varying effects are piece-wise constant over the intervals used for the fit. In practice, this subtle difference can be neglected if the intervals are small enough, as in this case.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Note that the graphical representation in the 3D
+wireframe plot as well as the heatmap/contour plots below are not exact
+– these effects are actually step functions over time, with steps at the
+interval end points <code>tend</code>, since a PAM implies that
+<em>all</em> time-varying effects are piece-wise constant over the
+intervals used for the fit. In practice, this subtle difference can be
+neglected if the intervals are small enough, as in this case.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

@@ -27,7 +27,7 @@ set method="REML".'><meta property="og:image" content="https://adibender.github.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -196,19 +196,17 @@ model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Parametric coefficients:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  Estimate Std. Error z value Pr(&gt;|z|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)       -7.8839     0.1969 -40.038   &lt;2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> complicationsyes   0.2453     0.3420   0.717    0.473    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)       -8.0233     0.2554 -31.412   &lt;2e-16 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> complicationsyes   0.2497     0.3424   0.729    0.466    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Approximate significance of smooth terms:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           edf Ref.df Chi.sq p-value  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> s(tend) 1.001  1.003  5.456  0.0196 *</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           edf Ref.df Chi.sq p-value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> s(tend) 4.144   5.04  8.312   0.138</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> R-sq.(adj) =  -0.0232   Deviance explained = 1.87%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UBRE = -0.79402  Scale est. = 1         n = 1937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> R-sq.(adj) =  -0.0245   Deviance explained = 3.79%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UBRE = -0.79476  Scale est. = 1         n = 1937</span>
 <span class="r-in"><span><span class="co">## Alternatively</span></span></span>
 <span class="r-in"><span><span class="fu">pamm</span><span class="op">(</span></span></span>
 <span class="r-in"><span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>,</span></span>

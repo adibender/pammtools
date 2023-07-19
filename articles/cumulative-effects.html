@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="cumulative-effects_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Cumulative Effects</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/cumulative-effects.Rmd" class="external-link"><code>vignettes/cumulative-effects.Rmd</code></a></small>
       <div class="hidden name"><code>cumulative-effects.Rmd</code></div>
@@ -152,9 +152,16 @@
 
     
     
-<p>This vignette provides a short reference for the estimation and interpretation of cumulative effects using <strong><code>pammtools</code></strong>. For a more detailed overview see <span class="citation">Bender and Scheipl (<a href="#ref-Bender2018f" role="doc-biblioref">2018</a>)</span>. In the <a href="cumulative-effects.html#introduction">first section</a>, a short introduction to cumulative effects is provided. In the <a href="cumulative-effects.html#example-sofa-score-and-extubation">second section</a>, we present a worked example on a real data set, including necessary data transformation, model estimation and visualization.</p>
-<details><p><summary>R Setup</summary></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<p>This vignette provides a short reference for the estimation and
+interpretation of cumulative effects using
+<strong><code>pammtools</code></strong>. For a more detailed overview
+see <span class="citation">Bender and Scheipl (<a href="#ref-Bender2018f" role="doc-biblioref">2018</a>)</span>. In the <a href="cumulative-effects.html#introduction">first section</a>, a short
+introduction to cumulative effects is provided. In the <a href="cumulative-effects.html#example-sofa-score-and-extubation">second
+section</a>, we present a worked example on a real data set, including
+necessary data transformation, model estimation and visualization.</p>
+<details><summary>
+R Setup
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -164,30 +171,53 @@
 </details><div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Cumulative effects can be thought of as an extension to the modeling of time-constant effects of time-dependent covariates (TDCs; see vignette on <a href="./tdcovar.html">time-dependent covariates</a>). Standard modeling of TDCs assumes that only the current (or one lagged) value of the covariate can affect the hazard at time <span class="math inline">\(t\)</span>, i.e., <span class="math display">\[\lambda(t|z(t)) = \lambda_0(t)\exp(\beta z(t)).\]</span></p>
-<p>Cumulative effects on the other hand allow the hazard at time <span class="math inline">\(t\)</span> to depend on multiple past observations of the covariate, such that the effect at time <span class="math inline">\(t\)</span> is the sum of all weighted effects of past observations (partial effects). to make this more concrete, consider the following quantities:</p>
+<p>Cumulative effects can be thought of as an extension to the modeling
+of time-constant effects of time-dependent covariates (TDCs; see
+vignette on <a href="./tdcovar.html">time-dependent covariates</a>).
+Standard modeling of TDCs assumes that only the current (or one lagged)
+value of the covariate can affect the hazard at time <span class="math inline">\(t\)</span>, i.e., <span class="math display">\[\lambda(t|z(t)) = \lambda_0(t)\exp(\beta
+z(t)).\]</span></p>
+<p>Cumulative effects on the other hand allow the hazard at time <span class="math inline">\(t\)</span> to depend on multiple past observations
+of the covariate, such that the effect at time <span class="math inline">\(t\)</span> is the sum of all weighted effects of
+past observations (partial effects). to make this more concrete,
+consider the following quantities:</p>
 <ul>
 <li>
 <span class="math inline">\(t\)</span>: the follow-up time</li>
 <li>
-<span class="math inline">\(t_z\)</span>: the time at which the TDC <span class="math inline">\(z\)</span> was observed (exposure time)</li>
+<span class="math inline">\(t_z\)</span>: the time at which the TDC
+<span class="math inline">\(z\)</span> was observed (exposure time)</li>
 <li>
-<span class="math inline">\(z(t_z)\)</span>: the value of covariate <span class="math inline">\(z\)</span> at exposure time <span class="math inline">\(t_z\)</span>
+<span class="math inline">\(z(t_z)\)</span>: the value of covariate
+<span class="math inline">\(z\)</span> at exposure time <span class="math inline">\(t_z\)</span>
 </li>
 <li>
-<span class="math inline">\(\mathbf{z} = \{z(t_{z}):t_z \leq t\}\)</span>: the exposure history of TDC <span class="math inline">\(z\)</span>, i.e., all recorded observations of the TDC (at time t).</li>
+<span class="math inline">\(\mathbf{z} = \{z(t_{z}):t_z \leq
+t\}\)</span>: the exposure history of TDC <span class="math inline">\(z\)</span>, i.e., all recorded observations of the
+TDC (at time t).</li>
 </ul>
-<p>Given these definitions, one possible specification of a model with a cumulative effect was suggested by <span class="citation">Sylvestre and Abrahamowicz (<a href="#ref-Sylvestre2009" role="doc-biblioref">2009</a>)</span> and is given below:</p>
+<p>Given these definitions, one possible specification of a model with a
+cumulative effect was suggested by <span class="citation">Sylvestre and
+Abrahamowicz (<a href="#ref-Sylvestre2009" role="doc-biblioref">2009</a>)</span> and is given below:</p>
 <p><span class="math display">\[
-\lambda(t|\mathbf{z}) = \lambda_0(t)\exp\left(\sum_{t_z \leq t} h(t-t_z)z(t_z)\right)
+\lambda(t|\mathbf{z}) = \lambda_0(t)\exp\left(\sum_{t_z \leq t}
+h(t-t_z)z(t_z)\right)
 \]</span></p>
-<p>Here, past observations are weighted by a (potentially) non-linear function <span class="math inline">\(h\)</span> of the <em>latency</em> (<span class="math inline">\(t-t_z\)</span>), i.e., the time that has passed since covariate <span class="math inline">\(z(t_z)\)</span> was observed, relative to the time of interest <span class="math inline">\(t\)</span>. The cumulative effect is then the sum of all <em>partial effects</em> <span class="math inline">\(h(t-t_z)z(t_z)\)</span>.</p>
+<p>Here, past observations are weighted by a (potentially) non-linear
+function <span class="math inline">\(h\)</span> of the <em>latency</em>
+(<span class="math inline">\(t-t_z\)</span>), i.e., the time that has
+passed since covariate <span class="math inline">\(z(t_z)\)</span> was
+observed, relative to the time of interest <span class="math inline">\(t\)</span>. The cumulative effect is then the sum
+of all <em>partial effects</em> <span class="math inline">\(h(t-t_z)z(t_z)\)</span>.</p>
 <p>The above model also makes some simplifying assumptions, e.g.:</p>
 <ul>
 <li>the partial effect of the TDC (<span class="math inline">\(z\)</span>) is linear in the covariate values</li>
-<li>the weighting function <span class="math inline">\(h\)</span> only depends on the latency, not on the specific combination of follow-up <span class="math inline">\(t\)</span> and <em>exposure time</em> <span class="math inline">\(t_z\)</span>
+<li>the weighting function <span class="math inline">\(h\)</span> only
+depends on the latency, not on the specific combination of follow-up
+<span class="math inline">\(t\)</span> and <em>exposure time</em> <span class="math inline">\(t_z\)</span>
 </li>
-<li>the covariate has been observed in 1 unit steps w.r.t. time-scale <span class="math inline">\(t\)</span>
+<li>the covariate has been observed in 1 unit steps w.r.t. time-scale
+<span class="math inline">\(t\)</span>
 </li>
 </ul>
 <p>A more flexible cumulative effect can be defined as follows:</p>
@@ -197,15 +227,31 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t, t_z, z(t_z))\mathrm{d}t_z,
 <p>with</p>
 <ul>
 <li>
-<span class="math inline">\(g(\mathbf{z},t)\)</span>: the cumulative effect of covariate history <span class="math inline">\(\mathbf{z}\)</span> on the hazard at time <span class="math inline">\(t\)</span> (numerically, the integral is usually approximated by a weighted sum)</li>
+<span class="math inline">\(g(\mathbf{z},t)\)</span>: the cumulative
+effect of covariate history <span class="math inline">\(\mathbf{z}\)</span> on the hazard at time <span class="math inline">\(t\)</span> (numerically, the integral is usually
+approximated by a weighted sum)</li>
 <li>
-<span class="math inline">\(h(t, t_z, z(t_z))\)</span>: the contribution of covariate <span class="math inline">\(z\)</span> observed at time <span class="math inline">\(t_z\)</span> with value <span class="math inline">\(z(t_z)\)</span> to the cumulative effect at time <span class="math inline">\(t\)</span> (<em>partial effect</em> in the following). In the framework of PAMMs, these partial effects ares estimated by penalized splines.</li>
+<span class="math inline">\(h(t, t_z, z(t_z))\)</span>: the
+contribution of covariate <span class="math inline">\(z\)</span>
+observed at time <span class="math inline">\(t_z\)</span> with value
+<span class="math inline">\(z(t_z)\)</span> to the cumulative effect at
+time <span class="math inline">\(t\)</span> (<em>partial effect</em> in
+the following). In the framework of PAMMs, these partial effects ares
+estimated by penalized splines.</li>
 <li>
-<span class="math inline">\(\mathcal{T}(t)\)</span>: the integration limits (lag-lead window) that control how many past observations of <span class="math inline">\(\mathbf{z}\)</span> contribute to the cumulative effect at time <span class="math inline">\(t\)</span>. The minimal requirement is <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z \leq t\}\)</span>, i.e., only past observations of the TDC can contribute to the cumulative effect at time <span class="math inline">\(t\)</span>.</li>
+<span class="math inline">\(\mathcal{T}(t)\)</span>: the integration
+limits (lag-lead window) that control how many past observations of
+<span class="math inline">\(\mathbf{z}\)</span> contribute to the
+cumulative effect at time <span class="math inline">\(t\)</span>. The
+minimal requirement is <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z \leq t\}\)</span>,
+i.e., only past observations of the TDC can contribute to the cumulative
+effect at time <span class="math inline">\(t\)</span>.</li>
 </ul>
-<p>A visual representation of exemplary lag-lead windows is depicted below:</p>
-<details><p><summary> R-Code lag-lead windows </summary></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>A visual representation of exemplary lag-lead windows is depicted
+below:</p>
+<details><summary>
+R-Code lag-lead windows
+</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_ll1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">9</span>, ll_fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span><span class="op">)</span></span>
 <span><span class="va">my_ll_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span>, <span class="va">tlag</span> <span class="op">=</span> <span class="fl">2</span>, <span class="va">tlead</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">t</span> <span class="op">&gt;=</span> <span class="va">tz</span> <span class="op">+</span> <span class="va">tlag</span> <span class="op">&amp;</span> <span class="va">t</span> <span class="op">&lt;</span> <span class="va">tz</span> <span class="op">+</span> <span class="va">tlag</span> <span class="op">+</span> <span class="va">tlead</span></span>
@@ -217,25 +263,49 @@ Illustration of two different lag-lead windows.
 </p>
 </div>
 <ul>
-<li><p>The left panel represents the minimal requirement <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z \leq t\}\)</span>. For example, the observation of the TDC at time <span class="math inline">\(t_z=4\)</span>, starts to contribute to the cumulative effect in interval <span class="math inline">\((4,5]\)</span> and continues to contribute until the last interval <span class="math inline">\((9,10]\)</span>, although with potentially different weights, as, in general, <span class="math inline">\(h(t=5, t_z = 4, z(4))\)</span> can be different to <span class="math inline">\(h(t=10, t_z=4, z(4))\)</span>.</p></li>
-<li><p>The right panel illustrates that a “standard” model for time-to-event data with a constant effect follows as a special case of the general definition of the cumulative effect with lag-lead window <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z = t\}\)</span> and <span class="math inline">\(h(t, t_z, z(t_z)) \equiv \beta z(t)\)</span></p></li>
+<li><p>The left panel represents the minimal requirement <span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z \leq t\}\)</span>. For
+example, the observation of the TDC at time <span class="math inline">\(t_z=4\)</span>, starts to contribute to the
+cumulative effect in interval <span class="math inline">\((4,5]\)</span>
+and continues to contribute until the last interval <span class="math inline">\((9,10]\)</span>, although with potentially
+different weights, as, in general, <span class="math inline">\(h(t=5,
+t_z = 4, z(4))\)</span> can be different to <span class="math inline">\(h(t=10, t_z=4, z(4))\)</span>.</p></li>
+<li><p>The right panel illustrates that a “standard” model for
+time-to-event data with a constant effect follows as a special case of
+the general definition of the cumulative effect with lag-lead window
+<span class="math inline">\(\mathcal{T}(t)=\{t_{z}: t_z = t\}\)</span>
+and <span class="math inline">\(h(t, t_z, z(t_z)) \equiv \beta
+z(t)\)</span></p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="example-sofa-score-and-extubation">Example: SOFA-score and extubation<a class="anchor" aria-label="anchor" href="#example-sofa-score-and-extubation"></a>
 </h2>
-<p>For an illustration of the functionality that <strong><code>pammtools</code></strong> provides to work with cumulative effects, we use (a sample) of the data analyzed in <span class="citation">Heyard et al. (<a href="#ref-Heyard2018" role="doc-biblioref">2018</a>)</span> and provided in the package <strong><code>TBFmultinomial</code></strong> (note that their analyses had a totally different goal, including modeling of competing risks; here we simply use the data for illustrative purposes).</p>
-<p>In the following analysis, we will model the (cause-specific) hazard for the event <code>extubation</code>, considering all competing events as censoring events. Covariates include <code>gender</code>, <code>type</code> (admission type), <code>SAPSadmission</code> (SAPS score at admission) and the time-dependent covariate <code>SOFA</code> score (lower scores indicate better health).</p>
-<p>To use the data for our purposes, we first perform some preprocessing, which produces two data sets:</p>
+<p>For an illustration of the functionality that
+<strong><code>pammtools</code></strong> provides to work with cumulative
+effects, we use (a sample) of the data analyzed in <span class="citation">Heyard et al. (<a href="#ref-Heyard2018" role="doc-biblioref">2018</a>)</span> and provided in the package
+<strong><code>TBFmultinomial</code></strong> (note that their analyses
+had a totally different goal, including modeling of competing risks;
+here we simply use the data for illustrative purposes).</p>
+<p>In the following analysis, we will model the (cause-specific) hazard
+for the event <code>extubation</code>, considering all competing events
+as censoring events. Covariates include <code>gender</code>,
+<code>type</code> (admission type), <code>SAPSadmission</code> (SAPS
+score at admission) and the time-dependent covariate <code>SOFA</code>
+score (lower scores indicate better health).</p>
+<p>To use the data for our purposes, we first perform some
+preprocessing, which produces two data sets:</p>
 <ul>
 <li>
-<code>event_df</code>: Data in “standard” format (one row per subject), that only includes time-constant covariates</li>
+<code>event_df</code>: Data in “standard” format (one row per
+subject), that only includes time-constant covariates</li>
 <li>
-<code>tdc_df</code>: Data containing information on time-dependent covariates (here <code>SOFA</code>) and exposure time <span class="math inline">\(t_z\)</span>
+<code>tdc_df</code>: Data containing information on time-dependent
+covariates (here <code>SOFA</code>) and exposure time <span class="math inline">\(t_z\)</span>
 </li>
 </ul>
-<details><p><summary>R-Code data preprocessing</summary></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<details><summary>
+R-Code data preprocessing
+</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">VAP_data</span>, package <span class="op">=</span> <span class="st">"TBFmultinomial"</span><span class="op">)</span></span>
 <span><span class="co"># create unique IDs</span></span>
 <span><span class="va">VAP_data</span> <span class="op">&lt;-</span> <span class="va">VAP_data</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -291,18 +361,26 @@ Illustration of two different lag-lead windows.
 <span><span class="co">## <span style="color: #BCBCBC;">6</span>     3     0    10</span></span></code></pre>
 <div class="figure" style="text-align: center">
 <img src="cumulative-effects_files/figure-html/unnamed-chunk-7-1.png" alt="SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement." width="600px"><p class="caption">
-SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement.
+SOFA profiles for individual patients. Each line represents a patient,
+each pixel represents a measurement.
 </p>
 </div>
 <div class="section level3">
 <h3 id="data-transformation">Data transformation<a class="anchor" aria-label="anchor" href="#data-transformation"></a>
 </h3>
-<p>For illustration, we fit a DLNM <span class="citation">(Gasparrini et al. <a href="#ref-Gasparrini2017" role="doc-biblioref">2017</a>)</span> with cumulative effect of the SOFA score (<span class="math inline">\(z\)</span>) as defined below:</p>
+<p>For illustration, we fit a DLNM <span class="citation">(<a href="#ref-Gasparrini2017" role="doc-biblioref">Gasparrini et al.
+2017</a>)</span> with cumulative effect of the SOFA score (<span class="math inline">\(z\)</span>) as defined below:</p>
 <p><span class="math display">\[
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
 \]</span></p>
-<p>with <span class="math inline">\(\mathcal{T}(t) = \{t_z: t_z \leq t \leq t_z + 5\}\)</span>, which means that only the SOFA scores observed within the last five days can affect the hazard at time <span class="math inline">\(t\)</span>.</p>
-<p><a href="https://adibender.github.io/pammtools/articles/data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects">Remember</a> that the specification of the partial effect <span class="math inline">\(h(t,t_z, z(t_z))\)</span> as well as the definition of the lag-lead window are important parts of the analysis and need to be considered at the beginning of the analysis as this information goes into the code for the data transformation:</p>
+<p>with <span class="math inline">\(\mathcal{T}(t) = \{t_z: t_z \leq t
+\leq t_z + 5\}\)</span>, which means that only the SOFA scores observed
+within the last five days can affect the hazard at time <span class="math inline">\(t\)</span>.</p>
+<p><a href="https://adibender.github.io/pammtools/articles/data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects">Remember</a>
+that the specification of the partial effect <span class="math inline">\(h(t,t_z, z(t_z))\)</span> as well as the
+definition of the lag-lead window are important parts of the analysis
+and need to be considered at the beginning of the analysis as this
+information goes into the code for the data transformation:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">event_df</span>, <span class="va">tdc_df</span><span class="op">)</span>,</span>
@@ -313,13 +391,19 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)}h(t-t_z, z(t_z))\mathrm{d}t_z,
 <span><span class="va">ped</span><span class="op">$</span><span class="va">day_latency</span> <span class="op">&lt;-</span> <span class="va">ped</span><span class="op">$</span><span class="va">day_latency</span> <span class="op">*</span> <span class="va">ped</span><span class="op">$</span><span class="va">LL</span></span></code></pre></div>
 <p>Above, we</p>
 <ul>
-<li>used the formula special <code>cumulative</code> to inform <code>as_ped</code> to perform data preprocessing in order to fit cumulative effects</li>
-<li>wrapped the variable <code>day</code> (<span class="math inline">\(t_z\)</span>) within the <code>latency</code> function to calculate <span class="math inline">\(t - t_z\)</span>
+<li>used the formula special <code>cumulative</code> to inform
+<code>as_ped</code> to perform data preprocessing in order to fit
+cumulative effects</li>
+<li>wrapped the variable <code>day</code> (<span class="math inline">\(t_z\)</span>) within the <code>latency</code>
+function to calculate <span class="math inline">\(t - t_z\)</span>
 </li>
-<li>customized the <code>ll_fun</code> argument to match the desired specification of <span class="math inline">\(\mathcal{T}(t)\)</span>
+<li>customized the <code>ll_fun</code> argument to match the desired
+specification of <span class="math inline">\(\mathcal{T}(t)\)</span>
 </li>
 </ul>
-<p>Note that the data now contains 3 matrix columns (<code>day_latency</code>, <code>SOFA</code> and <code>LL</code>; the latter stores the lag-lead matrix <span class="math inline">\(\mathcal{T}(t)\)</span>):</p>
+<p>Note that the data now contains 3 matrix columns
+(<code>day_latency</code>, <code>SOFA</code> and <code>LL</code>; the
+latter stores the lag-lead matrix <span class="math inline">\(\mathcal{T}(t)\)</span>):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Classes 'fped', 'ped' and 'data.frame':  1514 obs. of  12 variables:</span></span>
@@ -340,7 +424,12 @@ Lag-lead window for the first 10 days of the follow-up.
 <div class="section level3">
 <h3 id="model-estimation">Model estimation<a class="anchor" aria-label="anchor" href="#model-estimation"></a>
 </h3>
-<p>After successful data transformation with <code>as_ped</code>, the model can be estimated directly using <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>. Including matrix columns into the model specification will inform <code>gam</code> to estimate cumulative effects. In our case the the following call estimates the DLNM with a cumulative effect (of the SOFA score) as specified above:</p>
+<p>After successful data transformation with <code>as_ped</code>, the
+model can be estimated directly using <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>. Including
+matrix columns into the model specification will inform <code>gam</code>
+to estimate cumulative effects. In our case the the following call
+estimates the DLNM with a cumulative effect (of the SOFA score) as
+specified above:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">type</span> <span class="op">+</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">SAPSadmission</span> <span class="op">+</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">te</a></span><span class="op">(</span><span class="va">day_latency</span>, <span class="va">SOFA</span>, by <span class="op">=</span> <span class="va">LL</span><span class="op">)</span>,</span>
@@ -376,34 +465,71 @@ Lag-lead window for the first 10 days of the follow-up.
 <div class="section level3">
 <h3 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
 </h3>
-<p>Interpretation of the estimated cumulative effects is best performed by visualization of either the partial effects or the cumulative effect. <strong><code>pammtools</code></strong> provides a couple of convenience functions that facilitate this process:</p>
+<p>Interpretation of the estimated cumulative effects is best performed
+by visualization of either the partial effects or the cumulative effect.
+<strong><code>pammtools</code></strong> provides a couple of convenience
+functions that facilitate this process:</p>
 <ul>
 <li>
-<code>gg_tensor</code>: This visualizes 2D effect surfaces as heat maps/contour plots and is based on the output of <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code>
+<code>gg_tensor</code>: This visualizes 2D effect surfaces as heat
+maps/contour plots and is based on the output of
+<code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code>
 </li>
 <li>
-<code>gg_partial</code> and <code>gg_partial_ll</code>: The former visualizes the estimated partial effect, e.g., <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each combination of the (specified) input, the latter visualizes the partial effects as a heat-map within the specified lag-lead window (this makes it easier to see which partial effects actually contribute to the cumulative effect in a specific interval)</li>
+<code>gg_partial</code> and <code>gg_partial_ll</code>: The former
+visualizes the estimated partial effect, e.g., <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each
+combination of the (specified) input, the latter visualizes the partial
+effects as a heat-map within the specified lag-lead window (this makes
+it easier to see which partial effects actually contribute to the
+cumulative effect in a specific interval)</li>
 <li>
-<code>gg_slice</code>: Plots 1D slices of 2D surfaces and can be used more generally to plot covariate effects conditional on pre-specified values of other covariates.</li>
+<code>gg_slice</code>: Plots 1D slices of 2D surfaces and can be
+used more generally to plot covariate effects conditional on
+pre-specified values of other covariates.</li>
 <li>
-<code>gg_cumu_eff</code>: Either plots the estimated cumulative effect <span class="math inline">\(\hat g(\mathbf{z}, t)\)</span> for a given <span class="math inline">\(\mathbf{z}\)</span> or the (log-) hazard ratio <span class="math inline">\(\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)\)</span>
+<code>gg_cumu_eff</code>: Either plots the estimated cumulative
+effect <span class="math inline">\(\hat g(\mathbf{z}, t)\)</span> for a
+given <span class="math inline">\(\mathbf{z}\)</span> or the (log-)
+hazard ratio <span class="math inline">\(\log\left(\frac{\hat
+g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)\)</span>
 </li>
 </ul>
-<p>Note that for each of these plot functions there are respective functions to retrieve the data used for plotting such that the plots can be generated and customized manually (see especially examples in <code>make_newdata</code>).</p>
+<p>Note that for each of these plot functions there are respective
+functions to retrieve the data used for plotting such that the plots can
+be generated and customized manually (see especially examples in
+<code>make_newdata</code>).</p>
 <div class="section level4">
 <h4 id="d-partial-effect-surface">2D partial effect surface<a class="anchor" aria-label="anchor" href="#d-partial-effect-surface"></a>
 </h4>
-<p>The code below visualizes the estimated 2D partial effect <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each combination of latency and SOFA score (including confidence intervals). The gray areas indicate combinations that did not occur in the data.</p>
+<p>The code below visualizes the estimated 2D partial effect <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> for each
+combination of latency and SOFA score (including confidence intervals).
+The gray areas indicate combinations that did not occur in the data.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">mod</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"SOFA"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"latency (day)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-12-1.png" width="650px" style="display: block; margin: auto;"></p>
-<p>This illustrates that a low SOFA score substantially increases the log-hazard if it was observed recently (latency <span class="math inline">\(&lt;\)</span> 2 days), while partial effects of the SOFA score observed further in the past (latency <span class="math inline">\(&gt;\)</span> 3 days) go towards zero (the event of interest is “extubation”, therefore increased (log-)hazards imply increased probabilities of extubation). Note that for this graphic, the function <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> is evaluated at values of <span class="math inline">\(t-t_z\)</span> (<code>day_latency</code>) that are not present in the data.</p>
-<p>Alternatively, the function <code>gg_partial</code> can be used to produce similar visualizations and allows more control over the inputs. For example, the following code produces the partial effect surface plot evaluated only at latencies 0 through 5 and calculates the partial effects relative to a patient with SOFA score 10 (everything else being equal):</p>
+<p>This illustrates that a low SOFA score substantially increases the
+log-hazard if it was observed recently (latency <span class="math inline">\(&lt;\)</span> 2 days), while partial effects of
+the SOFA score observed further in the past (latency <span class="math inline">\(&gt;\)</span> 3 days) go towards zero (the event
+of interest is “extubation”, therefore increased (log-)hazards imply
+increased probabilities of extubation). Note that for this graphic, the
+function <span class="math inline">\(\hat h(t-t_z, z(t_z))\)</span> is
+evaluated at values of <span class="math inline">\(t-t_z\)</span>
+(<code>day_latency</code>) that are not present in the data.</p>
+<p>Alternatively, the function <code>gg_partial</code> can be used to
+produce similar visualizations and allows more control over the inputs.
+For example, the following code produces the partial effect surface plot
+evaluated only at latencies 0 through 5 and calculates the partial
+effects relative to a patient with SOFA score 10 (everything else being
+equal):</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_partial.html">gg_partial</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>, day_latency <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>  SOFA <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">SOFA</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, LL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SOFA <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cumulative-effects_files/figure-html/unnamed-chunk-13-1.png" width="400px" style="display: block; margin: auto;"> See also <code>gg_partial_ll</code> that shows the lag-lead window and partial effects that contribute to the cumulative effect in each interval. Due to the definition of the partial effect, however, these are constant in this case, as no time-variation was specified.</p>
+<p><img src="cumulative-effects_files/figure-html/unnamed-chunk-13-1.png" width="400px" style="display: block; margin: auto;">
+See also <code>gg_partial_ll</code> that shows the lag-lead window and
+partial effects that contribute to the cumulative effect in each
+interval. Due to the definition of the partial effect, however, these
+are constant in this case, as no time-variation was specified.</p>
 </div>
 <div class="section level4">
 <h4 id="d-conditional-effects-slices-through-the-2d-surface">1D conditional effects (slices through the 2D surface):<a class="anchor" aria-label="anchor" href="#d-conditional-effects-slices-through-the-2d-surface"></a>
@@ -415,16 +541,37 @@ Lag-lead window for the first 10 days of the follow-up.
 <span>  day_latency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, SOFA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">SOFA</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p_slice_latency</span>, <span class="va">p_slice_sofa</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cumulative-effects_files/figure-html/unnamed-chunk-14-1.png" width="650px" style="display: block; margin: auto;"></p>
-<p>These plots contain essentially the same information as the 2D surface, but focus on isolating the effects of the individual variables. This can be especially useful for three-dimensional partial effects which are hard to visualize otherwise.</p>
+<p>These plots contain essentially the same information as the 2D
+surface, but focus on isolating the effects of the individual variables.
+This can be especially useful for three-dimensional partial effects
+which are hard to visualize otherwise.</p>
 </div>
 <div class="section level4">
 <h4 id="cumulative-effects">Cumulative effects<a class="anchor" aria-label="anchor" href="#cumulative-effects"></a>
 </h4>
-<p>Since it can be difficult to assess how the estimated partial effects actually affect estimated hazard rates, <strong><code>pammtools</code></strong> provides additional functions to visualize and compare estimated cumulative effects on the level of the (log-)hazard rates for given TDCs <span class="math inline">\(\mathbf{z}\)</span>.</p>
-<p>Below, we visualize the cumulative effect in each interval of the follow-up. Since the effect depends on a TDC <span class="math inline">\(\mathbf{z}\)</span>, its values must be provided in the call to <code>gg_cumu_eff</code> as <code>z1</code> argument (either length 1 for time-constant values or length equal to maximum number of times <span class="math inline">\(z(t_z)\)</span> was observed). If <code>z2</code> is additionally specified, the log-hazard ratio is calculated as <span class="math inline">\(\log\left(\frac{\hat g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)\)</span>. Below, two such log-hazard ratios are visualized for two different comparisons of SOFA score profiles:</p>
+<p>Since it can be difficult to assess how the estimated partial effects
+actually affect estimated hazard rates,
+<strong><code>pammtools</code></strong> provides additional functions to
+visualize and compare estimated cumulative effects on the level of the
+(log-)hazard rates for given TDCs <span class="math inline">\(\mathbf{z}\)</span>.</p>
+<p>Below, we visualize the cumulative effect in each interval of the
+follow-up. Since the effect depends on a TDC <span class="math inline">\(\mathbf{z}\)</span>, its values must be provided
+in the call to <code>gg_cumu_eff</code> as <code>z1</code> argument
+(either length 1 for time-constant values or length equal to maximum
+number of times <span class="math inline">\(z(t_z)\)</span> was
+observed). If <code>z2</code> is additionally specified, the log-hazard
+ratio is calculated as <span class="math inline">\(\log\left(\frac{\hat
+g(\mathbf{z}_1, t)}{\hat g(\mathbf{z}_2, t)}\right)\)</span>. Below, two
+such log-hazard ratios are visualized for two different comparisons of
+SOFA score profiles:</p>
 <ul>
-<li>On the left hand side, a patient with SOFA scores continuously decreasing throughout the follow-up is compared to a patient with constant SOFA score of 10</li>
-<li>On the right hand side, a patient with SOFA scores increasing throughout the follow-up is compared to a patient with SOFA score 0 on the first 10 days, score 20 on the following 20 days and score 5 on the last 20 days of the follow-up.</li>
+<li>On the left hand side, a patient with SOFA scores continuously
+decreasing throughout the follow-up is compared to a patient with
+constant SOFA score of 10</li>
+<li>On the right hand side, a patient with SOFA scores increasing
+throughout the follow-up is compared to a patient with SOFA score 0 on
+the first 10 days, score 20 on the following 20 days and score 5 on the
+last 20 days of the follow-up.</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_cumu1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cumu_eff.html">gg_cumu_eff</a></span><span class="op">(</span><span class="va">ped</span>, <span class="va">mod</span>, term <span class="op">=</span> <span class="st">"SOFA"</span>,</span>
@@ -440,20 +587,30 @@ Lag-lead window for the first 10 days of the follow-up.
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-Bender2018f">
-<p>Bender, Andreas, and Fabian Scheipl. 2018. “Pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.” <em>arXiv:1806.01042 [Stat]</em>. <a href="http://arxiv.org/abs/1806.01042" class="external-link">http://arxiv.org/abs/1806.01042</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bender2018f" class="csl-entry">
+Bender, Andreas, and Fabian Scheipl. 2018. <span>“Pammtools: Piece-Wise
+Exponential Additive Mixed Modeling Tools.”</span> <em>arXiv:1806.01042
+[Stat]</em>. <a href="http://arxiv.org/abs/1806.01042" class="external-link">http://arxiv.org/abs/1806.01042</a>.
 </div>
-<div id="ref-Gasparrini2017">
-<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="external-link">https://doi.org/10.1111/biom.12645</a>.</p>
+<div id="ref-Gasparrini2017" class="csl-entry">
+Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G.
+Kenward. 2017. <span>“A Penalized Framework for Distributed Lag
+Non-Linear Models.”</span> <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="external-link">https://doi.org/10.1111/biom.12645</a>.
 </div>
-<div id="ref-Heyard2018">
-<p>Heyard, Rachel, Jean-François Timsit, Wafa Ibn Essaied, and Leonhard Held. 2018. “Dynamic Clinical Prediction Models for Discrete Time-to-Event Data with Competing Risks—A Case Study on the OUTCOMEREA Database.” <em>Biometrical Journal</em> 0 (0). <a href="https://doi.org/10.1002/bimj.201700259" class="external-link">https://doi.org/10.1002/bimj.201700259</a>.</p>
+<div id="ref-Heyard2018" class="csl-entry">
+Heyard, Rachel, Jean-François Timsit, Wafa Ibn Essaied, and Leonhard
+Held. 2018. <span>“Dynamic Clinical Prediction Models for Discrete
+Time-to-Event Data with Competing Risks—<span>A</span> Case Study on the
+<span>OUTCOMEREA</span> Database.”</span> <em>Biometrical Journal</em> 0
+(0). <a href="https://doi.org/10.1002/bimj.201700259" class="external-link">https://doi.org/10.1002/bimj.201700259</a>.
 </div>
-<div id="ref-Sylvestre2009">
-<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="external-link">https://doi.org/10.1002/sim.3701</a>.</p>
+<div id="ref-Sylvestre2009" class="csl-entry">
+Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. <span>“Flexible
+Modeling of the Cumulative Effects of Time-Dependent Exposures on the
+Hazard.”</span> <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="external-link">https://doi.org/10.1002/sim.3701</a>.
 </div>
 </div>
 </div>

@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="splines_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Non-linear effects (penalized splines)</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/splines.Rmd" class="external-link"><code>vignettes/splines.Rmd</code></a></small>
       <div class="hidden name"><code>splines.Rmd</code></div>
@@ -163,7 +163,8 @@
 <div class="section level2">
 <h2 id="veterans-data">Veteran’s data<a class="anchor" aria-label="anchor" href="#veterans-data"></a>
 </h2>
-<p>We first illustrate the estimation on non-linear smooth effects using the <code>veteran</code> data from the survival package:</p>
+<p>We first illustrate the estimation on non-linear smooth effects using
+the <code>veteran</code> data from the survival package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package<span class="op">=</span><span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran package</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in data("veteran", package = "survival"): data set 'veteran' not found</span></span></code></pre>
@@ -181,7 +182,9 @@
 <span><span class="co">## 5   1 squamous  118      1    70       11  65     1</span></span>
 <span><span class="co">## 6   1 squamous   10      1    20        5  49     0</span></span>
 <span><span class="co">## 7   1 squamous   82      1    40       10  69     1</span></span></code></pre>
-<p>There are two continuous covariates in the data set that could potentially exhibit non-linear effects, <code>age</code> and <code>karno</code>. We fit a Cox-PH model and a PAM of the form</p>
+<p>There are two continuous covariates in the data set that could
+potentially exhibit non-linear effects, <code>age</code> and
+<code>karno</code>. We fit a Cox-PH model and a PAM of the form</p>
 <p><span class="math display">\[
 \lambda(t|x) = \lambda_0(t)\exp(f(x_{karno}))
 \]</span></p>
@@ -196,9 +199,10 @@
 <span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, id<span class="op">=</span><span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">karno</span>, bs<span class="op">=</span><span class="st">"ps"</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></code></pre></div>
-<p>The Figure below visualizes the smooth estimates from both models:</p>
-<details><p><summary><em>Expand here to see R-Code</em></summary></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>The Figure below visualizes the smooth estimates from both
+models:</p>
+<details><summary><em>Expand here to see R-Code</em>
+</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># crate data set with varying karno values (from min to max in 100 steps)</span></span>
 <span><span class="co"># and add term contribution of karno from PAM and Cox-PH models</span></span>
 <span><span class="va">karno_df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>karno <span class="op">=</span> <span class="fu"><a href="../reference/seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">karno</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -214,16 +218,23 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu">plain</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu">plain</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># gg_karno</span></span></code></pre></div>
 </details><p><img src="splines_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>Both methods are in good agreement. The higher the Karnofsky-Score the lower the expected log-hazard. For further evaluation of the Karnofsky-Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see the <a href="tveffects.html">time-varying effects vignette</a>.</p>
+<p>Both methods are in good agreement. The higher the Karnofsky-Score
+the lower the expected log-hazard. For further evaluation of the
+Karnofsky-Score effect using time-varying terms of the form <span class="math inline">\(f(t)\cdot x_{karno}\)</span> and <span class="math inline">\(f(x_{karno}, t)\)</span> see the <a href="tveffects.html">time-varying effects vignette</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="mgus-data-age-example">MGUS data: age example<a class="anchor" aria-label="anchor" href="#mgus-data-age-example"></a>
 </h2>
-<p>In the following we consider another example using using data presented in the respective vignette in the <code>survival</code> package (see <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/splines.pdf" class="external-link">vignette("splines", package = "survival")</a></code>).</p>
+<p>In the following we consider another example using using data
+presented in the respective vignette in the <code>survival</code>
+package (see
+<code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/splines.pdf" class="external-link">vignette("splines", package = "survival")</a></code>).</p>
 <div class="section level3">
 <h3 id="cox-ph-workflow">Cox PH workflow<a class="anchor" aria-label="anchor" href="#cox-ph-workflow"></a>
 </h3>
-<p>The example presented in the vignette goes as follows, using the standard base R workflow and <code>termplot</code> for visualization:</p>
+<p>The example presented in the vignette goes as follows, using the
+standard base R workflow and <code>termplot</code> for
+visualization:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"mgus"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in data("mgus", package = "survival"): data set 'mgus' not found</span></span></code></pre>
@@ -251,7 +262,9 @@
 <div class="section level3">
 <h3 id="pam-workflow">PAM workflow<a class="anchor" aria-label="anchor" href="#pam-workflow"></a>
 </h3>
-<p>The equivalent fit using PAMs requires the additional step of transforming the data into a suitable format. We then use <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> to fit the model:</p>
+<p>The equivalent fit using PAMs requires the additional step of
+transforming the data into a suitable format. We then use
+<code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> to fit the model:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mgus.ped</span> <span class="op">&lt;-</span> <span class="va">mgus</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">sex</span> <span class="op">+</span> <span class="va">age</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mgus.ped</span><span class="op">)</span></span></code></pre></div>
@@ -289,18 +302,23 @@
 <span><span class="co">## </span></span>
 <span><span class="co">## R-sq.(adj) =  0.000299   Deviance explained = 5.19%</span></span>
 <span><span class="co">## -REML = 1350.2  Scale est. = 1         n = 28326</span></span></code></pre>
-<p>For visualization of the smooth effects we can use the default <code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code> function:</p>
+<p>For visualization of the smooth effects we can use the default
+<code><a href="https://rdrr.io/pkg/mgcv/man/plot.gam.html" class="external-link">mgcv::plot.gam</a></code> function:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mfit</span>, term <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, col.term <span class="op">=</span> <span class="fl">1</span>, col.se <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pamfit</span>, select <span class="op">=</span> <span class="fl">2</span>, se <span class="op">=</span> <span class="cn">TRUE</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="splines_files/figure-html/figpam1-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>In this example the PAM approach estimates a linear effect of age, which is consistent with the estimation using <code>coxph</code>, as there is only weak non-linearity.</p>
+<p>In this example the PAM approach estimates a linear effect of age,
+which is consistent with the estimation using <code>coxph</code>, as
+there is only weak non-linearity.</p>
 </div>
 <div class="section level3">
 <h3 id="mgus-data-hemoglobin-example">MGUS data: Hemoglobin example<a class="anchor" aria-label="anchor" href="#mgus-data-hemoglobin-example"></a>
 </h3>
-<p>Another example from the same vignette shows that estimated effects are very similar if the effect of the covariate is in fact strongly non-linear:</p>
+<p>Another example from the same vignette shows that estimated effects
+are very similar if the effect of the covariate is in fact strongly
+non-linear:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">hgb</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">mgus2</span><span class="op">)</span></span>
 <span><span class="va">mgus2.ped</span> <span class="op">&lt;-</span> <span class="va">mgus2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">futime</span>, <span class="va">death</span><span class="op">)</span><span class="op">~</span><span class="va">age</span> <span class="op">+</span> <span class="va">hgb</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
@@ -315,7 +333,15 @@
 <div class="section level3">
 <h3 id="monotonicity-constraints">Monotonicity constraints<a class="anchor" aria-label="anchor" href="#monotonicity-constraints"></a>
 </h3>
-<p>The vignette in the <code>survival</code> package further discusses enforcing monotonicity constraints on the effect of <code>hgb</code>. These can be achieved here more easily using the functionality provided in the <code>scam</code> package (see also <span class="citation">Pya and Wood (2015)</span>). The usage is exactly the same as before, replacing the call to <code>gam</code> with a call to <code>scam</code> and specifying <code>bs = "mpd"</code>. Note that the fit using constraints takes considerably longer compared to the unconstrained fit.</p>
+<p>The vignette in the <code>survival</code> package further discusses
+enforcing monotonicity constraints on the effect of <code>hgb</code>.
+These can be achieved here more easily using the functionality provided
+in the <code>scam</code> package (see also <span class="citation">Pya
+and Wood (2015)</span>). The usage is exactly the same as before,
+replacing the call to <code>gam</code> with a call to <code>scam</code>
+and specifying <code>bs = "mpd"</code>. Note that the fit using
+constraints takes considerably longer compared to the unconstrained
+fit.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scam</span><span class="op">)</span></span>
 <span><span class="va">mpam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scam/man/scam.html" class="external-link">scam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">hgb</span>, bs <span class="op">=</span> <span class="st">"mpd"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mgus2.ped</span>,</span>
@@ -330,11 +356,12 @@
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-pya2015">
-<p>Pya, Natalya, and Simon N Wood. 2015. “Shape Constrained Additive Models.” <em>Statistics and Computing</em> 25 (3): 543–59.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-pya2015" class="csl-entry">
+Pya, Natalya, and Simon N Wood. 2015. <span>“Shape Constrained Additive
+Models.”</span> <em>Statistics and Computing</em> 25 (3): 543–59.
 </div>
 </div>
 </div>

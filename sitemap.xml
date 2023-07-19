@@ -247,6 +247,9 @@
     <loc>https://adibender.github.io/pammtools/reference/sim_pexp.html</loc>
   </url>
   <url>
+    <loc>https://adibender.github.io/pammtools/reference/sim_pexp_cr.html</loc>
+  </url>
+  <url>
     <loc>https://adibender.github.io/pammtools/reference/simdf_elra.html</loc>
   </url>
   <url>
@@ -256,7 +259,7 @@
     <loc>https://adibender.github.io/pammtools/reference/split_data.html</loc>
   </url>
   <url>
-    <loc>https://adibender.github.io/pammtools/reference/split_data_recurrent.html</loc>
+    <loc>https://adibender.github.io/pammtools/reference/split_data_multistate.html</loc>
   </url>
   <url>
     <loc>https://adibender.github.io/pammtools/reference/staph.html</loc>

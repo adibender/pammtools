@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="strata_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Stratified baseline</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/strata.Rmd" class="external-link"><code>vignettes/strata.Rmd</code></a></small>
       <div class="hidden name"><code>strata.Rmd</code></div>
@@ -163,9 +163,15 @@
 <div class="section level2">
 <h2 id="stratified-baselines">Stratified baselines<a class="anchor" aria-label="anchor" href="#stratified-baselines"></a>
 </h2>
-<p>In some cases the proportional hazards assumption for different groups (levels of a factor variable) is violated. One approach to resolve this problem is to fit a so called <em>stratified</em> Cox model, where each level <span class="math inline">\(k=1,\ldots,K\)</span> of factor variable <span class="math inline">\(z\)</span> will have its own baseline-hazard:</p>
-<p><span class="math inline">\(\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)\)</span>.</p>
-<p>For illustration we again use the <code>veteran</code> data (censored at day 400) from the <code>survival</code> package, where the cell type of the lung cancer had four levels:</p>
+<p>In some cases the proportional hazards assumption for different
+groups (levels of a factor variable) is violated. One approach to
+resolve this problem is to fit a so called <em>stratified</em> Cox
+model, where each level <span class="math inline">\(k=1,\ldots,K\)</span> of factor variable <span class="math inline">\(z\)</span> will have its own baseline-hazard:</p>
+<p><span class="math inline">\(\lambda(t|z, x)=\lambda_{0k}(t,
+z)\exp(x'\beta)\)</span>.</p>
+<p>For illustration we again use the <code>veteran</code> data (censored
+at day 400) from the <code>survival</code> package, where the cell type
+of the lung cancer had four levels:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span><span class="op">)</span> <span class="co"># load veteran data</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in data("veteran"): data set 'veteran' not found</span></span></code></pre>
@@ -182,7 +188,9 @@
 <div class="section level3">
 <h3 id="stratified-cox-model">Stratified Cox model<a class="anchor" aria-label="anchor" href="#stratified-cox-model"></a>
 </h3>
-<p>Fitting a stratified Cox model using the <code>coxph</code> function from the <code>survival</code> package is simple, including a <code>strata</code> term in the model formula.</p>
+<p>Fitting a stratified Cox model using the <code>coxph</code> function
+from the <code>survival</code> package is simple, including a
+<code>strata</code> term in the model formula.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cph</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/strata.html" class="external-link">strata</a></span><span class="op">(</span><span class="va">celltype</span><span class="op">)</span>, data<span class="op">=</span><span class="va">veteran</span><span class="op">)</span></span>
 <span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/basehaz.html" class="external-link">basehaz</a></span><span class="op">(</span><span class="va">cph</span><span class="op">)</span></span></code></pre></div>
@@ -197,13 +205,19 @@
 <div class="section level3">
 <h3 id="stratified-pam">Stratified PAM<a class="anchor" aria-label="anchor" href="#stratified-pam"></a>
 </h3>
-<p>We can obtain similar results with PAMs by fitting one smooth baseline estimate for each category of <code>celltype</code> in the data. Technically, we specify the <code>by</code> argument in <code>mgcv</code> <code>s(...)</code> function.</p>
-<p>Note that in contrast to the model specification in <code>coxph</code> we need to include the <code>celltype</code> factor variable in the model specification:</p>
+<p>We can obtain similar results with PAMs by fitting one smooth
+baseline estimate for each category of <code>celltype</code> in the
+data. Technically, we specify the <code>by</code> argument in
+<code>mgcv</code> <code>s(...)</code> function.</p>
+<p>Note that in contrast to the model specification in
+<code>coxph</code> we need to include the <code>celltype</code> factor
+variable in the model specification:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id<span class="op">=</span><span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="va">celltype</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by<span class="op">=</span><span class="va">celltype</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>,</span>
 <span>    family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></code></pre></div>
-<p>Comparing the estimated baselines we get very similar results between the stratified Cox and stratified PAM models.</p>
+<p>Comparing the estimated baselines we get very similar results between
+the stratified Cox and stratified PAM models.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pinf</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">celltype</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -223,11 +237,19 @@
 <div class="section level3">
 <h3 id="stratified-proportional-hazards-model">Stratified Proportional Hazards Model<a class="anchor" aria-label="anchor" href="#stratified-proportional-hazards-model"></a>
 </h3>
-<p>Both models can be easily extended to incorporate further covariates. If we assume that the covariate effects are not time-varying, this extension constitutes a so called stratified proportional hazards model. For example, including effects for treatment (<code>trt</code>), age (<code>age</code>) and the Karnofsky-Score (<code>karno</code>), we get the model</p>
+<p>Both models can be easily extended to incorporate further covariates.
+If we assume that the covariate effects are not time-varying, this
+extension constitutes a so called stratified proportional hazards model.
+For example, including effects for treatment (<code>trt</code>), age
+(<code>age</code>) and the Karnofsky-Score (<code>karno</code>), we get
+the model</p>
 <p><span class="math display">\[
 \lambda(t|z, \mathbf{x}) =
-  \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} + \beta_3\cdot x_{age})
-\]</span> where <span class="math inline">\(\lambda_{0k}(t)\)</span> is the baseline for observation with cell type <span class="math inline">\(k\)</span>, <span class="math inline">\(k\in \{squamos,\ smallcell,\ adeno,\ large\}\)</span>:</p>
+  \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} +
+\beta_3\cdot x_{age})
+\]</span> where <span class="math inline">\(\lambda_{0k}(t)\)</span> is
+the baseline for observation with cell type <span class="math inline">\(k\)</span>, <span class="math inline">\(k\in
+\{squamos,\ smallcell,\ adeno,\ large\}\)</span>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cph2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">cph</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">karno</span><span class="op">)</span></span>
 <span><span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">pam</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">karno</span><span class="op">)</span></span>
@@ -236,7 +258,8 @@
 <span><span class="co">## trt    0.31096123  0.32764309</span></span>
 <span><span class="co">## age   -0.01642337 -0.01679495</span></span>
 <span><span class="co">## karno -0.03670427 -0.03696870</span></span></code></pre>
-<p>Again, covariate estimates are very similar between the two models and can be interpreted in the same way.</p>
+<p>Again, covariate estimates are very similar between the two models
+and can be interpreted in the same way.</p>
 </div>
 </div>
   </div>

@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="data-transformation_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Transformation</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/data-transformation.Rmd" class="external-link"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -156,21 +156,37 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span></code></pre></div>
-<p>In this vignette we provide details on transforming data into a format suitable to fit piece-wise exponential (additive) models (PAM). Three main cases need to be distinguished</p>
+<p>In this vignette we provide details on transforming data into a
+format suitable to fit piece-wise exponential (additive) models (PAM).
+Three main cases need to be distinguished</p>
 <ol style="list-style-type: decimal">
-<li><p><a href="data-transformation.html#standard-time-to-event-data">Data without time-dependent covariates</a></p></li>
-<li><p><a href="data-transformation.html#left-truncated-data">Left-truncated data</a></p></li>
-<li><p><a href="data-transformation.html#data-with-time-dependent-covariates">Data with time-dependent covariates</a></p></li>
-<li><p><a href="data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects">Data with time-dependent covariates that should be modeled as cumulative effects</a></p></li>
+<li><p><a href="data-transformation.html#standard-time-to-event-data">Data without
+time-dependent covariates</a></p></li>
+<li><p><a href="data-transformation.html#left-truncated-data">Left-truncated
+data</a></p></li>
+<li><p><a href="data-transformation.html#data-with-time-dependent-covariates">Data
+with time-dependent covariates</a></p></li>
+<li><p><a href="data-transformation.html#data-with-time-dependent-covariates-with-cumulative-effects">Data
+with time-dependent covariates that should be modeled as cumulative
+effects</a></p></li>
 </ol>
 <div class="section level2">
 <h2 id="standard-time-to-event-data">Standard time-to-event data<a class="anchor" aria-label="anchor" href="#standard-time-to-event-data"></a>
 </h2>
-<p>In the case of “standard” time-to-event the data, the transformation is relatively straight forward and handled by the <code>as_ped</code> (<strong>as</strong> <strong>p</strong>iece-wise <strong>e</strong>xponential <strong>d</strong>ata) function. This function internally calls <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survival::survSplit</a></code>, thus all arguments available for the <code>survSplit</code> function are also available to the <code>as_ped</code> function.</p>
+<p>In the case of “standard” time-to-event the data, the transformation
+is relatively straight forward and handled by the <code>as_ped</code>
+(<strong>as</strong> <strong>p</strong>iece-wise
+<strong>e</strong>xponential <strong>d</strong>ata) function. This
+function internally calls <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survival::survSplit</a></code>, thus all
+arguments available for the <code>survSplit</code> function are also
+available to the <code>as_ped</code> function.</p>
 <div class="section level3">
 <h3 id="using-defaults">Using defaults<a class="anchor" aria-label="anchor" href="#using-defaults"></a>
 </h3>
-<p>As an example data set we first consider a data set of a stomach area tumor available from the <strong><code>pammtools</code></strong> package. Patients were operated on to remove the tumor. Some patients experienced complications during the operation:</p>
+<p>As an example data set we first consider a data set of a stomach area
+tumor available from the <strong><code>pammtools</code></strong>
+package. Patients were operated on to remove the tumor. Some patients
+experienced complications during the operation:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span></span>
 <span><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -187,13 +203,24 @@
 <span><span class="co">## <span style="color: #BCBCBC;">5</span>     5   397      1              2    30 female yes         no           </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">6</span>     6  <span style="text-decoration: underline;">1</span>219      0              2    66 female yes         no           </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 2 more variables: metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span></span></code></pre>
-<p>Each row contains information on the survival time (<code>days</code>), an event indicator (<code>status</code>) as well as information about comorbidities (<code>charlson_score</code>), <code>age</code>, <code>sex</code>, and covariates that might be relevant like whether or not complications occurred (<code>complications</code>) and whether the cancer metastasized (<code>metastases</code>).</p>
-<p>To transform the data into piece-wise exponential data (<code>ped</code>) format, we need to</p>
+<p>Each row contains information on the survival time
+(<code>days</code>), an event indicator (<code>status</code>) as well as
+information about comorbidities (<code>charlson_score</code>),
+<code>age</code>, <code>sex</code>, and covariates that might be
+relevant like whether or not complications occurred
+(<code>complications</code>) and whether the cancer metastasized
+(<code>metastases</code>).</p>
+<p>To transform the data into piece-wise exponential data
+(<code>ped</code>) format, we need to</p>
 <ul>
-<li><p>define <span class="math inline">\(J+1\)</span> interval break points <span class="math inline">\(t_{\min} = \kappa_0 &lt; \kappa_1 &lt; \cdots &lt; \kappa_J = t_{\max}\)</span></p></li>
-<li><p>create <em>pseudo</em>-observations for each interval <span class="math inline">\(j = 1,\ldots, J\)</span> in which subject <span class="math inline">\(i, i = 1,\ldots,n\)</span> was under risk.</p></li>
+<li><p>define <span class="math inline">\(J+1\)</span> interval break
+points <span class="math inline">\(t_{\min} = \kappa_0 &lt; \kappa_1
+&lt; \cdots &lt; \kappa_J = t_{\max}\)</span></p></li>
+<li><p>create <em>pseudo</em>-observations for each interval <span class="math inline">\(j = 1,\ldots, J\)</span> in which subject <span class="math inline">\(i, i = 1,\ldots,n\)</span> was under
+risk.</p></li>
 </ul>
-<p>Using the <code>pammtools</code> package this is easily achieved with the <code>as_ped</code> function as follows:</p>
+<p>Using the <code>pammtools</code> package this is easily achieved with
+the <code>as_ped</code> function as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">132</span>, <span class="fl">141</span>, <span class="fl">145</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -222,13 +249,17 @@
 <span><span class="co">## 21 145      5    6    (5,6] 0.0000000          0  60 male           yes</span></span>
 <span><span class="co">## 22 145      6    7    (6,7] 0.0000000          0  60 male           yes</span></span>
 <span><span class="co">## 23 145      7    8    (7,8] 0.0000000          1  60 male           yes</span></span></code></pre>
-<p>When no cut points are specified, the default is to use the unique event times. As can be seen from the above output, the function creates an <code>id</code> variable, indicating the subjects <span class="math inline">\(i = 1,\ldots,n\)</span>, with one row per interval that the subject “visited”. Thus,</p>
+<p>When no cut points are specified, the default is to use the unique
+event times. As can be seen from the above output, the function creates
+an <code>id</code> variable, indicating the subjects <span class="math inline">\(i = 1,\ldots,n\)</span>, with one row per interval
+that the subject “visited”. Thus,</p>
 <ul>
 <li>subject <code>132</code> was at risk during 4 intervals,</li>
 <li>subject <code>141</code> was at risk during 12 intervals,</li>
 <li>and subject <code>145</code> in 7 intervals.</li>
 </ul>
-<p>In addition to the optional <code>id</code> variable the function also creates</p>
+<p>In addition to the optional <code>id</code> variable the function
+also creates</p>
 <ul>
 <li>
 <code>tstart</code>: the beginning of each interval</li>
@@ -237,15 +268,31 @@
 <li>
 <code>interval</code>: a factor variable denoting the interval</li>
 <li>
-<code>offset</code>: the log of the duration during which the subject was under risk in that interval</li>
+<code>offset</code>: the log of the duration during which the
+subject was under risk in that interval</li>
 </ul>
-<p>Additionally the time-constant covariates (here: <code>age</code>, <code>sex</code>, <code>complications</code>,) are repeated <span class="math inline">\(n_i\)</span> number of times, where <span class="math inline">\(n_i\)</span> is the number of intervals during which subject <span class="math inline">\(i\)</span> was in the risk set.</p>
+<p>Additionally the time-constant covariates (here: <code>age</code>,
+<code>sex</code>, <code>complications</code>,) are repeated <span class="math inline">\(n_i\)</span> number of times, where <span class="math inline">\(n_i\)</span> is the number of intervals during
+which subject <span class="math inline">\(i\)</span> was in the risk
+set.</p>
 </div>
 <div class="section level3">
 <h3 id="custom-cut-points">Custom cut points<a class="anchor" aria-label="anchor" href="#custom-cut-points"></a>
 </h3>
-<p>Per default, the <code>as_ped</code> function uses all unique event times as cut points (which is a sensible default as for example the (cumulative) baseline hazard estimates in Cox-PH functions are also updated at event times). Also, PAMMs represent the baseline hazard via splines whose basis functions are evaluated at the cut points. Using unique events times automatically increases the density of cut points in relevant areas of the follow-up.</p>
-<p>In some cases, however, one might want to reduce the number of cut points, to reduce the size of the resulting data and/or faster estimation times. To do so the <code>cut</code> argument has to be specified. Following the above example, we can use only 4 cut points <span class="math inline">\(\kappa_0 = 0, \kappa_1 = 3, \kappa_2 = 7, \kappa_3 = 15\)</span>, resulting in <span class="math inline">\(J = 3\)</span> intervals:</p>
+<p>Per default, the <code>as_ped</code> function uses all unique event
+times as cut points (which is a sensible default as for example the
+(cumulative) baseline hazard estimates in Cox-PH functions are also
+updated at event times). Also, PAMMs represent the baseline hazard via
+splines whose basis functions are evaluated at the cut points. Using
+unique events times automatically increases the density of cut points in
+relevant areas of the follow-up.</p>
+<p>In some cases, however, one might want to reduce the number of cut
+points, to reduce the size of the resulting data and/or faster
+estimation times. To do so the <code>cut</code> argument has to be
+specified. Following the above example, we can use only 4 cut points
+<span class="math inline">\(\kappa_0 = 0, \kappa_1 = 3, \kappa_2 = 7,
+\kappa_3 = 15\)</span>, resulting in <span class="math inline">\(J =
+3\)</span> intervals:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">tumor</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">15</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
 <span><span class="va">ped2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -260,7 +307,14 @@
 <span><span class="co">## 6 145      0    3    (0,3] 1.0986123          0  60 male           yes</span></span>
 <span><span class="co">## 7 145      3    7    (3,7] 1.3862944          0  60 male           yes</span></span>
 <span><span class="co">## 8 145      7   15   (7,15] 0.0000000          1  60 male           yes</span></span></code></pre>
-<p>Note that now subjects <code>141</code> and <code>145</code> have both three rows in the data set. The fact that subject <code>141</code> was in the risk set of the last interval for a longer time than subject <code>145</code> is, however, still accounted for by the <code>offset</code> variable. Note that the <code>offset</code> for subject <code>145</code> is only <code>0</code>, because the last interval for this subject starts at <span class="math inline">\(t=7\)</span> and the subject experienced and event at <span class="math inline">\(t=8\)</span>, thus <span class="math inline">\(\log(8-7) = 0\)</span></p>
+<p>Note that now subjects <code>141</code> and <code>145</code> have
+both three rows in the data set. The fact that subject <code>141</code>
+was in the risk set of the last interval for a longer time than subject
+<code>145</code> is, however, still accounted for by the
+<code>offset</code> variable. Note that the <code>offset</code> for
+subject <code>145</code> is only <code>0</code>, because the last
+interval for this subject starts at <span class="math inline">\(t=7\)</span> and the subject experienced and event
+at <span class="math inline">\(t=8\)</span>, thus <span class="math inline">\(\log(8-7) = 0\)</span></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 10</span></span></span>
@@ -274,8 +328,14 @@
 <div class="section level2">
 <h2 id="left-truncated-data">Left-truncated Data<a class="anchor" aria-label="anchor" href="#left-truncated-data"></a>
 </h2>
-<p>In left truncated data, subjects enter the risk set at some time-point unequal to zero. Such data usually ships in the so called start-stop notation, where for each subject the start time specifies the left-truncation time (can also be 0) and the stop time the time-to-event, which can be right-censored.</p>
-<p>For an illustration, we use a data set on infant mortality and maternal death available in the <strong><code>eha</code></strong> package (see <code><a href="https://ehar.se/r/eha/reference/infants.html" class="external-link">?eha::infants</a></code>) for details.</p>
+<p>In left truncated data, subjects enter the risk set at some
+time-point unequal to zero. Such data usually ships in the so called
+start-stop notation, where for each subject the start time specifies the
+left-truncation time (can also be 0) and the stop time the
+time-to-event, which can be right-censored.</p>
+<p>For an illustration, we use a data set on infant mortality and
+maternal death available in the <strong><code>eha</code></strong>
+package (see <code><a href="https://ehar.se/r/eha/reference/infants.html" class="external-link">?eha::infants</a></code>) for details.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">infants</span>, package <span class="op">=</span> <span class="st">"eha"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">infants</span><span class="op">)</span></span></code></pre></div>
@@ -286,7 +346,14 @@
 <span><span class="co">## 4       2    13   76     1   dead  23 girl Nedertornea married  other 1847</span></span>
 <span><span class="co">## 5       2    13  365     0  alive  23 girl Nedertornea married  other 1847</span></span>
 <span><span class="co">## 6       2    13  365     0  alive  23 girl Nedertornea married  other 1848</span></span></code></pre>
-<p>As children were included in the study after death of their mother, their survival time is left-truncated at the entry time (variable <code>enter</code>). When transforming such data to the PED format, we need to create a interval cut-point at each entry time. In general, each interval has to be constructed such that only subjects already at risk have an entry in the PED data. The previously introduced function <code>as_ped</code> can be also used for this setting, however, the LHS of the formula must be in start-stop format:</p>
+<p>As children were included in the study after death of their mother,
+their survival time is left-truncated at the entry time (variable
+<code>enter</code>). When transforming such data to the PED format, we
+need to create a interval cut-point at each entry time. In general, each
+interval has to be constructed such that only subjects already at risk
+have an entry in the PED data. The previously introduced function
+<code>as_ped</code> can be also used for this setting, however, the LHS
+of the formula must be in start-stop format:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">infants_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span> <span class="va">mother</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span></span>
 <span><span class="va">infants_ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
@@ -313,52 +380,105 @@
 <div class="section level2">
 <h2 id="data-with-time-dependent-covariates">Data with time-dependent covariates<a class="anchor" aria-label="anchor" href="#data-with-time-dependent-covariates"></a>
 </h2>
-<p>In case of data with time-dependent covariates (that should not be modeled as cumulative effects), the follow-up is usually split at desired cut-points and <em>additionally</em> at the time-points at which the TDC changes its value.</p>
-<p>We assume that the data is provided in two data sets, one that contains time-to-event data and time-constant covariates and one data set that contains information of time-dependent covariates.</p>
-<p>For illustration, we use the <code>pbc</code> data from the <code>survival</code> package. Before the actual data transformation we perform the data preprocessing in <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package="survival")</a></code>:</p>
+<p>In case of data with time-dependent covariates (that should not be
+modeled as cumulative effects), the follow-up is usually split at
+desired cut-points and <em>additionally</em> at the time-points at which
+the TDC changes its value.</p>
+<p>We assume that the data is provided in two data sets, one that
+contains time-to-event data and time-constant covariates and one data
+set that contains information of time-dependent covariates.</p>
+<p>For illustration, we use the <code>pbc</code> data from the
+<code>survival</code> package. Before the actual data transformation we
+perform the data preprocessing in
+<code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package="survival")</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbc"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># loads pbc and pbcseq</span></span>
 <span><span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>status <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span>, <span class="va">bili</span>, <span class="va">protime</span><span class="op">)</span></span></code></pre></div>
-<p>We want to transform the data such that we could fit a concurrent effect of the time-dependent covariates <code>bili</code> and <code>protime</code>, therefore, the RHS of the formula passed to <code>as_ped</code> needs to contain an additional component, separated by <code>|</code> and all variables for which should be transformed to the concurrent format specified within the <code>concurrent</code> special. The data sets are provided within a list. In <code>concurrent</code>, we also have to specify the name of the variable which stores information on the time points at which the TDCs are updated.</p>
+<p>We want to transform the data such that we could fit a concurrent
+effect of the time-dependent covariates <code>bili</code> and
+<code>protime</code>, therefore, the RHS of the formula passed to
+<code>as_ped</code> needs to contain an additional component, separated
+by <code>|</code> and all variables for which should be transformed to
+the concurrent format specified within the <code>concurrent</code>
+special. The data sets are provided within a list. In
+<code>concurrent</code>, we also have to specify the name of the
+variable which stores information on the time points at which the TDCs
+are updated.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped_pbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
 <span>  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,</span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, <span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span>,</span>
 <span>  id      <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span></code></pre></div>
-<p>Multiple data sets can be provided within the list and multiple <code>concurrent</code> terms with different <code>tz_var</code> arguments can be specified with different lags. This will increase the data set, as an (additional) split point will be generated for each (lagged) time-point at which the TDC was observed:</p>
+<p>Multiple data sets can be provided within the list and multiple
+<code>concurrent</code> terms with different <code>tz_var</code>
+arguments can be specified with different lags. This will increase the
+data set, as an (additional) split point will be generated for each
+(lagged) time-point at which the TDC was observed:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbc_ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">pbcseq</span><span class="op">)</span>,</span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">bili</span>, tz_var <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/specials.html">concurrent</a></span><span class="op">(</span><span class="va">protime</span>, tz_var <span class="op">=</span> <span class="st">"day"</span>, lag <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>    id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span></code></pre></div>
-<p>If different <code>tz_var</code> arguments are provided, the union of both will be used as cut points in addition to usual cut points.</p>
-<p><strong>Warning</strong>: For time-points on the follow up that have no observation of the TDC, the last observation will be carried forward until the next update is available.</p>
+<p>If different <code>tz_var</code> arguments are provided, the union of
+both will be used as cut points in addition to usual cut points.</p>
+<p><strong>Warning</strong>: For time-points on the follow up that have
+no observation of the TDC, the last observation will be carried forward
+until the next update is available.</p>
 </div>
 <div class="section level2">
 <h2 id="data-with-time-dependent-covariates-with-cumulative-effects">Data with time-dependent covariates (with cumulative effects)<a class="anchor" aria-label="anchor" href="#data-with-time-dependent-covariates-with-cumulative-effects"></a>
 </h2>
-<p>Here we demonstrate data transformation of data with TDCs (<span class="math inline">\(\mathbf{z}=\{z(t_{z,q}),q=1,\ldots,Q\}\)</span>, that subsequently will be modeled as cumulative effects defined as</p>
+<p>Here we demonstrate data transformation of data with TDCs (<span class="math inline">\(\mathbf{z}=\{z(t_{z,q}),q=1,\ldots,Q\}\)</span>,
+that subsequently will be modeled as cumulative effects defined as</p>
 <p><span class="math display">\[
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 \]</span> Here</p>
 <ul>
 <li>
-<p>the three-variate function <span class="math inline">\(h(t,t_z,z(t_z))\)</span> defines the so-called <em>partial effects</em> of the TDC <span class="math inline">\(z(t_z)\)</span> observed at exposure time <span class="math inline">\(t_z\)</span> on the hazard at time <span class="math inline">\(t\)</span> <span class="citation">(Bender et al. 2018)</span>. The general partial effect definition given above is only one possibility, other common choices are<br> </p>
+<p>the three-variate function <span class="math inline">\(h(t,t_z,z(t_z))\)</span> defines the so-called
+<em>partial effects</em> of the TDC <span class="math inline">\(z(t_z)\)</span> observed at exposure time <span class="math inline">\(t_z\)</span> on the hazard at time <span class="math inline">\(t\)</span> <span class="citation">(Bender et al.
+2018)</span>. The general partial effect definition given above is only
+one possibility, other common choices are<br> </p>
 <ul>
 <li>
-<span class="math inline">\(h(t-t_z)z(t_z)\)</span> (This is the WCE model by <span class="citation">Sylvestre and Abrahamowicz (2009)</span>) <br> </li>
+<span class="math inline">\(h(t-t_z)z(t_z)\)</span> (This is the WCE
+model by <span class="citation">Sylvestre and Abrahamowicz
+(2009)</span>) <br> </li>
 <li>
-<span class="math inline">\(h(t-t_z, z(t_z))\)</span> (This is the DLNM model by <span class="citation">Gasparrini et al. (2017)</span>)<br> </li>
+<span class="math inline">\(h(t-t_z, z(t_z))\)</span> (This is the
+DLNM model by <span class="citation">Gasparrini et al.
+(2017)</span>)<br> </li>
 </ul>
 </li>
-<li><p>the cumulative effect <span class="math inline">\(g(\mathbf{z}, t)\)</span> at follow-up time <span class="math inline">\(t\)</span> is the integral (or sum) of the partial effects over exposure times <span class="math inline">\(t_z\)</span> contained within <span class="math inline">\(\mathcal{T}(t)\)</span><br> </p></li>
-<li><p>the so called lag-lead window (or window of effectiveness) is denoted by <span class="math inline">\(\mathcal{T}(t)\)</span>. This represents the set of exposure times at which exposures can affect the hazard rate at time <span class="math inline">\(t\)</span>. The most common definition is <span class="math inline">\(\mathcal{T}(t) = \{t_{z,q}: t \geq t_{z,q}, q=1,\ldots, Q\}\)</span>, which means that all exposures that were observed prior to <span class="math inline">\(t\)</span> or at <span class="math inline">\(t\)</span> are eligible.</p></li>
+<li><p>the cumulative effect <span class="math inline">\(g(\mathbf{z},
+t)\)</span> at follow-up time <span class="math inline">\(t\)</span> is
+the integral (or sum) of the partial effects over exposure times <span class="math inline">\(t_z\)</span> contained within <span class="math inline">\(\mathcal{T}(t)\)</span><br> </p></li>
+<li><p>the so called lag-lead window (or window of effectiveness) is
+denoted by <span class="math inline">\(\mathcal{T}(t)\)</span>. This
+represents the set of exposure times at which exposures can affect the
+hazard rate at time <span class="math inline">\(t\)</span>. The most
+common definition is <span class="math inline">\(\mathcal{T}(t) =
+\{t_{z,q}: t \geq t_{z,q}, q=1,\ldots, Q\}\)</span>, which means that
+all exposures that were observed prior to <span class="math inline">\(t\)</span> or at <span class="math inline">\(t\)</span> are eligible.</p></li>
 </ul>
-<p>As before we use the function <code>as_ped</code> to transform the data and additionally use the formula special <code>cumulative</code> (for <strong>fun</strong>ctional <strong>c</strong>ovariate) to specify the partial effect structure on the right-hand side of the formula.</p>
-<p>Let <span class="math inline">\(t\)</span> (<code>time</code>) the follow up time, <span class="math inline">\(\mathbf{z}_1\)</span> (<code>z1</code>) and <span class="math inline">\(\mathbf{z}_2\)</span> (<code>z2</code>) two TDCs observed at different exposure time grids <span class="math inline">\(t_z\)</span> (<code>tz1</code>) and <span class="math inline">\(s_z\)</span> (<code>tz2</code>) with lag-lead windows <span class="math inline">\(\mathcal{T}_1(t) = \{t_{z,q}: t \geq t_{z,q}\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_{z,k}: t \geq s_{z,k} + 2\}\)</span> (defined by <code>ll2 &lt;- function(t, tz) { t &gt;= tz + 2}</code>).</p>
-<p>The table below gives a selection of possible partial effects and the usage of <code>cumulative</code> to create matrices needed to estimate different types of cumulative effects of <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span>:</p>
+<p>As before we use the function <code>as_ped</code> to transform the
+data and additionally use the formula special <code>cumulative</code>
+(for <strong>fun</strong>ctional <strong>c</strong>ovariate) to specify
+the partial effect structure on the right-hand side of the formula.</p>
+<p>Let <span class="math inline">\(t\)</span> (<code>time</code>) the
+follow up time, <span class="math inline">\(\mathbf{z}_1\)</span>
+(<code>z1</code>) and <span class="math inline">\(\mathbf{z}_2\)</span>
+(<code>z2</code>) two TDCs observed at different exposure time grids
+<span class="math inline">\(t_z\)</span> (<code>tz1</code>) and <span class="math inline">\(s_z\)</span> (<code>tz2</code>) with lag-lead
+windows <span class="math inline">\(\mathcal{T}_1(t) = \{t_{z,q}: t \geq
+t_{z,q}\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) =
+\{s_{z,k}: t \geq s_{z,k} + 2\}\)</span> (defined by
+<code>ll2 &lt;- function(t, tz) { t &gt;= tz + 2}</code>).</p>
+<p>The table below gives a selection of possible partial effects and the
+usage of <code>cumulative</code> to create matrices needed to estimate
+different types of cumulative effects of <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span>:</p>
 <table class="table">
 <colgroup>
 <col width="49%">
@@ -371,19 +491,23 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t-t_z, z_1(t_z))\)</span></td>
+<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t-t_z,
+z_1(t_z))\)</span></td>
 <td><code>cumulative(latency(tz1), z1, tz_var= "tz1")</code></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t-t_z, z_1(t_z))\)</span></td>
+<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t-t_z,
+z_1(t_z))\)</span></td>
 <td><code>cumulative(time, latency(tz1), z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z))\)</span></td>
+<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z,
+z_1(t_z))\)</span></td>
 <td><code>cumulative(time, tz1, z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z)) + \int_{\mathcal{T}_2}h(t-s_z, z_2(s_z))\)</span></td>
+<td><span class="math inline">\(\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z))
++ \int_{\mathcal{T}_2}h(t-s_z, z_2(s_z))\)</span></td>
 <td><code>cumulative(time, tz1, z1, tz_var="tz1") + cumulative(latency(tz2), z2, tz_var="tz2", ll_fun=ll2)</code></td>
 </tr>
 <tr class="odd">
@@ -394,18 +518,46 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </table>
 <p>Note that</p>
 <ul>
-<li><p>the variable representing follow-up time <span class="math inline">\(t\)</span> in <code>cumulative</code> (here <code>time</code>) must match the time variable specified on the left-hand side of the <code>formula</code></p></li>
-<li><p>the variable representing exposure time <span class="math inline">\(t_z\)</span> (here <code>tz1</code> and <code>tz2</code>) must be wrapped within <code>latency()</code> to tell <code>as_ped</code> to calculate <span class="math inline">\(t-t_z\)</span></p></li>
-<li><p>by default, <span class="math inline">\(\mathcal{T}(t)\)</span> is defined as <code>function(t, tz) {t &gt;= tz}</code>, thus for <span class="math inline">\(\mathcal{T}_1\)</span> it is not necessary to explicitly specify the lag-lead window. In case you want to use a custom lag-lead window, provide the respective function to the <code>ll_fun</code> argument in <code>cumulative</code> (see <code>ll2</code> in the examples above)</p></li>
-<li><p><code>cumulative</code> makes no difference between partial effects such as <span class="math inline">\(h(t-t_z, z(t_z))\)</span> and <span class="math inline">\(h(t-t_z)z(t_z)\)</span> as the necessary data transformation is the same in both cases. Later, however, when fitting the model, a distinction must be made</p></li>
-<li><p>more than one <span class="math inline">\(z\)</span> variable can be provided to <code>cumulative</code>, which can be convenient if multiple covariates should have the same time components and the same lag-lead window</p></li>
-<li><p>multiple <code>cumulative</code> terms can be specified, having different exposure times <code>t_z</code>, <code>s_z</code> and/or different lag-lead windows for different covariates <span class="math inline">\(\mathbf{z}_1\)</span>, <span class="math inline">\(\mathbf{z}_2\)</span></p></li>
-<li><p>To tell <code>cumulative</code> which of the variables specified is the exposure time <span class="math inline">\(t_z\)</span>, the <code>tz_var</code> argument must be specified within each <code>cumulative</code> term. The follow-up time component <span class="math inline">\(t\)</span> will be automatically recognized via the left-hand side of the <code>formula</code>.</p></li>
+<li><p>the variable representing follow-up time <span class="math inline">\(t\)</span> in <code>cumulative</code> (here
+<code>time</code>) must match the time variable specified on the
+left-hand side of the <code>formula</code></p></li>
+<li><p>the variable representing exposure time <span class="math inline">\(t_z\)</span> (here <code>tz1</code> and
+<code>tz2</code>) must be wrapped within <code>latency()</code> to tell
+<code>as_ped</code> to calculate <span class="math inline">\(t-t_z\)</span></p></li>
+<li><p>by default, <span class="math inline">\(\mathcal{T}(t)\)</span>
+is defined as <code>function(t, tz) {t &gt;= tz}</code>, thus for <span class="math inline">\(\mathcal{T}_1\)</span> it is not necessary to
+explicitly specify the lag-lead window. In case you want to use a custom
+lag-lead window, provide the respective function to the
+<code>ll_fun</code> argument in <code>cumulative</code> (see
+<code>ll2</code> in the examples above)</p></li>
+<li><p><code>cumulative</code> makes no difference between partial
+effects such as <span class="math inline">\(h(t-t_z, z(t_z))\)</span>
+and <span class="math inline">\(h(t-t_z)z(t_z)\)</span> as the necessary
+data transformation is the same in both cases. Later, however, when
+fitting the model, a distinction must be made</p></li>
+<li><p>more than one <span class="math inline">\(z\)</span> variable can
+be provided to <code>cumulative</code>, which can be convenient if
+multiple covariates should have the same time components and the same
+lag-lead window</p></li>
+<li><p>multiple <code>cumulative</code> terms can be specified, having
+different exposure times <code>t_z</code>, <code>s_z</code> and/or
+different lag-lead windows for different covariates <span class="math inline">\(\mathbf{z}_1\)</span>, <span class="math inline">\(\mathbf{z}_2\)</span></p></li>
+<li><p>To tell <code>cumulative</code> which of the variables specified
+is the exposure time <span class="math inline">\(t_z\)</span>, the
+<code>tz_var</code> argument must be specified within each
+<code>cumulative</code> term. The follow-up time component <span class="math inline">\(t\)</span> will be automatically recognized via
+the left-hand side of the <code>formula</code>.</p></li>
 </ul>
 <div class="section level3">
 <h3 id="one-time-dependent-covariate">One time-dependent covariate<a class="anchor" aria-label="anchor" href="#one-time-dependent-covariate"></a>
 </h3>
-<p>For illustration we use the ICU patients data sets <code>patient</code> and <code>daily</code> provided in the <strong><code>pammtools</code></strong> package, with follow-up time <code>survhosp</code> (<span class="math inline">\(t\)</span>), exposure time <code>Study_Day</code> (<span class="math inline">\(t_z\)</span>) and TDCs <code>caloriesPercentage</code> <span class="math inline">\(\mathbf{z}_1\)</span> and <code>proteinGproKG</code> (<span class="math inline">\(\mathbf{z}_2\)</span>):</p>
+<p>For illustration we use the ICU patients data sets
+<code>patient</code> and <code>daily</code> provided in the
+<strong><code>pammtools</code></strong> package, with follow-up time
+<code>survhosp</code> (<span class="math inline">\(t\)</span>), exposure
+time <code>Study_Day</code> (<span class="math inline">\(t_z\)</span>)
+and TDCs <code>caloriesPercentage</code> <span class="math inline">\(\mathbf{z}_1\)</span> and
+<code>proteinGproKG</code> (<span class="math inline">\(\mathbf{z}_2\)</span>):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">patient</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   Year CombinedicuID CombinedID Survdays PatientDied survhosp Gender Age</span></span>
@@ -433,7 +585,15 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">## <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">1</span>110         4              35.1          0.259</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">1</span>110         5              77.2          0.647</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">1</span>110         6              17.3          0</span></span></code></pre>
-<p>Below we illustrate the usage of <code>as_ped</code> and <code>cumulative</code> to obtain covariate matrices for the latency matrix of follow up time and exposure time and a matrix of the TDC (<code>caloriesPercentage</code>). The follow up will be split in 30 intervals with interval breaks points <code>0:30</code>. By default, the exposure time provided to <code>tz_var</code> will be used as a suffix for the names of the new matrix columns to indicate the exposure they refer to, however, you can override the suffix by specifying the <code>suffix</code> argument to <code>cumulative</code>.</p>
+<p>Below we illustrate the usage of <code>as_ped</code> and
+<code>cumulative</code> to obtain covariate matrices for the latency
+matrix of follow up time and exposure time and a matrix of the TDC
+(<code>caloriesPercentage</code>). The follow up will be split in 30
+intervals with interval breaks points <code>0:30</code>. By default, the
+exposure time provided to <code>tz_var</code> will be used as a suffix
+for the names of the new matrix columns to indicate the exposure they
+refer to, however, you can override the suffix by specifying the
+<code>suffix</code> argument to <code>cumulative</code>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
 <span>  data    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,</span>
@@ -474,12 +634,20 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">##  - attr(*, "tz_vars")=List of 1</span></span>
 <span><span class="co">##  - attr(*, "ll_weights")=List of 1</span></span>
 <span><span class="co">##  - attr(*, "func_mat_names")=List of 1</span></span></code></pre>
-<p>As you can see, the data is transformed to the PED format as before and two additional matrix columns are added, <code>Study_Day_latency</code> and <code>caloriesPercentage</code>.<br> </p>
+<p>As you can see, the data is transformed to the PED format as before
+and two additional matrix columns are added,
+<code>Study_Day_latency</code> and
+<code>caloriesPercentage</code>.<br> </p>
 </div>
 <div class="section level3">
-<h3 id="two-time-dependent-covariates-observed-on-the-same-exposure-time-grid">Two time-dependent covariates observed on the same exposure time grid<a class="anchor" aria-label="anchor" href="#two-time-dependent-covariates-observed-on-the-same-exposure-time-grid"></a>
+<h3 id="two-time-dependent-covariates-observed-on-the-same-exposure-time-grid">Two time-dependent covariates observed on the same exposure time
+grid<a class="anchor" aria-label="anchor" href="#two-time-dependent-covariates-observed-on-the-same-exposure-time-grid"></a>
 </h3>
-<p>Using the same data, we show a slightly more complex example with two functional covariate terms with partial effects <span class="math inline">\(h(t, t-t_z, z_1(t_z))\)</span> and <span class="math inline">\(h(t-t_z, z_2(t_z))\)</span>. As in the case of ICU patient data, both TDCs were observed on the same exposure time grid, we want to use the same lag-lead window and the latency term <span class="math inline">\(t-t_z\)</span> occurs in both partial effects, we only need to specify one <code>cumulative</code> term.</p>
+<p>Using the same data, we show a slightly more complex example with two
+functional covariate terms with partial effects <span class="math inline">\(h(t, t-t_z, z_1(t_z))\)</span> and <span class="math inline">\(h(t-t_z, z_2(t_z))\)</span>. As in the case of ICU
+patient data, both TDCs were observed on the same exposure time grid, we
+want to use the same lag-lead window and the latency term <span class="math inline">\(t-t_z\)</span> occurs in both partial effects, we
+only need to specify one <code>cumulative</code> term.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">patient</span>, <span class="va">daily</span><span class="op">)</span>,</span>
@@ -528,7 +696,13 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <div class="section level3">
 <h3 id="multiple-tdcs-observed-at-different-exposure-time-grids">Multiple TDCs observed at different exposure time grids<a class="anchor" aria-label="anchor" href="#multiple-tdcs-observed-at-different-exposure-time-grids"></a>
 </h3>
-<p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span> and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use simulated data <code>simdf_elra</code> contained in <strong><code>pammtools</code></strong> (see example in <code>sim_pexp</code> for data generation).</p>
+<p>To illustrate data transformation when TDCs <span class="math inline">\(\mathbf{z}_1\)</span> and <span class="math inline">\(\mathbf{z}_2\)</span> were observed on different
+exposure time grids (<span class="math inline">\(t_z\)</span> and <span class="math inline">\(s_z\)</span>) and are assumed to have different
+lag_lead windows <span class="math inline">\(\mathcal{T}_1(t)\)</span>
+and <span class="math inline">\(\mathcal{T}_2(t)\)</span>, we use
+simulated data <code>simdf_elra</code> contained in
+<strong><code>pammtools</code></strong> (see example in
+<code>sim_pexp</code> for data generation).</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simdf_elra</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 250 × 9</span></span></span>
@@ -580,14 +754,23 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span>     1     3</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>     1     4</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">11</span>     1     5</span></span></code></pre>
-<p>Note that <code>tz1</code> has a maximum length of 10, while <code>tz2</code> has a maximum length of <code>11</code> and while <code>tz1</code> was observed during the follow up, <code>tz2</code> was partially observed before the beginning of the follow up.</p>
+<p>Note that <code>tz1</code> has a maximum length of 10, while
+<code>tz2</code> has a maximum length of <code>11</code> and while
+<code>tz1</code> was observed during the follow up, <code>tz2</code> was
+partially observed before the beginning of the follow up.</p>
 <p>If we wanted to estimate the following cumulative effects</p>
 <ul>
 <li>
-<span class="math inline">\(g(\mathbf{z}_1, t) = \int_{\mathcal{T}_1(t)} h(t, t-t_z, z_1(s_z))\)</span> and</li>
-<li><span class="math inline">\(g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))\)</span></li>
+<span class="math inline">\(g(\mathbf{z}_1, t) =
+\int_{\mathcal{T}_1(t)} h(t, t-t_z, z_1(s_z))\)</span> and</li>
+<li><span class="math inline">\(g(\mathbf{z}_2, t) =
+\int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))\)</span></li>
 </ul>
-<p>with <span class="math inline">\(\mathcal{T}_1(t) = \{t_z: t \geq t_z + 2\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_z: t \geq s_z\}\)</span> the data transformation function must reflect the different exposure times as well as different lag-lead window specifications as illustrated below:</p>
+<p>with <span class="math inline">\(\mathcal{T}_1(t) = \{t_z: t \geq t_z
++ 2\}\)</span> and <span class="math inline">\(\mathcal{T}_2(t) = \{s_z:
+t \geq s_z\}\)</span> the data transformation function must reflect the
+different exposure times as well as different lag-lead window
+specifications as illustrated below:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">simdf_elra</span>,</span>
@@ -627,24 +810,33 @@ g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 <span><span class="co">##  - attr(*, "tz_vars")=List of 2</span></span>
 <span><span class="co">##  - attr(*, "ll_weights")=List of 2</span></span>
 <span><span class="co">##  - attr(*, "func_mat_names")=List of 2</span></span></code></pre>
-<p>Note how the matrix covariates associated with <code>tz1</code> have 10 columns while matrix covariates associated with <code>tz2</code> have 11 columns. Note also that the lag-lead matrices differ</p>
+<p>Note how the matrix covariates associated with <code>tz1</code> have
+10 columns while matrix covariates associated with <code>tz2</code> have
+11 columns. Note also that the lag-lead matrices differ</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_laglead.html">gg_laglead</a></span><span class="op">(</span><span class="va">ped_sim</span><span class="op">)</span></span></code></pre></div>
 <p><img src="data-transformation_files/figure-html/unnamed-chunk-17-1.png" width="600px" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-Bender2018">
-<p>Bender, Andreas, Fabian Scheipl, Wolfgang Hartl, Andrew G. Day, and Helmut Küchenhoff. 2018. “Penalized Estimation of Complex, Non-Linear Exposure-Lag-Response Associations.” <em>Biostatistics</em>. <a href="https://doi.org/10.1093/biostatistics/kxy003" class="external-link">https://doi.org/10.1093/biostatistics/kxy003</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bender2018" class="csl-entry">
+Bender, Andreas, Fabian Scheipl, Wolfgang Hartl, Andrew G. Day, and
+Helmut Küchenhoff. 2018. <span>“Penalized Estimation of Complex,
+Non-Linear Exposure-Lag-Response Associations.”</span>
+<em>Biostatistics</em>. <a href="https://doi.org/10.1093/biostatistics/kxy003" class="external-link">https://doi.org/10.1093/biostatistics/kxy003</a>.
 </div>
-<div id="ref-Gasparrini2017">
-<p>Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G. Kenward. 2017. “A Penalized Framework for Distributed Lag Non-Linear Models.” <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="external-link">https://doi.org/10.1111/biom.12645</a>.</p>
+<div id="ref-Gasparrini2017" class="csl-entry">
+Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G.
+Kenward. 2017. <span>“A Penalized Framework for Distributed Lag
+Non-Linear Models.”</span> <em>Biometrics</em> 73: 938–48. <a href="https://doi.org/10.1111/biom.12645" class="external-link">https://doi.org/10.1111/biom.12645</a>.
 </div>
-<div id="ref-Sylvestre2009">
-<p>Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. “Flexible Modeling of the Cumulative Effects of Time-Dependent Exposures on the Hazard.” <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="external-link">https://doi.org/10.1002/sim.3701</a>.</p>
+<div id="ref-Sylvestre2009" class="csl-entry">
+Sylvestre, Marie-Pierre, and Michal Abrahamowicz. 2009. <span>“Flexible
+Modeling of the Cumulative Effects of Time-Dependent Exposures on the
+Hazard.”</span> <em>Statistics in Medicine</em> 28 (27): 3437–53. <a href="https://doi.org/10.1002/sim.3701" class="external-link">https://doi.org/10.1002/sim.3701</a>.
 </div>
 </div>
 </div>

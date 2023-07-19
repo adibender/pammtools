@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="baseline_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Baseline Hazard</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/baseline.Rmd" class="external-link"><code>vignettes/baseline.Rmd</code></a></small>
       <div class="hidden name"><code>baseline.Rmd</code></div>
@@ -160,7 +160,11 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
 <span><span class="va">Set1</span> <span class="op">&lt;-</span> <span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">9</span>, <span class="st">"Set1"</span><span class="op">)</span></span></code></pre></div>
-<p>Here we briefly demonstrate how to fit and visualize a simple baseline model using the <strong><code>pammtools</code></strong> package. We illustrate the procedure using a subset of the <code>tumor</code> data from the <strong><code>pammtools</code></strong> package:</p>
+<p>Here we briefly demonstrate how to fit and visualize a simple
+baseline model using the <strong><code>pammtools</code></strong>
+package. We illustrate the procedure using a subset of the
+<code>tumor</code> data from the <strong><code>pammtools</code></strong>
+package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tumor"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tumor</span><span class="op">)</span></span></code></pre></div>
@@ -176,7 +180,8 @@
 <span><span class="co">## <span style="color: #949494;"># ℹ 1 more variable: resection &lt;fct&gt;</span></span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span>,<span class="op">]</span></span></code></pre></div>
-<p>The below graph depicts the estimated cumulative hazard using the Nelson-Aalen estimator:</p>
+<p>The below graph depicts the estimated cumulative hazard using the
+Nelson-Aalen estimator:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/basehaz.html" class="external-link">basehaz</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">tumor</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">rename</a></span><span class="op">(</span>nelson_aalen <span class="op">=</span> <span class="va">hazard</span><span class="op">)</span></span>
@@ -190,7 +195,9 @@
 <div class="section level2">
 <h2 id="data-transformation">Data transformation<a class="anchor" aria-label="anchor" href="#data-transformation"></a>
 </h2>
-<p>To fit a PAM, we first we need to bring the data in a suitable format (see <a href="data-transformation.html">vignette on data transformation</a>).</p>
+<p>To fit a PAM, we first we need to bring the data in a suitable format
+(see <a href="data-transformation.html">vignette on data
+transformation</a>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use unique event times as interval break points</span></span>
 <span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
@@ -213,9 +220,18 @@
 <div class="section level2">
 <h2 id="pams">PAMs<a class="anchor" aria-label="anchor" href="#pams"></a>
 </h2>
-<p>PAMs estimate the baseline log-hazard rate semi-parametrically as a smooth, non-linear function evaluated at the end-points <code>tend</code> of the intervals defined for our model.</p>
-<p>Note that the estimated log-hazard value at time-points <code>tend</code> gives the value of the log-hazard rate for the <strong>entire previous interval</strong> as PAMs estimate hazard rates that are <strong>constant</strong> in each interval.</p>
-<p>Estimating the log hazard rate as a smooth function evaluated at <code>tend</code> - instead of using an unpenalized estimator without such a smoothness assumption - ensures that the hazard rate does not change too rapidly from interval to interval unless there is sufficient evidence for such changes in the data.</p>
+<p>PAMs estimate the baseline log-hazard rate semi-parametrically as a
+smooth, non-linear function evaluated at the end-points
+<code>tend</code> of the intervals defined for our model.</p>
+<p>Note that the estimated log-hazard value at time-points
+<code>tend</code> gives the value of the log-hazard rate for the
+<strong>entire previous interval</strong> as PAMs estimate hazard rates
+that are <strong>constant</strong> in each interval.</p>
+<p>Estimating the log hazard rate as a smooth function evaluated at
+<code>tend</code> - instead of using an unpenalized estimator without
+such a smoothness assumption - ensures that the hazard rate does not
+change too rapidly from interval to interval unless there is sufficient
+evidence for such changes in the data.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ped</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span></code></pre></div>
@@ -243,9 +259,11 @@
 <div class="section level3">
 <h3 id="graphical-comparison">Graphical comparison<a class="anchor" aria-label="anchor" href="#graphical-comparison"></a>
 </h3>
-<p>In the figure below we compare the previous baseline estimates of the Cox model with the PAM estimates.</p>
-<details><p><summary>Expand here for R-Code</summary></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>In the figure below we compare the previous baseline estimates of the
+Cox model with the PAM estimates.</p>
+<details><summary>
+Expand here for R-Code
+</summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create new data set with one row per unique interval</span></span>
 <span><span class="co"># and add information about the cumulative hazard estimate</span></span>
 <span><span class="va">int_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span><span class="va">ped</span>, tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>

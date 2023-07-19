@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,13 +138,14 @@
 
       
 
-      </header><script src="recurrent-events_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Recurrent Events</h1>
-                        <h4 data-toc-skip class="author">Jordache Ramjith, Andreas Bender, Kit C.B. Roes &amp; Marianne A. Jonker</h4>
+                        <h4 data-toc-skip class="author">Jordache
+Ramjith, Andreas Bender, Kit C.B. Roes &amp; Marianne A. Jonker</h4>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/recurrent-events.Rmd" class="external-link"><code>vignettes/recurrent-events.Rmd</code></a></small>
       <div class="hidden name"><code>recurrent-events.Rmd</code></div>
@@ -156,7 +157,11 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>We illustrate application of PAMMs in the analysis of the effect of HIV exposure on the time to staphylococcus aureaus infection in children, with possible recurrences. The children are anonymized and random <code>id</code>s were generated. The following packages are used in this analysis:</p>
+<p>We illustrate application of PAMMs in the analysis of the effect of
+HIV exposure on the time to staphylococcus aureaus infection in
+children, with possible recurrences. The children are anonymized and
+random <code>id</code>s were generated. The following packages are used
+in this analysis:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
@@ -166,17 +171,26 @@
 <div class="section level3">
 <h3 id="time-until-staphylococcus-aureaus-infection-in-children">Time until staphylococcus aureaus infection in children<a class="anchor" aria-label="anchor" href="#time-until-staphylococcus-aureaus-infection-in-children"></a>
 </h3>
-<p>The data set (<code>staph</code>), is contained within the <strong><code>pammtools</code></strong> package and includes 374 observations from 137 children (from the Drakenstein child health study) with a maximum of 6 recurrences. The <code>staph</code> data is in longitudinal format reflecting the recurrences for children over different rows. Here</p>
+<p>The data set (<code>staph</code>), is contained within the
+<strong><code>pammtools</code></strong> package and includes 374
+observations from 137 children (from the Drakenstein child health study)
+with a maximum of 6 recurrences. The <code>staph</code> data is in
+longitudinal format reflecting the recurrences for children over
+different rows. Here</p>
 <ul>
 <li>
-<code>t.start</code> and <code>t.stop</code> indicate the entry and exit time into the risk set for the respective recurrences</li>
+<code>t.start</code> and <code>t.stop</code> indicate the entry and
+exit time into the risk set for the respective recurrences</li>
 <li>
-<code>event</code> indicates whether the <span class="math inline">\(k\)</span>-th recurrence was observed (1 = yes, 0 = censored for the <span class="math inline">\(k\)</span>-th recurrence)</li>
+<code>event</code> indicates whether the <span class="math inline">\(k\)</span>-th recurrence was observed (1 = yes, 0
+= censored for the <span class="math inline">\(k\)</span>-th
+recurrence)</li>
 <li>
 <code>enum</code> is the event number <span class="math inline">\(k\)</span>
 </li>
 <li>
-<code>HIVexposure</code> indicates whether the mother of the child was HIV positive (1 = yes, 0 = no)</li>
+<code>HIVexposure</code> indicates whether the mother of the child
+was HIV positive (1 = yes, 0 = no)</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"staph"</span><span class="op">)</span></span>
@@ -207,23 +221,46 @@
 <div class="section level3">
 <h3 id="transformation-to-ped-format">Transformation to PED format<a class="anchor" aria-label="anchor" href="#transformation-to-ped-format"></a>
 </h3>
-<p>In order to apply PAMMs to recurrent events, we first transform the data to the <em>piece-wise exponential data</em> (PED) format (see <a href="https://adibender.github.io/pammtools/articles/data-transformation.html">here</a> for details). We use the <code><a href="../reference/as_ped.html">as_ped()</a></code> function in <strong><code>pammtools</code></strong>. For the data transformation in the recurrent events context, we first need to decide whether analysis should be performed on the calendar- or gap-time scale. This is controlled by the <code>timescale</code> argument (see below). For these data, we use the gap-time.</p>
-<p>The individual inputs for the data transformation are given as follows:</p>
+<p>In order to apply PAMMs to recurrent events, we first transform the
+data to the <em>piece-wise exponential data</em> (PED) format (see <a href="https://adibender.github.io/pammtools/articles/data-transformation.html">here</a>
+for details). We use the <code><a href="../reference/as_ped.html">as_ped()</a></code> function in
+<strong><code>pammtools</code></strong>. For the data transformation in
+the recurrent events context, we first need to decide whether analysis
+should be performed on the calendar- or gap-time scale. This is
+controlled by the <code>timescale</code> argument (see below). For these
+data, we use the gap-time.</p>
+<p>The individual inputs for the data transformation are given as
+follows:</p>
 <ul>
 <li>
-<code>formula</code>: specifies the <code>Surv</code> object on the left hand side which contains information about the risk set entry and exit times as well as the event indicator; and the variables that should be retained in the data set after data transformation. Note that the variables <code>id</code> and <code>enum</code> will be retained in the data without specification.</li>
+<code>formula</code>: specifies the <code>Surv</code> object on the
+left hand side which contains information about the risk set entry and
+exit times as well as the event indicator; and the variables that should
+be retained in the data set after data transformation. Note that the
+variables <code>id</code> and <code>enum</code> will be retained in the
+data without specification.</li>
 <li>
-<code>id</code>: specifies the variable in the data set the indicates individual subjects</li>
+<code>id</code>: specifies the variable in the data set the
+indicates individual subjects</li>
 <li>
 <code>data</code>: the data to be transformed</li>
 <li>
-<code>transition</code>: the variable that indicates transitions from one state to another (here state transitions are transitions from event number <span class="math inline">\(k-1\)</span> to <span class="math inline">\(k\)</span>)</li>
+<code>transition</code>: the variable that indicates transitions
+from one state to another (here state transitions are transitions from
+event number <span class="math inline">\(k-1\)</span> to <span class="math inline">\(k\)</span>)</li>
 <li>
-<code>timescale</code>: the time scale of the output data (defaults to gap time)</li>
+<code>timescale</code>: the time scale of the output data (defaults
+to gap time)</li>
 <li>
-<code>max_time</code>: The maximum time considered. All observations with <span class="math inline">\(t&gt;max\_time\)</span> will be set to <code>max_time</code> and their event indicator set to <span class="math inline">\(0\)</span>. Here we restrict the follow-up to <code>366</code> days, as it marks one year under observation and few children were under observation beyond that time.</li>
+<code>max_time</code>: The maximum time considered. All observations
+with <span class="math inline">\(t&gt;max\_time\)</span> will be set to
+<code>max_time</code> and their event indicator set to <span class="math inline">\(0\)</span>. Here we restrict the follow-up to
+<code>366</code> days, as it marks one year under observation and few
+children were under observation beyond that time.</li>
 <li>
-<code>cut</code>: This argument is unspecified here, but could be used to control the time points at which the follow-up is partitioned. If unspecified, all unique event times are used as cut points.</li>
+<code>cut</code>: This argument is unspecified here, but could be
+used to control the time points at which the follow-up is partitioned.
+If unspecified, all unique event times are used as cut points.</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span></span>
@@ -233,7 +270,9 @@
 <span>  transition  <span class="op">=</span> <span class="st">"enum"</span>,</span>
 <span>  timescale   <span class="op">=</span> <span class="st">"gap"</span>,</span>
 <span>  max_time    <span class="op">=</span> <span class="fl">366</span><span class="op">)</span></span></code></pre></div>
-<p>The resulting data for the first two infants is indicated below (we show the first and last observation of each infant for each event number they were at risk):</p>
+<p>The resulting data for the first two infants is indicated below (we
+show the first and last observation of each infant for each event number
+they were at risk):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -264,7 +303,16 @@
 <div class="section level4">
 <h4 id="model-specification">Model specification<a class="anchor" aria-label="anchor" href="#model-specification"></a>
 </h4>
-<p>We first model the baseline hazards over time. Biologically, the infection incidence in gap time may be different for the first event compared with the recurrences. However, estimation of the baseline hazard for each of the event numbers is not useful/feasible since only a few subjects experienced 3 or more events. Therefore, we will create a new variable to indicate whether the event a child is at risk for is the first event or a recurrence. Note, however, that we do this after PED data transformation and use the full information to create the PED data. We only use <code>enum_strata</code> for stratification when estimating the baseline hazard.</p>
+<p>We first model the baseline hazards over time. Biologically, the
+infection incidence in gap time may be different for the first event
+compared with the recurrences. However, estimation of the baseline
+hazard for each of the event numbers is not useful/feasible since only a
+few subjects experienced 3 or more events. Therefore, we will create a
+new variable to indicate whether the event a child is at risk for is the
+first event or a recurrence. Note, however, that we do this after PED
+data transformation and use the full information to create the PED data.
+We only use <code>enum_strata</code> for stratification when estimating
+the baseline hazard.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">enum</span> <span class="op">&gt;</span> <span class="fl">1</span>,<span class="st">"recurrent"</span>,<span class="st">"first"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -272,18 +320,36 @@
 <p><span class="math display">\[
 \lambda(t,k|z_i) = \exp(\beta_{0k} + f_{0,k}(t) + z_i),
 \]</span></p>
-<p>where <span class="math inline">\(z_i\sim N(0, \sigma_z^2)\)</span> are Gaussian, child specific random effects that account for child-specific frailty and <span class="math inline">\(\beta_{0k}\)</span> and <span class="math inline">\(f_{0k}\)</span> are the constant (intercept) and non-linear parts of the log-baseline hazard of the <span class="math inline">\(k\)</span>-th event. Given the data transformation, this is equivalent to fitting a stratified PAM (see <a href="https://adibender.github.io/pammtools/articles/strata.html">here</a> for details), where stratification is done w.r.t. to <code>enum_strata</code>.</p>
+<p>where <span class="math inline">\(z_i\sim N(0, \sigma_z^2)\)</span>
+are Gaussian, child specific random effects that account for
+child-specific frailty and <span class="math inline">\(\beta_{0k}\)</span> and <span class="math inline">\(f_{0k}\)</span> are the constant (intercept) and
+non-linear parts of the log-baseline hazard of the <span class="math inline">\(k\)</span>-th event. Given the data
+transformation, this is equivalent to fitting a stratified PAM (see <a href="https://adibender.github.io/pammtools/articles/strata.html">here</a>
+for details), where stratification is done w.r.t. to
+<code>enum_strata</code>.</p>
 </div>
 <div class="section level4">
 <h4 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
 </h4>
-<p>Details on the model specification in <strong><code>R</code></strong> are given below. Note that we use the <code>pamm</code> function to fit the model, which is a wrapper to <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> or <code><a href="https://rdrr.io/pkg/mgcv/man/bam.html" class="external-link">mgcv::bam</a></code>, but direct modeling of the data using any suitable package/function would also be possible. The other arguments are passed to the respective fitting function.</p>
+<p>Details on the model specification in <strong><code>R</code></strong>
+are given below. Note that we use the <code>pamm</code> function to fit
+the model, which is a wrapper to <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code> or
+<code><a href="https://rdrr.io/pkg/mgcv/man/bam.html" class="external-link">mgcv::bam</a></code>, but direct modeling of the data using any
+suitable package/function would also be possible. The other arguments
+are passed to the respective fitting function.</p>
 <p>In the formula argument,</p>
 <ul>
 <li>
-<code>s(tend, by = enum_strata)</code> indicates the non-linear smooth functions, estimated via penalized splines (with thin-plate spline basis functions). By using <code>by=enum_strata</code> inside <code><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s()</a></code> and including <code>enum_strata</code> as a fixed effect in the model, we are modeling stratified smooth functions (i.e., stratified baseline hazards) for first and recurrent events respectively, and</li>
+<code>s(tend, by = enum_strata)</code> indicates the non-linear
+smooth functions, estimated via penalized splines (with thin-plate
+spline basis functions). By using <code>by=enum_strata</code> inside
+<code><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s()</a></code> and including <code>enum_strata</code> as a fixed
+effect in the model, we are modeling stratified smooth functions (i.e.,
+stratified baseline hazards) for first and recurrent events
+respectively, and</li>
 <li>
-<code>s(id, bs = "re")</code> indicates a random effect (frailty) for each child.</li>
+<code>s(id, bs = "re")</code> indicates a random effect (frailty)
+for each child.</li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pamm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span></span>
@@ -292,7 +358,15 @@
 <span>  engine   <span class="op">=</span> <span class="st">"bam"</span>,</span>
 <span>  method   <span class="op">=</span> <span class="st">"fREML"</span>,</span>
 <span>  discrete <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>As usual for <strong><code>mgcv</code></strong> objects, the resulting model summary output shown below is separated into two parts, one for the “parametric coefficients” and one for the “smooth terms”. In case of smooth terms, the estimated degrees of freedom (edf) gives us an idea of how “wiggly” the respective smooth functions are, and the p-values test whether overall these are different from a flat line <span class="citation">(Wood <a href="#ref-wood_p-values_2013" role="doc-biblioref">2013</a>)</span>. For the random effects terms, we report their estimated variances (<code>gam.vcomp</code>) and p-values (summary output). From the output, we see that the random effects are statistically insignificant <span class="math inline">\((p=0.249)\)</span>.</p>
+<p>As usual for <strong><code>mgcv</code></strong> objects, the
+resulting model summary output shown below is separated into two parts,
+one for the “parametric coefficients” and one for the “smooth terms”. In
+case of smooth terms, the estimated degrees of freedom (edf) gives us an
+idea of how “wiggly” the respective smooth functions are, and the
+p-values test whether overall these are different from a flat line <span class="citation">(<a href="#ref-wood_p-values_2013" role="doc-biblioref">Wood 2013</a>)</span>. For the random effects
+terms, we report their estimated variances (<code>gam.vcomp</code>) and
+p-values (summary output). From the output, we see that the random
+effects are statistically insignificant <span class="math inline">\((p=0.249)\)</span>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -320,7 +394,8 @@
 <span><span class="co">## </span></span>
 <span><span class="co">## R-sq.(adj) =  -0.0265   Deviance explained = -0.97%</span></span>
 <span><span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></span></code></pre>
-<p>The standard deviation of the random effects is also relatively small and can be extracted using the <code>gam.vcomp</code> command:</p>
+<p>The standard deviation of the random effects is also relatively small
+and can be extracted using the <code>gam.vcomp</code> command:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.vcomp.html" class="external-link">gam.vcomp</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -332,7 +407,8 @@
 <span><span class="co">## s(id)                        0.2565797067 4.015591e-02 1.639438617</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Rank: 3/3</span></span></code></pre>
-<p>The results indicate that random effects are not required in this model. We therefore omit the random effects in the following.</p>
+<p>The results indicate that random effects are not required in this
+model. We therefore omit the random effects in the following.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pam0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">pamm0</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">id</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam0</span><span class="op">)</span></span></code></pre></div>
@@ -363,14 +439,26 @@
 <div class="section level4">
 <h4 id="estimates-over-time-and-visualization">Estimates over time and visualization<a class="anchor" aria-label="anchor" href="#estimates-over-time-and-visualization"></a>
 </h4>
-<p>To obtain and visualize any quantity based on the fitted model, it is easiest to create a suitable data set and calculate the quantity of interest. <strong><code>pammtools</code></strong> provides the respective convenience functions.</p>
-<p>Below we illustrate the calculation and visualization of the baseline hazard over time, where we use</p>
+<p>To obtain and visualize any quantity based on the fitted model, it is
+easiest to create a suitable data set and calculate the quantity of
+interest. <strong><code>pammtools</code></strong> provides the
+respective convenience functions.</p>
+<p>Below we illustrate the calculation and visualization of the baseline
+hazard over time, where we use</p>
 <ul>
 <li>
-<code>make_newdata</code> to create a data set with one row for each unique event time used when fitting the model, stratified by event stratum. <code>make_newdata</code> constructs a combination of the variables specified (here unique values of <code>tend</code> for each value of <code>enum_strata</code>, similar to <code>expand.grid</code>, and sets all other variables to mean and modus values, if applicable). It is also aware of the specific PED structure.</li>
-<li>use the <code>add_hazard</code> function to augment the created data set with the predicted hazard and respective confidence intervals.</li>
+<code>make_newdata</code> to create a data set with one row for each
+unique event time used when fitting the model, stratified by event
+stratum. <code>make_newdata</code> constructs a combination of the
+variables specified (here unique values of <code>tend</code> for each
+value of <code>enum_strata</code>, similar to <code>expand.grid</code>,
+and sets all other variables to mean and modus values, if applicable).
+It is also aware of the specific PED structure.</li>
+<li>use the <code>add_hazard</code> function to augment the created data
+set with the predicted hazard and respective confidence intervals.</li>
 </ul>
-<p>Once the data is created and augmented with the predicted hazard, we can use standard visualization function to create the graphics:</p>
+<p>Once the data is created and augmented with the predicted hazard, we
+can use standard visualization function to create the graphics:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span></span>
@@ -389,8 +477,19 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12.5</span><span class="op">)</span>,breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">12</span>,<span class="fl">2</span><span class="op">)</span>,expand<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">enum_strata</span><span class="op">)</span></span></code></pre></div>
 <p><img src="recurrent-events_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>We can see, that the hazard for the first event is high in the beginning and declines over time, as most children will have had the first infection after one year of life. Consequently, the hazard for recurrence is low in the beginning and increases over time before it flattens out after about two months.</p>
-<p>Calculation of survival probabilities works equivalently, except that we use the <code>add_surv_prob</code> function instead of <code>add_hazard</code>. Note that calculating the survival probability involves calculating a cumulative hazard. Thus, when there is a grouping structure in the data (here the different strata), we have to group by this variable before we calculate cumulative hazards or survival probabilities. Note also, that we use <code>geom_surv</code> in order to force the function to start at a survival probability of 1.</p>
+<p>We can see, that the hazard for the first event is high in the
+beginning and declines over time, as most children will have had the
+first infection after one year of life. Consequently, the hazard for
+recurrence is low in the beginning and increases over time before it
+flattens out after about two months.</p>
+<p>Calculation of survival probabilities works equivalently, except that
+we use the <code>add_surv_prob</code> function instead of
+<code>add_hazard</code>. Note that calculating the survival probability
+involves calculating a cumulative hazard. Thus, when there is a grouping
+structure in the data (here the different strata), we have to group by
+this variable before we calculate cumulative hazards or survival
+probabilities. Note also, that we use <code>geom_surv</code> in order to
+force the function to start at a survival probability of 1.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">newdata</span> <span class="op">&lt;-</span><span class="va">newdata</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">enum_strata</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -414,7 +513,16 @@
 <div class="section level3">
 <h3 id="modeling-the-effects-of-hiv-assuming-proportional-hazards">Modeling the effects of HIV assuming proportional hazards<a class="anchor" aria-label="anchor" href="#modeling-the-effects-of-hiv-assuming-proportional-hazards"></a>
 </h3>
-<p>The HIV exposure variable indicates whether children were HIV exposed and uninfected (HEU) by being born to HIV positive mothers or HIV uninfected (HU). We will fit this model in the PAMM framework to evaluate the effect of HIV exposure while assuming proportional hazards. This means that the effects of HIV shift the log-hazard by some constant over time. We fit two models. In the first model, we assume that the hazard ratio is the same for first and recurrent infections. In the second model, we allow different hazard ratios for first and recurrent infections, but we still assume both these hazard ratios are proportional over time.</p>
+<p>The HIV exposure variable indicates whether children were HIV exposed
+and uninfected (HEU) by being born to HIV positive mothers or HIV
+uninfected (HU). We will fit this model in the PAMM framework to
+evaluate the effect of HIV exposure while assuming proportional hazards.
+This means that the effects of HIV shift the log-hazard by some constant
+over time. We fit two models. In the first model, we assume that the
+hazard ratio is the same for first and recurrent infections. In the
+second model, we allow different hazard ratios for first and recurrent
+infections, but we still assume both these hazard ratios are
+proportional over time.</p>
 <div class="section level4">
 <h4 id="model-1">Model 1<a class="anchor" aria-label="anchor" href="#model-1"></a>
 </h4>
@@ -451,7 +559,8 @@
 <span><span class="co">## </span></span>
 <span><span class="co">## R-sq.(adj) =  -0.0279   Deviance explained = -2.18%</span></span>
 <span><span class="co">## fREML =  18453  Scale est. = 1         n = 18889</span></span></code></pre>
-<p>We can see that estimated effect of HIV exposure in terms of the hazard ratio is <span class="math inline">\(HR=\exp(0.2681)=1.31\;(p=0.062)\)</span>.</p>
+<p>We can see that estimated effect of HIV exposure in terms of the
+hazard ratio is <span class="math inline">\(HR=\exp(0.2681)=1.31\;(p=0.062)\)</span>.</p>
 </div>
 <div class="section level4">
 <h4 id="model-2">Model 2<a class="anchor" aria-label="anchor" href="#model-2"></a>
@@ -490,15 +599,20 @@
 <span><span class="co">## </span></span>
 <span><span class="co">## R-sq.(adj) =  -0.0274   Deviance explained = -2.01%</span></span>
 <span><span class="co">## fREML =  18451  Scale est. = 1         n = 18889</span></span></code></pre>
-<p>We can see that estimated effect of HIV exposure in terms of the hazard ratio is <span class="math inline">\(HR=\exp(-0.0201)=0.98\;(p=0.925)\)</span> for the first infection and <span class="math inline">\(HR=\exp(0.5427)=1.72\;(p=0.006)\)</span> for recurrent infections.</p>
+<p>We can see that estimated effect of HIV exposure in terms of the
+hazard ratio is <span class="math inline">\(HR=\exp(-0.0201)=0.98\;(p=0.925)\)</span> for the
+first infection and <span class="math inline">\(HR=\exp(0.5427)=1.72\;(p=0.006)\)</span> for
+recurrent infections.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references">
-<div id="ref-wood_p-values_2013">
-<p>Wood, Simon N. 2013. “On P-Values for Smooth Components of an Extended Generalized Additive Model.” <em>Biometrika</em> 100 (1): 221–28. <a href="https://doi.org/10.1093/biomet/ass048" class="external-link">https://doi.org/10.1093/biomet/ass048</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-wood_p-values_2013" class="csl-entry">
+Wood, Simon N. 2013. <span>“On p-Values for Smooth Components of an
+Extended Generalized Additive Model.”</span> <em>Biometrika</em> 100
+(1): 221–28. <a href="https://doi.org/10.1093/biomet/ass048" class="external-link">https://doi.org/10.1093/biomet/ass048</a>.
 </div>
 </div>
 </div>

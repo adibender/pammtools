@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="tdcovar_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time-dependent covariates</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/tdcovar.Rmd" class="external-link"><code>vignettes/tdcovar.Rmd</code></a></small>
       <div class="hidden name"><code>tdcovar.Rmd</code></div>
@@ -164,7 +164,12 @@
 <div class="section level2">
 <h2 id="analysis-of-the-recidivism-data">Analysis of the recidivism data<a class="anchor" aria-label="anchor" href="#analysis-of-the-recidivism-data"></a>
 </h2>
-<p>In the following, we demonstrate an analysis containing time-dependent covariates, using the well-known recidivism data discussed in detail in <span class="citation">Fox and Weisberg (2011)</span>. The R-Code of the original analysis using the extended Cox model can be found <a href="https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R" class="external-link">here</a>, the respective vignette <a href="https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf" class="external-link">here</a>.</p>
+<p>In the following, we demonstrate an analysis containing
+time-dependent covariates, using the well-known recidivism data
+discussed in detail in <span class="citation">Fox and Weisberg
+(2011)</span>. The R-Code of the original analysis using the extended
+Cox model can be found <a href="https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R" class="external-link">here</a>,
+the respective vignette <a href="https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># raw data</span></span>
 <span><span class="co"># https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R</span></span>
@@ -175,7 +180,10 @@
 <div class="section level3">
 <h3 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
 </h3>
-<p>In this example we don’t need a dedicated function for transformation, as we basically just need to transform the data into long format (equals splitting at each week for which subjects are in the risk set):</p>
+<p>In this example we don’t need a dedicated function for
+transformation, as we basically just need to transform the data into
+long format (equals splitting at each week for which subjects are in the
+risk set):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># transform into long format</span></span>
 <span><span class="va">recidivism_long</span> <span class="op">&lt;-</span> <span class="va">recidivism</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -197,7 +205,12 @@
 <div class="section level3">
 <h3 id="fitting-the-models">Fitting the models<a class="anchor" aria-label="anchor" href="#fitting-the-models"></a>
 </h3>
-<p>Below we fit a PAM and an extended Cox model. In this case the format for both models is the same (which is not always the case for analyses with time-dependent covariates, see the second example below using the <code>pbc</code> data): The <code>stop</code> variable defines the interval endpoints and is used to model the baseline log hazard rates.</p>
+<p>Below we fit a PAM and an extended Cox model. In this case the format
+for both models is the same (which is not always the case for analyses
+with time-dependent covariates, see the second example below using the
+<code>pbc</code> data): The <code>stop</code> variable defines the
+interval endpoints and is used to model the baseline log hazard
+rates.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Fit PAM (smooth effects of age and prio, using P-Splines)</span></span>
 <span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">arrest</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">stop</span><span class="op">)</span> <span class="op">+</span> <span class="va">fin</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">age</span>, bs<span class="op">=</span><span class="st">"ps"</span><span class="op">)</span> <span class="op">+</span> <span class="va">race</span> <span class="op">+</span> <span class="va">wexp</span> <span class="op">+</span> <span class="va">mar</span> <span class="op">+</span> <span class="va">paro</span> <span class="op">+</span></span>
@@ -234,9 +247,11 @@
 <div class="section level3">
 <h3 id="graphical-comparison-of-the-two-models">Graphical comparison of the two models<a class="anchor" aria-label="anchor" href="#graphical-comparison-of-the-two-models"></a>
 </h3>
-<p>The figure below summarizes the comparison between the two models.</p>
-<details><p><summary>Expand here for R-Code</summary></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>The figure below summarizes the comparison between the two
+models.</p>
+<details><summary>
+Expand here for R-Code
+</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_eff</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_df</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="../reference/tidy_fixed.html">tidy_fixed</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span>,</span>
@@ -298,13 +313,20 @@
 <span>  <span class="va">prio_gg</span>,</span>
 <span>  layout_matrix<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details><p><img src="tdcovar_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>As we can see, the estimates of the fixed coefficients (left panel) are very similar between the two models, including the confidence intervals. Using the default settings in both model specifications (using P-Splines for smooth terms), the PAM estimates are smoother compared to the Cox estimates (right panel).</p>
+<p>As we can see, the estimates of the fixed coefficients (left panel)
+are very similar between the two models, including the confidence
+intervals. Using the default settings in both model specifications
+(using P-Splines for smooth terms), the PAM estimates are smoother
+compared to the Cox estimates (right panel).</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="analysis-of-the-pbc-data">Analysis of the <code>pbc</code> data<a class="anchor" aria-label="anchor" href="#analysis-of-the-pbc-data"></a>
 </h2>
-<p>Here we show an example with continuous time-dependent covariates using the Primary Biliary Cirrhosis Data (<code>pbc</code>) from the <code>survival</code> package (see <code><a href="https://rdrr.io/pkg/survival/man/pbc.html" class="external-link">?pbc</a></code> for documentation).</p>
+<p>Here we show an example with continuous time-dependent covariates
+using the Primary Biliary Cirrhosis Data (<code>pbc</code>) from the
+<code>survival</code> package (see <code><a href="https://rdrr.io/pkg/survival/man/pbc.html" class="external-link">?pbc</a></code> for
+documentation).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pbc"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pbc</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">11</span>, <span class="fl">12</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
@@ -330,7 +352,8 @@
 <div class="section level3">
 <h3 id="extended-cox-analysis-of-the-pbc-data">Extended Cox analysis of the <code>pbc</code> data<a class="anchor" aria-label="anchor" href="#extended-cox-analysis-of-the-pbc-data"></a>
 </h3>
-<p>We first replicate the analysis from <code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package="survival")</a></code>:</p>
+<p>We first replicate the analysis from
+<code><a href="https://cran.rstudio.com/web/packages/survival/vignettes/timedep.pdf" class="external-link">vignette("timedep", package="survival")</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># below code copied from survival vignette "timedep"</span></span>
 <span><span class="va">temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbc</span>, <span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span>, select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="co"># baseline</span></span>
@@ -344,12 +367,20 @@
 <pre><code><span><span class="co">##                    bili  protime</span></span>
 <span><span class="co">## baseline fit   0.930592 2.890573</span></span>
 <span><span class="co">## time dependent 1.241214 3.983400</span></span></code></pre>
-<p>This demonstrates that results can differ substantially if only the baseline values of TDCs are used for the analysis instead of their complete trajectories over time.</p>
+<p>This demonstrates that results can differ substantially if only the
+baseline values of TDCs are used for the analysis instead of their
+complete trajectories over time.</p>
 </div>
 <div class="section level3">
 <h3 id="pam-analysis-of-the-pbc-data">PAM analysis of the <code>pbc</code> data<a class="anchor" aria-label="anchor" href="#pam-analysis-of-the-pbc-data"></a>
 </h3>
-<p>Data transformation is performed using the <code>as_ped</code> function with the <code>concurrent</code> special as described in the <a href="data-transformation.html">data-transformation vignette</a>. Note that a covariate value observed at day 192 will by default affect the hazard starting from interval <span class="math inline">\((192, \ldots]\)</span>. This can be modified using the <code>lag</code> argument, which defaults to zero, but can be set to any positive integer value.</p>
+<p>Data transformation is performed using the <code>as_ped</code>
+function with the <code>concurrent</code> special as described in the <a href="data-transformation.html">data-transformation vignette</a>. Note
+that a covariate value observed at day 192 will by default affect the
+hazard starting from interval <span class="math inline">\((192,
+\ldots]\)</span>. This can be modified using the <code>lag</code>
+argument, which defaults to zero, but can be set to any positive integer
+value.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbc</span> <span class="op">&lt;-</span> <span class="va">pbc</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">id</span> <span class="op">&lt;=</span> <span class="fl">312</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">id</span><span class="op">:</span><span class="va">sex</span>, <span class="va">bili</span>, <span class="va">protime</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -366,9 +397,12 @@
 <pre><code><span><span class="co">##              pam      cox</span></span>
 <span><span class="co">## bili    1.266443 1.241214</span></span>
 <span><span class="co">## protime 4.277453 3.983400</span></span></code></pre>
-<p>Coefficient estimates are very similar for both models, especially for the effect of <code>bili</code>. A graphical comparison yields similar results:</p>
-<details><p><summary>Expand here for R-Code</summary></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<p>Coefficient estimates are very similar for both models, especially
+for the effect of <code>bili</code>. A graphical comparison yields
+similar results:</p>
+<details><summary>
+Expand here for R-Code
+</summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Effect of bilirubin</span></span>
 <span><span class="co"># note that we use the reference argument to calculate</span></span>
 <span><span class="co"># the relative risk change (x - \bar{x})'\beta for comparison with predict.coxph</span></span>
@@ -399,11 +433,13 @@
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-Fox2011">
-<p>Fox, John, and Harvey Sanford Weisberg. 2011. <em>An R Companion to Applied Regression</em>. Revised. Thousand Oaks, Calif: Sage Pubn.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Fox2011" class="csl-entry">
+Fox, John, and Harvey Sanford Weisberg. 2011. <em>An <span>R</span>
+<span>Companion</span> to <span>Applied</span>
+<span>Regression</span></em>. Revised. Thousand Oaks, Calif: Sage Pubn.
 </div>
 </div>
 </div>

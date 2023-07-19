@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
       </span>
     </div>
 
@@ -138,12 +138,12 @@
 
       
 
-      </header><script src="basics_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic Modeling</h1>
             
-            <h4 data-toc-skip class="date">2023-03-23</h4>
+            <h4 data-toc-skip class="date">2023-07-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/basics.Rmd" class="external-link"><code>vignettes/basics.Rmd</code></a></small>
       <div class="hidden name"><code>basics.Rmd</code></div>
@@ -152,21 +152,38 @@
 
     
     
-<p>In this article we present basic examples for the estimation of PAMs using <strong><code>pammtools</code></strong> and compare the results to estimates obtained using the <code>coxph</code> function from the <strong><code>survival</code></strong> package.</p>
-<p>In the following two sections, we first describe the classical piece-wise exponential model (PEM) and after that the extension to piece-wise exponential additive models (PAM).</p>
+<p>In this article we present basic examples for the estimation of PAMs
+using <strong><code>pammtools</code></strong> and compare the results to
+estimates obtained using the <code>coxph</code> function from the
+<strong><code>survival</code></strong> package.</p>
+<p>In the following two sections, we first describe the classical
+piece-wise exponential model (PEM) and after that the extension to
+piece-wise exponential additive models (PAM).</p>
 <div class="section level3">
 <h3 id="piece-wise-exponential-model-pem">Piece-wise exponential model (PEM)<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-model-pem"></a>
 </h3>
-<p>The strength of the PEM is that analysis of time-to-event data can be performed using algorithms designed to fit Generalized Linear Models. This approach yields coefficient estimates that are equivalent to the estimates obtained from <em>Cox Proportional Hazards</em> models if</p>
+<p>The strength of the PEM is that analysis of time-to-event data can be
+performed using algorithms designed to fit Generalized Linear Models.
+This approach yields coefficient estimates that are equivalent to the
+estimates obtained from <em>Cox Proportional Hazards</em> models if</p>
 <ol style="list-style-type: decimal">
-<li><p>there are no ties (i.e., simultaneous events) in the data and</p></li>
-<li><p>all unique event (and censoring) times are used as interval cut points in order to transform the data into the format suitable for PEMs (see <code><a href="../reference/as_ped.html">?as_ped</a></code> and the <a href="data-transformation.html">vignette on data transformation</a>).</p></li>
+<li><p>there are no ties (i.e., simultaneous events) in the data
+and</p></li>
+<li><p>all unique event (and censoring) times are used as interval cut
+points in order to transform the data into the format suitable for PEMs
+(see <code><a href="../reference/as_ped.html">?as_ped</a></code> and the <a href="data-transformation.html">vignette on data
+transformation</a>).</p></li>
 </ol>
-<p>Estimates can differ between the two approaches due to a more crude handling of ties in the PEM approach <span class="citation">(Whitehead <a href="#ref-whitehead1980" role="doc-biblioref">1980</a>)</span>. In practice these differences are usually negligible (see examples below).</p>
+<p>Estimates can differ between the two approaches due to a more crude
+handling of ties in the PEM approach <span class="citation">(<a href="#ref-whitehead1980" role="doc-biblioref">Whitehead
+1980</a>)</span>. In practice these differences are usually negligible
+(see examples below).</p>
 <div class="section level4">
 <h4 id="subset-with-unique-event-times">Subset with unique event times<a class="anchor" aria-label="anchor" href="#subset-with-unique-event-times"></a>
 </h4>
-<p>We first demonstrate the equivalence using a subset of the Veterans’ data <span class="citation">(Kalbfleisch and Prentice <a href="#ref-Kalbfleisch1980" role="doc-biblioref">1980</a>)</span> provided in the <code>survival</code> package:</p>
+<p>We first demonstrate the equivalence using a subset of the Veterans’
+data <span class="citation">(<a href="#ref-Kalbfleisch1980" role="doc-biblioref">Kalbfleisch and Prentice 1980</a>)</span> provided
+in the <code>survival</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
@@ -214,12 +231,25 @@
 <div class="section level3">
 <h3 id="piece-wise-exponential-additive-model">Piece-wise exponential additive model<a class="anchor" aria-label="anchor" href="#piece-wise-exponential-additive-model"></a>
 </h3>
-<p>PAMs have two main advantages over PEMs <span class="citation">(Bender, Groll, and Scheipl <a href="#ref-Bender2018a" role="doc-biblioref">2018</a>)</span>:</p>
+<p>PAMs have two main advantages over PEMs <span class="citation">(<a href="#ref-Bender2018a" role="doc-biblioref">Bender, Groll, and Scheipl
+2018</a>)</span>:</p>
 <ul>
-<li><p>PAM estimation scales better when the number of intervals becomes large: PEMs need to estimate one parameter per interval for the baseline hazard, while the number of parameters in PAMs only depends on the number of basis functions used for the spline estimate of the baseline hazard.</p></li>
-<li><p>In PEMs, baseline hazard estimates for each interval can vary a lot between neighboring intervals, especially when intervals only contain few events. For PAMs on the other hand estimates of the baseline hazard in neighboring intervals are similar due to penalization unless the data provides very strong evidence for large changes between neighboring intervals.</p></li>
+<li><p>PAM estimation scales better when the number of intervals becomes
+large: PEMs need to estimate one parameter per interval for the baseline
+hazard, while the number of parameters in PAMs only depends on the
+number of basis functions used for the spline estimate of the baseline
+hazard.</p></li>
+<li><p>In PEMs, baseline hazard estimates for each interval can vary a
+lot between neighboring intervals, especially when intervals only
+contain few events. For PAMs on the other hand estimates of the baseline
+hazard in neighboring intervals are similar due to penalization unless
+the data provides very strong evidence for large changes between
+neighboring intervals.</p></li>
 </ul>
-<p>Note that coefficient estimates in PAMs are no longer equivalent to those from Cox PH models, since the estimation of the baseline hazard is performed semi-parametrically. In our experience the differences are negligible.</p>
+<p>Note that coefficient estimates in PAMs are no longer equivalent to
+those from Cox PH models, since the estimation of the baseline hazard is
+performed semi-parametrically. In our experience the differences are
+negligible.</p>
 <p>Using the example above (data without ties) we get:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## compare to PAM</span></span>
@@ -233,17 +263,22 @@
 <span><span class="co">## age 0.007543308 0.006413903 0.006413903</span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-Bender2018a">
-<p>Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. “A Generalized Additive Model Approach to Time-to-Event Analysis.” <em>Statistical Modelling</em> 18 (3-4): 299–321. <a href="https://doi.org/10.1177/1471082X17748083" class="external-link">https://doi.org/10.1177/1471082X17748083</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bender2018a" class="csl-entry">
+Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018. <span>“A
+Generalized Additive Model Approach to Time-to-Event Analysis.”</span>
+<em>Statistical Modelling</em> 18 (3-4): 299–321. <a href="https://doi.org/10.1177/1471082X17748083" class="external-link">https://doi.org/10.1177/1471082X17748083</a>.
 </div>
-<div id="ref-Kalbfleisch1980">
-<p>Kalbfleisch, J., and R. Prentice. 1980. <em>The Statistical Analysis of Failure Time Data</em>. New York: Wiley.</p>
+<div id="ref-Kalbfleisch1980" class="csl-entry">
+Kalbfleisch, J., and R. Prentice. 1980. <em>The Statistical Analysis of
+Failure Time Data</em>. New York: Wiley.
 </div>
-<div id="ref-whitehead1980">
-<p>Whitehead, John. 1980. “Fitting Cox’s Regression Model to Survival Data Using GLIM.” <em>Applied Statistics</em> 29 (3): 268–75.</p>
+<div id="ref-whitehead1980" class="csl-entry">
+Whitehead, John. 1980. <span>“Fitting Cox’s Regression Model to Survival
+Data Using <span>GLIM</span>.”</span> <em>Applied Statistics</em> 29
+(3): 268–75.
 </div>
 </div>
 </div>
