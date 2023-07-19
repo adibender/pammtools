@@ -37,6 +37,7 @@ Suggests:
     testthat
 Config/Needs/website: 
   coxme,
+  eha,
   etm,
   TBFmultinomial
 License: MIT + file LICENSE
