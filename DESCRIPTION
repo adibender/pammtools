@@ -39,6 +39,7 @@ Config/Needs/website:
   coxme,
   eha,
   etm,
+  scam,
   TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true
