@@ -3,7 +3,7 @@ title: "Non-linear effects (penalized splines)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{splines.html}
+  %\VignetteIndexEntry{Non-linear effects (penalized splines)}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
