@@ -3,7 +3,7 @@ title: "Stratified baseline"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{strata}
+  %\VignetteIndexEntry{Stratified baseline}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---

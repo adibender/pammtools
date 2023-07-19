@@ -3,7 +3,7 @@ title: "Time-dependent covariates"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{tdcovar}
+  %\VignetteIndexEntry{Time-dependent covariates}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---

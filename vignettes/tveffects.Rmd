@@ -3,7 +3,7 @@ title: "Time-varying effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{tveffects}
+  %\VignetteIndexEntry{Time-varying effects}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
