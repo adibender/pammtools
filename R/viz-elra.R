@@ -235,9 +235,5 @@ get_ll <- function(x, ind_term, ..., time_var = "tend") {
   nd %>% filter(!!sym(tz_var) %in% tz_val) %>%
     mutate(
       !!sym(ll_var_mat) := ll_fun(.data[[time_var]], .data[[tz_var]]) * 1L) %>%
-    arrange(.data[[time_var]], .data[[tz_var]]) %>%
-    group_by(.data[[tz_var]]) %>%
-    mutate(!!sym(ll_var_mat) := lag(!!sym(ll_var_mat), default = 0)) %>%
-    ungroup()
-
+    arrange(.data[[time_var]], .data[[tz_var]]) 
 }
