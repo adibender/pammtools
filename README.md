@@ -3,7 +3,7 @@
 
 [![R-CMD-check](https://github.com/adibender/pammtools/workflows/R-CMD-check/badge.svg)](https://github.com/adibender/pammtools/actions)
 [![cran
-checks](https://cranchecks.info/badges/worst/pammtools)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
+checks](https://badges.cranchecks.info/worst/pammtools.svg)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Build
 Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://travis-ci.org/adibender/pammtools)

@@ -1,3 +1,6 @@
+# pammtools 0.5.9
++ Fixes issue 154: direction argument to `geom_stepribbon`
+
 # pammtools 0.5.8
 + removed argument `methods` from `pamm`. Can be specified via `...`. Fixes #200
 + adapted `warn_about_new_time_points` when original data not stored in model object. Fixes #203
