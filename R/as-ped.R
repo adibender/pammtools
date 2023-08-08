@@ -132,8 +132,10 @@ as_ped.nested_fdf <- function(data, formula, ...) {
       summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
     ## id_tseq attribute depends on timescale  
     if (dots$timescale == "gap") {   ## if gap, then group_by() by "transition"
-      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
-                                                .data[[dots$transition]]) %>% 
+      # attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var")),
+      #                                           .data[[dots$transition]]) %>% 
+      #   transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
+      attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% 
         transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
     } else {                         ## if calendar
       attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>% 
@@ -155,7 +157,7 @@ as_ped.nested_fdf <- function(data, formula, ...) {
   }
   
   if (has_special(formula, "cumulative")) {
-    ped <- add_cumulative(ped, data = data, formula = formula)
+    ped <- add_cumulative(ped, data = data, formula = formula, timescale = dots$timescale)
     attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
                                     ~bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x)))))
     class(ped) <- c("fped", class(ped))

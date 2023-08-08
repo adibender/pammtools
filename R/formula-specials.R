@@ -96,7 +96,7 @@ concurrent <- function(...,
 #' @importFrom purrr flatten map
 #' @importFrom stats terms
 #' @keywords internal
-get_cumulative <- function(data, formula) {
+get_cumulative <- function(data, formula, ped, timescale = NULL) {
   
   stopifnot(has_tdc_form(formula))
   
@@ -111,7 +111,8 @@ get_cumulative <- function(data, formula) {
   
   ## create matrices
   func_mats <- map(func_list,
-                   ~ expand_cumulative(data = data, ., n_func = n_func)) %>%
+                   ~ expand_cumulative(data = data, ., n_func = n_func,
+                                       ped = ped, timescale = timescale)) %>%
     flatten()
   
   list(
@@ -155,7 +156,7 @@ has_special <- function(formula, special = "cumulative") {
 #' @param func Single evaluated \code{\link{cumulative}} term.
 #' @importFrom purrr map invoke_map
 #' @keywords internal
-expand_cumulative <- function(data, func, n_func) {
+expand_cumulative <- function(data, func, n_func, ped, timescale) {
   
   col_vars <- func$col_vars
   tz_var   <- func$tz_var
@@ -182,14 +183,14 @@ expand_cumulative <- function(data, func, n_func) {
     hist_mats[[i]] <- if (col_vars[i] == attr(data, "time_var")) {
       make_time_mat(data, nz)
     } else if (col_vars[i] == func$latency_var) {
-      make_latency_mat(data, tz)
+      make_latency_mat(data, tz, timescale)
     } else {
-      make_z_mat(data, col_vars[i], nz)
+      make_z_mat(data, col_vars[i], nz, ped, timescale)
     }
   }
   
   if (any(c(time_var, tz_var) %in% col_vars)) {
-    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun)))
+    hist_mats <- c(hist_mats, list(make_lag_lead_mat(data, tz, func$ll_fun, timescale)))
     names(hist_mats) <- make_mat_names(c(col_vars, "LL"), func$latency_var,
                                        tz_var, func$suffix, n_func)
     time_mat_ind <- grepl(time_var, names(hist_mats))
@@ -331,9 +332,9 @@ add_concurrent <- function(ped, data, id_var, ...) {
 }
 
 #' @keywords internal
-add_cumulative <- function(ped, data, formula) {
+add_cumulative <- function(ped, data, formula, timescale) {
   
-  func_components <- get_cumulative(data, formula)
+  func_components <- get_cumulative(data, formula, ped, timescale)
   func_matrices <- func_components$func_mats
   
   ## check that all individuals share same tz pattern
@@ -448,12 +449,23 @@ make_time_mat <- function(data, nz) {
 #' @rdname elra_matrix
 #' @inherit make_time_mat
 #' @keywords internal
-make_latency_mat <- function(data, tz) {
+make_latency_mat <- function(data, tz, timescale = NULL) {
   
   time        <- attr(data, "breaks")
   id_tseq     <- attr(data, "id_tseq")
   Latency_mat <- outer(time, tz, FUN = "-")
   Latency_mat[Latency_mat < 0] <- 0
+  if (!is.null(timescale)) {
+    if (timescale == "gap") {
+      idx <- unique(id_tseq[id_tseq > nrow(Latency_mat)])
+      l_idx <- length(idx)
+      if (l_idx) {
+        Latency_mat <- Latency_mat[c(1:nrow(Latency_mat), rep(nrow(Latency_mat), l_idx)),]
+        Latency_mat[idx,] <- map(idx, function(i) lag(Latency_mat[i,], n = order(i), default = 0)) %>% 
+          reduce(rbind)
+      }
+    }
+  }
   Latency_mat[id_tseq, , drop = FALSE]
   
 }
@@ -464,13 +476,26 @@ make_latency_mat <- function(data, tz) {
 make_lag_lead_mat <- function(
     data,
     tz,
-    ll_fun = function(t, tz) t >= tz) {
+    ll_fun = function(t, tz) t >= tz, 
+    timescale = NULL) {
   
   LL    <- outer(attr(data, "breaks"), tz, FUN = ll_fun) * 1L
   delta <- abs(diff(tz))
   IW    <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
                   byrow = TRUE)
   LL    <- LL * IW
+  if (!is.null(timescale)) {
+    if (timescale == "gap") {
+      id_tseq <- attr(data, "id_tseq")
+      idx <- unique(id_tseq[id_tseq > nrow(LL)])
+      l_idx <- length(idx)
+      if (l_idx) {
+        LL <- LL[c(1:nrow(LL), rep(nrow(LL), l_idx)),]
+        LL[idx,] <- map(idx, function(i) lag(LL[i,], n = order(i), default = 0)) %>% 
+          reduce(rbind)
+      }
+    }
+  }
   LL[attr(data, "id_tseq"), , drop = FALSE]
   
 }
@@ -482,15 +507,23 @@ make_lag_lead_mat <- function(
 #' @importFrom purrr map map_int
 #' @importFrom dplyr pull
 #' @keywords internal
-make_z_mat <- function(data, z_var, nz, ...) {
+make_z_mat <- function(data, z_var, nz, ped = NULL, timescale = NULL) {
   
   tz_ind <- seq_len(nz)
   Z <- map(data[[z_var]], .f = ~ unlist(.x)[tz_ind])
   Z <- do.call(rbind, Z)
   colnames(Z) <- paste0(z_var, tz_ind)
   Z[is.na(Z)] <- 0
-  Z[attr(data, "id_tz_seq"), , drop = FALSE]
-  
+  if (is.null(timescale)) { 
+    Z[attr(data, "id_tz_seq"), , drop = FALSE]
+  } else {
+    Z <- Z[attr(data, "id_tz_seq"), , drop = FALSE]
+    id_var <- attr(data, "id_var")
+    ## reorder as in ped data frame!
+    posx_df <- data.frame(pos_p = order(ped[[id_var]]), pos_Z = 1:nrow(ped))
+    posx_df <- posx_df[order(posx_df$pos_p),]
+    Z[posx_df$pos_Z,]
+  }
 }
 
 get_ncols <- function(data, col_vars) {
