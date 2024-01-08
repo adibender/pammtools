@@ -137,9 +137,36 @@ test_that("Trafo works for recurrent events data", {
 
 
 test_that("Trafo works for multi-state data", {
+  
+  # test_df <- data.frame(
+  #   id     = c(1,1, 2,2,2),
+  #   tstart = c(0, .5, 0, .8, 1.2),
+  #   tstop  = c(.5, 3, .8, 1.2, 3),
+  #   status = c(1, 0, 1, 1, 1),
+  #   enum   = c(1, 2, 1, 2, 3),
+  #   trans  = c("1->1", "1->2", "1->1", "1->2", "2->3"),
+  #   age    = c(50, 50, 24, 24, 24))
+  
+  test_df <- data.frame(
+    id     = c(1,1, 2,2,2),
+    tstart = c(0, .5, 0, .8, 1.2),
+    tstop  = c(.5, 3, .8, 1.2, 3),
+    status = c(1, 0, 1, 1, 1),
+    enum   = c(1, 2, 1, 2, 3),
+    age    = c(50, 50, 24, 24, 24))
+  
+  print(test_df)
+  
+  # GAP timescale
+  gap_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ enum + age,
+    transition = "enum",
+    id         = "id",
+    timescale  = "gap",
+    max_time   = 3)
 
-
-
+  print(gap_df)
 
   }
 )
