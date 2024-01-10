@@ -127,7 +127,7 @@ data_list <- split(data, data[[transition]])
 data_list <- data_list[map_dbl(data_list, ~sum(.x[[surv_vars[3]]])) >= min_events]
 cuts <-  do.call(debug_split_data_multistate, dots)
 # error message: no applicable method for 'get_cut' applied to an object of class "list"
-# try within the function
+# JP 10.01.2024: changed get_cut -> get_cut.list
 
 lhs_vars <- get_lhs_vars(formula)
 if (length(lhs_vars) == 3 & timescale == "gap") {
@@ -139,7 +139,7 @@ if (length(lhs_vars) == 3 & timescale == "gap") {
   formula_cuts <- formula
 }
 
-dots <- debug_split_data_multistate(
+cuts <- debug_split_data_multistate(
           formula = dots$formula,
           data = dots$data,
           transition = dots$transition,
@@ -269,7 +269,7 @@ debug_split_data_multistate <- function(
     dots$id <- id_var
   }
   
-  return(dots)
+  return(cuts)
   
   # 
   # split_df_list <- map2(
