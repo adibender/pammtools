@@ -66,9 +66,7 @@ fped_attr <- function(fped) {
 #' @param .data an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @param tbl an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @param x an  object of class \code{ped}, see \code{\link{as_ped}}.
-#' @param funs see \code{\link[dplyr]{summarize_all}}
 #' @param ... see \code{dplyr} documentation
-#' @param .dots see \code{dplyr} documentation
 #' @description See \code{dplyr} documentation of the respective functions for
 #'   description and examples.
 #' @return a modified \code{ped} object (except for \code{do})
@@ -218,7 +216,6 @@ select.ped <- function(.data, ...) {
 
 }
 
-#' @param keep_attributes conserve attributes? defaults to \code{TRUE}
 #' @export
 #' @export mutate
 #' @rdname dplyr_verbs

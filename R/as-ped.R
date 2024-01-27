@@ -203,7 +203,7 @@ is.ped <- function(x) inherits(x, "ped")
 
 #' @rdname as_ped
 #' @param newdata A new data set (\code{data.frame}) that contains the same
-#' variables that were used to create the PED object (code{data}).
+#' variables that were used to create the PED object (\code{data}).
 #' @export
 as_ped.ped <- function(data, newdata, ...) {
 
