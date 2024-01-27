@@ -88,7 +88,7 @@ Often this will be \code{0}, which is the default.}
 \item{x}{any R object.}
 
 \item{newdata}{A new data set (\code{data.frame}) that contains the same
-variables that were used to create the PED object (code{data}).}
+variables that were used to create the PED object (\code{data}).}
 }
 \value{
 A data frame class \code{ped} in piece-wise exponential data format.

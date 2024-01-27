@@ -22,8 +22,6 @@ nest_tdc <- function(data, formula, ...) {
 }
 
 #' @rdname nest_tdc
-#' @param vars A character vector of TDCs that will be nested.
-#' @param id A character giving the name of the ID column.
 #' @export
 nest_tdc.default <- function(data, formula, ...) {
 
