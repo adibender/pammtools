@@ -138,12 +138,6 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
-
-\item{funs}{see \code{\link[dplyr]{summarize_all}}}
-
-\item{.dots}{see \code{dplyr} documentation}
-
-\item{keep_attributes}{conserve attributes? defaults to \code{TRUE}}
 }
 \value{
 a modified \code{ped} object (except for \code{do})
