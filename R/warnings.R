@@ -41,7 +41,7 @@ warn_about_new_time_points.pamm <- function(object, newdata, ...) {
     int_original <- int_info(object)
     if ("interval" %in% colnames(newdata)) {
       int_new <- unique(newdata[["interval"]])
-      if(!all(int_new %in% int_original)) {
+      if(!all(int_new %in% int_original[["interval"]])) {
         warning(
           paste0(
             "Time points/intervals in new data not equivalent to time points/intervals during model fit.",
