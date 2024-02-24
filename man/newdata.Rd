@@ -63,9 +63,6 @@ tumor \%>\% make_newdata(days=seq_range(days, 3), status=unique(status), age=c(5
 # mean/modus values of unspecified variables are calculated over whole data
 tumor \%>\% make_newdata(sex=unique(sex))
 tumor \%>\% group_by(sex) \%>\% make_newdata()
-# You can also pass a part of the data sets as data frame to make_newdata
-purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) \%>\%
-  make_newdata(x=tumor)
 
 # Examples for PED data
 ped <- tumor \%>\% slice(1:3) \%>\% as_ped(Surv(days, status)~., cut = c(0, 500, 1000))
