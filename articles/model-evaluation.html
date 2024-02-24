@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Model evaluation</h1>
             
-            <h4 data-toc-skip class="date">2024-01-27</h4>
+            <h4 data-toc-skip class="date">2024-02-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/model-evaluation.Rmd" class="external-link"><code>vignettes/model-evaluation.Rmd</code></a></small>
       <div class="hidden name"><code>model-evaluation.Rmd</code></div>
@@ -226,10 +226,10 @@ depends on the evaluation time.</p>
 <span><span class="co">## Integrated Brier score (crps):</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)</span></span>
-<span><span class="co">## Reference              0.059              0.115               0.169</span></span>
-<span><span class="co">## pam1                   0.058              0.111               0.168</span></span>
-<span><span class="co">## pam2                   0.053              0.104               0.161</span></span>
-<span><span class="co">## pam3                   0.051              0.104               0.163</span></span></code></pre>
+<span><span class="co">## Reference              0.069              0.129               0.176</span></span>
+<span><span class="co">## pam1                   0.067              0.125               0.172</span></span>
+<span><span class="co">## pam2                   0.063              0.118               0.164</span></span>
+<span><span class="co">## pam3                   0.059              0.115               0.167</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="c-index">C-Index<a class="anchor" aria-label="anchor" href="#c-index"></a>
@@ -256,8 +256,8 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Pattern:</span></span>
 <span><span class="co">##                 Freq</span></span>
-<span><span class="co">##  event          183 </span></span>
-<span><span class="co">##  right.censored 193 </span></span>
+<span><span class="co">##  event          174 </span></span>
+<span><span class="co">##  right.censored 202 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) </span></span>
 <span><span class="co">## </span></span>
@@ -267,9 +267,9 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## $AppCindex</span></span>
 <span><span class="co">##      time=203 time=533 time=1120</span></span>
-<span><span class="co">## pam1     70.7     61.0      57.4</span></span>
-<span><span class="co">## pam2     81.9     67.4      61.0</span></span>
-<span><span class="co">## pam3     81.8     65.8      56.7</span></span></code></pre>
+<span><span class="co">## pam1     66.0     62.1      60.7</span></span>
+<span><span class="co">## pam2     77.0     68.8      64.8</span></span>
+<span><span class="co">## pam3     77.6     67.1      56.4</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Consider using time-dependent AUC instead: riskRegression::Score</span></span></code></pre>

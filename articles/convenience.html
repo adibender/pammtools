@@ -143,7 +143,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Workflow and convenience functions</h1>
             
-            <h4 data-toc-skip class="date">2024-01-27</h4>
+            <h4 data-toc-skip class="date">2024-02-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/HEAD/vignettes/convenience.Rmd" class="external-link"><code>vignettes/convenience.Rmd</code></a></small>
       <div class="hidden name"><code>convenience.Rmd</code></div>
@@ -220,22 +220,26 @@ to the newly created data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped_df</span> <span class="op">&lt;-</span> <span class="va">ped_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_hazard.html">add_hazard</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span>
 <span><span class="va">ped_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">interval</span>, <span class="va">hazard</span>, <span class="va">ci_lower</span>, <span class="va">ci_upper</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   interval       hazard     ci_lower     ci_upper</span></span>
-<span><span class="co">## 1    (0,1] 0.0001955248 0.0001095045 0.0003491175</span></span>
-<span><span class="co">## 2    (0,1] 0.0005049800 0.0003750227 0.0006799715</span></span>
-<span><span class="co">## 3    (0,1] 0.0013042070 0.0008609207 0.0019757403</span></span>
-<span><span class="co">## 4    (1,2] 0.0001952127 0.0001093736 0.0003484204</span></span>
-<span><span class="co">## 5    (1,2] 0.0005041739 0.0003747135 0.0006783617</span></span>
-<span><span class="co">## 6    (1,2] 0.0013021252 0.0008600158 0.0019715103</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">##   interval   hazard ci_lower ci_upper</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> (0,1]    0.000<span style="text-decoration: underline;">196</span> 0.000<span style="text-decoration: underline;">110</span> 0.000<span style="text-decoration: underline;">349</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> (0,1]    0.000<span style="text-decoration: underline;">505</span> 0.000<span style="text-decoration: underline;">375</span> 0.000<span style="text-decoration: underline;">680</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> (0,1]    0.001<span style="text-decoration: underline;">30</span>  0.000<span style="text-decoration: underline;">861</span> 0.001<span style="text-decoration: underline;">98</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> (1,2]    0.000<span style="text-decoration: underline;">195</span> 0.000<span style="text-decoration: underline;">109</span> 0.000<span style="text-decoration: underline;">348</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> (1,2]    0.000<span style="text-decoration: underline;">504</span> 0.000<span style="text-decoration: underline;">375</span> 0.000<span style="text-decoration: underline;">678</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> (1,2]    0.001<span style="text-decoration: underline;">30</span>  0.000<span style="text-decoration: underline;">860</span> 0.001<span style="text-decoration: underline;">97</span></span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ped_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">interval</span>, <span class="va">hazard</span>, <span class="va">ci_lower</span>, <span class="va">ci_upper</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##        interval       hazard     ci_lower     ci_upper</span></span>
-<span><span class="co">## 973 (2595,2808] 6.569813e-05 2.690993e-05 0.0001603959</span></span>
-<span><span class="co">## 974 (2595,2808] 1.696779e-04 7.946854e-05 0.0003622893</span></span>
-<span><span class="co">## 975 (2595,2808] 4.382256e-04 1.914665e-04 0.0010030042</span></span>
-<span><span class="co">## 976 (2808,3034] 5.205515e-05 1.613385e-05 0.0001679536</span></span>
-<span><span class="co">## 977 (2808,3034] 1.344423e-04 4.594680e-05 0.0003933841</span></span>
-<span><span class="co">## 978 (2808,3034] 3.472230e-04 1.127654e-04 0.0010691554</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">##   interval       hazard  ci_lower ci_upper</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> (2595,2808] 0.000<span style="text-decoration: underline;">065</span>7 0.000<span style="text-decoration: underline;">026</span>9 0.000<span style="text-decoration: underline;">160</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> (2595,2808] 0.000<span style="text-decoration: underline;">170</span>  0.000<span style="text-decoration: underline;">079</span>5 0.000<span style="text-decoration: underline;">362</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> (2595,2808] 0.000<span style="text-decoration: underline;">438</span>  0.000<span style="text-decoration: underline;">191</span>  0.001<span style="text-decoration: underline;">00</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> (2808,3034] 0.000<span style="text-decoration: underline;">052</span>1 0.000<span style="text-decoration: underline;">016</span>1 0.000<span style="text-decoration: underline;">168</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> (2808,3034] 0.000<span style="text-decoration: underline;">134</span>  0.000<span style="text-decoration: underline;">045</span>9 0.000<span style="text-decoration: underline;">393</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> (2808,3034] 0.000<span style="text-decoration: underline;">347</span>  0.000<span style="text-decoration: underline;">113</span>  0.001<span style="text-decoration: underline;">07</span></span></span></code></pre>
 <p>Which in turn can be conveniently plotted using respective functions,
 e.g.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
