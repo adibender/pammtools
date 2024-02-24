@@ -190,10 +190,8 @@ in the <code>survival</code> package:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span> <span class="co"># load veteran data</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in data("veteran", package = "survival"): data set 'veteran' not found</span></span></code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># remove ties to illustrate equivalence with Cox approach</span></span>
+<span><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="fu">survival</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/survival/man/veteran.html" class="external-link">veteran</a></span></span>
+<span><span class="co"># remove ties to illustrate equivalence with Cox approach</span></span>
 <span><span class="va">vetu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dplyr_verbs.html">filter</a></span><span class="op">(</span><span class="va">veteran</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ped_vetu</span> <span class="op">&lt;-</span> <span class="va">vetu</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, cut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">vetu</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span></span>
@@ -212,7 +210,7 @@ in the <code>survival</code> package:</p>
 <div class="section level4">
 <h4 id="full-data-set">Full data set<a class="anchor" aria-label="anchor" href="#full-data-set"></a>
 </h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Using the full data set (with ties) yields slightly different results</span></span>
 <span><span class="co"># when comparing PEM to Cox-PH</span></span>
 <span><span class="va">ped_vet</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -251,7 +249,7 @@ those from Cox PH models, since the estimation of the baseline hazard is
 performed semi-parametrically. In our experience the differences are
 negligible.</p>
 <p>Using the example above (data without ties) we get:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## compare to PAM</span></span>
 <span><span class="va">pam_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">ped_vetu</span>,</span>
 <span>    family <span class="op">=</span> <span class="st">"poisson"</span>, offset <span class="op">=</span> <span class="va">offset</span><span class="op">)</span></span>

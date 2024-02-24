@@ -226,10 +226,10 @@ depends on the evaluation time.</p>
 <span><span class="co">## Integrated Brier score (crps):</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)</span></span>
-<span><span class="co">## Reference              0.065              0.119               0.169</span></span>
-<span><span class="co">## pam1                   0.063              0.115               0.166</span></span>
-<span><span class="co">## pam2                   0.058              0.108               0.159</span></span>
-<span><span class="co">## pam3                   0.055              0.108               0.162</span></span></code></pre>
+<span><span class="co">## Reference              0.062              0.116               0.168</span></span>
+<span><span class="co">## pam1                   0.061              0.115               0.166</span></span>
+<span><span class="co">## pam2                   0.057              0.110               0.163</span></span>
+<span><span class="co">## pam3                   0.055              0.108               0.163</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="c-index">C-Index<a class="anchor" aria-label="anchor" href="#c-index"></a>
@@ -256,8 +256,8 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Pattern:</span></span>
 <span><span class="co">##                 Freq</span></span>
-<span><span class="co">##  event          192 </span></span>
-<span><span class="co">##  right.censored 184 </span></span>
+<span><span class="co">##  event          182 </span></span>
+<span><span class="co">##  right.censored 194 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) </span></span>
 <span><span class="co">## </span></span>
@@ -267,9 +267,9 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## $AppCindex</span></span>
 <span><span class="co">##      time=203 time=533 time=1120</span></span>
-<span><span class="co">## pam1     67.3     60.6      59.4</span></span>
-<span><span class="co">## pam2     76.7     66.5      62.9</span></span>
-<span><span class="co">## pam3     76.4     64.6      56.0</span></span></code></pre>
+<span><span class="co">## pam1     60.9     59.9      59.3</span></span>
+<span><span class="co">## pam2     70.4     64.3      60.6</span></span>
+<span><span class="co">## pam3     74.3     61.8      55.3</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Consider using time-dependent AUC instead: riskRegression::Score</span></span></code></pre>

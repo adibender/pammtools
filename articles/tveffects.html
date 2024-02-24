@@ -210,10 +210,8 @@ covariates, see <code><a href="https://rdrr.io/pkg/survival/man/veteran.html" cl
 details:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># for some reason the prior variable is coded 0/10 instead of 0/1</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"veteran"</span>, package <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in data("veteran", package = "survival"): data set 'veteran' not found</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="fu">survival</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/survival/man/veteran.html" class="external-link">veteran</a></span></span>
+<span><span class="va">veteran</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span></span>
 <span>    trt   <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">trt</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>    prior <span class="op">=</span> <span class="fl">1L</span> <span class="op">*</span> <span class="op">(</span><span class="va">prior</span> <span class="op">==</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -237,7 +235,7 @@ f(x_{\text{karno}},t) = \beta_{\text{karno}}\cdot x_{\text{karno}} +
 \]</span> This is an instance of the “known time-variation function”
 case above with <span class="math inline">\(g(t) =
 \log(t+20).\)</span></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span> <span class="op">+</span> <span class="fu">tt</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span>,</span>
 <span>  data    <span class="op">=</span> <span class="va">veteran</span>,</span>
@@ -247,7 +245,7 @@ case above with <span class="math inline">\(g(t) =
 <span><span class="co">##  0.07914694  0.12051224 -0.15466404  0.02930082</span></span></code></pre>
 <p>Thus the time-varying component of the effect becomes <span class="math inline">\(\beta_{\text{karno}}+\beta_{\text{karno},t}\cdot\log(t+20)
 = -0.155 + 0.029\cdot\log(t+20)\)</span>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">400</span>, by <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">t</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"karno"</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"tt(karno)"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">t</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"Beta(t) for karno"</span>, las <span class="op">=</span> <span class="fl">1</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.1</span>, <span class="fl">.05</span><span class="op">)</span>,</span>
@@ -259,7 +257,7 @@ case above with <span class="math inline">\(g(t) =
 </h3>
 <p>To fit a PAM with equivalent model specification (except for the
 baseline hazard) we can use</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data transformation</span></span>
 <span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">veteran</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>logt20 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">tstart</span> <span class="op">+</span> <span class="op">(</span><span class="va">tstart</span> <span class="op">-</span> <span class="va">tend</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
@@ -271,7 +269,7 @@ baseline hazard) we can use</p>
 <span><span class="co">## 4    (3,4]          0   0    60  69     0 3.113515</span></span>
 <span><span class="co">## 5    (4,7]          0   0    60  69     0 3.113515</span></span>
 <span><span class="co">## 6    (7,8]          0   0    60  69     0 3.277145</span></span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># fit model</span></span>
 <span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span> <span class="op">+</span> <span class="va">karno</span><span class="op">:</span><span class="va">logt20</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">ped</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -283,7 +281,7 @@ baseline hazard) we can use</p>
 <span><span class="co">## prior         0.11689786  0.12051224</span></span>
 <span><span class="co">## karno        -0.15921724 -0.15466404</span></span>
 <span><span class="co">## karno:logt20  0.03049036  0.02930082</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare fits</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">t</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"karno"</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">vfit</span><span class="op">)</span><span class="op">[</span><span class="st">"tt(karno)"</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">t</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"Beta(t) for karno"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.1</span>, <span class="fl">.05</span><span class="op">)</span>, las <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -304,14 +302,14 @@ into an increased hazard for higher-scoring patients after about day
 <p>In case we don’t want to pre-specify which shape the time-dependency
 should have, we can specify the effect of <code>karno</code> as <span class="math inline">\(f(x_{\text{karno}},t) = f(t)\cdot
 x_{\text{karno}}\)</span>, where <span class="math inline">\(f(t)\)</span> is estimated from the data:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># no need to specify main effect for karno here</span></span>
 <span><span class="va">pam2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, by <span class="op">=</span> <span class="va">karno</span><span class="op">)</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">ped</span>, offset <span class="op">=</span> <span class="va">offset</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 The figure below visualizes the estimate of the time-varying effect of
 <code>karno</code> for all three models
 <details><summary><em>Expand here to see R-Code</em>
-</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">term.df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/ped_info.html">ped_info</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/add_term.html">add_term</a></span><span class="op">(</span><span class="va">pam2</span>, term <span class="op">=</span> <span class="st">"karno"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_at</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fit"</span>, <span class="st">"ci_lower"</span>, <span class="st">"ci_upper"</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/funs.html" class="external-link">funs</a></span><span class="op">(</span><span class="va">.</span> <span class="op">/</span> <span class="va">.data</span><span class="op">$</span><span class="va">karno</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span></span>
@@ -327,7 +325,7 @@ The figure below visualizes the estimate of the time-varying effect of
 <span><span class="co">## # Using lambdas list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))</span></span>
 <span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gg_tv_karno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">term.df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">fit</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_step</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"PAM with penalized spline"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/geom_stepribbon.html">geom_stepribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">ci_lower</span>, ymax <span class="op">=</span> <span class="va">ci_upper</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -361,7 +359,7 @@ time-variable <code>tend</code> is already present in the
 includes the <em>shape</em> of the baseline hazard as well. The
 <em>level</em> of the baseline log hazard is given by the intercept of
 the model.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Non-linear, non-linearly time-varying effects</span></span>
 <span><span class="va">pam3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">te</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">karno</span><span class="op">)</span>,</span>
@@ -372,7 +370,7 @@ the model.</p>
 function <span class="math inline">\(\hat{f}(x_{\text{karno}},
 t)\)</span> is highly non-linear (<span class="math inline">\(edf
 \approx 8.9\)</span>):</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Family: poisson </span></span>
@@ -403,7 +401,7 @@ depict the Karnofsky-Score and the time respectively and the z-axis
 displays the contribution of the effect to the log-hazard for each
 combination of <span class="math inline">\(x_{\text{karno}}\)</span> and
 <span class="math inline">\(t\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pam3</span>, select <span class="op">=</span> <span class="fl">3</span>, scheme <span class="op">=</span> <span class="fl">1</span>, theta <span class="op">=</span> <span class="fl">120</span>, ticktype <span class="op">=</span> <span class="st">"detailed"</span><span class="op">)</span></span></code></pre></div>
 <p>Such 3D plots are sometimes difficult to interpret, thus we also
 provide a heat-/contourplot (left panel) with respective slices for
@@ -430,7 +428,7 @@ could indicate that the effect of the Karnofsky-Score tends towards 0
 over time as the information collected at the beginning of the follow-up
 becomes outdated (but see uncertainty).</p>
 <details><summary><em>Expand here to see R-Code</em>
-</summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+</summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># heat map/contour plot</span></span>
 <span><span class="va">te_gg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">pam3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">51</span>, <span class="fl">200</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
@@ -443,7 +441,7 @@ becomes outdated (but see uncertainty).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position  <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
 <span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># plot f(karno, t) for specific slices</span></span>
 <span><span class="va">karno_df</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, karno <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">75</span>, <span class="fl">95</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -487,7 +485,7 @@ Karnofsky-Scores and later time-points. Also note that the estimate does
 not include the estimated average time-constant log-hazard
 (<code>coefficients(pam3)["(Intercept)"]=</code>-4.966) and its
 uncertainty.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gg_tensor.html">gg_tensor</a></span><span class="op">(</span><span class="va">pam3</span>, ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"t"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fu">plain</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tveffects_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;"></p>
