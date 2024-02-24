@@ -35,7 +35,7 @@ We first illustrate the estimation on non-linear smooth effects using
 the `veteran` data from the survival package:
 
 ```{r}
-data("veteran", package="survival") # load veteran package
+veteran <- survival::veteran # load veteran package
 veteran <- veteran %>%
   mutate(
     trt   = 1+(trt == 2),
