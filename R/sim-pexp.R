@@ -155,9 +155,9 @@ sim_pexp <- function(formula, data, cut) {
       status = 1L * (.data$time <= max(cut)),
       time   = pmin(.data$time, max(cut)))
 
-    suppressMessages(
+  suppressMessages(
     sim_df <- sim_df %>%
-      left_join(select(data, -.data$time, -.data$status))
+      left_join(select(data, -all_of(c("time", "status"))))
   )
 
   attr(sim_df, "id_var")     <- "id"
@@ -166,7 +166,7 @@ sim_pexp <- function(formula, data, cut) {
   attr(sim_df, "tz_var")     <- tz_vars
   attr(sim_df, "cens_value") <- 0
   attr(sim_df, "breaks")     <- cut
-  attr(sim_df, "tz")         <- imap(tz_vars, ~select(sim_df, .x) %>%
+  attr(sim_df, "tz")         <- imap(tz_vars, ~select(sim_df, all_of(.x)) %>%
     pull(.x) %>% unique()) %>% flatten()
   if (exists("ll_funs")) attr(sim_df, "ll_funs") <- ll_funs
   if (exists("cumu_funs")) attr(sim_df, "cumu_funs") <- cumu_funs
