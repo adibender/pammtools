@@ -56,7 +56,7 @@ library(mgcv)
 library(pammtools)
 library(dplyr)
 
-data("veteran", package = "survival") # load veteran data
+veteran <- survival::veteran
 # remove ties to illustrate equivalence with Cox approach
 vetu <- filter(veteran, !duplicated(time))
 ped_vetu <- vetu %>%
