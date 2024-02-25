@@ -12,5 +12,4 @@
 No problems.
 
 ## Comments
-- Fixed data trafo for competing risks with more than two causes
-- maintenance updates
+- Maintenance updates

@@ -13,7 +13,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?b
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-ago/pammtools)](https://cran.r-project.org/package=pammtools)
 [![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
 [![MIT
-license](https://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/license/mit/)
+license](https://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/license/mit)
 <!-- badges: end -->
 
 # **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools

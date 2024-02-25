@@ -1,3 +1,6 @@
+# pamtools 0.5.93
++ Maintnance (some tidyverse deprecations, link fixes, etc., smaller bugs)
+
 # pammtools 0.5.92
 + Fixed competing risks data trafo in case of more than 2 causes
 
