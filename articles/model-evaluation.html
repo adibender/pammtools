@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.93</span>
       </span>
     </div>
 
@@ -226,10 +226,10 @@ depends on the evaluation time.</p>
 <span><span class="co">## Integrated Brier score (crps):</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##           IBS[0.01;time=203) IBS[0.01;time=533) IBS[0.01;time=1120)</span></span>
-<span><span class="co">## Reference              0.071              0.128               0.175</span></span>
-<span><span class="co">## pam1                   0.070              0.128               0.180</span></span>
-<span><span class="co">## pam2                   0.067              0.122               0.174</span></span>
-<span><span class="co">## pam3                   0.061              0.118               0.174</span></span></code></pre>
+<span><span class="co">## Reference              0.061              0.109               0.159</span></span>
+<span><span class="co">## pam1                   0.060              0.108               0.163</span></span>
+<span><span class="co">## pam2                   0.056              0.101               0.153</span></span>
+<span><span class="co">## pam3                   0.053              0.101               0.157</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="c-index">C-Index<a class="anchor" aria-label="anchor" href="#c-index"></a>
@@ -256,8 +256,8 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Pattern:</span></span>
 <span><span class="co">##                 Freq</span></span>
-<span><span class="co">##  event          178 </span></span>
-<span><span class="co">##  right.censored 198 </span></span>
+<span><span class="co">##  event          165 </span></span>
+<span><span class="co">##  right.censored 211 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Censoring model for IPCW: marginal model (Kaplan-Meier for censoring distribution) </span></span>
 <span><span class="co">## </span></span>
@@ -267,9 +267,9 @@ message and the cited literature.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## $AppCindex</span></span>
 <span><span class="co">##      time=203 time=533 time=1120</span></span>
-<span><span class="co">## pam1     63.1     55.2      53.1</span></span>
-<span><span class="co">## pam2     73.7     62.7      59.7</span></span>
-<span><span class="co">## pam3     77.8     62.3      51.6</span></span></code></pre>
+<span><span class="co">## pam1     64.5     60.3      58.2</span></span>
+<span><span class="co">## pam2     76.7     67.6      62.5</span></span>
+<span><span class="co">## pam3     76.1     65.6      56.0</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in summary.Cindex(x, print = TRUE, ...): The C-index is not proper for t-year predictions. Blanche et al. (2018), Biostatistics, 20(2): 347--357.</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Consider using time-dependent AUC instead: riskRegression::Score</span></span></code></pre>

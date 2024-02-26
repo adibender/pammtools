@@ -48,7 +48,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.92</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.93</span>
       </span>
     </div>
 
@@ -218,15 +218,15 @@ not stacked but rather returned in a list.</p>
 <span>  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span>, combine <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ped</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## List of 2</span></span>
-<span><span class="co">##  $ cause = 1:Classes 'ped' and 'data.frame': 31274 obs. of  9 variables:</span></span>
-<span><span class="co">##   ..- attr(*, "breaks")= num [1:99] 0.00821 0.10951 0.15606 0.27105 0.38877 ...</span></span>
+<span><span class="co">##  $ cause = 1:Classes 'ped' and 'data.frame': 30891 obs. of  9 variables:</span></span>
+<span><span class="co">##   ..- attr(*, "breaks")= num [1:96] 0.0684 0.2081 0.2218 0.3094 0.3231 ...</span></span>
 <span><span class="co">##   ..- attr(*, "id_var")= chr "id"</span></span>
 <span><span class="co">##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span></span>
 <span><span class="co">##   ..- attr(*, "trafo_args")=List of 3</span></span>
 <span><span class="co">##   ..- attr(*, "time_var")= chr "time"</span></span>
 <span><span class="co">##   ..- attr(*, "status_var")= chr "status"</span></span>
-<span><span class="co">##  $ cause = 2:Classes 'ped' and 'data.frame': 31274 obs. of  9 variables:</span></span>
-<span><span class="co">##   ..- attr(*, "breaks")= num [1:99] 0.00821 0.10951 0.15606 0.27105 0.38877 ...</span></span>
+<span><span class="co">##  $ cause = 2:Classes 'ped' and 'data.frame': 30891 obs. of  9 variables:</span></span>
+<span><span class="co">##   ..- attr(*, "breaks")= num [1:96] 0.0684 0.2081 0.2218 0.3094 0.3231 ...</span></span>
 <span><span class="co">##   ..- attr(*, "id_var")= chr "id"</span></span>
 <span><span class="co">##   ..- attr(*, "intvars")= chr [1:6] "id" "tstart" "tend" "interval" ...</span></span>
 <span><span class="co">##   ..- attr(*, "trafo_args")=List of 3</span></span>
@@ -238,13 +238,13 @@ not stacked but rather returned in a list.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data set for event type 1 (death from cardiovascular events)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     id      tstart        tend                    interval    offset ped_status</span></span>
-<span><span class="co">## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0</span></span>
-<span><span class="co">## 2 5002 0.008213552 0.109514031 (0.0082135524,0.1095140315] -2.289664          0</span></span>
-<span><span class="co">## 3 5002 0.109514031 0.156057495 (0.1095140315,0.1560574949] -3.067369          0</span></span>
-<span><span class="co">## 4 5002 0.156057495 0.271047228 (0.1560574949,0.2710472279] -2.162912          0</span></span>
-<span><span class="co">## 5 5002 0.271047228 0.388774812 (0.2710472279,0.3887748118] -2.139382          0</span></span>
-<span><span class="co">## 6 5002 0.388774812 0.396988364 (0.3887748118,0.3969883641] -4.801970          0</span></span>
+<pre><code><span><span class="co">##     id     tstart       tend                    interval    offset ped_status</span></span>
+<span><span class="co">## 1 5002 0.00000000 0.06844627            (0,0.0684462697] -2.681706          0</span></span>
+<span><span class="co">## 2 5002 0.06844627 0.20807666 (0.0684462697,0.2080766598] -1.968756          0</span></span>
+<span><span class="co">## 3 5002 0.20807666 0.22176591 (0.2080766598,0.2217659138] -4.291144          0</span></span>
+<span><span class="co">## 4 5002 0.22176591 0.30937714 (0.2217659138,0.3093771389] -2.434846          0</span></span>
+<span><span class="co">## 5 5002 0.30937714 0.32306639 (0.3093771389,0.3230663929] -4.291144          0</span></span>
+<span><span class="co">## 6 5002 0.32306639 0.44626968 (0.3230663929,0.4462696783] -2.093920          0</span></span>
 <span><span class="co">##    sex age cause</span></span>
 <span><span class="co">## 1 Male  60     1</span></span>
 <span><span class="co">## 2 Male  60     1</span></span>
@@ -255,13 +255,13 @@ not stacked but rather returned in a list.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># data set for event type 2 (death from other causes)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     id      tstart        tend                    interval    offset ped_status</span></span>
-<span><span class="co">## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0</span></span>
-<span><span class="co">## 2 5002 0.008213552 0.109514031 (0.0082135524,0.1095140315] -2.289664          0</span></span>
-<span><span class="co">## 3 5002 0.109514031 0.156057495 (0.1095140315,0.1560574949] -3.067369          0</span></span>
-<span><span class="co">## 4 5002 0.156057495 0.271047228 (0.1560574949,0.2710472279] -2.162912          0</span></span>
-<span><span class="co">## 5 5002 0.271047228 0.388774812 (0.2710472279,0.3887748118] -2.139382          0</span></span>
-<span><span class="co">## 6 5002 0.388774812 0.396988364 (0.3887748118,0.3969883641] -4.801970          0</span></span>
+<pre><code><span><span class="co">##     id     tstart       tend                    interval    offset ped_status</span></span>
+<span><span class="co">## 1 5002 0.00000000 0.06844627            (0,0.0684462697] -2.681706          0</span></span>
+<span><span class="co">## 2 5002 0.06844627 0.20807666 (0.0684462697,0.2080766598] -1.968756          0</span></span>
+<span><span class="co">## 3 5002 0.20807666 0.22176591 (0.2080766598,0.2217659138] -4.291144          0</span></span>
+<span><span class="co">## 4 5002 0.22176591 0.30937714 (0.2217659138,0.3093771389] -2.434846          0</span></span>
+<span><span class="co">## 5 5002 0.30937714 0.32306639 (0.3093771389,0.3230663929] -4.291144          0</span></span>
+<span><span class="co">## 6 5002 0.32306639 0.44626968 (0.3230663929,0.4462696783] -2.093920          0</span></span>
 <span><span class="co">##    sex age cause</span></span>
 <span><span class="co">## 1 Male  60     2</span></span>
 <span><span class="co">## 2 Male  60     2</span></span>
@@ -286,20 +286,20 @@ recognizes the data type and fits the models accordingly:</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Parametric coefficients:</span></span>
 <span><span class="co">##              Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">## (Intercept) -3.167038   0.584978  -5.414 6.17e-08 ***</span></span>
-<span><span class="co">## sexMale     -0.137125   0.132272  -1.037   0.2999    </span></span>
-<span><span class="co">## age          0.020100   0.008468   2.374   0.0176 *  </span></span>
+<span><span class="co">## (Intercept) -3.167236   0.583971  -5.424 5.84e-08 ***</span></span>
+<span><span class="co">## sexMale     -0.130885   0.132003  -0.992   0.3214    </span></span>
+<span><span class="co">## age          0.019828   0.008447   2.347   0.0189 *  </span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Approximate significance of smooth terms:</span></span>
 <span><span class="co">##           edf Ref.df Chi.sq p-value   </span></span>
-<span><span class="co">## s(tend) 1.008  1.017  8.053 0.00471 **</span></span>
+<span><span class="co">## s(tend) 1.009  1.018  8.233 0.00428 **</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## R-sq.(adj) =  -0.00995   Deviance explained = 0.576%</span></span>
-<span><span class="co">## UBRE = -0.91666  Scale est. = 1         n = 31274</span></span>
+<span><span class="co">## R-sq.(adj) =  -0.00847   Deviance explained = 0.56%</span></span>
+<span><span class="co">## UBRE = -0.91401  Scale est. = 1         n = 30891</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $`cause = 2`</span></span>
 <span><span class="co">## </span></span>
@@ -311,20 +311,20 @@ recognizes the data type and fits the models accordingly:</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Parametric coefficients:</span></span>
 <span><span class="co">##             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">## (Intercept) -6.94555    0.88212  -7.874 3.44e-15 ***</span></span>
-<span><span class="co">## sexMale      0.16876    0.18030   0.936    0.349    </span></span>
-<span><span class="co">## age          0.06420    0.01244   5.163 2.44e-07 ***</span></span>
+<span><span class="co">## (Intercept) -6.97569    0.88326  -7.898 2.84e-15 ***</span></span>
+<span><span class="co">## sexMale      0.16815    0.18028   0.933    0.351    </span></span>
+<span><span class="co">## age          0.06426    0.01244   5.166 2.39e-07 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Approximate significance of smooth terms:</span></span>
-<span><span class="co">##           edf Ref.df Chi.sq p-value    </span></span>
-<span><span class="co">## s(tend) 1.013  1.026  11.39 0.00078 ***</span></span>
+<span><span class="co">##           edf Ref.df Chi.sq p-value   </span></span>
+<span><span class="co">## s(tend) 1.015  1.029  10.45 0.00129 **</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## R-sq.(adj) =  -0.00606   Deviance explained = 2.35%</span></span>
-<span><span class="co">## UBRE = -0.95097  Scale est. = 1         n = 31274</span></span></code></pre>
+<span><span class="co">## R-sq.(adj) =  -0.00104   Deviance explained =  2.4%</span></span>
+<span><span class="co">## UBRE = -0.95238  Scale est. = 1         n = 30891</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cause-specific-hazards-with-shared-effects">Cause specific hazards with shared effects<a class="anchor" aria-label="anchor" href="#cause-specific-hazards-with-shared-effects"></a>
@@ -339,13 +339,13 @@ and stacked:</p>
 <span>  <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">.</span>, id <span class="op">=</span> <span class="st">"id"</span>, cut <span class="op">=</span> <span class="va">cut</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ped_stacked</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##     id      tstart        tend                    interval    offset ped_status</span></span>
-<span><span class="co">## 1 5002 0.000000000 0.008213552            (0,0.0082135524] -4.801970          0</span></span>
-<span><span class="co">## 2 5002 0.008213552 0.109514031 (0.0082135524,0.1095140315] -2.289664          0</span></span>
-<span><span class="co">## 3 5002 0.109514031 0.156057495 (0.1095140315,0.1560574949] -3.067369          0</span></span>
-<span><span class="co">## 4 5002 0.156057495 0.271047228 (0.1560574949,0.2710472279] -2.162912          0</span></span>
-<span><span class="co">## 5 5002 0.271047228 0.388774812 (0.2710472279,0.3887748118] -2.139382          0</span></span>
-<span><span class="co">## 6 5002 0.388774812 0.396988364 (0.3887748118,0.3969883641] -4.801970          0</span></span>
+<pre><code><span><span class="co">##     id     tstart       tend                    interval    offset ped_status</span></span>
+<span><span class="co">## 1 5002 0.00000000 0.06844627            (0,0.0684462697] -2.681706          0</span></span>
+<span><span class="co">## 2 5002 0.06844627 0.20807666 (0.0684462697,0.2080766598] -1.968756          0</span></span>
+<span><span class="co">## 3 5002 0.20807666 0.22176591 (0.2080766598,0.2217659138] -4.291144          0</span></span>
+<span><span class="co">## 4 5002 0.22176591 0.30937714 (0.2217659138,0.3093771389] -2.434846          0</span></span>
+<span><span class="co">## 5 5002 0.30937714 0.32306639 (0.3093771389,0.3230663929] -4.291144          0</span></span>
+<span><span class="co">## 6 5002 0.32306639 0.44626968 (0.3230663929,0.4462696783] -2.093920          0</span></span>
 <span><span class="co">##    sex age cause</span></span>
 <span><span class="co">## 1 Male  60     1</span></span>
 <span><span class="co">## 2 Male  60     1</span></span>
@@ -369,24 +369,24 @@ inclusion of interaction effects:</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Parametric coefficients:</span></span>
 <span><span class="co">##                   Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">## (Intercept)      -3.167038   0.584978  -5.414 6.17e-08 ***</span></span>
-<span><span class="co">## sexMale          -0.137125   0.132272  -1.037 0.299882    </span></span>
-<span><span class="co">## age               0.020100   0.008468   2.374 0.017609 *  </span></span>
-<span><span class="co">## sexFemale:cause2 -3.778094   1.058443  -3.569 0.000358 ***</span></span>
-<span><span class="co">## sexMale:cause2   -3.472253   1.011862  -3.432 0.000600 ***</span></span>
-<span><span class="co">## age:cause2        0.044095   0.015044   2.931 0.003379 ** </span></span>
+<span><span class="co">## (Intercept)      -3.167236   0.583971  -5.424 5.84e-08 ***</span></span>
+<span><span class="co">## sexMale          -0.130885   0.132003  -0.992 0.321424    </span></span>
+<span><span class="co">## age               0.019828   0.008447   2.347 0.018906 *  </span></span>
+<span><span class="co">## sexFemale:cause2 -3.808003   1.058828  -3.596 0.000323 ***</span></span>
+<span><span class="co">## sexMale:cause2   -3.509017   1.012453  -3.466 0.000529 ***</span></span>
+<span><span class="co">## age:cause2        0.044429   0.015035   2.955 0.003126 ** </span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Approximate significance of smooth terms:</span></span>
-<span><span class="co">##                  edf Ref.df Chi.sq  p-value    </span></span>
-<span><span class="co">## s(tend):cause1 1.008  1.017  8.053 0.004715 ** </span></span>
-<span><span class="co">## s(tend):cause2 1.037  1.073 11.268 0.000909 ***</span></span>
+<span><span class="co">##                  edf Ref.df Chi.sq p-value   </span></span>
+<span><span class="co">## s(tend):cause1 1.009  1.018  8.233 0.00428 **</span></span>
+<span><span class="co">## s(tend):cause2 1.041  1.081 10.323 0.00151 **</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## R-sq.(adj) =  -0.00805   Deviance explained = 2.06%</span></span>
-<span><span class="co">## UBRE = -0.93381  Scale est. = 1         n = 62548</span></span></code></pre>
+<span><span class="co">## R-sq.(adj) =  -0.00533   Deviance explained = 2.06%</span></span>
+<span><span class="co">## UBRE = -0.93319  Scale est. = 1         n = 61782</span></span></code></pre>
 <p>The results indicate that cause specific terms (interactions) are
 necessary in this case and the two models largely agree. For example,
 the age effect for the two causes are very similar for both models:</p>
@@ -416,14 +416,14 @@ function, here <code>add_cif</code>:</p>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Groups:   cause [2]</span></span></span>
-<span><span class="co">##      tend cause      cif cif_lower cif_upper</span></span>
-<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.008<span style="text-decoration: underline;">21</span> 1     0.000<span style="text-decoration: underline;">862</span>  0.000<span style="text-decoration: underline;">661</span>  0.001<span style="text-decoration: underline;">14</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.110   1     0.011<span style="text-decoration: underline;">5</span>    0.008<span style="text-decoration: underline;">90</span>   0.015<span style="text-decoration: underline;">1</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.156   1     0.016<span style="text-decoration: underline;">3</span>    0.012<span style="text-decoration: underline;">7</span>    0.021<span style="text-decoration: underline;">4</span>  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0.008<span style="text-decoration: underline;">21</span> 2     0.000<span style="text-decoration: underline;">406</span>  0.000<span style="text-decoration: underline;">278</span>  0.000<span style="text-decoration: underline;">569</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.110   2     0.005<span style="text-decoration: underline;">45</span>   0.003<span style="text-decoration: underline;">76</span>   0.007<span style="text-decoration: underline;">54</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.156   2     0.007<span style="text-decoration: underline;">77</span>   0.005<span style="text-decoration: underline;">37</span>   0.010<span style="text-decoration: underline;">7</span></span></span></code></pre>
+<span><span class="co">##     tend cause     cif cif_lower cif_upper</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.068<span style="text-decoration: underline;">4</span> 1     0.007<span style="text-decoration: underline;">28</span>   0.005<span style="text-decoration: underline;">70</span>   0.009<span style="text-decoration: underline;">26</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.208  1     0.022<span style="text-decoration: underline;">1</span>    0.017<span style="text-decoration: underline;">5</span>    0.027<span style="text-decoration: underline;">8</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.222  1     0.023<span style="text-decoration: underline;">5</span>    0.018<span style="text-decoration: underline;">6</span>    0.029<span style="text-decoration: underline;">6</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0.068<span style="text-decoration: underline;">4</span> 2     0.003<span style="text-decoration: underline;">51</span>   0.002<span style="text-decoration: underline;">44</span>   0.004<span style="text-decoration: underline;">77</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.208  2     0.010<span style="text-decoration: underline;">7</span>    0.007<span style="text-decoration: underline;">54</span>   0.014<span style="text-decoration: underline;">4</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.222  2     0.011<span style="text-decoration: underline;">4</span>    0.008<span style="text-decoration: underline;">04</span>   0.015<span style="text-decoration: underline;">4</span></span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
