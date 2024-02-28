@@ -68,7 +68,7 @@ pamm.icu.pneu <- my.icu.pneu %>%
          , sex)
 
 
-my.pamm.icu.pneu <- pamm.icu.pneu %>% add_counterfactual_transitions()
+my.pamm.icu.pneu_test <- pamm.icu.pneu %>% add_counterfactual_transitions()
 
 cal_icu.pneu <- as_ped_multistate(
   data       = my.pamm.icu.pneu,
@@ -89,17 +89,34 @@ pam <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) + as.factor(tran
 summary(pam)
 
 plot(pam, xlim = c(0,100), ylim = c(-20, 20), page=1)
+plot.gam(pam, select = 4, ylim=c(-1,1))
 
-meeting_test <- make_newdata(cal_icu.pneu, tend = unique(tend), transition=unique(transition)) %>% 
-  group_by(transition) %>% 
+meeting_test <- make_newdata(cal_icu.pneu, tend = unique(tend), transition=unique(transition), age = quantile(age, probs=c(0.05, 0.95))) %>% 
+  group_by(transition, age) %>% 
   add_cumu_hazard(pam)
 
-# plot cumu hazards
-ggplot(meeting_test, aes(x=tend, y=cumu_hazard)) + geom_line(aes(col=transition)) + xlim(c(0, 100)) + ylim(c(0, 20))
 # makenewdata anstelle von ped_info (setzt covariablen die nicht spezifiziert werden auf mittelwerte)
 
-test <- meeting_test %>% add_trans_prob(pam)
-ggplot(test, aes(x=tend, y=trans_prob)) + geom_line(aes(col=transition)) + xlim(c(0, 100)) + ylim(c(0, 1))
+
+old_groups <- dplyr::groups(meeting_test)
+# transition is needed in the add_trans_prob because the transitions probabilities
+# depend on each other
+res_data <- meeting_test %>% ungroup(transition)
+test <- group_split(res_data) |> 
+  map(res_data, .f = ~ group_by(.x, transition)) |> 
+  map(res_data, .f = ~ add_trans_prob(.x)) |>
+  map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
+  bind_rows()
+# # old code without grouping
+# test <- meeting_test %>% add_trans_prob()
+# ggplot(test, aes(x=tend, y=trans_prob)) + geom_line(aes(col=transition)) + xlim(c(0, 100)) + ylim(c(0, 1))
+
+# plot transitions
+ggplot(test, aes(x=tend, y=trans_prob)) + 
+  geom_line(aes(col=as.factor(age))) + 
+  facet_wrap(~transition, ncol = 1) +
+  xlim(c(0, 100)) + 
+  ylim(c(0,1))
 
 # ---------------------------------------------------------------------------- #
 # RECALCULATE BEYERSMANN

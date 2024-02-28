@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------- #
 get_trans_prob <- function(
     newdata,
-    object,
+    # object,
     time_var   = NULL,
     interval_length = "intlen",
     transition = "transition",
@@ -26,7 +26,7 @@ get_trans_prob <- function(
   assert_subset(cumu_hazard, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
   
-  assert_class(object, classes = "glm")
+  # assert_class(object, classes = "glm")
   
   interval_length <- sym(interval_length)
   transition <- sym(transition)
@@ -38,9 +38,12 @@ get_trans_prob <- function(
   
   # get unique transitions to build transition matrix
   unique_transition <- data.frame(unique(newdata %>% select(!!transition, from, to)))
+  print(unique_transition)
   
   # get unique time points
-  unique_tend <- data.frame(unique(newdata %>% ungroup(!!transition) %>% select(!!tend)))
+  unique_tend <- data.frame(unique(newdata %>% 
+                                     ungroup(!!transition) %>% 
+                                     select(!!tend)))
   
   # transition matrix
   M <- array(rep(0, nrow(unique_transition)**nrow(unique_transition)*nrow(unique_tend))
@@ -57,7 +60,7 @@ get_trans_prob <- function(
   
   # add cumu hazards to dataset
   newdata <- newdata %>% 
-    group_by(!!transition) %>%
+    # group_by(!!transition) %>%
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
 
   
@@ -113,7 +116,7 @@ get_trans_prob <- function(
 
 add_trans_prob <- function(
     newdata
-    , object
+#    , object
     , overwrite       = FALSE 
     , time_var        = NULL
     , interval_length = "intlen",
@@ -136,6 +139,8 @@ add_trans_prob <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
   
-  get_trans_prob(newdata, object, time_var = time_var, interval_length = interval_length, ...)
+  get_trans_prob(newdata
+                 # , object
+                 , time_var = time_var, interval_length = interval_length, ...)
   
 }
