@@ -89,6 +89,12 @@ make_X.gam <- function(object, newdata, ...) {
 
 }
 
+make_X.scam <- function(object, newdata, ...) {
+  
+  X <- predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
+  
+}
+
 prep_X <- function(object, newdata, reference = NULL, ...) {
 
   X <- make_X(object, newdata, ...)
