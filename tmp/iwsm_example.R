@@ -67,7 +67,7 @@ my.mgus2.cens <- my.mgus2 %>%
 # merge transitions
 my.mgus2.pam <- bind_rows(my.mgus2.pcm, my.mgus2.death, my.mgus2.pcmdeath, my.mgus2.cens)
 
-
+# pamm pipeline
 my.mgus2.pam <- my.mgus2.pam %>% add_counterfactual_transitions()
 
 cal.my.mgus2.pam <- as_ped_multistate(
@@ -78,9 +78,11 @@ cal.my.mgus2.pam <- as_ped_multistate(
   censor_code = 0,
   timescale  = "calendar")
 
+# dim check for run time
 dim(my.mgus2.pam)
 dim(cal.my.mgus2.pam)
 
+# check progress, runs approx 30-45min
 ctrl <- gam.control(trace = TRUE)
 pam <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
                  + as.factor(transition)
@@ -106,6 +108,7 @@ mpam <- scam::scam(ped_status ~ s(tend, by=as.factor(transition))
              , family = poisson()
              , offset = offset)
 
+# visualize splines
 plot(mpam, xlim = c(0,20), ylim = c(-1, 1), page=1)
 
 summary(mpam)
@@ -128,8 +131,7 @@ plot.gam(pam, select=10)
 # plot.gam(pam, select=12)
 
 
-# hgb = quantile(....) --> Vermutung: aktuell noch nicht möglich, so wie funktion definiert ist
-
+# prepare add_trans_prob pipeline
 prep.cal.my.mgus2.pam <- make_newdata(cal.my.mgus2.pam
                                       , tend = unique(tend)
                                       , transition=unique(transition)
@@ -145,7 +147,7 @@ traceback()
 unique(prep.cal.my.mgus2.pam$hgb)
 
 
-
+# workaround for grouped data -> include in add_trans_prob() when time
 old_groups <- dplyr::groups(prep.cal.my.mgus2.pam)
 # transition is needed in the add_trans_prob because the transitions probabilities
 # depend on each other
@@ -170,8 +172,6 @@ transition_ggplot <- ggplot(test, aes(x=tend, y=trans_prob, linetype=hgb)) +
   xlab("time") +
   theme_bw()
 ggsave("tmp/example/transition_probabilities.pdf", plot = transition_ggplot, width = 10)
-
-  scale_color_brewer(palette = "Blues") + 
   
 
 ggplot(test, aes(x=tend, y=trans_prob)) + 
