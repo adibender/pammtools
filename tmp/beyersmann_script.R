@@ -71,13 +71,16 @@ pamm.icu.pneu <- my.icu.pneu %>%
 my.pamm.icu.pneu_test <- pamm.icu.pneu %>% add_counterfactual_transitions()
 
 cal_icu.pneu <- as_ped_multistate(
-  data       = my.pamm.icu.pneu,
+  data       = my.pamm.icu.pneu_test,
   formula    = Surv(tstart, tstop, status)~ age + sex + transition,
   transition = "transition",
   id         = "id",
   censor_code = 0,
   timescale  = "calendar")
 
+dim(pamm.icu.pneu)
+dim(my.pamm.icu.pneu_test)
+dim(cal_icu.pneu)
 
 # ---------------------------------------------------------------------------- #
 # Predict hazards and use add_trans_prob to calculate transition prob
