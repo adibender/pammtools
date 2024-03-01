@@ -45,6 +45,9 @@ get_trans_prob <- function(
                                      ungroup(!!transition) %>% 
                                      select(!!tend)))
   
+  print(paste0("nrow_tend: ",nrow(unique_tend)))
+  print(paste0("nrow_trans: ",nrow(unique_transition)))
+  
   # transition matrix
   M <- array(rep(0, nrow(unique_transition)**nrow(unique_transition)*nrow(unique_tend))
              , dim=c(nrow(unique_transition), nrow(unique_transition), nrow(unique_transition), nrow(unique_tend))) 
@@ -62,6 +65,8 @@ get_trans_prob <- function(
   newdata <- newdata %>% 
     # group_by(!!transition) %>%
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
+  
+  
 
   
   # create dA array, to calculate transition probabilities
@@ -100,7 +105,7 @@ get_trans_prob <- function(
  
  # transform array so that transition probability can be joined via tend and transition
  tmp <- cbind(unique_tend
-              , sapply(1:3, function(row) cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]))
+              , sapply(1:nrow(unique_transition), function(row) cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]))
  colnames(tmp) <- c("tend", as.character(unique_transition$transition))
  trans_prob_df <- tmp %>%
    pivot_longer(cols = c(as.character(unique_transition$transition)), names_to = "transition", values_to = "trans_prob")
