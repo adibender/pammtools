@@ -49,7 +49,7 @@ add_term <- function(
 
   col_ind <- map(term, grep, x = names(object$coefficients)) %>%
     unlist() %>% unique() %>% sort()
-  is_gam <- inherits(object, "gam")
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
 
   X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
 
@@ -237,7 +237,7 @@ get_hazard.default <- function(
   type    <- match.arg(type)
   ci_type <- match.arg(ci_type)
 
-  is_gam <- inherits(object, "gam")
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
   if (is.null(time_var)) {
     time_var <- ifelse(is_gam, "tend", "interval")
   } else {
@@ -501,7 +501,7 @@ add_ci <- function(
 
   ci_type <- match.arg(ci_type)
 
-  is_gam <- inherits(object, "gam")
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
   if (is_gam) {
     V <- object$Vp
   } else {
@@ -711,7 +711,7 @@ get_cif.default <- function(
   sim_coef_mat,
   ...) {
 
-  is_gam <- inherits(object, "gam")
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
   if (is.null(time_var)) {
     time_var <- ifelse(is_gam, "tend", "interval")
   } else {
