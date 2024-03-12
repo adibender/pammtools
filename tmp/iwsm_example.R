@@ -180,6 +180,109 @@ ggplot(test, aes(x=tend, y=trans_prob)) +
   xlim(c(0, 100)) +
   scale_color_brewer(palette = "Blues")
 
+
+#-------------------------------------------------------------------------------
+# Example
+# current example in abstract - hgb contour plots for linear and non-linear fit
+#-------------------------------------------------------------------------------
+
+# PAM
+
+test_cal_pam <- make_newdata(cal.my.mgus2.pam
+                             , tend = unique(tend)
+                             , transition=unique(transition)
+                             #, hgb = seq(7, 16, by = 0.5)
+                             , hgb = seq(6, 16, by = 1)) %>% 
+  group_by(transition, hgb) %>% 
+  add_cumu_hazard(pam_hgb) 
+
+# workaround for grouped data -> include in add_trans_prob() when time
+old_groups <- dplyr::groups(test_cal_pam)
+# transition is needed in the add_trans_prob because the transitions probabilities
+# depend on each other
+res_data <- test_cal_pam %>% ungroup(transition)
+test <- group_split(res_data) |> 
+  map(res_data, .f = ~ group_by(.x, transition)) |> 
+  map(res_data, .f = ~ add_trans_prob(.x)) |>
+  map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
+  bind_rows()
+
+test$hgb <- as.factor(test$hgb)
+test$age <- as.factor(test$age)
+
+test_sub <- test %>% filter(transition == "0->2")
+
+transition_ggplot <- ggplot(test_sub, aes(x=tend, y=trans_prob)) + 
+  geom_line(aes(group=hgb, col=hgb)) + 
+  facet_wrap(~transition, ncol = 2, scales = "free_y", labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 200)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw()
+transition_ggplot
+
+# PAM LINEAR
+
+test_cal_lin <- make_newdata(cal.my.mgus2.pam
+                             , tend = unique(tend)
+                             , transition=unique(transition)
+                             #, hgb = seq(7, 16, by = 0.5)
+                             , hgb = seq(6, 16, by = 1)) %>% 
+  group_by(transition, hgb) %>% 
+  add_cumu_hazard(pam_lin_hgb) 
+# workaround for grouped data -> include in add_trans_prob() when time
+old_groups <- dplyr::groups(test_cal_pam_linear)
+# transition is needed in the add_trans_prob because the transitions probabilities
+# depend on each other
+res_data <- test_cal_lin %>% ungroup(transition)
+test_lin <- group_split(res_data) |> 
+  map(res_data, .f = ~ group_by(.x, transition)) |> 
+  map(res_data, .f = ~ add_trans_prob(.x)) |>
+  map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
+  bind_rows()
+
+test_lin_sub <- test_lin %>% filter(transition == "0->2")
+
+transition_ggplot_lin <- ggplot(test_lin_sub, aes(x=tend, y=trans_prob)) + 
+  geom_line(aes(group=hgb, col=hgb)) + 
+  facet_wrap(~transition, ncol = 3, scales = "free_y", labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 200)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw() 
+transition_ggplot_lin
+
+# combine plots
+test_lin_sub <- test_lin_sub %>% mutate(model = "linear")
+test_sub <- test_sub %>% mutate(model = "non-linear")
+
+test <- rbind(test_lin_sub, test_sub)
+
+test$model <- as.factor(test$model)
+
+table(test$model)
+
+combined_ggplot <- ggplot(test, aes(x=tend, y=trans_prob)) + 
+  geom_line(aes(group=hgb, col=hgb)) + 
+  facet_wrap(transition~ model, ncol = 2, labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 200)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+combined_ggplot
+ggsave("tmp/example/transition_probabilities_hgb.pdf", plot = combined_ggplot, width = 10)
+
+pdf("tmp/example/hgb_spline.pdf", width = 10)
+plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
+dev.off()
+
 #-------------------------------------------------------------------------------
 # Example
 # https://cran.r-project.org/web/packages/survival/vignettes/survival.pdf
