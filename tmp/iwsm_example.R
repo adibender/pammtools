@@ -146,6 +146,11 @@ prep.cal.my.mgus2.pam <- make_newdata(cal.my.mgus2.pam
 traceback()
 unique(prep.cal.my.mgus2.pam$hgb)
 
+#-------------------------------------------------------------------------------
+# Example
+# hgb groups (high hgb, low hgb differences) plots 
+# grouped by age
+#-------------------------------------------------------------------------------
 
 # workaround for grouped data -> include in add_trans_prob() when time
 old_groups <- dplyr::groups(prep.cal.my.mgus2.pam)
@@ -184,6 +189,7 @@ ggplot(test, aes(x=tend, y=trans_prob)) +
 #-------------------------------------------------------------------------------
 # Example
 # current example in abstract - hgb contour plots for linear and non-linear fit
+# no age effect
 #-------------------------------------------------------------------------------
 
 # PAM
