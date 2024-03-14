@@ -192,13 +192,41 @@ ggplot(test, aes(x=tend, y=trans_prob)) +
 # no age effect
 #-------------------------------------------------------------------------------
 
+# linear hgb
+ctrl <- gam.control(trace = TRUE)
+pam_lin_hgb <- mgcv::gam(ped_status ~ tend*as.factor(transition)
+                         + as.factor(transition)
+                         + sex
+                         + hgb * as.factor(transition)
+                         , data = cal.my.mgus2.pam
+                         , family=poisson()
+                         , offset=offset
+                         , control = ctrl)
+
+
+summary(pam_lin_hgb)
+
+
+
 # PAM
+
+ctrl <- gam.control(trace = TRUE)
+pam_hgb <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+                     + as.factor(transition)
+                     + sex
+                     + s(hgb, by=as.factor(transition))
+                     , data = cal.my.mgus2.pam
+                     , family=poisson()
+                     , offset=offset
+                     , control = ctrl)
+summary(pam_hgb)
+
 
 test_cal_pam <- make_newdata(cal.my.mgus2.pam
                              , tend = unique(tend)
                              , transition=unique(transition)
                              #, hgb = seq(7, 16, by = 0.5)
-                             , hgb = seq(6, 16, by = 1)) %>% 
+                             , hgb = seq(6, 16, by = 0.1)) %>% 
   group_by(transition, hgb) %>% 
   add_cumu_hazard(pam_hgb) 
 
@@ -229,27 +257,40 @@ transition_ggplot <- ggplot(test_sub, aes(x=tend, y=trans_prob)) +
   theme_bw()
 transition_ggplot
 
-# PAM LINEAR
+plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
 
+ggplot(test_sub, aes(x=tend, y=hgb, z=trans_prob)) +
+  geom_contour_filled() +
+  xlim(c(0,100))
+
+
+ggplot(test_sub, aes(x=tend, y=hgb, z=trans_prob)) +
+  geom_tile(aes(fill=trans_prob)) +
+  scale_fill_gradient2(low  = "steelblue", high = "firebrick2", midpoint=0.5)+
+  stat_contour(col="grey30") +
+  xlim(c(0,100))
+
+# PAM LINEAR
 test_cal_lin <- make_newdata(cal.my.mgus2.pam
                              , tend = unique(tend)
                              , transition=unique(transition)
                              #, hgb = seq(7, 16, by = 0.5)
-                             , hgb = seq(6, 16, by = 1)) %>% 
+                             , hgb = seq(6, 16, by = 0.1)) %>% 
   group_by(transition, hgb) %>% 
   add_cumu_hazard(pam_lin_hgb) 
 # workaround for grouped data -> include in add_trans_prob() when time
-old_groups <- dplyr::groups(test_cal_pam_linear)
+old_groups <- dplyr::groups(test_cal_lin)
 # transition is needed in the add_trans_prob because the transitions probabilities
 # depend on each other
 res_data <- test_cal_lin %>% ungroup(transition)
 test_lin <- group_split(res_data) |> 
-  map(res_data, .f = ~ group_by(.x, transition)) |> 
+  map(res_data, .f = ~ group_by(.x, transition))|> 
   map(res_data, .f = ~ add_trans_prob(.x)) |>
   map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
   bind_rows()
 
-test_lin_sub <- test_lin %>% filter(transition == "0->2")
+test_lin_sub <- test_lin %>% 
+  filter(transition == "0->2")
 
 transition_ggplot_lin <- ggplot(test_lin_sub, aes(x=tend, y=trans_prob)) + 
   geom_line(aes(group=hgb, col=hgb)) + 
@@ -262,6 +303,15 @@ transition_ggplot_lin <- ggplot(test_lin_sub, aes(x=tend, y=trans_prob)) +
   theme_bw() 
 transition_ggplot_lin
 
+ggplot(test_lin_sub, aes(x=tend, y=hgb, z=trans_prob)) +
+  geom_tile(aes(fill=trans_prob)) +
+  scale_fill_gradient2(
+      low  = "steelblue"
+    , high = "firebrick2"
+    , midpoint=0.5)+
+  stat_contour(col="grey30") +
+  xlim(c(0,100))
+
 # combine plots
 test_lin_sub <- test_lin_sub %>% mutate(model = "linear")
 test_sub <- test_sub %>% mutate(model = "non-linear")
@@ -271,6 +321,72 @@ test <- rbind(test_lin_sub, test_sub)
 test$model <- as.factor(test$model)
 
 table(test$model)
+
+combined_contour <- ggplot(test, aes(x=tend, y=hgb, z=trans_prob)) +
+  geom_tile(aes(fill=trans_prob)) +
+  scale_fill_gradient2(
+    name = "probability"
+    , low  = "steelblue"
+    , high = "firebrick2"
+    , midpoint=0.5)+
+  stat_contour(col="grey30",lwd = 1.1) +
+  # geom_vline(xintercept = c(25, 75), lty = 3) +
+  # geom_hline(yintercept = c(8, 10, 12, 14), lty = 3) +
+  facet_wrap(transition ~ model, ncol=2, labeller = label_both) +
+  xlim(c(0,100)) +
+  theme_bw() +
+  theme(legend.position = "right"
+        , strip.text = element_text(size = 14)
+        , axis.text = element_text(size = 14))
+
+combined_contour
+
+# combine spline plots
+hgb_df <- cal.my.mgus2.pam %>%
+  make_newdata(hgb = seq(6, 16, by = 0.1), transition = unique(transition)) %>%
+  add_term(pam_hgb, term = "hgb")
+time_df <- cal.my.mgus2.pam %>%
+  make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+  add_term(pam_hgb, term = "tend")
+
+hgb_df <- hgb_df %>% filter(transition == "0->2") %>% mutate(model = "non-linear")
+time_df <- time_df %>% filter(transition == "0->2") %>% mutate(model = "non-linear")
+
+library(RColorBrewer)
+library(gridExtra)
+Greens  <- RColorBrewer::brewer.pal(9, "Greens")
+Purples <- RColorBrewer::brewer.pal(9, "Purples")
+
+hgb_pp <- ggplot(hgb_df, aes(x = hgb)) +
+  geom_line(aes(y = fit), lwd = 1.1) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+              alpha = .2) +
+  ylab("s(hgb, 4.65):transition0->2") +
+  xlab("hgb") + coord_cartesian(ylim = c(-0.5, 2.5)) +
+  theme_bw() +
+  theme( strip.text = element_text(size = 14)
+         , axis.text = element_text(size = 14)) +
+  facet_wrap(transition ~ model, labeller = label_both)
+
+hgb_pp
+
+time_pp <- ggplot(time_df, aes(x = tend)) +
+  geom_line(aes(y = fit), lwd = 1.1) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
+              alpha = .2) +
+  ylab("s(tend, 7.7):transition0->2") +
+  xlab("tend") + coord_cartesian(ylim = c(-0.5, 1)) +
+  xlim(c(0,100)) +
+  theme_bw() +
+  theme( strip.text = element_text(size = 14)
+         , axis.text = element_text(size = 14)) +
+  facet_wrap(transition ~ model, labeller = label_both)
+
+time_pp
+
+combined_spline_contour <- grid.arrange(hgb_pp, time_pp, combined_contour, ncol=3, widths=c(1/4, 1/4, 2/4))
+combined_spline_contour
+ggsave("tmp/example/transition_probabilities_hgb_contour.pdf", plot = combined_spline_contour, width = 16)
 
 combined_ggplot <- ggplot(test, aes(x=tend, y=trans_prob)) + 
   geom_line(aes(group=hgb, col=hgb)) + 
@@ -288,6 +404,25 @@ ggsave("tmp/example/transition_probabilities_hgb.pdf", plot = combined_ggplot, w
 pdf("tmp/example/hgb_spline.pdf", width = 10)
 plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
 dev.off()
+
+#-------------------------------------------------------------------------------
+# Example
+# real contour plots
+# no age effect
+#-------------------------------------------------------------------------------
+ctrl <- gam.control(trace = TRUE)
+pam_te_hgb <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+                         + as.factor(transition)
+                         + te(tend, hgb, by=as.factor(transition))
+                         , data = cal.my.mgus2.pam
+                         , family=poisson()
+                         , offset=offset
+                         , control = ctrl)
+
+
+summary(pam_te_hgb)
+
+plot(pam_te_hgb, select=6)
 
 #-------------------------------------------------------------------------------
 # Example
