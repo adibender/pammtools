@@ -297,7 +297,7 @@ transition_ggplot_lin <- ggplot(test_lin_sub, aes(x=tend, y=trans_prob)) +
   facet_wrap(~transition, ncol = 3, scales = "free_y", labeller = label_both) +
   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
-  xlim(c(0, 200)) +
+  xlim(c(0, 400)) +
   ylab("Transition Probability") +
   xlab("time") +
   theme_bw() 
@@ -486,20 +486,25 @@ ndata <- ndata %>%
   mutate(status = case_when(
     as.character(event) == "censored" ~ 0,
     TRUE ~ 1)
+    , from = from - 1
+    , to = to - 1
     )
 head(ndata)
 
 str(ndata)
 
-perc <- 0.5
+perc <- 0.1
 ndata_sample <- sample_n(ndata, round(dim(ndata)[1]*perc,0))
 dim(ndata_sample)
 
 
 table(ndata$status)
-ndata_pamm <- ndata %>% add_counterfactual_transitions()
+ndata_pamm <- ndata_sample %>% add_counterfactual_transitions()
 head(ndata_pamm)
 dim(ndata_pamm)
+
+length(unique(ndata_pamm$tstop))
+length(unique(ndata_pamm$transition))
 
 cal_ndata_pamm <- as_ped_multistate(
   data       = ndata_pamm,
@@ -523,17 +528,16 @@ ctrl <- gam.control(trace = TRUE)
 
 pam_ndata <- mgcv::bam(ped_status ~ s(tend, by=as.factor(transition)) 
                        + as.factor(transition)
-                       + male
-                       + s(bmi, by=as.factor(transition))
-                       + height*male
-                       + height
-                       + age
                        , data = cal_ndata_pamm
                        , family=poisson()
                        , offset=offset
+                       , discrete = T #include to make it faster
+                       , method = "fREML" #include to make it faster
                        , control = ctrl)
 
 summary(pam_ndata)
+
+head(cal_ndata_pamm)
 
 
 new_ndata_pam <- make_newdata(cal_ndata_pamm
@@ -541,25 +545,30 @@ new_ndata_pam <- make_newdata(cal_ndata_pamm
                               , transition=unique(transition)
                               #, age = quantile(age, probs=c(0.05, 0.5, 0.95))
                               ) %>% 
-  group_by(transition, age) %>% 
+  group_by(transition) %>% 
   add_cumu_hazard(pam_ndata) 
 
 old_groups <- dplyr::groups(new_ndata_pam)
 # transition is needed in the add_trans_prob because the transitions probabilities
 # depend on each other
 res_ndata <- new_ndata_pam %>% ungroup(transition)
-test <- group_split(res_ndata) |> 
+test_ndata <- group_split(res_ndata) |> 
   map(res_ndata, .f = ~ group_by(.x, transition)) |> 
   map(res_ndata, .f = ~ add_trans_prob(.x)) |>
   map(res_ndata, .f = ~ group_by(.x, !!!old_groups)) |>
   bind_rows()
 
 # plot transitions
-ggplot(test, aes(x=tend, y=trans_prob)) + 
-  geom_line(aes(col=as.factor(age))) + 
-  facet_wrap(~transition, ncol = 1) +
-  xlim(c(30, 80)) +
-  ylim(c(0,0.05))
+ggplot(test_ndata, aes(x=tend, y=trans_prob)) + 
+  geom_line() + 
+  facet_wrap(~transition, ncol = 4, scales = "free_y", labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 6700)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw() 
+
 
 
 
