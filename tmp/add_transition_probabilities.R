@@ -37,7 +37,7 @@ get_trans_prob <- function(
            , to = as.numeric(gsub(".*->", "", !!transition)))
   
   # get unique transitions to build transition matrix
-  unique_transition <- data.frame(unique(newdata %>% select(transition, from, to)))
+  unique_transition <- data.frame(unique(newdata %>% select(!!transition, from, to)))
   # get unique time points
   unique_tend <- data.frame(unique(newdata %>% 
                                      ungroup(!!transition) %>% 

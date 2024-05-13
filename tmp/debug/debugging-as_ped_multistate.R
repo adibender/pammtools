@@ -1,9 +1,12 @@
+setwd("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+
+
 # create test file
 test_df <- data.frame(
   id     = c(1,1, 2,2,2),
   tstart = c(0, .5, 0, .8, 1.2),
   tstop  = c(.5, 3, .8, 1.2, 3),
-  status = c(1, 0, 1, 1, 1),
+  status = c(1, 0, 1, 1, 2),
   enum   = c(1, 2, 1, 2, 3),
   age    = c(50, 50, 24, 24, 24))
 
@@ -19,6 +22,14 @@ min_events <- 1L
 censor_code<- 0L
 max_time <- 3
 
+
+# ----------------------------------------------------------------------------#
+# copied code from as-ped.R
+# ----------------------------------------------------------------------------#
+
+# ----------------------------------------------------------------------------#
+# line 362 onwards
+# ----------------------------------------------------------------------------#
 # add transition column to formula if not already specified
 rhs_vars <- get_rhs_vars(formula)
 if (!(transition %in% rhs_vars)) {
@@ -34,23 +45,23 @@ dots <- debug_as_ped_multistate(
   timescale  = "gap",
   max_time   = 3)
 
-# # get ped object
-# ped <- debug_as_ped_multistate(
-#   data       = test_df,
-#   formula    = Surv(tstart, tstop, status)~ enum + age,
-#   transition = "enum",
-#   id         = "id",
-#   timescale  = "gap",
-#   max_time   = 3)
-
-# call split function
-ped <- do.call(split_data_multistate, dots)
-# error: splits not at correct time
-# -> debug split_data_multistate
+# # call split function
+# ped <- do.call(split_data_multistate, dots)
+# # error: splits not at correct time
+# # -> debug split_data_multistate
 
 # ----------------------------------------------------------------------------#
 # copied code from split-data.R
 # ----------------------------------------------------------------------------#
+
+# initialize variables
+id <- dots$id
+data <- dots$data
+formula <- dots$formula
+max_time <- dots$max_time
+transition <- dots$transition
+min_events <- dots$min_events
+timescale <- dots$timescale
 
 # ----------------------------------------------------------------------------#
 # line 185 onwards
@@ -82,17 +93,37 @@ formula <- update_formula(formula, proposed_names = c(".time", surv_vars[3]))
 #}
 # split data for each spell
 data_list <- split(data, data[[transition]])
+
+# control:
+print(data_list)
+
 # rm(data)
 # only keep spells with minimum number of events
 data_list <- data_list[map_dbl(data_list, ~sum(.x[[surv_vars[3]]])) >= min_events]
+# control:
+print(data_list)
+
 cuts <-  do.call(debug_split_data_multistate, dots)
+# control:
+print(cuts)
 # error message: no applicable method for 'get_cut' applied to an object of class "list"
 # JP 10.01.2024: changed get_cut -> get_cut.list
 # cut point is 1.8 instead of 1.2, hence error lies within split_data_multistate
 # within split_data_multistate the error lies in the function get_cut.list
 
 
+# ----------------------------------------------------------------------------#
+# copied code from get-cut-points.R
+# ----------------------------------------------------------------------------#
+
+# ----------------------------------------------------------------------------#
+# debugging get_cut.list
+# line 44 onwards
+# ----------------------------------------------------------------------------#
 lhs_vars <- get_lhs_vars(formula)
+# control:
+print(lhs_vars)
+
 if (length(lhs_vars) == 3 & timescale == "gap") {
   rhs_vars <- get_rhs_vars(formula)
   formula_cuts <- as.formula(
@@ -101,17 +132,60 @@ if (length(lhs_vars) == 3 & timescale == "gap") {
 } else {
   formula_cuts <- formula
 }
+# control:
+print(formula_cuts)
 
-cuts <- debug_split_data_multistate(
-  formula = dots$formula,
-  data = dots$data,
-  transition = dots$transition,
-  cut = dots$cut,
-  max_time = dots$max_time,
-  event = dots$event,
-  min_events = dots$min_events,
-  timescale = dots$timescale
+cuts <- map(
+  .x = data,
+  .f = ~get_cut.default(
+    data     = .x,
+    formula  = formula_cuts,
+    cut      = cut,
+    max_time = max_time,
+    event    = event,
+    ...)
 )
+# error: Caused by error in `data[[outcome_vars[1]]]`:
+# ! subscript out of bounds
+# run manually
+
+# ----------------------------------------------------------------------------#
+# debugging get_cut.default
+# line 23 onwards
+# ----------------------------------------------------------------------------#
+
+#initialize variables
+data <- data
+formula <- formula_cuts
+cut <- dots$cut
+max_time <- dots$max_time
+event <- 1L
+
+# comment out if-clause because cut == NULL
+# if (is.null(cut)) {
+  outcome_vars <- get_lhs_vars(formula)
+  if (length(outcome_vars) == 2) {
+    cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
+  } else {
+    cut_start <- unique(data[[outcome_vars[1]]])
+    cut_end   <- unique(data[[outcome_vars[2]]])
+    cut       <- union(cut_start, cut_end)
+  }
+  if (!is.null(max_time)) {
+    cut <- cut[cut < max_time]
+    cut <- c(cut, max_time)
+  }
+# }
+
+
+
+
+
+
+
+
+
+
 
 
 split_df_list <- map2(
@@ -124,6 +198,8 @@ split_df_list <- map2(
     split_df     <- do.call(split_data, dots)
   }
 )
+# control:
+print(split_df_list)
 
 split_df <- bind_rows(split_df_list)
 split_df <- split_df %>%

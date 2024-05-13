@@ -38,66 +38,57 @@ get_trans_prob <- function(
   
   # get unique transitions to build transition matrix
   unique_transition <- data.frame(unique(newdata %>% select(transition, from, to)))
-  print(unique_transition)
   # get unique time points
   unique_tend <- data.frame(unique(newdata %>% 
                                      ungroup(!!transition) %>% 
                                      select(!!tend)))
-  
-  print("Initialisiere Matrix M")
+
   # transition matrix
   m <- sapply(unique_transition[,c(2,3)], max) + 1 #transition starts at 0, integer of matrix at 1
   M <- array(0, dim=c(max(m), max(m), nrow(unique_transition))) 
-  print("Matrix M initialisiert")
+
 
   # create transition matrices to be used at every time point,
   # multiply matrices with "scalar" alpha_ij_k which is the delta cumu hazard at time t_k for transition i->j
-  
-  print("Befülle Matrix M")
-  print(unique_transition$from)
-  print(unique_transition$to)
+
   for (iter in 1:nrow(unique_transition)){
     M[unique_transition$from[iter] + 1, unique_transition$to[iter] + 1,iter] <- 1
     M[unique_transition$from[iter] + 1, unique_transition$from[iter] + 1,iter] <- -1
   }
-  print("Matrix M befüllt")
-  print(M)
-  break
 
   # add cumu hazards to dataset
   newdata <- newdata %>% 
     # group_by(!!transition) %>%
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
-  
-  
+
   # create dA array, to calculate transition probabilities
   alpha <- array(rep(0, nrow(unique_tend)*nrow(unique_transition)), dim=c(nrow(unique_tend), nrow(unique_transition)))
-  dimnames(alpha)[[2]] <- unique_transition$transition
-  I <- array(rep(diag(nrow(unique_transition)), nrow(unique_tend))
-             , dim=c( nrow(unique_transition), nrow(unique_transition),nrow(unique_tend)))
-  A <- array(rep(0, nrow(unique_transition)*nrow(unique_transition)*nrow(unique_tend))
-             , dim=c( nrow(unique_transition), nrow(unique_transition),nrow(unique_tend)))
-  cum_A <- array(rep(0, nrow(unique_transition)*nrow(unique_transition)*nrow(unique_tend))
-                 , dim=c( nrow(unique_transition), nrow(unique_transition),nrow(unique_tend)))
+  I <- array(rep(diag(max(m)), nrow(unique_tend))
+             , dim=c( max(m), max(m), nrow(unique_tend)))
+  A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
+  cum_A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
   
   # calculate differences in hazards
   alpha <- sapply(1:nrow(unique_transition), function(iter){
     val <- newdata %>% ungroup() %>% filter(transition == unique_transition[iter,1]) %>% arrange(tend)
     val$delta_cumu_hazard
   })
-  
-  print(alpha)
-  
-  #slow code, can be optimized but lack of time for now 
-  for (trans in 1:nrow(unique_transition)){
-    for (iter in 1:nrow(unique_tend)) {
-      M[,,trans,iter] <- M[,,trans,iter] * alpha[iter, trans]
+  for (t in 1:nrow(unique_tend)) {
+    for (trans in 1:nrow(unique_transition)){
+      A[,,t] <- A[,,t] + M[,,trans] * alpha[t, trans]
     }
   }
+
+  # #slow code, can be optimized but lack of time for now 
+  # for (trans in 1:nrow(unique_transition)){
+  #   for (iter in 1:nrow(unique_tend)) {
+  #     M[,,trans,iter] <- M[,,trans,iter] * alpha[iter, trans]
+  #   }
+  # }
   
   # prepare transition probabilities
-  A <- I + apply(M, c(1,2,4), sum)
-  
+  A <- I + A
+
   for (iter in 1:nrow(unique_tend)) {
     if (iter == 1) {
       cum_A[,,iter] = A[,,iter]

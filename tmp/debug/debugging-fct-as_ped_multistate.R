@@ -196,3 +196,89 @@ debug_get_cut.list <- function (
   
 }
 
+helper_as_ped_multistate <- function(
+    data,
+    formula,
+    cut          = NULL,
+    max_time     = NULL,
+    tdc_specials = c("concurrent", "cumulative"),
+    censor_code  = 0L,
+    transition  = character(),
+    timescale    = c("gap", "calendar"),
+    min_events   = 1L,
+    ...
+) {
+  
+  assert_character(transition, min.chars = 1L, min.len = 1L, any.missing = FALSE,
+                   len = 1L)
+  assert_integer(min_events, lower = 1L, len = 1L)
+  
+  status_error(data, formula, censor_code)
+  assert_subset(tdc_specials, c("concurrent", "cumulative"))
+  
+  rhs_vars <- get_rhs_vars(formula)
+  if (!(transition %in% rhs_vars)) {
+    formula <- add_to_rhs(formula, transition)
+  }
+  if (!(transition %in% rhs_vars)) {
+    formula <- add_to_rhs(formula, transition)
+  }
+  
+  # check if transformation contains state or trafo
+  if (is.character(transition)) {
+    status <- as.name(get_lhs_vars(formula)[3])
+    msg_if <- "If-clause works"
+  }
+  
+  dots            <- list(...)
+  dots$data       <- data
+  dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
+  dots$cut        <- sort(unique(cut))
+  dots$max_time   <- max_time
+  dots$transition <- transition
+  dots$min_events <- min_events
+  dots$timescale  <- timescale
+  
+  # ped <- do.call(split_data_multistate, dots)
+  #attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
+  
+  return(msg_if)
+  
+}
+test_df <- data.frame(
+  id     = c(1,1,1, 2,2,2),
+  tstart = c(0, .5, 1, 0, 0, 2),
+  tstop  = c(.5, 1, 1.5, 1.5, 2.5, 2.5),
+  status = c(1, 1, 1, 1, 0, 1),
+  state   = c(1, 2, 3, 1, 2, 3),
+  age    = c(50,50,50, 24,24,24))
+
+print(test_df)
+
+ped_test_df <- helper_as_ped_multistate(
+  data = test_df,
+  formula = Surv(tstart, tstop, status) ~ state + age, 
+  transition = "state",
+  timescale = "calendar",
+  id = "id"
+)
+
+
+test_df2 <- test_df %>%
+  filter(status == 1) %>%
+  group_by(id, status) %>%
+  mutate(
+    state_start = coalesce(lag(state), state),
+    transition = paste0(state_start, "->", state)) %>%
+  select(id, tstart, tstop, state_start, state, transition, status, age)
+print(test_df2)
+
+ped_test_df2 <- as_ped_multistate(
+  data = test_df2,
+  formula = Surv(tstart, tstop, status) ~ state + age, 
+  transition = "transition",
+  timescale = "calendar",
+  id = "id"
+)
+
+print(ped_test_df %>%filter(id==2))
