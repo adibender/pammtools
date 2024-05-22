@@ -1303,6 +1303,8 @@ dev.off()
 # => EXTEND TO TIME DEPENDENT THIRD STATE TRANSITION
 # => BUT INDEPENDENT OF TRANSITION
 #
+# SUCCESSFUL
+#
 # ------------------------------------------------------------------------------
 
 # first part remains equal to above
