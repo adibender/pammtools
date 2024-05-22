@@ -57,7 +57,7 @@ plot(pam, page=1)
 t_mat <- matrix(data = NA, nrow = 3, ncol = 3)
 t_mat[1,2] <- "log(0.3)"
 t_mat[1,3] <- "log(0.6)"
-#t_mat[2,3] <- "log(0.9)"
+t_mat[2,3] <- "log(0.5)"
 
 n = 100
 data <- cbind.data.frame(
@@ -148,7 +148,6 @@ ggplot(data=test_msm, aes(x=tend, y=trans_prob, fill=transition)) +
 
 test_msm_01 <- test_msm %>% 
   filter(transition == "1->2")
-View(test_msm_01)
 
 summary(test_msm_01$trans_prob)
 hist(test_msm_01$trans_prob)
@@ -202,10 +201,12 @@ plot(pam, page=1)
 # ------------------------------------------------------------------------------
 # try and compare to beyersmann with alpha_01 = 0.3, alpha_02 = 0.6
 f0 <- function(t) {
-  dgamma(t, 8, 2) *6
+  dgamma(t, 4, 2) *6
 }
 
-form <- formula( ~ -3 + f0(t) + sqrt(x1) - 2*sin(x2) | 1 - 0.5*x2)
+# form <- formula(  ~ 0.5 + 0.25*x1**3| f0(t))
+
+form <- formula(  ~ 0.3 | 0.6 )
 
 
 n = 100
@@ -234,7 +235,7 @@ head(sim_df)
 
 cal_sim_df <- as_ped_multistate(
   data       = sim_df,
-  formula    = Surv(tstart, tstop, status)~ transition,
+  formula    = Surv(tstart, tstop, status)~ transition + x1,
   transition = "transition",
   id         = "id",
   censor_code = 0,
@@ -245,11 +246,14 @@ head(cal_sim_df)
 
 ctrl <- gam.control(trace = TRUE)
 
-pam_sim <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+pam_sim <- mgcv::bam(ped_status ~ s(tend, by=as.factor(transition)) 
                      + as.factor(transition)
+                     + s(x1, by=as.factor(transition))
                      , data = cal_sim_df
                      , family=poisson()
                      , offset=offset
+                     , method = "fREML"
+                     , discrete = T
                      , control = ctrl)
 
 summary(pam_sim)
@@ -259,10 +263,10 @@ plot(pam_sim, page = 1)
 new_sim_pam <- make_newdata(cal_sim_df
                             , tend = unique(tend)
                             , transition=unique(transition)
-                            # , x1 = seq(-3,3, by = 3)
+                            , x1 = seq(-2,2, by = 0.2)
                             # , x2 = seq(0,6, by = 3)
 ) %>% 
-  group_by(transition) %>% 
+  group_by(transition, x1) %>% 
   add_cumu_hazard(pam_sim) 
 
 old_groups <- dplyr::groups(new_sim_pam)
@@ -276,9 +280,27 @@ test_msm <- group_split(res_msm) |>
   bind_rows()
 
 # plot transitions
-ggplot(test_msm, aes(x=tend, y=trans_prob)) + 
-  geom_line() + 
-  facet_wrap(~transition, ncol = 3, scales = "free_y", labeller = label_both) +
+test_contour <- test_msm %>% mutate(tend = round(tend, 1), x1 = round(x1,2))
+ggplot(test_contour, aes(x=tend, y=x1, z=trans_prob)) +
+  geom_tile(aes(fill=trans_prob)) +
+  scale_fill_gradient2(
+    name = "probability"
+    , low  = "steelblue"
+    , high = "firebrick2"
+    , midpoint=0.5)+
+  stat_contour(col="grey30",lwd = 1.1) +
+  # geom_vline(xintercept = c(25, 75), lty = 3) +
+  # geom_hline(yintercept = c(8, 10, 12, 14), lty = 3) +
+  facet_wrap(~ transition, ncol=3, labeller = label_both) +
+  xlim(c(0,2)) +
+  theme_bw() +
+  theme(legend.position = "bottom"
+        , strip.text = element_text(size = 14)
+        , axis.text = element_text(size = 14))
+
+ggplot(test_msm, aes(x=tend, y=cumu_hazard)) + 
+  geom_line(aes(group = x1, col = x1)) + 
+  facet_wrap(~transition, ncol = 2, scales = "free_y", labeller = label_both) +
   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
   xlim(c(0, 3)) +
@@ -293,22 +315,27 @@ ggplot(test_msm, aes(x=tend, y=trans_prob)) +
 #
 # ------------------------------------------------------------------------------
 f0 <- function(t) {
-  dgamma(t, 8, 2) *3
+  dgamma(t, 4, 2) *6
 }
 
 test <- runif(n, 0, 3)
-plot(test, f0(test))
+plot(test, -f0(test))
+
+# # define hazard for transitions 1->2 & 1->3
+# form_stepone <- formula( ~ 0.5 + 0.05*x1**3 + f0(t) | 0.6 - 0.05*x1**2  )
+# # define hazard for transition 2->3
+# form_steptwo <- formula( ~ - 0.4 + sin(x2) + (t+x3 <= 3) * f0(t + x3))
 
 # define hazard for transitions 1->2 & 1->3
-form_stepone <- formula( ~ - 0.3 + 0.1*x1**3 | 0.6 - 0.25*x1 )
+form_stepone <- formula( ~ 0.5 + 0.25*x1**3| f0(t)  )
 # define hazard for transition 2->3
-form_steptwo <- formula( ~ 0.9)
+form_steptwo <- formula( ~ 0.4 - x1**2)
 
-n = 200
+n = 1000
 data <- cbind.data.frame(
   id = 1:n,
   x1 = runif(n, -3, 3),
-  x2 = runif(n, 0, 6),
+  x2 = runif(n, 0, 2*pi),
   x3 = rep(0, n),
   from = 1,
   t = 0)
@@ -378,25 +405,46 @@ head(cal_sim_df)
 
 ctrl <- gam.control(trace = TRUE)
 
-pam_sim <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+# pam_sim <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+#                      + as.factor(transition)
+#                      + s(x1, by=as.factor(transition))
+#                      + s(x2, by=as.factor(transition))
+#                      , data = cal_sim_df
+#                      , family=poisson()
+#                      , offset=offset
+#                      , control = ctrl)
+# 
+# summary(pam_sim)
+# plot(pam_sim, page = 1)
+# plot(pam_sim, select = 7, ylim = c(-1,1))
+# plot(pam_sim, select = 4, xlim = c(-2,2))
+
+bam_sim <- mgcv::bam(ped_status ~ s(tend, by=as.factor(transition)) 
                      + as.factor(transition)
                      + s(x1, by=as.factor(transition))
                      , data = cal_sim_df
                      , family=poisson()
                      , offset=offset
+                     , discrete = T
+                     , method = "fREML"
                      , control = ctrl)
 
-summary(pam_sim)
+summary(bam_sim)
 
-plot(pam_sim, page = 1)
-plot(pam_sim, select = 6, ylim = c(0,1))
-plot(pam_sim, select = 4, xlim = c(-2,2))
+plot(bam_sim, page = 1)
+
+par(mfrow=c(1,3))
+plot(bam_sim, select = 4, xlim = c(-2,2), ylim=c(-2,2))
+plot(bam_sim, select = 5, xlim = c(-2,2), ylim=c(-2,2))
+plot(bam_sim, select = 6, xlim = c(-2,2), ylim=c(-2,2))
+par(mfrow=c(1,1))
+
+pam_sim <- bam_sim
 
 new_sim_pam <- make_newdata(cal_sim_df
                             , tend = unique(tend)
                             , transition=unique(transition)
-                            , x1 = seq(-3,3, by = 1.5)
-                            # , x2 = seq(0,6, by = 3)
+                            , x1 = seq(-2,2, by = 2)
 ) %>% 
   group_by(transition
            , x1) %>% 
@@ -416,7 +464,7 @@ test_msm <- group_split(res_msm) |>
 ggplot(test_msm, aes(x=tend, y=cumu_hazard)) + 
   geom_line() + 
   facet_wrap(~transition + x1
-             , ncol = 5
+             , ncol = 3
              # , scales = "free_y"
              , labeller = label_both) +
   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
@@ -431,15 +479,204 @@ ggplot(test_msm, aes(x=tend, y=cumu_hazard)) +
 ggplot(test_msm, aes(x=tend, y=trans_prob)) + 
   geom_line() + 
   facet_wrap(~transition + x1
-             , ncol = 5
+             , ncol = 3
+             , scales = "free_y"
+             , labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 2)) +
+  ylim(c(0,1)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw() 
+
+# ------------------------------------------------------------------------------
+#
+# simulate time only and check if it works
+#
+# ------------------------------------------------------------------------------
+f0 <- function(t) {
+  dgamma(t, 4, 2) *6
+}
+
+test <- runif(n, 0, 3)
+plot(test, f0(test))
+
+# define hazard for transitions 1->2 & 1->3
+form_stepone <- formula( ~ f0(t) | 0.6)
+# define hazard for transition 2->3
+form_steptwo <- formula( ~ (t+x3 <= 3) * f0(t+x3))
+
+n = 500
+data <- cbind.data.frame(
+  id = 1:n,
+  x1 = runif(n, -3, 3),
+  x2 = runif(n, 0, 2*pi),
+  x3 = rep(0, n),
+  from = 1,
+  t = 0)
+
+cut =  seq(0, 3, by = 0.01)
+
+sim_df_stepone <- sim_pexp_cr(form_stepone, data, cut) %>%
+  mutate(from = 1
+         , to = type + 1
+         , transition = case_when(
+           type == 1 ~ "1->2",
+           type == 2 ~ "1->3",
+           .default = "err"
+         )) %>%
+  rename(tstart = t, tstop = time) %>%
+  filter(status == 1)
+
+head(sim_df_stepone)
+
+# second step
+
+
+# take all relevant subjects, i.e. subjects with transition 1->2, i.e. currently in state 2
+data_steptwo <- sim_df_stepone %>% 
+  filter(to == 2, status == 1) %>%
+  mutate(x3 = tstop) %>%
+  select(id, x1, x2, x3, from, t = tstop)
+
+dim(data_steptwo)
+head(data_steptwo)
+
+cut =  seq(0, 3, by = 0.01)
+
+sim_df_steptwo <- sim_pexp_cr(form_steptwo, data_steptwo, cut) %>%
+  mutate(from = 2
+         , to = type + 2
+         , transition = case_when(
+           type == 1 ~ "2->3",
+           .default = "err"
+         )
+         , time = time + t
+         , hazard2 = 0) %>%
+  rename(tstart = t, tstop = time) %>% 
+  filter(status == 1)
+
+head(sim_df_steptwo)
+
+sim_df <- rbind(sim_df_stepone, sim_df_steptwo)
+head(sim_df)
+
+sim_df <- sim_df %>% add_counterfactual_transitions()
+head(sim_df)
+
+table(sim_df$transition)
+
+# go on with pamm tools procedure
+cal_sim_df <- as_ped_multistate(
+  data       = sim_df,
+  formula    = Surv(tstart, tstop, status)~ transition,
+  transition = "transition",
+  id         = "id",
+  censor_code = 0,
+  timescale  = "calendar")
+
+dim(cal_sim_df)
+head(cal_sim_df)
+
+ctrl <- gam.control(trace = TRUE)
+
+# pam_sim <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
+#                      + as.factor(transition)
+#                      + s(x1, by=as.factor(transition))
+#                      + s(x2, by=as.factor(transition))
+#                      , data = cal_sim_df
+#                      , family=poisson()
+#                      , offset=offset
+#                      , control = ctrl)
+# 
+# summary(pam_sim)
+# plot(pam_sim, page = 1)
+# plot(pam_sim, select = 7, ylim = c(-1,1))
+# plot(pam_sim, select = 4, xlim = c(-2,2))
+
+bam_sim <- mgcv::bam(ped_status ~ s(tend, by=as.factor(transition)) 
+                     + as.factor(transition)
+                     , data = cal_sim_df
+                     , family=poisson()
+                     , offset=offset
+                     , discrete = T
+                     , method = "fREML"
+                     , control = ctrl)
+
+summary(bam_sim)
+# 
+# plot(bam_sim, page = 1)
+# plot(bam_sim, select = 7, ylim = c(-1,1))
+# plot(bam_sim, select = 8, ylim = c(-1,1))
+# plot(bam_sim, select = 9, ylim = c(-1,1))
+
+pam_sim <- bam_sim
+
+new_sim_pam <- make_newdata(cal_sim_df
+                            , tend = unique(tend)
+                            , transition=unique(transition)
+) %>% 
+  group_by(transition) %>% 
+  add_cumu_hazard(pam_sim) 
+
+old_groups <- dplyr::groups(new_sim_pam)
+# transition is needed in the add_trans_prob because the transitions probabilities
+# depend on each other
+res_msm <- new_sim_pam %>% ungroup(transition)
+test_msm <- group_split(res_msm) |> 
+  map(res_msm, .f = ~ group_by(.x, transition)) |> 
+  map(res_msm, .f = ~ add_trans_prob(.x)) |>
+  map(res_msm, .f = ~ group_by(.x, !!!old_groups)) |>
+  bind_rows()
+
+# plot hazards
+ggplot(test_msm, aes(x=tend, y=cumu_hazard)) + 
+  geom_line() + 
+  facet_wrap(~transition
+             , ncol = 3
+             # , scales = "free_y"
+             , labeller = label_both) +
+  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  xlim(c(0, 3)) +
+  ylim(c(0,5)) +
+  ylab("Transition Probability") +
+  xlab("time") +
+  theme_bw() 
+
+# plot transitions
+ggplot(test_msm, aes(x=tend, y=trans_prob)) + 
+  geom_line() + 
+  facet_wrap(~transition
+             , ncol = 3
              , scales = "free_y"
              , labeller = label_both) +
   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
   xlim(c(0, 3)) +
+  ylim(c(0,1)) +
   ylab("Transition Probability") +
   xlab("time") +
   theme_bw() 
+
+
+
+
+# test_msm_sub <- test_msm %>% filter(transition == "1->2") %>% mutate(tend = round(tend, 1)
+#                                                                      , x1 = round(x1, 1))
+# ggplot(test_msm_sub, aes(x=tend, y=x1, z=trans_prob)) + 
+#   geom_contour() 
+# 
+# ggplot(test_msm_sub, aes(x=tend, y=x1, z=trans_prob)) +
+#   geom_tile(aes(fill=trans_prob)) +
+#   scale_fill_gradient2(
+#     low  = "steelblue"
+#     , high = "firebrick2"
+#     , midpoint=0.5)+
+#   stat_contour(col="grey30") +
+#   xlim(c(0,3))
+
 
 
 

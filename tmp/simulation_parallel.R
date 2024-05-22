@@ -1,0 +1,11 @@
+# Pammtools
+setwd("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+library(dplyr)
+library(mgcv)
+library(survival)
+library(Formula)
+devtools::load_all()
+source("sandbox/helpers-msm.R")
+library(mstate)
+library(parallel)
+library(doParallel)
