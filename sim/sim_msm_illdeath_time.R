@@ -26,6 +26,10 @@ devtools::load_all()
 source("sandbox/helpers-msm.R")
 library(mstate)
 
+# ---------------------------------------------------------------------------- #
+# CODE
+# ---------------------------------------------------------------------------- #
+
 # first part remains equal to above
 # here: alpha_01 = 0.3, alpha_02 = 0.6, alpha_12 = 0.5
 n = 750

@@ -8,6 +8,27 @@
 #
 # ------------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------- #
+# LIBRARIES
+# ---------------------------------------------------------------------------- #
+# Beyersmann
+library(kmi)
+library(mvna)
+library(etm)
+
+# Pammtools
+setwd("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+library(dplyr)
+library(survival)
+library(Formula)
+devtools::load_all()
+source("sandbox/helpers-msm.R")
+library(mstate)
+
+# ---------------------------------------------------------------------------- #
+# CODE
+# ---------------------------------------------------------------------------- #
+
 # here: alpha_01 = 0.3, alpha_02 = 0.6, alpha_12 = 0.5
 n = 750
 
