@@ -84,7 +84,9 @@ msm_df <- sim_pexp_msm(
 head(msm_df)
 
 test <- msm_df %>% filter(status == 1, transition == "1->2") %>% arrange(tstop)
-
+head(test)
+test <- msm_df %>% filter(id == 12)
+View(test)
 # created the simulated data set. Transform data to be used to calculate transition probabilities
 
 msm_df <- msm_df %>% add_counterfactual_transitions()
@@ -1145,3 +1147,127 @@ ggplot(test_msm, aes(x=tend, y=cumu_hazard)) +
   xlab("time") +
   theme_bw() 
 
+
+
+#-------------------------------------------------------------------------------
+#
+# TRY EFFECT OF TIME
+#
+#-------------------------------------------------------------------------------
+
+
+
+
+# set number of observations/subjects
+n <- 250
+# create data set with variables which will affect the hazard rate.
+df <- cbind.data.frame(x1 = runif (n, -3, 3), x2 = runif (n, 0, 6)) %>%
+  as_tibble()
+# the formula which specifies how covariates affet the hazard rate
+f0 <- function(t) {
+  dgamma(t, 8, 2) *6
+}
+form <- ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)
+
+# understand what is done in the code
+# lines 101 ff.
+f1 <- formula(Formula(form), rhs = 1)
+if (length(Formula(form))[2] > 1) {
+  f2  <- formula(Formula(form), rhs = 2)
+} else {
+  f2 <- NULL
+}
+
+data <- df %>%
+  mutate(
+    id     = row_number(),
+    time   = max(cut),
+    status = 1)
+
+ped  <- split_data(
+  formula = Surv(time, status)~.,
+  data    = select_if(data, is_atomic),
+  cut     = cut,
+  id      = "id")
+
+ped <- ped %>%
+  rename("t" = "tstart") %>%
+  mutate(rate = exp(f_eval(f1, .)))
+
+head(ped)
+
+# time is used as a variable and set to tstart in split_data step. 
+# idea: use this sampler to sample third transition
+
+f0 <- function(t) {
+  dgamma(t, 4, 2) *6
+}
+
+# form <- formula(  ~ 0.5 + 0.25*x1**3| f0(t))
+form <- formula(  ~ 0.3 | 0.6 )
+
+n = 100
+data <- cbind.data.frame(
+  id = 1:n,
+  x1 = runif(n, -3, 3),
+  x2 = runif(n, 0, 6),
+  from = 1,
+  t = 0)
+
+cut =  seq(0, 3, by = 0.01)
+
+sim_df <- sim_pexp_cr(form, data, cut) %>%
+  mutate(from = 1
+         , to = type + 1
+         , transition = case_when(
+           type == 1 ~ "1->2",
+           type == 2 ~ "1->3",
+           .default = "err"
+         )) %>%
+  rename(tstart = t, tstop = time) 
+
+sim_df_2 <- sim_df %>%
+  filter(to == 2) %>%
+  rename(t = tstop) %>%
+  mutate(from = 2
+         , time = max(cut)
+         , status = 1) %>%
+  select(id, x1, x2, t, from, time, status)
+
+# use again code for transition sampling
+ped  <- split_data(
+  formula = Surv(t, time, status)~.,
+  data    = select_if(sim_df_2, is_atomic),
+  cut     = cut,
+  id      = "id")
+  # filter(tstart >= t) %>% #exclude all time steps before transition is possible
+
+ped <- ped %>%
+  rename("tfirst" = "t"
+         , "t" = "tstart") %>%
+  mutate(rate = exp(f_eval(f1, .)))
+
+ped <- ped %>%
+  rename("t" = "tstart") %>%
+  mutate(rate = exp(f_eval(f1, .)))
+
+head(ped)
+
+sim_df_step2 <- ped %>%
+  group_by(id) %>%
+  summarize(time = rpexp(rate = .data$rate, t = .data$t)) %>%
+  mutate(
+    status = 1L * (.data$time <= max(cut)),
+    time   = pmin(.data$time, max(cut)))
+
+# problem: t
+
+head(sim_df_step2)
+
+
+set.seed(24032018)
+sim_df <- sim_pexp(form, df, 1:10)
+head(sim_df)
+plot(survfit(Surv(time, status)~1, data = sim_df ))
+
+plot(1:10, f0(1:10))

@@ -847,6 +847,17 @@ check1 <- survcheck(Surv(age1, age2, event) ~ nafld + male, data=ndata,
                       id=id, istate=cstate)
 check1
 
+
+nfit1 <- coxph(list(Surv(age1, age2, event) ~ nafld + male,
+                    "0mc":state("1mc", "2mc", "3mc") ~ nafld+ male / common,
+                    2:3 + 2:4 ~ nafld + male / common,
+                    0:"death" ~ male / common),
+               data=ndata, id=id, istate=cstate)
+
+summary(nfit1)
+str(nfit1)
+nfit1$transitions
+
 #-------------------------------------------------------------------------------
 # PAMMTOOLS
 # prepare data set for as_ped function
