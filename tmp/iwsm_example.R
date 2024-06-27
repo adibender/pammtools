@@ -246,34 +246,7 @@ test <- group_split(res_data) |>
   map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
   bind_rows()
 
-test$hgb <- as.factor(test$hgb)
-test$age <- as.factor(test$age)
-
 test_sub <- test %>% filter(transition == "0->2")
-
-transition_ggplot <- ggplot(test_sub, aes(x=tend, y=trans_prob)) + 
-  geom_line(aes(group=hgb, col=hgb)) + 
-  facet_wrap(~transition, ncol = 2, scales = "free_y", labeller = label_both) +
-  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
-  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
-  xlim(c(0, 200)) +
-  ylab("Transition Probability") +
-  xlab("time") +
-  theme_bw()
-transition_ggplot
-
-plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
-
-ggplot(test_sub, aes(x=tend, y=hgb, z=trans_prob)) +
-  geom_contour_filled() +
-  xlim(c(0,100))
-
-
-ggplot(test_sub, aes(x=tend, y=hgb, z=trans_prob)) +
-  geom_tile(aes(fill=trans_prob)) +
-  scale_fill_gradient2(low  = "steelblue", high = "firebrick2", midpoint=0.5)+
-  stat_contour(col="grey30") +
-  xlim(c(0,100))
 
 # PAM LINEAR
 test_cal_lin <- make_newdata(cal.my.mgus2.pam
@@ -297,26 +270,6 @@ test_lin <- group_split(res_data) |>
 test_lin_sub <- test_lin %>% 
   filter(transition == "0->2")
 
-transition_ggplot_lin <- ggplot(test_lin_sub, aes(x=tend, y=trans_prob)) + 
-  geom_line(aes(group=hgb, col=hgb)) + 
-  facet_wrap(~transition, ncol = 3, scales = "free_y", labeller = label_both) +
-  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
-  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
-  xlim(c(0, 400)) +
-  ylab("Transition Probability") +
-  xlab("time") +
-  theme_bw() 
-transition_ggplot_lin
-
-ggplot(test_lin_sub, aes(x=tend, y=hgb, z=trans_prob)) +
-  geom_tile(aes(fill=trans_prob)) +
-  scale_fill_gradient2(
-      low  = "steelblue"
-    , high = "firebrick2"
-    , midpoint=0.5)+
-  stat_contour(col="grey30") +
-  xlim(c(0,100))
-
 # combine plots
 test_lin_sub <- test_lin_sub %>% mutate(model = "linear")
 test_sub <- test_sub %>% mutate(model = "non-linear")
@@ -335,14 +288,18 @@ combined_contour <- ggplot(test, aes(x=tend, y=hgb, z=trans_prob)) +
     , high = "firebrick2"
     , midpoint=0.5)+
   stat_contour(col="grey30",lwd = 1.1) +
-  # geom_vline(xintercept = c(25, 75), lty = 3) +
-  # geom_hline(yintercept = c(8, 10, 12, 14), lty = 3) +
-  facet_wrap(transition ~ model, ncol=2, labeller = label_both) +
+  facet_wrap(transition ~ model
+             , ncol=2
+             , labeller = label_both
+             ) +
   xlim(c(0,100)) +
   theme_bw() +
-  theme(legend.position = "right"
-        , strip.text = element_text(size = 14)
-        , axis.text = element_text(size = 14))
+  theme( strip.text = element_text(size = 20)
+         , axis.text = element_text(size = 14)
+         , axis.title = element_text(size = 20)
+         , legend.text = element_text(size = 20)
+         , legend.title = element_text(size = 20)
+  ) 
 
 combined_contour
 
@@ -357,19 +314,20 @@ time_df <- cal.my.mgus2.pam %>%
 hgb_df <- hgb_df %>% filter(transition == "0->2") %>% mutate(model = "non-linear")
 time_df <- time_df %>% filter(transition == "0->2") %>% mutate(model = "non-linear")
 
-Greens  <- RColorBrewer::brewer.pal(9, "Greens")
-Purples <- RColorBrewer::brewer.pal(9, "Purples")
-
 hgb_pp <- ggplot(hgb_df, aes(x = hgb)) +
   geom_line(aes(y = fit), lwd = 1.1) +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
               alpha = .2) +
+  facet_wrap(transition ~ model, labeller = label_both) +
   ylab("s(hgb, 4.65):transition0->2") +
   xlab("hgb") + coord_cartesian(ylim = c(-0.5, 2.5)) +
   theme_bw() +
-  theme( strip.text = element_text(size = 14)
-         , axis.text = element_text(size = 14)) +
-  facet_wrap(transition ~ model, labeller = label_both)
+  theme( strip.text = element_text(size = 20)
+         , axis.text = element_text(size = 14)
+         , axis.title = element_text(size = 20)
+         , legend.text = element_text(size = 20)
+         , legend.title = element_text(size = 20)
+         ) 
 
 hgb_pp
 
@@ -377,36 +335,52 @@ time_pp <- ggplot(time_df, aes(x = tend)) +
   geom_line(aes(y = fit), lwd = 1.1) +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper),
               alpha = .2) +
+  facet_wrap(transition ~ model, labeller = label_both) +
   ylab("s(tend, 7.7):transition0->2") +
   xlab("tend") + coord_cartesian(ylim = c(-0.5, 1)) +
   xlim(c(0,100)) +
   theme_bw() +
-  theme( strip.text = element_text(size = 14)
-         , axis.text = element_text(size = 14)) +
-  facet_wrap(transition ~ model, labeller = label_both)
+  theme( strip.text = element_text(size = 20)
+         , axis.text = element_text(size = 14)
+         , axis.title = element_text(size = 20)
+         , legend.text = element_text(size = 20)
+         , legend.title = element_text(size = 20)
+         )
+  
 
 time_pp
 
 combined_spline_contour <- grid.arrange(hgb_pp, time_pp, combined_contour, ncol=3, widths=c(1/4, 1/4, 2/4))
 combined_spline_contour
-ggsave("tmp/example/transition_probabilities_hgb_contour.pdf", plot = combined_spline_contour, width = 16)
+# save for paper
+ggsave("tmp/example/transition_probabilities_hgb_contour.pdf", plot = combined_spline_contour, width = 16) 
 
-combined_ggplot <- ggplot(test, aes(x=tend, y=trans_prob)) + 
-  geom_line(aes(group=hgb, col=hgb)) + 
-  facet_wrap(transition~ model, ncol = 2, labeller = label_both) +
-  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
-  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
-  xlim(c(0, 200)) +
-  ylab("Transition Probability") +
-  xlab("time") +
-  theme_bw() +
-  theme(legend.position = "bottom")
-combined_ggplot
-ggsave("tmp/example/transition_probabilities_hgb.pdf", plot = combined_ggplot, width = 10)
-
-pdf("tmp/example/hgb_spline.pdf", width = 10)
-plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
+# save for poster
+ggsave("tmp/example/transition_probabilities_hgb_contour.png"
+       , plot = combined_spline_contour
+       , width = 35
+       , height = 10
+       , dpi = 300
+       , units = "cm"
+       )
 dev.off()
+# 
+# combined_ggplot <- ggplot(test, aes(x=tend, y=trans_prob)) + 
+#   geom_line(aes(group=hgb, col=hgb)) + 
+#   facet_wrap(transition~ model, ncol = 2, labeller = label_both) +
+#   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
+#   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+#   xlim(c(0, 200)) +
+#   ylab("Transition Probability") +
+#   xlab("time") +
+#   theme_bw() +
+#   theme(legend.position = "bottom")
+# combined_ggplot
+# ggsave("tmp/example/transition_probabilities_hgb.pdf", plot = combined_ggplot, width = 10)
+# 
+# pdf("tmp/example/hgb_spline.pdf", width = 10)
+# plot(pam_hgb, select=5, ylim=c(-0.5,1.5), xlim=c(6,16))
+# dev.off()
 
 #-------------------------------------------------------------------------------
 # SIMULATION STUDY

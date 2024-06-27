@@ -10,7 +10,8 @@ devtools::load_all()
 source("sandbox/helpers-msm.R")
 # source("sandbox/sim-pexp-msm.R")
 library(mstate)
-# library(msm)
+library(msm)
+library(mvna)
 # library(dynpred)
 library(effects)
 library(tidyr)
@@ -246,20 +247,47 @@ long_msm <- test_msm %>%
   mutate(package = "pammtools") %>% 
   select(tend, treat, transition, cumu_hazard, package)
 
-long_haz_df <- rbind(long_mstate, long_msm)
+long_haz_df <- rbind(long_mstate, long_msm) %>%
+  mutate(transition = case_when(transition == "1->2" ~ "0->1"
+                                , transition == "1->3" ~ "0->2"
+                                , transition == "2->1" ~ "1->0"
+                                , transition == "2->3" ~ "1->2")
+         )
 
 comparison_nelaal <- ggplot(long_haz_df, aes(x=tend, y=cumu_hazard, col=treat, linetype = package)) + 
   geom_line(linewidth=1) +
   facet_wrap(~transition, ncol = 4, labeller = label_both) +
-  # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
-  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
+  scale_color_manual(values = c("firebrick2"
+                                , "steelblue")
+                     )+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
   ylab("Cumulative Hazards") +
-  xlab("time") +
-  scale_linetype_manual(values=c("dashed", "solid")) +
-  theme_bw()
+  xlab("time in days") +
+  ylim(c(0,6)) +
+  scale_linetype_manual(values=c("dotted", "solid")) +
+  theme_bw() +
+  theme( strip.text = element_text(size = 20)
+         , axis.text = element_text(size = 14)
+         , axis.title = element_text(size = 20)
+         , legend.text = element_text(size = 20)
+         , legend.title = element_text(size = 20)
+  )
 
 comparison_nelaal
-ggsave("tmp/example/hazards_comparison_cox_mstate_recurrent.pdf", plot = comparison_nelaal, width = 16, height = 10)
+# paper figure
+ggsave("tmp/example/hazards_comparison_cox_mstate_recurrent.pdf"
+       , plot = comparison_nelaal
+       , width = 16
+       , height = 10)
+
+# poster figure
+ggsave("tmp/example/hazards_comparison_cox_mstate_recurrent.png"
+       , plot = comparison_nelaal
+       , width = 35
+       , height = 10
+       , dpi = 300
+       , units = "cm"
+)
 dev.off()
 
 
@@ -376,7 +404,7 @@ ggplot(test_prothr, aes(x=tend, y=trans_prob, col = treat)) +
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
   ylim(c(0,1)) +
   ylab("Transition Probability") +
-  xlab("time") +
+  xlab("time in days") +
   theme_bw()
 
 
@@ -469,7 +497,7 @@ ggplot(test_cav, aes(x=tend, y=trans_prob)) +
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
   ylim(c(0,1)) +
   ylab("Transition Probability") +
-  xlab("time") +
+  xlab("time in days") +
   theme_bw() 
 
 # continue with vignette as comparison
