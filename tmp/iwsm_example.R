@@ -2,6 +2,7 @@
 library(RColorBrewer)
 library(gridExtra)
 library(scam)
+library(dplyr)
 
 data(cancer, package="survival")
 
@@ -226,6 +227,26 @@ pam_hgb <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition))
                      , control = ctrl)
 summary(pam_hgb)
 
+# test tensor spline for tend and hgb
+cal.my.mgus2.pam$transition <- as.factor(cal.my.mgus2.pam$transition)
+ctrl <- gam.control(trace = TRUE)
+pam_hgbtend <- mgcv::bam(ped_status ~ s(tend, by=transition) 
+                     + transition
+                     + sex
+                     + te(hgb, age, by=transition)
+                     , data = cal.my.mgus2.pam
+                     , family=poisson()
+                     , offset=offset
+                     , method = "fREML"
+                     , discrete = TRUE
+                     , control = ctrl)
+
+summary(pam_hgbtend)
+
+plot(pam_hgbtend, page = 1)
+plot(pam_hgbtend, select=4)
+
+gg_tensor(pam_hgbtend)
 
 test_cal_pam <- make_newdata(cal.my.mgus2.pam
                              , tend = unique(tend)
@@ -283,7 +304,7 @@ table(test$model)
 combined_contour <- ggplot(test, aes(x=tend, y=hgb, z=trans_prob)) +
   geom_tile(aes(fill=trans_prob)) +
   scale_fill_gradient2(
-    name = "probability"
+    name = "transition\nprobability"
     , low  = "steelblue"
     , high = "firebrick2"
     , midpoint=0.5)+
@@ -293,6 +314,8 @@ combined_contour <- ggplot(test, aes(x=tend, y=hgb, z=trans_prob)) +
              , labeller = label_both
              ) +
   xlim(c(0,100)) +
+  xlab("time in days") +
+  ylab("hemoglobin") +
   theme_bw() +
   theme( strip.text = element_text(size = 20)
          , axis.text = element_text(size = 14)
@@ -337,7 +360,7 @@ time_pp <- ggplot(time_df, aes(x = tend)) +
               alpha = .2) +
   facet_wrap(transition ~ model, labeller = label_both) +
   ylab("s(tend, 7.7):transition0->2") +
-  xlab("tend") + coord_cartesian(ylim = c(-0.5, 1)) +
+  xlab("time in days") + coord_cartesian(ylim = c(-0.5, 1)) +
   xlim(c(0,100)) +
   theme_bw() +
   theme( strip.text = element_text(size = 20)
