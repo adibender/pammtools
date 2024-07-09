@@ -758,7 +758,7 @@ get_cif.default <- function(
 }
 
 ## Transition Probability Matrix for multi-state data
-
+#' @keywords internal
 get_trans_prob <- function(
     newdata,
     # object,
@@ -863,15 +863,19 @@ get_trans_prob <- function(
   
 }
 
+#' Add transition probabilities
+#' @export
 add_trans_prob <- function(
     newdata
-    #    , object
+    , object
     , overwrite       = FALSE 
+    , alpha           = 0.05
+    , n_sim           = 500L
     , time_var        = NULL
     , interval_length = "intlen",
-    ...) {
+    ...
+) {
   
-  interval_length <- quo_name(enquo(interval_length))
   
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {
@@ -888,8 +892,22 @@ add_trans_prob <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
   
-  get_trans_prob(newdata
-                 # , object
-                 , time_var = time_var, interval_length = interval_length, ...)
+  # extract to simulate ci
+  coefs         <- coef(object)
+  V             <- object$Vp
+  sim_coef_mat  <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
+  
+  
+  newdata <- newdata %>% add_cumu_hazard(object)
+  
+  old_groups <- dplyr::groups(newdata)
+  res_data <- newdata %>% ungroup(transition)
+  out_data <- group_split(res_data) |> 
+    map(res_data, .f = ~ group_by(.x, transition))|> 
+    map(res_data, .f = ~ get_trans_prob(.x)) |>
+    map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
+    bind_rows()
+  
+  return(out_data)
   
 }
