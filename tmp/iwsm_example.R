@@ -254,7 +254,43 @@ test_cal_pam <- make_newdata(cal.my.mgus2.pam
                              #, hgb = seq(7, 16, by = 0.5)
                              , hgb = seq(6, 16, by = 0.1)) %>% 
   group_by(transition, hgb) %>% 
-  add_cumu_hazard(pam_hgb) 
+  add_trans_prob(pam_hgb) 
+
+
+# test new wrapper
+test_cal_pam <- make_newdata(cal.my.mgus2.pam
+                             , tend = unique(tend)
+                             , transition=unique(transition)
+                             #, hgb = seq(7, 16, by = 0.5)
+                             , hgb = seq(6, 16, by = 0.1)) %>% 
+  group_by(transition, hgb)
+debug <- test_cal_pam %>% add_trans_prob(pam_hgb)
+debug <- test_cal_pam %>% add_cumu_hazard(pam_hgb)
+
+combined_contour <- ggplot(debug, aes(x=tend, y=hgb, z=trans_prob)) +
+  geom_tile(aes(fill=trans_prob)) +
+  scale_fill_gradient2(
+    name = "transition\nprobability"
+    , low  = "steelblue"
+    , high = "firebrick2"
+    , midpoint=0.5)+
+  stat_contour(col="grey30",lwd = 1.1) +
+  facet_wrap(~ transition
+             , ncol=3
+             , labeller = label_both
+  ) +
+  xlim(c(0,100)) +
+  xlab("time in days") +
+  ylab("hemoglobin") +
+  theme_bw() +
+  theme( strip.text = element_text(size = 20)
+         , axis.text = element_text(size = 14)
+         , axis.title = element_text(size = 20)
+         , legend.text = element_text(size = 20)
+         , legend.title = element_text(size = 20)
+  ) 
+
+combined_contour
 
 # workaround for grouped data -> include in add_trans_prob() when time
 old_groups <- dplyr::groups(test_cal_pam)

@@ -10,6 +10,7 @@ add_trans_prob <- function(
   ) {
 
   
+  
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {
       stop("Data set already contains 'trans_prob' column.
@@ -26,12 +27,13 @@ add_trans_prob <- function(
   }
   
   # extract to simulate ci
+  X             <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   coefs         <- coef(object)
   V             <- object$Vp
   sim_coef_mat  <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
   
-  
-  newdata <- newdata %>% add_cumu_hazard(object)
+  # add cumu_hazard to newdata
+  newdata <- newdata |> add_cumu_hazard(object, ci=F)
   
   old_groups <- dplyr::groups(newdata)
   res_data <- newdata %>% ungroup(transition)
