@@ -1,0 +1,104 @@
+---
+title: "Multi-State"
+author: "Johannes Piller"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{multi-state}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = TRUE,
+  message    = FALSE,
+  fig.height = 5,
+  fig.width  = 5,
+  dpi        = 300
+)
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+# Introduction
+
+In this vignette, we show examples of how to estimate and visualize transition probabilities for multi-state data. First, we show that a baseline PAMMs model returns equal probabilities as the empirical transition probabilities stemming from the Aalen-Johannsen estimator. Second, we show that the estimated baseline model in a multi-state setting with backtransitions using PAMMs is equal to a Cox proportional hazard model. Third, we illustrate the application of PAMMs in the analysis of the non-linear effect of hemoglobin on the probabilities to transition to a plasma cell malignancy (PCM) and / or death.
+
+## Data transformation
+The data transformation required to fit PAMMs to multi-state data is similar to the transformation in the single event case (see the [data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html) for details). In fact, internally the standard transformation is applied to each event type using `as_ped`, however, some choices have to be made
+
+- left-truncation becomes relevant, because, so far, settings considered only transitions from the initial status to a single event of interest 
+- specify the start and end of an event
+- return the data as a list (one element for each transition) or a stacked data set (with an additional column (covariate), indicating the transition)
+
+# `prothr` Data - Abnormal prothrombin levels in liver cirrhosis
+
+For illustration, we use the `prothr` data set from the **`mstate`** package. 
+- 488 liver cirrhosis patients
+- endpoints: `status` = 0/1 for censoring, event
+- events of interest: `status` = 1 and `to` = 2/3 for abnormal prothrombin level (patient can transition between normal and abnormal prothrombin level back and forth), death, `tstart`, `tend` as time-to-event
+- variable of interest  `treat`: A patient's treatment (Placebo, Prednisone)
+
+```{r, echo = TRUE}
+library(survival)
+library(pammtools)
+library(purrr)
+data(prothr, package = "mstate")
+prothr |> filter(id == 46) |> knitr::kable() # example patients
+```
+
+```{r, echo = FALSE}
+data("prothr", package = "mstate")
+prothr <- prothr %>%
+  rename(tstart = Tstart, tstop = Tstop) %>%
+  filter(tstart != tstop)
+```
+
+In general, one has to follow three steps to derive transition probabilities from multi-state survival data.
+
+First, we need to transform the survival data `prothr` into piecewise exponential data. We can use 
+```{r lib-ms-pammtools, echo = FALSE}
+# load function as it is not yet included in the package
+#devtools::load_all("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+#source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/R/add-functions.R")
+#source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/tmp/add_transition_probabilities.R")
+
+library(tidyverse)
+```
+```{r, echo = TRUE, dependson=c("lib-ms-pammtools")}
+my.prothr <- prothr |> filter(status == 1) |> add_counterfactual_transitions() # add possible transitions
+ped <- as_ped_multistate(
+  data       = my.prothr,
+  formula    = Surv(tstart, tstop, status)~ .,
+  transition = "transition",
+  id         = "id",
+  timescale  = "calendar",
+  tdc_specials="concurrent"
+)
+```
+where `add_counterfactual_transitions` is a helper function, which adds all possible transitions at each point in time.
+
+Second, we need to estimate the log hazard structure using PAM objects. We can use
+```{r echo = TRUE}
+pam <- pamm(ped_status ~ s(tend, by=transition) + transition * treat, data = ped)
+```
+
+Third, we need to post-process the data to include all relevant objects of interest in our data set. We can use 
+```{r, echo = TRUE}
+ndf <- make_newdata(ped, tend  = unique(tend), treat  = unique(treat), transition = unique(transition)) 
+ndf <- ndf  |>
+  group_by(treat, transition) |>  # important!
+  add_trans_prob(pam)
+```
+where `make_newdata` creates a data set containing all covariates and all their combinations from the PAM object. The convenience function `add_trans_prob` crates a new column `trans_prob`, which can be visualized.
+
+```{r prothr-viz, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "800px"}
+# visualization
+ggplot(ndf, aes(x=tend, y=trans_prob)) + 
+  geom_line(aes(col=treat)) + 
+  facet_wrap(~transition) +
+  labs(y = "Transition Probability", x = "time", color = "Treatment", fill= "Treatment")
+```
+
