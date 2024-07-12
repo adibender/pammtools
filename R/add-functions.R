@@ -870,7 +870,7 @@ add_trans_prob <- function(
     , object
     , overwrite       = FALSE 
     , alpha           = 0.05
-    , n_sim           = 500L
+    , n_sim           = 100L
     , time_var        = NULL
     , interval_length = "intlen",
     ...
