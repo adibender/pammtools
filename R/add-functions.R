@@ -913,6 +913,7 @@ add_trans_prob <- function(
 }
 
 #' helper function for add_trans_ci
+#' @keywords internal
 get_sim_cumu <- function(newdata, ...) {
   
   newdata$cumu_hazard <- cumsum(newdata$intlen * newdata$hazard)
