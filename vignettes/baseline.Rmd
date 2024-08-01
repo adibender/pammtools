@@ -3,7 +3,7 @@ title: "Baseline Hazard"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{baseline}
+ %\VignetteIndexEntry{Baseline Hazard}
  %\VignetteEngine{knitr::rmarkdown}
 ---
 

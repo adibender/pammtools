@@ -8,7 +8,8 @@
 predictSurvProb.pamm <- function(
   object,
   newdata,
-  times) {
+  times,
+  ...) {
 
   if (!is.ped(newdata)) {
 

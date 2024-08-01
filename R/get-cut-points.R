@@ -40,7 +40,8 @@ get_cut.default <- function(
 
 }
 
-
+#' @rdname get_cut
+#' @inherit get_cut
 get_cut.list <- function (
   data,
   formula,

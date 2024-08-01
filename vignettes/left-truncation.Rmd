@@ -3,7 +3,7 @@ title: "Left Truncation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{left-truncation}
+  %\VignetteIndexEntry{Left Truncation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

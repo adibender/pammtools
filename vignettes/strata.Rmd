@@ -3,7 +3,7 @@ title: "Stratified baseline"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{strata}
+  %\VignetteIndexEntry{Stratified baseline}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -43,7 +43,7 @@ from the `survival` package,
 where the cell type of the lung cancer had four levels:
 
 ```{r}
-data("veteran") # load veteran data
+veteran <- survival::veteran # load veteran data
 veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),
