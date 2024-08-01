@@ -16,6 +16,8 @@ library(mvna)
 library(effects)
 library(tidyr)
 
+devtools::install("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+
 # try mstate::prothr data set
 # LINK: https://cran.r-project.org/web/packages/mstate/mstate.pdf
 
@@ -141,6 +143,32 @@ if (require(lattice)){
          # , ylim=c(0,10)
   )
 }
+
+
+# estimate transition probabilites
+etm.prothr <- etm(my.data, c("0", "1", "2"), tra, "cens", s = 0)
+
+par(mfrow=c(2,2))
+plot(etm.prothr, tr.choice = "0 1", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "0 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 0", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+par(mfrow=c(1,1))
 
 data <- prothr %>% 
   rename(tstart = Tstart, tstop = Tstop) %>%
