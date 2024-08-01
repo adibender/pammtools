@@ -930,27 +930,23 @@ add_trans_ci <- function(newdata, object, n_sim=100L, alpha=0.05, ...) {
   coefs         <- coef(object)
   V             <- object$Vp
   
+  # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
+  groups_array <- group_indices(newdata)
+  groups_trans <- newdata %>% ungroup(transition) %>% group_indices()
+  
   sim_coef_mat <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)
     exp(X %*% z))
   
   # create list with replicated newdata
-  nlst <- as.list(replicate(n_sim, newdata, simplify=F))
+  nlst <- as.list(replicate(n_sim, newdata[,c("tend", "transition", "intlen")], simplify=F))
   
   # add cumu-hazard in each element and calculate trans_prob with perturbed hazards
   nlst <- lapply(1:n_sim, function(i) {
     nlst[[i]] <- cbind(nlst[[i]], hazard = sim_fit_mat[, i]) # add hazard
     # split by group and calculate cumu hazard
-    nlst[[i]] <- split(nlst[[i]], group_indices(nlst[[i]]))%>%
-      map_dfr(get_sim_cumu)
-    
-    old_groups <- dplyr::groups(nlst[[i]])
-    res_data <- nlst[[i]] %>% ungroup(transition)
-    nlst[[i]] <- group_split(res_data) |> 
-      map(res_data, .f = ~ group_by(.x, transition))|> 
-      map(res_data, .f = ~ get_trans_prob(.x)) |>
-      map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
-      bind_rows()
+    nlst[[i]] <- split(nlst[[i]], groups_array) %>% map_dfr(get_sim_cumu)
+    nlst[[i]] <- split(nlst[[i]], groups_trans) %>% map_dfr(get_trans_prob)
     
     nlst[[i]]
   })
