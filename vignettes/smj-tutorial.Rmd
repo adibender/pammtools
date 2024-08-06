@@ -3,7 +3,7 @@ title: "Paper: A generalized additive model approach to time-to-event analysis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{smj-tutorial}
+  %\VignetteIndexEntry{Paper: A generalized additive model approach to time-to-event analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

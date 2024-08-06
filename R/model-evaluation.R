@@ -16,7 +16,7 @@ as.data.frame.crps <- function(x, row.names = NULL, optional = FALSE, ...) {
   m$method <- attr(x, "dimnames")[[1]]
 
   m <- m %>%
-    pivot_longer(cols = -.data$method, values_to = "IBS") %>%
-    dplyr::rename(time = .data$name)
+    pivot_longer(cols = -one_of("method"), values_to = "IBS") %>%
+    dplyr::rename(time = "name")
 
 }

@@ -1,6 +1,6 @@
 ---
 title: "Multi-State"
-author: "Johannes Piller"
+author: "Johannes Piller, Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -22,7 +22,7 @@ library(ggplot2)
 theme_set(theme_bw())
 ```
 
-# Introduction
+## Introduction
 
 In this vignette, we show examples of how to estimate and visualize transition probabilities for multi-state data. First, we show that a baseline PAMMs model returns equal probabilities as the empirical transition probabilities stemming from the Aalen-Johannsen estimator. Second, we show that the estimated baseline model in a multi-state setting with backtransitions using PAMMs is equal to a Cox proportional hazard model. Third, we illustrate the application of PAMMs in the analysis of the non-linear effect of hemoglobin on the probabilities to transition to a plasma cell malignancy (PCM) and / or death.
 
@@ -33,7 +33,7 @@ The data transformation required to fit PAMMs to multi-state data is similar to 
 - specify the start and end of an event
 - return the data as a list (one element for each transition) or a stacked data set (with an additional column (covariate), indicating the transition)
 
-# `prothr` Data - Abnormal prothrombin levels in liver cirrhosis
+# `prothr` Data - Time to abnormal prothrombin levels in liver cirrhosis
 
 For illustration, we use the `prothr` data set from the **`mstate`** package. 
 - 488 liver cirrhosis patients
@@ -45,6 +45,7 @@ For illustration, we use the `prothr` data set from the **`mstate`** package.
 library(survival)
 library(pammtools)
 library(purrr)
+
 data(prothr, package = "mstate")
 prothr |> filter(id == 46) |> knitr::kable() # example patients
 ```
@@ -56,15 +57,20 @@ prothr <- prothr %>%
   filter(tstart != tstop)
 ```
 
-In general, one has to follow three steps to derive transition probabilities from multi-state survival data.
+In general, one has to follow three steps to derive transition probabilities from multi-state survival data. 
+- First, we need to transform the survival data `prothr` into piecewise exponential data. 
+- Second, we need to estimate the log hazard structure using PAM objects. 
+- Third, we need to post-process the data to include all relevant objects of interest in our data set. 
 
-First, we need to transform the survival data `prothr` into piecewise exponential data. We can use 
+## Transformation to PED format
+
+Transforming the survival data `prothr` into piecewise exponential data, we can use 
 ```{r lib-ms-pammtools, echo = FALSE}
 # load function as it is not yet included in the package
-#devtools::load_all("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
-#source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/R/add-functions.R")
-#source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/tmp/add_transition_probabilities.R")
-
+# devtools::load_all("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+# source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/R/add-functions.R")
+# source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/tmp/add_transition_probabilities.R")
+library(checkmate)
 library(tidyverse)
 ```
 ```{r, echo = TRUE, dependson=c("lib-ms-pammtools")}
@@ -80,25 +86,190 @@ ped <- as_ped_multistate(
 ```
 where `add_counterfactual_transitions` is a helper function, which adds all possible transitions at each point in time.
 
-Second, we need to estimate the log hazard structure using PAM objects. We can use
+## Baseline Multi-State Model
+
+Estimating the log hazard structure using PAM objects, we can use
 ```{r echo = TRUE}
 pam <- pamm(ped_status ~ s(tend, by=transition) + transition * treat, data = ped)
+summary(pam)
 ```
 
-Third, we need to post-process the data to include all relevant objects of interest in our data set. We can use 
-```{r, echo = TRUE}
+
+## Post-processing, i.e. plotting the transition probabilities
+
+Post-processing the data to include all relevant objects of interest in our data set, we can use 
+```{r, echo = TRUE, warning = FALSE, dependson=c("lib-ms-pammtools")}
 ndf <- make_newdata(ped, tend  = unique(tend), treat  = unique(treat), transition = unique(transition)) 
 ndf <- ndf  |>
   group_by(treat, transition) |>  # important!
+  # arrange(treat, transition, tend) |>
+  # add_trans_ci(pam) |>
   add_trans_prob(pam)
 ```
 where `make_newdata` creates a data set containing all covariates and all their combinations from the PAM object. The convenience function `add_trans_prob` crates a new column `trans_prob`, which can be visualized.
 
-```{r prothr-viz, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "800px"}
+```{r prothr-viz, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "600px"}
 # visualization
-ggplot(ndf, aes(x=tend, y=trans_prob)) + 
-  geom_line(aes(col=treat)) + 
+ggplot(ndf, aes(x=tend)) + 
+  geom_line(aes(y=trans_prob, col=treat)) +
+  # geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=treat), alpha = .3) +
   facet_wrap(~transition) +
   labs(y = "Transition Probability", x = "time", color = "Treatment", fill= "Treatment")
+
 ```
 
+## Comparison of the results with Aalen-Johannsen estimator
+```{r, echo = FALSE, warning = FALSE, dependson=c("lib-ms-pammtools")}
+library(mstate)
+library(msm)
+library(mvna)
+
+# code from mstate documentation
+data(prothr)
+tmat <- attr(prothr, "trans")
+pr0 <- subset(prothr, treat=="Placebo")
+attr(pr0, "trans") <- tmat
+pr1 <- subset(prothr, treat=="Prednisone")
+attr(pr1, "trans") <- tmat
+c0 <- coxph(Surv(Tstart, Tstop, status) ~ strata(trans), data=pr0)
+c1 <- coxph(Surv(Tstart, Tstop, status) ~ strata(trans), data=pr1)
+
+
+msf0 <- msfit(c0, trans=tmat)
+msf1 <- msfit(c1, trans=tmat)
+
+# Comparison as in Figure 2 of Titman (2015)
+# Aalen-Johansen
+pt0 <- probtrans(msf0, predt=0)[[2]] # changed predt from 1000 to 0
+pt1 <- probtrans(msf1, predt=0)[[2]] # changed predt from 1000 to 0
+par(mfrow=c(1,2))
+plot(pt0$time, pt0$pstate1, type="s", lwd=2, xlim=c(0,4000), ylim=c(0,1),
+     xlab="Time since randomisation (days)", ylab="Probability")
+lines(pt1$time, pt1$pstate1, type="s", lwd=2, lty=3)
+legend("topright", c("Placebo", "Prednisone"), lwd=2, lty=1:2, bty="n")
+title(main="Aalen-Johansen")
+# Landmark Aalen-Johansen
+LMpt0 <- LMAJ(msdata=pr0, s=0, from=2) # changed predt from 1000 to 0
+LMpt1 <- LMAJ(msdata=pr1, s=0, from=2) # changed predt from 1000 to 0
+plot(LMpt0$time, LMpt0$pstate1, type="s", lwd=2, xlim=c(0,4000), ylim=c(0,1),
+     xlab="Time since randomisation (days)", ylab="Probability")
+lines(LMpt1$time, LMpt1$pstate1, type="s", lwd=2, lty=3)
+legend("topright", c("Placebo", "Prednisone"), lwd=2, lty=1:2, bty="n")
+title(main="Landmark Aalen-Johansen")
+par(mfrow=c(1,1))
+
+# plot hazards
+mstate_dat0 <- msf0$Haz %>% mutate(transition = case_when(
+  trans == 1 ~ "1->2",
+  trans == 2 ~ "1->3",
+  trans == 3 ~ "2->1",
+  trans == 4 ~ "2->3",
+  .default = "cens"
+  )
+  , treat = "Placebo")
+mstate_dat1 <- msf1$Haz %>% mutate(transition = case_when(
+  trans == 1 ~ "1->2",
+  trans == 2 ~ "1->3",
+  trans == 3 ~ "2->1",
+  trans == 4 ~ "2->3",
+  .default = "cens"
+  )
+, treat = "Prednisone")
+
+mstate_dat <- rbind(mstate_dat0, mstate_dat1)
+
+
+ggplot(data = mstate_dat, aes(x=time, y=Haz)) + 
+  geom_line(aes(col=treat)) +
+  facet_wrap(~transition, ncol = 4, labeller = label_both)
+
+# data analysis / preparation
+head(prothr)
+table(prothr$from, prothr$to)
+# transitions 1->2, 1->3, 2->1, 2->3 possible.
+# classical multi-state setup with recurrent events. 
+
+# try analysis with etm
+# transform days in fractions of year
+data <- prothr %>% mutate(Tstart = Tstart / 365.25, 
+                          Tstop = Tstop /365.25,
+                          from = from - 1,
+                          to = to - 1)
+head(data)
+dim(data)
+
+
+# build transition matrix for mvna
+tra <- matrix(FALSE, ncol = 3, nrow = 3)
+dimnames(tra) <- list(c("0", "1", "2"), c("0", "1", "2"))
+tra[1, 2:3] <- TRUE
+tra[2, c(1,3)] <- TRUE
+
+# print transition matrix
+tra
+
+my.data <- prothr %>% 
+  mutate(from = from -1, to = to-1) %>%
+  rename(entry = Tstart, exit = Tstop) %>% 
+  arrange(id, entry, exit) %>% 
+  filter(!(entry == exit)) %>%
+  distinct()
+dim(my.data)
+head(my.data)
+
+my.data %>% filter(tstart== tstop)
+
+table(my.data$from, my.data$to)
+
+# calculate cause specific hazards
+my.nelaal <- mvna(my.data, c("0", "1", "2"), tra, "cens")
+if (require(lattice)){
+  xyplot(my.nelaal
+         , strip=strip.custom(bg="white")
+         , ylab="Cumulative Hazard"
+         , lwd=2
+         # , xlim=c(0,5)
+         # , ylim=c(0,10)
+         )
+}
+# differentiate between placebo and not
+my.data.placebo <- my.data %>% filter(treat=="Placebo")
+table(my.data.placebo$from, my.data.placebo$to)
+
+my.nelaal <- mvna(my.data.placebo, c("0", "1", "2"), tra, "cens")
+if (require(lattice)){
+  xyplot(my.nelaal
+         , strip=strip.custom(bg="white")
+         , ylab="Cumulative Hazard"
+         , lwd=2
+         # , xlim=c(0,5)
+         # , ylim=c(0,10)
+  )
+}
+
+
+# estimate transition probabilites
+etm.prothr <- etm(my.data, c("0", "1", "2"), tra, "cens", s = 0)
+
+par(mfrow=c(2,2))
+plot(etm.prothr, tr.choice = "0 1", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "0 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 0", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+par(mfrow=c(1,1))
+```

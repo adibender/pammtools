@@ -6,7 +6,10 @@
 \usage{
 add_trans_prob(
   newdata,
+  object,
   overwrite = FALSE,
+  alpha = 0.05,
+  n_sim = 100L,
   time_var = NULL,
   interval_length = "intlen",
   ...

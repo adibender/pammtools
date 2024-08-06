@@ -3,7 +3,7 @@ title: "Workflow and convenience functions"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{convenience}
+  %\VignetteIndexEntry{Workflow and convenience functions}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

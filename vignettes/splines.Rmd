@@ -3,7 +3,7 @@ title: "Non-linear effects (penalized splines)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{splines.html}
+  %\VignetteIndexEntry{Non-linear effects (penalized splines)}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -35,7 +35,7 @@ We first illustrate the estimation on non-linear smooth effects using
 the `veteran` data from the survival package:
 
 ```{r}
-data("veteran", package="survival") # load veteran package
+veteran <- survival::veteran # load veteran package
 veteran <- veteran %>%
   mutate(
     trt   = 1+(trt == 2),

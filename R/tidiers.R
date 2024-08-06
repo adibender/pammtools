@@ -46,7 +46,7 @@ tidy_fixed.gam <- function(x, intercept=FALSE, ...) {
 
   ftab <- summary(x)[["p.table"]][, 1:2]
   if (!intercept) {
-    ftab <- ftab[!grepl("Intercept", rownames(ftab)), ]
+    ftab <- ftab[!grepl("Intercept", rownames(ftab)), , drop = FALSE]
   }
   calc_ci(ftab)
 

@@ -3,7 +3,7 @@ title: "Model evaluation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{model-evaluation}
+  %\VignetteIndexEntry{Model evaluation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

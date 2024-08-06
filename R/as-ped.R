@@ -203,7 +203,7 @@ is.ped <- function(x) inherits(x, "ped")
 
 #' @rdname as_ped
 #' @param newdata A new data set (\code{data.frame}) that contains the same
-#' variables that were used to create the PED object (code{data}).
+#' variables that were used to create the PED object (\code{data}).
 #' @export
 as_ped.ped <- function(data, newdata, ...) {
 
@@ -251,7 +251,9 @@ as_ped_cr <- function(
   ...) {
 
   lhs_vars <- get_lhs_vars(formula)
+  n_lhs <- length(lhs_vars)
   event_types <- get_event_types(data, formula, censor_code)
+  n_events <- sum(event_types != censor_code)
 
   cut <- map2(
     event_types,
@@ -269,7 +271,7 @@ as_ped_cr <- function(
     cut,
     function(.event, .cut) {
       ped_i <- data %>%
-        mutate(!!lhs_vars[2] := 1L * (.data[[lhs_vars[2]]] == .env[[".event"]])) %>%
+        mutate(!!lhs_vars[n_lhs] := 1L * (.data[[lhs_vars[n_lhs]]] == .env[[".event"]])) %>%
         as_ped(
           formula      = formula,
           cut          = .cut,

@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 number_sections: true
 vignette: >
-  %\VignetteIndexEntry{recurrent-events}
+  %\VignetteIndexEntry{Recurrent Events}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

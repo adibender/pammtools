@@ -22,10 +22,6 @@ Only TDCs present in \code{formula} will be returned.}
 part indicates the structure of the TDC structure.}
 
 \item{...}{Further arguments passed to methods.}
-
-\item{vars}{A character vector of TDCs that will be nested.}
-
-\item{id}{A character giving the name of the ID column.}
 }
 \description{
 Provides methods to nest data with time-dependent covariates (TDCs).

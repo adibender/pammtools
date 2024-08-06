@@ -23,3 +23,4 @@
 ^pammtools\.Rproj$
 ^revdep$
 ^\.github$
+^CRAN-SUBMISSION$

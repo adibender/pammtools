@@ -83,7 +83,7 @@ sample_info.fped <- function(x) {
 #'
 #' @importFrom dplyr slice bind_cols
 #' @importFrom vctrs vec_c
-#' @importFrom purrr map map_lgl map2 transpose cross
+#' @importFrom purrr map map_lgl
 #' @importFrom checkmate test_data_frame
 #' @param ... Data frames that should be combined to one data frame.
 #' Elements of first df vary fastest, elements of last df vary slowest.
@@ -102,10 +102,10 @@ combine_df <- function(...) {
   }
   ind_seq   <- map(dots, ~ seq_len(nrow(.x)))
   not_empty <- map_lgl(ind_seq, ~ length(.x) > 0)
-  ind_list  <- ind_seq[not_empty] %>% cross() %>% transpose() %>% map(function(x) vec_c(!!!x))
 
-  map2(dots[not_empty], ind_list, function(.x, .y) slice(.x, .y)) %>%
-    bind_cols()
+  ord <- lapply(dots[not_empty], function(z) colnames(z)) |> unlist()
+  out <- do.call(expand_grid, rev(dots[not_empty]))
+  out <- out[, ord]
 
 }
 
@@ -121,6 +121,7 @@ combine_df <- function(...) {
 #'
 #' @rdname newdata
 #' @aliases make_newdata
+#' @importFrom tidyr expand_grid
 #' @inheritParams sample_info
 #' @param ... Covariate specifications (expressions) that will be evaluated
 #' by looking for variables in \code{x}. Must be of the form \code{z = f(z)}
@@ -131,7 +132,8 @@ combine_df <- function(...) {
 #' the time argument, but see "Details" an "Examples" below.
 #' @import dplyr
 #' @importFrom checkmate assert_data_frame assert_character
-#' @importFrom purrr map cross_df
+#' @importFrom purrr map
+#' @importFrom tidyr expand_grid
 #' @details Depending on the type of variables in \code{x}, mean or modus values
 #' will be used for variables not specified in ellipsis
 #' (see also \code{\link[pammtools]{sample_info}}). If \code{x} is an object
@@ -159,9 +161,6 @@ combine_df <- function(...) {
 #' # mean/modus values of unspecified variables are calculated over whole data
 #' tumor %>% make_newdata(sex=unique(sex))
 #' tumor %>% group_by(sex) %>% make_newdata()
-#' # You can also pass a part of the data sets as data frame to make_newdata
-#' purrr::cross_df(list(days = c(0, 500, 1000), sex = c("male", "female"))) %>%
-#'   make_newdata(x=tumor)
 #'
 #' # Examples for PED data
 #' ped <- tumor %>% slice(1:3) %>% as_ped(Surv(days, status)~., cut = c(0, 500, 1000))
@@ -193,11 +192,13 @@ make_newdata.default <- function(x, ...) {
   orig_names <- names(x)
 
   expressions    <- quos(...)
-  expr_evaluated <- map(expressions, lazyeval::f_eval, data = x)
+  expr_evaluated <- map(expressions, lazyeval::f_eval, data = x) |>
+    map(c)
 
   # construct data parts depending on input type
   lgl_atomic <- map_lgl(expr_evaluated, is_atomic)
-  part1 <- expr_evaluated[lgl_atomic] %>% cross_df()
+  # part1 <- expr_evaluated[lgl_atomic] |> cross_df()
+  part1 <- do.call(tidyr::expand_grid, rev(expr_evaluated[lgl_atomic]))
   part2 <- do.call(combine_df, expr_evaluated[!lgl_atomic])
 
   ndf  <- combine_df(part1, part2)

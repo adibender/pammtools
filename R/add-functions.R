@@ -63,36 +63,43 @@ add_term <- function(
     se <- unname(sqrt(rowSums( (X %*% cov.coefs) * X )))
     newdata <- newdata %>%
       mutate(
-        ci_lower = .data$fit - se_mult * se,
-        ci_upper = .data$fit + se_mult * se)
+        ci_lower = .data[["fit"]] - se_mult * se,
+        ci_upper = .data[["fit"]] + se_mult * se)
   }
 
   return(newdata)
 
 }
 
+#' Create model matrix from model object
+#' @param object a model object
 make_X <- function(object, ...) {
 
   UseMethod("make_X", object)
 
 }
 
+#' @inherit make_X
 make_X.default <- function(object, newdata, ...) {
 
   X <- model.matrix(object$formula[-2], data = newdata, ...)
 
 }
 
+#' @inherit make_X
+#' @keywords internal
 make_X.gam <- function(object, newdata, ...) {
 
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
 
 }
 
+#' @inherit make_X
+#' @keywords internal
 make_X.scam <- function(object, newdata, ...) {
-  
+
   X <- predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
-  
+
 }
 
 prep_X <- function(object, newdata, reference = NULL, ...) {
@@ -258,7 +265,7 @@ get_hazard.default <- function(
       add_ci(object, X, type = type, ci_type = ci_type, se_mult = se_mult, ...)
   }
   if (type == "response") {
-    newdata <- newdata %>% mutate(hazard = exp(.data$hazard))
+    newdata <- newdata %>% mutate(hazard = exp(.data[["hazard"]]))
   }
 
   newdata %>% arrange(.data[[time_var]], .by_group = TRUE)
@@ -329,7 +336,7 @@ get_cumu_hazard <- function(
 
   interval_length <- sym(interval_length)
 
-  mutate_args  <- list(cumu_hazard = quo(cumsum(.data$hazard *
+  mutate_args  <- list(cumu_hazard = quo(cumsum(.data[["hazard"]] *
     (!!interval_length))))
   haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
     ~ grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
@@ -343,8 +350,8 @@ get_cumu_hazard <- function(
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
           append(list(
-            cumu_lower = quo(cumsum(.data$ci_lower * (!!interval_length))),
-            cumu_upper = quo(cumsum(.data$ci_upper * (!!interval_length)))))
+            cumu_lower = quo(cumsum(.data[["ci_lower"]] * (!!interval_length))),
+            cumu_upper = quo(cumsum(.data[["ci_upper"]] * (!!interval_length)))))
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -443,7 +450,7 @@ get_surv_prob <- function(
 
   interval_length <- sym(interval_length)
 
-  mutate_args  <- list(surv_prob = quo(exp(-cumsum(.data$hazard *
+  mutate_args  <- list(surv_prob = quo(exp(-cumsum(.data[["hazard"]] *
     (!!interval_length)))))
   haz_vars_in_data <- map(c("hazard", "se", "ci_lower", "ci_upper"),
     ~grep(.x, colnames(newdata), value = TRUE, fixed = TRUE)) %>% flatten_chr()
@@ -457,8 +464,8 @@ get_surv_prob <- function(
       if (ci_type == "default") {
         mutate_args <- mutate_args %>%
           append(list(
-            surv_upper = quo(exp(-cumsum(.data$ci_lower * (!!interval_length)))),
-            surv_lower = quo(exp(-cumsum(.data$ci_upper * (!!interval_length))))))
+            surv_upper = quo(exp(-cumsum(.data[["ci_lower"]] * (!!interval_length)))),
+            surv_lower = quo(exp(-cumsum(.data[["ci_upper"]] * (!!interval_length))))))
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -512,16 +519,16 @@ add_ci <- function(
   if (type == "link") {
     newdata <- newdata %>%
       mutate(
-        ci_lower = .data$hazard - se_mult * .data$se,
-        ci_upper = .data$hazard + se_mult * .data$se)
+        ci_lower = .data[["hazard"]] - se_mult * .data[["se"]],
+        ci_upper = .data[["hazard"]] + se_mult * .data[["se"]])
   }
 
   if (type != "link") {
     if (ci_type == "default") {
       newdata <- newdata %>%
         mutate(
-          ci_lower = exp(.data$hazard - se_mult * .data$se),
-          ci_upper = exp(.data$hazard + se_mult * .data$se))
+          ci_lower = exp(.data[["hazard"]] - se_mult * .data[["se"]]),
+          ci_upper = exp(.data[["hazard"]] + se_mult * .data[["se"]]))
     } else {
       if (ci_type == "delta") {
         newdata <- split(newdata, group_indices(newdata)) %>%
@@ -545,8 +552,8 @@ add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (Jacobi %*% V) * Jacobi )),
-      ci_lower = exp(.data$hazard) - .data$se * se_mult,
-      ci_upper = exp(.data$hazard) + .data$se * se_mult)
+      ci_lower = exp(.data[["hazard"]]) - .data[["se"]] * se_mult,
+      ci_upper = exp(.data[["hazard"]]) + .data[["se"]] * se_mult)
 
 }
 
@@ -560,8 +567,8 @@ add_delta_ci_cumu <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (LHS %*% V) * LHS )),
-      cumu_lower = cumsum(.data$intlen * .data$hazard) - .data$se * se_mult,
-      cumu_upper = cumsum(.data$intlen * .data$hazard) + .data$se * se_mult)
+      cumu_lower = cumsum(.data[["intlen"]] * .data[["hazard"]]) - .data[["se"]] * se_mult,
+      cumu_upper = cumsum(.data[["intlen"]] * .data[["hazard"]]) + .data[["se"]] * se_mult)
 
 }
 
@@ -576,8 +583,8 @@ add_delta_ci_surv <- function(newdata, object, se_mult = 2, ...) {
   newdata %>%
     mutate(
       se       = sqrt(rowSums( (LHS %*% V) * LHS)),
-      surv_lower = exp(-cumsum(.data$hazard * .data$intlen)) - .data$se * se_mult,
-      surv_upper = exp(-cumsum(.data$hazard * .data$intlen)) + .data$se * se_mult)
+      surv_lower = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) - .data[["se"]] * se_mult,
+      surv_upper = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) + .data[["se"]] * se_mult)
 
 }
 
@@ -768,7 +775,7 @@ get_trans_prob <- function(
     tend = "tend",
     cumu_hazard = "cumu_hazard",
     ...) {
-  
+
   # interval_length
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
@@ -782,49 +789,49 @@ get_trans_prob <- function(
   assert_character(cumu_hazard)
   assert_subset(cumu_hazard, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  
+
   # assert_class(object, classes = "glm")
-  
+
   interval_length <- sym(interval_length)
   transition <- sym(transition)
-  
+
   # include from and to, to obtain transition probability in multidim array
-  newdata <- newdata %>% 
+  newdata <- newdata %>%
     mutate(from = as.numeric(gsub("->.*", "", !!transition))
            , to = as.numeric(gsub(".*->", "", !!transition)))
-  
+
   # get unique transitions to build transition matrix
   unique_transition <- data.frame(unique(newdata %>% select(!!transition, from, to)))
   # get unique time points
-  unique_tend <- data.frame(unique(newdata %>% 
-                                     ungroup(!!transition) %>% 
+  unique_tend <- data.frame(unique(newdata %>%
+                                     ungroup(!!transition) %>%
                                      select(!!tend)))
-  
+
   # transition matrix
   m <- sapply(unique_transition[,c(2,3)], max) + 1 #transition starts at 0, integer of matrix at 1
-  M <- array(0, dim=c(max(m), max(m), nrow(unique_transition))) 
-  
-  
+  M <- array(0, dim=c(max(m), max(m), nrow(unique_transition)))
+
+
   # create transition matrices to be used at every time point,
   # multiply matrices with "scalar" alpha_ij_k which is the delta cumu hazard at time t_k for transition i->j
-  
+
   for (iter in 1:nrow(unique_transition)){
     M[unique_transition$from[iter] + 1, unique_transition$to[iter] + 1,iter] <- 1
     M[unique_transition$from[iter] + 1, unique_transition$from[iter] + 1,iter] <- -1
   }
-  
+
   # add cumu hazards to dataset
-  newdata <- newdata %>% 
+  newdata <- newdata %>%
     # group_by(!!transition) %>%
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
-  
+
   # create dA array, to calculate transition probabilities
   alpha <- array(rep(0, nrow(unique_tend)*nrow(unique_transition)), dim=c(nrow(unique_tend), nrow(unique_transition)))
   I <- array(rep(diag(max(m)), nrow(unique_tend))
              , dim=c( max(m), max(m), nrow(unique_tend)))
   A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
   cum_A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
-  
+
   # calculate differences in hazards
   alpha <- sapply(1:nrow(unique_transition), function(iter){
     val <- newdata %>% ungroup() %>% filter(transition == unique_transition[iter,1]) %>% arrange(tend)
@@ -835,10 +842,10 @@ get_trans_prob <- function(
       A[,,t] <- A[,,t] + M[,,trans] * alpha[t, trans]
     }
   }
-  
+
   # prepare transition probabilities
   A <- I + A
-  
+
   for (iter in 1:nrow(unique_tend)) {
     if (iter == 1) {
       cum_A[,,iter] = A[,,iter]
@@ -846,21 +853,21 @@ get_trans_prob <- function(
       cum_A[,,iter] = round(cum_A[,,iter-1] %*% A[,,iter],10) #use matrix multiplikation
     }
   }
-  
+
   # transform array so that transition probability can be joined via tend and transition
   tmp <- cbind(unique_tend
                , sapply(1:nrow(unique_transition), function(row) cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]))
   colnames(tmp) <- c("tend", as.character(unique_transition$transition))
   trans_prob_df <- tmp %>%
     pivot_longer(cols = c(as.character(unique_transition$transition)), names_to = "transition", values_to = "trans_prob")
-  
+
   # join probabilities and return matrix
   newdata <- newdata %>%
     left_join(trans_prob_df, by=c("tend", "transition")) %>%
     select(-delta_cumu_hazard, -from, -to)
-  
+
   return(newdata)
-  
+
 }
 
 #' Add transition probabilities
@@ -868,15 +875,15 @@ get_trans_prob <- function(
 add_trans_prob <- function(
     newdata
     , object
-    , overwrite       = FALSE 
+    , overwrite       = FALSE
     , alpha           = 0.05
     , n_sim           = 100L
     , time_var        = NULL
     , interval_length = "intlen",
     ...
 ) {
-  
-  
+
+
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {
       stop("Data set already contains 'trans_prob' column.
@@ -891,69 +898,69 @@ add_trans_prob <- function(
       names(newdata))
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
-  
+
   # extract to simulate ci
   coefs         <- coef(object)
   V             <- object$Vp
   sim_coef_mat  <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
-  
-  
+
+
   newdata <- newdata %>% add_cumu_hazard(object)
-  
+
   old_groups <- dplyr::groups(newdata)
   res_data <- newdata %>% ungroup(transition)
-  out_data <- group_split(res_data) |> 
-    map(res_data, .f = ~ group_by(.x, transition))|> 
+  out_data <- group_split(res_data) |>
+    map(res_data, .f = ~ group_by(.x, transition))|>
     map(res_data, .f = ~ get_trans_prob(.x)) |>
     map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
     bind_rows()
-  
+
   return(out_data)
-  
+
 }
 
 #' helper function for add_trans_ci
 #' @keywords internal
 get_sim_cumu <- function(newdata, ...) {
-  
+
   newdata$cumu_hazard <- cumsum(newdata$intlen * newdata$hazard)
-  
+
   newdata
-  
+
 }
 
 #' Add transition probabilities confidence intervals
 #' @export
 add_trans_ci <- function(newdata, object, n_sim=100L, alpha=0.05, ...) {
-  
+
   X             <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   coefs         <- coef(object)
   V             <- object$Vp
-  
+
   # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
   groups_array <- group_indices(newdata)
   groups_trans <- newdata %>% ungroup(transition) %>% group_indices()
-  
+
   sim_coef_mat <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)
     exp(X %*% z))
-  
+
   # create list with replicated newdata
   nlst <- as.list(replicate(n_sim, newdata[,c("tend", "transition", "intlen")], simplify=F))
-  
+
   # add cumu-hazard in each element and calculate trans_prob with perturbed hazards
   nlst <- lapply(1:n_sim, function(i) {
     nlst[[i]] <- cbind(nlst[[i]], hazard = sim_fit_mat[, i]) # add hazard
     # split by group and calculate cumu hazard
     nlst[[i]] <- split(nlst[[i]], groups_array) %>% map_dfr(get_sim_cumu)
     nlst[[i]] <- split(nlst[[i]], groups_trans) %>% map_dfr(get_trans_prob)
-    
+
     nlst[[i]]
   })
-  
+
   sim_trans_probs <- do.call(cbind, lapply(nlst, function(df) df$trans_prob))
   newdata$trans_lower <- apply(sim_trans_probs, 1, quantile, probs = alpha / 2)
   newdata$trans_upper <- apply(sim_trans_probs, 1, quantile, probs = 1 - alpha / 2)
-  
+
   newdata
 }

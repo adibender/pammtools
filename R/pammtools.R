@@ -38,7 +38,8 @@
 #' }
 #'
 #' @name pammtools
-#' @docType package
+#' @keywords internal
+"_PACKAGE"
 #' @references
 #' Bender, Andreas, Andreas Groll, and Fabian Scheipl. 2018.
 #' “A Generalized Additive Model Approach to Time-to-Event Analysis”
