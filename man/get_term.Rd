@@ -14,13 +14,6 @@ first row will be used.}
 
 \item{term}{The (non-linear) model term of interest.}
 
-\item{n}{Specify the output sequence either by supplying the
-length of the sequence with \code{n}, or the spacing between value
-with \code{by}. Specifying both is an error.
-
-I recommend that you name these arguments in order to make it clear to
-the reader.}
-
 \item{...}{Further arguments passed to \code{\link{seq_range}}.}
 }
 \description{
