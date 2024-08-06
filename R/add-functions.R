@@ -876,6 +876,7 @@ add_trans_prob <- function(
     newdata
     , object
     , overwrite       = FALSE
+    , ci              = FALSE
     , alpha           = 0.05
     , n_sim           = 100L
     , time_var        = NULL
@@ -892,20 +893,23 @@ add_trans_prob <- function(
   } else {
     rm.vars <- intersect(
       c("trans_prob"
-        # , "surv_lower" # not yet implemented
-        # , "surv_upper" # not yet implemented
+        , "trans_lower" 
+        , "trans_upper"
       ),
       names(newdata))
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  # extract to simulate ci
-  coefs         <- coef(object)
-  V             <- object$Vp
-  sim_coef_mat  <- mvtnorm::rmvnorm(n_sim, mean = coefs, sigma = V)
+  # add confidence intervals if wanted
+  if (ci) {
+    newdata <- newdata |> 
+      add_trans_ci(object) |>
+      add_cumu_hazard(object)
+  } else {
+    newdata <- newdata |> 
+      add_cumu_hazard(object)
+  }
 
-
-  newdata <- newdata %>% add_cumu_hazard(object)
 
   old_groups <- dplyr::groups(newdata)
   res_data <- newdata %>% ungroup(transition)
@@ -964,3 +968,5 @@ add_trans_ci <- function(newdata, object, n_sim=100L, alpha=0.05, ...) {
 
   newdata
 }
+
+
