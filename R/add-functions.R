@@ -904,10 +904,10 @@ add_trans_prob <- function(
   if (ci) {
     newdata <- newdata |> 
       add_trans_ci(object) |>
-      add_cumu_hazard(object)
+      add_cumu_hazard(object, overwrite = T)
   } else {
     newdata <- newdata |> 
-      add_cumu_hazard(object)
+      add_cumu_hazard(object, overwrite = T)
   }
 
 
