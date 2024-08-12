@@ -150,9 +150,7 @@ test_that("Trafo works for multi-state data without recurrent events", {
 
   test_df <- test_df %>% add_counterfactual_transitions()
 
-  print(test_df)
-
-  # CALENDAR timescale
+   # CALENDAR timescale
   cal_df <- as_ped(
     data       = test_df,
     formula    = Surv(tstart, tstop, status)~ .,
@@ -160,9 +158,7 @@ test_that("Trafo works for multi-state data without recurrent events", {
     id         = "id",
     timescale  = "calendar")
 
-  print(cal_df)
-
-  # according to code: order by transition -> id -> tstart
+   # according to code: order by transition -> id -> tstart
   expect_data_frame(cal_df, nrows = 7L, ncols = 10L)
   expect_identical(cal_df$transition,
     as.factor(c("1->2", "1->2","1->2","1->3", "1->3","1->3","2->3")))
