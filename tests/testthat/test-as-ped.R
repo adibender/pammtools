@@ -148,12 +148,12 @@ test_that("Trafo works for multi-state data without recurrent events", {
     transition   = c("1->3", "1->2","2->3"),
     age    = c(24, 36,36))
 
-  test_df <- test_df %>% filter(status == 1) %>% add_counterfactual_transitions()
+  test_df <- test_df %>% add_counterfactual_transitions()
 
   print(test_df)
 
   # CALENDAR timescale
-  cal_df <- as_ped_multistate(
+  cal_df <- as_ped(
     data       = test_df,
     formula    = Surv(tstart, tstop, status)~ .,
     transition = "transition",
@@ -168,7 +168,7 @@ test_that("Trafo works for multi-state data without recurrent events", {
     as.factor(c("1->2", "1->2","1->2","1->3", "1->3","1->3","2->3")))
   expect_identical(
     cal_df$id,
-    c(1, 1, 2, 1, 1, 2, 1))
+    c(1, 1, 2, 1, 1, 2, 2))
   expect_identical(
     round(cal_df$tstart, 1),
     c(0.0, 1.2, 0.0, 0.0, 1.2, 0.0, 1.2))
