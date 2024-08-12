@@ -131,6 +131,12 @@ where `make_newdata` creates a data set containing all covariates and all their 
 ggplot(ndf, aes(x=tend)) + 
   geom_line(aes(y=trans_prob, col=treat)) +
   geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=treat), alpha = .3) +
+  scale_color_manual(values = c("firebrick2"
+                                , "steelblue")
+                     )+
+  scale_fill_manual(values = c("firebrick2"
+                                , "steelblue")
+                     )+
   facet_wrap(~transition) +
   xlim(c(0, 4000)) +
   ylim(c(0,1))+
