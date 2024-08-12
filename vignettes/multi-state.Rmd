@@ -84,7 +84,7 @@ prothr <- prothr |>
   filter(tstart != tstop) |>
   select(-trans)
 
-ped <- as_ped_multistate(
+ped <- as_ped(
   data       = prothr,
   formula    = Surv(tstart, tstop, status)~ .,
   transition = "transition",

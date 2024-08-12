@@ -15,6 +15,7 @@ library(mvna)
 # library(dynpred)
 library(effects)
 library(tidyr)
+library(etm)
 
 devtools::install("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
 
@@ -24,9 +25,9 @@ devtools::install("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammt
 # code from mstate documentation
 data(prothr)
 tmat <- attr(prothr, "trans")
-pr0 <- subset(prothr, treat=="Placebo")
+pr0 <- subset(prothr, treat=="Placebo") |> filter(Tstart != Tstop)
 attr(pr0, "trans") <- tmat
-pr1 <- subset(prothr, treat=="Prednisone")
+pr1 <- subset(prothr, treat=="Prednisone") |> filter(Tstart != Tstop)
 attr(pr1, "trans") <- tmat
 c0 <- coxph(Surv(Tstart, Tstop, status) ~ strata(trans), data=pr0)
 c1 <- coxph(Surv(Tstart, Tstop, status) ~ strata(trans), data=pr1)
@@ -37,10 +38,10 @@ msf1 <- msfit(c1, trans=tmat)
 
 # Comparison as in Figure 2 of Titman (2015)
 # Aalen-Johansen
-pt0 <- probtrans(msf0, predt=0)[[2]] # changed predt from 1000 to 0
+pt0 <- probtrans(msf0, predt=0)[[1]] # changed predt from 1000 to 0
 pt1 <- probtrans(msf1, predt=0)[[2]] # changed predt from 1000 to 0
 par(mfrow=c(1,2))
-plot(pt0$time, pt0$pstate1, type="s", lwd=2, xlim=c(0,4000), ylim=c(0,1),
+plot(pt0$time, pt0$pstate2, type="s", lwd=2, xlim=c(0,4000), ylim=c(0,1),
      xlab="Time since randomisation (days)", ylab="Probability")
 lines(pt1$time, pt1$pstate1, type="s", lwd=2, lty=3)
 legend("topright", c("Placebo", "Prednisone"), lwd=2, lty=1:2, bty="n")
@@ -131,6 +132,7 @@ if (require(lattice)){
 }
 # differentiate between placebo and not
 my.data.placebo <- my.data %>% filter(treat=="Placebo")
+my.data.prednisone <- my.data %>% filter(treat=="Prednisone")
 table(my.data.placebo$from, my.data.placebo$to)
 
 my.nelaal <- mvna(my.data.placebo, c("0", "1", "2"), tra, "cens")
@@ -143,11 +145,23 @@ if (require(lattice)){
          # , ylim=c(0,10)
   )
 }
+my.nelaal <- mvna(my.data.prednisone, c("0", "1", "2"), tra, "cens")
+if (require(lattice)){
+  xyplot(my.nelaal
+         , strip=strip.custom(bg="white")
+         , ylab="Cumulative Hazard"
+         , lwd=2
+         # , xlim=c(0,5)
+         # , ylim=c(0,10)
+  )
+}
 
 
 # estimate transition probabilites
-etm.prothr <- etm(my.data, c("0", "1", "2"), tra, "cens", s = 0)
+etm.prothr.placebo <- etm(my.data.placebo, c("0", "1", "2"), tra, "cens", s = 0)
+etm.prothr.prednisone <- etm(my.data.prednisone, c("0", "1", "2"), tra, "cens", s = 0)
 
+etm.prothr <- etm.prothr.placebo
 par(mfrow=c(2,2))
 plot(etm.prothr, tr.choice = "0 1", conf.int = TRUE,
      lwd = 2, legend = FALSE, ylim = c(0, 1),
@@ -170,16 +184,43 @@ plot(etm.prothr, tr.choice = "1 2", conf.int = TRUE,
      ci.fun = "cloglog")
 par(mfrow=c(1,1))
 
+etm.prothr <- etm.prothr.prednisone
+par(mfrow=c(2,2))
+plot(etm.prothr, tr.choice = "0 1", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "0 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 0", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+
+plot(etm.prothr, tr.choice = "1 2", conf.int = TRUE,
+     lwd = 2, legend = FALSE, ylim = c(0, 1),
+     xlim = c(0, 4000), xlab = "Days",
+     ci.fun = "cloglog")
+par(mfrow=c(1,1))
+
+# data already contains all possible transitions,
+# no need for add_counterfactual_transition
 data <- prothr %>% 
+  select(-trans) %>%
   rename(tstart = Tstart, tstop = Tstop) %>%
   mutate(transition = paste0(from, "->", to),
-         time = (tstop - tstart) /365.25)
+         time = (tstop - tstart) /365.25) |>
+  filter(tstart != tstop)
 
 # # count number of transitions
 # test <- data %>% filter(status == 1)
 # table(test$transition)
 
-my.data <- data %>% add_counterfactual_transitions()
+# my.data <- data %>% add_counterfactual_transitions() %>% distinct()
 dim(my.data)
 
 head(my.data)
@@ -195,6 +236,7 @@ cal.my.data <- as_ped_multistate(
   timescale  = "calendar", 
   tdc_specials="concurrent"
   )
+
 
 ctrl <- gam.control(trace = TRUE)
 pam <- mgcv::gam(ped_status ~ s(tend, by=as.factor(transition)) 
@@ -214,8 +256,10 @@ new_pam <- make_newdata(cal.my.data
                         , treat = unique(treat)
 ) %>% 
   group_by(transition, treat) %>% 
-  add_cumu_hazard(pam) %>%
-  add_hazard(pam)
+  add_cumu_hazard(pam) 
+
+%>%
+  add_trans_prob(pam)
 
 # new_haz <- make_newdata(cal.my.data
 #                         , tend = unique(tend)
@@ -235,11 +279,22 @@ test_msm <- group_split(res_msm) |>
   map(res_msm, .f = ~ group_by(.x, !!!old_groups)) |>
   bind_rows()
 
+
+# alternative without trans prob
+test_msm <- new_pam
+
 head(test_msm)
 head(mstate_dat)
 
 joined_test_mstate <- left_join(test_msm, mstate_dat, by=c('tend' = 'time', 'transition', 'treat')) %>%
-  select(tend, treat, transition, cumu_hazard, cumu_lower, cumu_upper, trans_prob, Haz) %>%
+  select(tend
+         , treat
+         , transition
+         , cumu_hazard
+         , cumu_lower
+         , cumu_upper
+         # , trans_prob
+         , Haz) %>%
   filter(!is.na(Haz))
 
 # joined_haz_mstate <- left_join(new_haz, mstate_dat, by=c('tend' = 'time', 'transition', 'treat')) %>%
@@ -257,7 +312,7 @@ table(joined_test_mstate$transition)
 # plot transitions
 ggplot(test_msm, aes(x=tend, y=trans_prob)) + 
   geom_line(aes(col=as.factor(treat))) + 
-  facet_wrap(~transition, ncol = 4, labeller = label_both) +
+  facet_wrap(~transition, ncol = 2, labeller = label_both) +
   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
   ylim(c(0,0.8)) +
@@ -317,7 +372,6 @@ ggsave("tmp/example/hazards_comparison_cox_mstate_recurrent.png"
        , units = "cm"
 )
 dev.off()
-
 
 # ---------------------------------------------------------------------------- #
 #
