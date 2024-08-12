@@ -48,21 +48,13 @@ library(ggplot2)
 library(pammtools)
 library(purrr)
 library(mstate)
+library(checkmate)
+library(tidyverse)
+library(dplyr)
 
 data(prothr, package = "mstate")
 prothr |> filter(id == 46) |> knitr::kable() # example patients
 ```
-
-```{r, echo = FALSE}
-data("prothr", package = "mstate")
-prothr <- prothr |> 
-  mutate(transition = as.factor(paste0(from, "->", to))
-         , treat = as.factor(treat)) |>
-  rename(tstart = Tstart, tstop = Tstop) |>
-  filter(tstart != tstop) |>
-  select(-trans)
-```
-
 In general, one has to follow three steps to derive transition probabilities from multi-state survival data. 
 - First, we need to transform the survival data `prothr` into piecewise exponential data. 
 - Second, we need to estimate the log hazard structure using PAM objects. 
@@ -80,9 +72,17 @@ library(checkmate)
 library(tidyverse)
 library(dplyr)
 ```
-```{r, echo = TRUE, dependson=c("lib-ms-pammtools")}
+```{r ms-prothr-ped, echo = TRUE, dependson=c("lib-ms-pammtools")}
 # not necessary, prothr already contains all possible transitions
 # my.prothr <- prothr |> add_counterfactual_transitions() # add possible transitions
+
+data("prothr", package = "mstate")
+prothr <- prothr |> 
+  mutate(transition = as.factor(paste0(from, "->", to))
+         , treat = as.factor(treat)) |>
+  rename(tstart = Tstart, tstop = Tstop) |>
+  filter(tstart != tstop) |>
+  select(-trans)
 
 ped <- as_ped_multistate(
   data       = prothr,
@@ -98,8 +98,8 @@ where `add_counterfactual_transitions` is a helper function, which adds all poss
 ## Baseline Multi-State Model
 
 Estimating the log hazard structure using PAM objects, we can use
-```{r echo = TRUE}
-pam <- pamm(ped_status ~ s(tend, by=transition) + transition * treat, data = ped)
+```{r ms-prothr-pam, echo = TRUE, dependson=c("ms-prothr-ped")}
+# pam <- pamm(ped_status ~ s(tend, by=transition) + transition * treat, data = ped)
 pam <- bam(ped_status ~ s(tend, by=transition) + transition * treat
            , data = ped
            , family = poisson()
@@ -113,7 +113,7 @@ summary(pam)
 ## Post-processing, i.e. plotting the transition probabilities
 
 Post-processing the data to include all relevant objects of interest in our data set, we can use 
-```{r, echo = TRUE, warning = FALSE, dependson=c("lib-ms-pammtools")}
+```{r ms-prothr-ndf, echo = TRUE, warning = FALSE, dependson=c("lib-ms-pammtools", "ms-prothr-pam")}
 ndf <- make_newdata(ped, tend  = unique(tend), treat  = unique(treat), transition = unique(transition)) 
 ndf <- ndf  |>
   group_by(treat, transition) |>  # important!
@@ -130,7 +130,7 @@ where `make_newdata` creates a data set containing all covariates and all their 
 # visualization
 ggplot(ndf, aes(x=tend)) + 
   geom_line(aes(y=trans_prob, col=treat)) +
-  # geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=treat), alpha = .3) +
+  geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=treat), alpha = .3) +
   facet_wrap(~transition) +
   xlim(c(0, 4000)) +
   ylim(c(0,1))+
@@ -142,14 +142,12 @@ ggplot(ndf, aes(x=tend)) +
 
 ## Comparison of the results with Aalen-Johannsen estimator
 
-Comparing the ``pammtools`` resutls with the ``mastate`` results, we want to validate that the baselines are indeed correct. The following code shows the comparison between the ``mstate``.
+Comparing the ``pammtools`` results with the ``mstate`` results, we want to validate that the baselines are indeed correct. The following code shows the comparison between the ``mstate``.
 
 First, we compare the cumulative hazards
-```{r, echo = TRUE, warning = FALSE, dependson=c("lib-ms-pammtools")}
+```{r, echo = FALSE, warning = FALSE, dependson=c("lib-ms-pammtools", "ms-prothr-ndf")}
 # pammtools
-ndf <- ndf  |>
-  group_by(treat, transition) |>  # important!
-  add_cumu_hazard(pam, overwrite = T) |>
+ndf <- ndf |>
   mutate(package = "pammtools")
 ```
 ```{r prothr-prep-mstate, eval=TRUE, echo = FALSE, warning = FALSE, dependson=c("lib-ms-pammtools")}
@@ -208,90 +206,88 @@ long_haz_df <- rbind(long_mstate, long_msm) %>%
          )
 
 
-# estimate transition probabilites
-my.data <- prothr %>% 
-  mutate(from = from -1, to = to-1) %>%
-  rename(entry = Tstart, exit = Tstop) %>% 
-  arrange(id, entry, exit) %>% 
-  filter(!(entry == exit)) %>%
-  distinct()
+# compare transition probabilities
+alpha <- 0.05
 
-# build transition matrix for mvna
-tra <- matrix(FALSE, ncol = 3, nrow = 3)
-dimnames(tra) <- list(c("0", "1", "2"), c("0", "1", "2"))
-tra[1, 2:3] <- TRUE
-tra[2, c(1,3)] <- TRUE
+pt0 <- probtrans(msf0, predt=0) # changed predt from 1000 to 0
+pt1 <- probtrans(msf1, predt=0) # changed predt from 1000 to 0
 
-my.data0 <- my.data %>% filter(treat=="Placebo")
-my.data1 <- my.data %>% filter(treat=="Prednisone")
-etm.prothr0 <- etm(my.data0, c("0", "1", "2"), tra, "cens", s = 0)
-etm.prothr1 <- etm(my.data1, c("0", "1", "2"), tra, "cens", s = 0)
-mstate_trans_dat0 <- rbind(cbind(tend = etm.prothr0$time, trans_prob = etm.prothr0$est[1,2,], trans = 1)
-                          , tend = cbind(etm.prothr0$time, trans_prob = etm.prothr0$est[1,3,], trans = 2)
-                          , tend = cbind(etm.prothr0$time, trans_prob = etm.prothr0$est[2,1,], trans = 3)
-                          , tend = cbind(etm.prothr0$time, trans_prob = etm.prothr0$est[2,3,], trans = 4))
-  
-mstate_trans_dat0 <- data.frame(mstate_trans_dat0) |> mutate(transition = case_when(
-  trans == 1 ~ "1->2",
-  trans == 2 ~ "1->3",
-  trans == 3 ~ "2->1",
-  trans == 4 ~ "2->3",
-  .default = "cens"
-  )
-  , treat = "Placebo")
 
-mstate_trans_dat1 <- rbind(cbind(tend = etm.prothr1$time, trans_prob = etm.prothr1$est[1,2,], trans = 1)
-                          , tend = cbind(etm.prothr1$time, trans_prob = etm.prothr1$est[1,3,], trans = 2)
-                          , tend = cbind(etm.prothr1$time, trans_prob = etm.prothr1$est[2,1,], trans = 3)
-                          , tend = cbind(etm.prothr1$time, trans_prob = etm.prothr1$est[2,3,], trans = 4))
-  
-mstate_trans_dat1 <- data.frame(mstate_trans_dat1) |> mutate(transition = case_when(
-  trans == 1 ~ "1->2",
-  trans == 2 ~ "1->3",
-  trans == 3 ~ "2->1",
-  trans == 4 ~ "2->3",
-  .default = "cens"
-  )
-  , treat = "Prednisone")
+pt0_df_12 <- data.frame(cbind(tend = pt0[[1]]$time
+                              , trans_prob = pt0[[1]]$pstate2
+                              , trans_lower = pt0[[1]]$pstate2 - pt0[[1]]$se2 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt0[[1]]$pstate2 + pt0[[1]]$se2 * qnorm(1 - alpha / 2))
+                        ) %>%
+  mutate(transition = "1->2")
+pt0_df_13 <- data.frame(cbind(tend = pt0[[1]]$time
+                              , trans_prob = pt0[[1]]$pstate3
+                              , trans_lower = pt0[[1]]$pstate3 - pt0[[1]]$se3 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt0[[1]]$pstate3 + pt0[[1]]$se3 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "1->3")
+pt0_df_21 <- data.frame(cbind(tend = pt0[[2]]$time
+                              , trans_prob = pt0[[2]]$pstate1
+                              , trans_lower = pt0[[2]]$pstate1 - pt0[[2]]$se1 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt0[[2]]$pstate1 + pt0[[2]]$se1 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "2->1")
+pt0_df_23 <- data.frame(cbind(tend = pt0[[2]]$time
+                              , trans_prob = pt0[[2]]$pstate3
+                              , trans_lower = pt0[[2]]$pstate3 - pt0[[2]]$se3 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt0[[2]]$pstate3 + pt0[[2]]$se3 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "2->3")
 
-long_mstate_trans <- rbind(mstate_trans_dat0, mstate_trans_dat1) |> mutate(package = "mstate") |> select(-trans)
+pt0_df <- rbind(pt0_df_12, 
+                pt0_df_13,
+                pt0_df_21,
+                pt0_df_23) %>%
+  mutate(treat = "Placebo",
+         package = "mstate")
 
-# plot hazards
-long_msm_trans <- ndf %>% 
-  mutate(package = "pammtools") %>% 
-  select(tend, treat, transition, trans_prob, package)
+pt1_df_12 <- data.frame(cbind(tend = pt1[[1]]$time
+                              , trans_prob = pt1[[1]]$pstate2
+                              , trans_lower = pt1[[1]]$pstate2 - pt1[[1]]$se2 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt1[[1]]$pstate2 + pt1[[1]]$se2 * qnorm(1 - alpha / 2))
+                        ) %>%
+  mutate(transition = "1->2")
+pt1_df_13 <- data.frame(cbind(tend = pt1[[1]]$time
+                              , trans_prob = pt1[[1]]$pstate3
+                              , trans_lower = pt1[[1]]$pstate3 - pt1[[1]]$se3 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt1[[1]]$pstate3 + pt1[[1]]$se3 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "1->3")
+pt1_df_21 <- data.frame(cbind(tend = pt1[[2]]$time
+                              , trans_prob = pt1[[2]]$pstate1
+                              , trans_lower = pt1[[2]]$pstate1 - pt1[[2]]$se1 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt1[[2]]$pstate1 + pt1[[2]]$se1 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "2->1")
+pt1_df_23 <- data.frame(cbind(tend = pt1[[2]]$time
+                              , trans_prob = pt1[[2]]$pstate3
+                              , trans_lower = pt1[[2]]$pstate3 - pt1[[2]]$se3 * qnorm(1 - alpha / 2)
+                              , trans_upper = pt1[[2]]$pstate3 + pt1[[2]]$se3 * qnorm(1 - alpha / 2)
+                              )) %>%
+  mutate(transition = "2->3")
 
-long_trans_df <- rbind(long_mstate_trans, long_msm_trans)
+pt1_df <- rbind(pt1_df_12, 
+                pt1_df_13,
+                pt1_df_21,
+                pt1_df_23) %>%
+  mutate(treat = "Prednisone",
+         package = "mstate")
+
+pt_df_mstate <- rbind(pt0_df, pt1_df)
+
+pt_df_pamm <- ndf %>%
+  mutate(package = "pammtools") %>%
+  select(tend, treat, transition, trans_prob, trans_lower, trans_upper, package)
+
+pt_df <- rbind(pt_df_pamm, pt_df_mstate)
 ```
 
-```{r, eval=FALSE, echo = FALSE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
-# # plot transitions
-# ggplot(test_msm, aes(x=tend, y=trans_prob)) + 
-#   geom_line(aes(col=as.factor(treat))) + 
-#   facet_wrap(~transition, ncol = 2, labeller = label_both) +
-#   # scale_color_manual(values = c("#1f78b4", "#1f78b4", "#33a02c", "#33a02c"))+
-#   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +
-#   ylim(c(0,0.8)) +
-#   xlim(c(0, 4000)) +
-#   ylab("Transition Probability") +
-#   xlab("time") +
-#   theme_bw() 
 
-comparison_aaljoh <- ggplot(long_trans_df, aes(x=tend, y=trans_prob, col=treat, linetype = package)) + 
-  geom_line() +
-  facet_wrap(~transition, ncol = 4, labeller = label_both) +
-  scale_color_manual(values = c("firebrick2"
-                                , "steelblue")
-                     )+
-  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
-  ylab("Transition Probabilities") +
-  xlab("time in days") +
-  ylim(c(0,1)) +
-  scale_linetype_manual(values=c("dotted", "solid")) +
-  theme_bw()
 
-comparison_aaljoh
-```
 
 ```{r, eval=TRUE, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
 # # plot transitions
@@ -320,4 +316,74 @@ comparison_nelaal <- ggplot(long_haz_df, aes(x=tend, y=cumu_hazard, col=treat, l
   theme_bw()
 
 comparison_nelaal
+```
+Second, we compare the transition probabilities, which are calculated using the cumulative hazards
+```{r, eval=FALSE, echo = FALSE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
+comparison_aaljoh <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=treat, linetype = package)) + 
+  geom_line() +
+  # geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=treat), alpha = .3) +
+  facet_wrap(~transition, ncol = 4, labeller = label_both) +
+  scale_color_manual(values = c("firebrick2"
+                                , "steelblue")
+                     )+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
+  ylab("Transition Probabilities") +
+  xlab("time in days") +
+  ylim(c(0,1)) +
+  xlim(c(0, 4000)) +
+  scale_linetype_manual(values=c("dotted", "solid")) +
+  theme_bw()
+
+comparison_aaljoh
+```
+
+Third, we compare the width of the confidence bands
+```{r, eval=FALSE, echo = FALSE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
+comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(package, treat), linetype = package)) + 
+  geom_line() +
+  geom_ribbon(aes(ymin = trans_lower, ymax = trans_upper, fill=interaction(package, treat), alpha = package)) +
+  facet_wrap(~treat+transition, ncol = 4, labeller = label_both) +
+  scale_color_manual(values = c("mstate.Placebo" = "grey"
+                                ,"mstate.Prednisone" = "grey"
+                                , "pammtools.Placebo" = "firebrick2"
+                                , "pammtools.Prednisone" = "steelblue")
+                     )+
+  scale_fill_manual(values = c("mstate.Placebo" = "grey"
+                                ,"mstate.Prednisone" = "grey"
+                                , "pammtools.Placebo" = "firebrick2"
+                                , "pammtools.Prednisone" = "steelblue")
+                     )+
+  scale_alpha_manual(values = c("mstate" = 0.3, "pammtools" = 0.05))+
+  # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
+  ylab("Transition Probabilities") +
+  xlab("time in days") +
+  ylim(c(0,1)) +
+  xlim(c(0, 4000)) +
+  scale_linetype_manual(values=c("dotted", "solid")) +
+  theme_bw()+
+  guides(color = "none", fill = "none", alpha = "none", linetype = "none")
+
+comparison_aaljoh_ci
+```
+
+```{r, eval=TRUE, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
+comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(package, treat), linetype = package)) + 
+  geom_line(linetype = "solid") +
+  geom_line(aes(y=trans_lower), linetype = "dotted") +
+  geom_line(aes(y=trans_upper), linetype = "dotted") +
+  geom_ribbon(data = subset(pt_df, package == "mstate"), aes(ymin = trans_lower, ymax = trans_upper), fill = "grey", alpha = 0.3) +
+  facet_wrap(~treat+transition, ncol = 4, labeller = label_both) +
+  ylab("Transition Probabilities") +
+  xlab("time in days") +
+  ylim(c(0,1)) +
+  xlim(c(0, 4000)) +
+  scale_color_manual(values = c("mstate.Placebo" = "grey"
+                              ,"mstate.Prednisone" = "grey"
+                              , "pammtools.Placebo" = "firebrick2"
+                              , "pammtools.Prednisone" = "steelblue")
+                   )+
+  theme_bw()+
+  guides(color = "none", fill = "none", linetype = "none")
+
+comparison_aaljoh_ci
 ```
