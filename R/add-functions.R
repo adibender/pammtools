@@ -822,7 +822,7 @@ get_trans_prob <- function(
 
   # add cumu hazards to dataset
   newdata <- newdata %>%
-    # group_by(!!transition) %>%
+    group_by(!!transition) %>%
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
 
   # create dA array, to calculate transition probabilities
@@ -837,11 +837,15 @@ get_trans_prob <- function(
     val <- newdata %>% ungroup() %>% filter(transition == unique_transition[iter,1]) %>% arrange(tend)
     val$delta_cumu_hazard
   })
+  
   for (t in 1:nrow(unique_tend)) {
     for (trans in 1:nrow(unique_transition)){
       A[,,t] <- A[,,t] + M[,,trans] * alpha[t, trans]
     }
   }
+  
+  # # for debugging
+  # print(A[,,nrow(unique_tend)])
 
   # prepare transition probabilities
   A <- I + A
@@ -850,7 +854,7 @@ get_trans_prob <- function(
     if (iter == 1) {
       cum_A[,,iter] = A[,,iter]
     } else {
-      cum_A[,,iter] = round(cum_A[,,iter-1] %*% A[,,iter],10) #use matrix multiplikation
+      cum_A[,,iter] = cum_A[,,iter-1] %*% A[,,iter] #use matrix multiplikation
     }
   }
 
@@ -859,7 +863,8 @@ get_trans_prob <- function(
                , sapply(1:nrow(unique_transition), function(row) cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]))
   colnames(tmp) <- c("tend", as.character(unique_transition$transition))
   trans_prob_df <- tmp %>%
-    pivot_longer(cols = c(as.character(unique_transition$transition)), names_to = "transition", values_to = "trans_prob")
+    pivot_longer(cols = c(as.character(unique_transition$transition)), names_to = "transition", values_to = "trans_prob") %>%
+    mutate(trans_prob = pmin(pmax(trans_prob, 0), 1))
 
   # join probabilities and return matrix
   newdata <- newdata %>%
@@ -904,10 +909,10 @@ add_trans_prob <- function(
   if (ci) {
     newdata <- newdata |> 
       add_trans_ci(object) |>
-      add_cumu_hazard(object, overwrite = T)
+      add_cumu_hazard(object, overwrite = T, ci=F)
   } else {
     newdata <- newdata |> 
-      add_cumu_hazard(object, overwrite = T)
+      add_cumu_hazard(object, overwrite = T, ci=F)
   }
 
 
@@ -917,7 +922,8 @@ add_trans_prob <- function(
     map(res_data, .f = ~ group_by(.x, transition))|>
     map(res_data, .f = ~ get_trans_prob(.x)) |>
     map(res_data, .f = ~ group_by(.x, !!!old_groups)) |>
-    bind_rows()
+    bind_rows() |>
+    select(-cumu_hazard)
 
   return(out_data)
 
@@ -940,7 +946,7 @@ add_trans_ci <- function(newdata, object, n_sim=100L, alpha=0.05, ...) {
   X             <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   coefs         <- coef(object)
   V             <- object$Vp
-
+  
   # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
   groups_array <- group_indices(newdata)
   groups_trans <- newdata %>% ungroup(transition) %>% group_indices()
