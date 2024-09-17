@@ -20,8 +20,8 @@ get_cut.default <- function(
   event    = 1L,
   ...) {
 
+  outcome_vars <- get_lhs_vars(formula)
   if (is.null(cut)) {
-    outcome_vars <- get_lhs_vars(formula)
     if (length(outcome_vars) == 2) {
       cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
     } else {
