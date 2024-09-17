@@ -20,7 +20,7 @@ prothr_sub <- prothr %>% filter(Tstart != Tstop) %>% select(1:8) %>% group_by(tr
 prothr_sub
 ped_prothr <- as_ped_multistate(data = prothr_sub,
                      Surv(Tstart, Tstop, status) ~.,
-                     cut = seq(0,1000, by = 100),
+                     max_time = 1000,
                      transition = "trans",
                      timescale  = "calendar"
 ) %>%
@@ -59,3 +59,31 @@ get_cut.default(data, Surv(Tstart, Tstop, status) ~ . + trans)
 outcome_vars <- get_lhs_vars(Surv(Tstart, Tstop, status) ~ . + trans)
 event = 1L
 unique(data[[outcome_vars[2]]][1L * (data[[outcome_vars[3]]]) == event])
+
+# now fix max_time, throws error message if as_ped is used for big data set
+devtools::load_all()
+
+data("prothr", package = "mstate")
+prothr <- prothr %>% filter(Tstart != Tstop)
+
+ped_prothr <- as_ped(data = prothr_sub,
+                                Surv(Tstart, Tstop, status) ~.,
+                                max_time = 1000,
+                                transition = "trans",
+                                timescale  = "calendar"
+) %>%
+  select(1:9)
+ped_prothr
+# ==> works on small data set
+ped_prothr <- as_ped(data = prothr,
+                     Surv(Tstart, Tstop, status) ~.,
+                     max_time = 1000,
+                     transition = "trans",
+                     timescale  = "calendar"
+) %>%
+  select(1:9)
+ped_prothr
+
+max(unique(ped_prothr$tend))
+
+

@@ -101,6 +101,16 @@ split_data <- function(
 
 
   # Add variables for piece-wise exponential (additive) model
+  if(length(surv_vars) == 3) {
+    split_df  <- split_df %>%
+      mutate(
+        ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
+                            0L, .data$ped_status),
+        tstart     = pmin(.data$tstart, max(cut)),
+        ped_time   = pmin(.data$ped_time, max(cut)),
+        offset     = ifelse(.data$ped_time  == .data$tstart, -Inf, log(.data$ped_time - .data$tstart))) %>%
+      filter(!(.data$tstart == .data$ped_time))
+  } else {
   split_df  <- split_df %>%
     mutate(
       ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
@@ -108,6 +118,7 @@ split_data <- function(
       ped_time   = pmin(.data$ped_time, max(cut)),
       offset     = log(.data$ped_time - .data$tstart)) %>%
     filter(!(.data$tstart == .data$ped_time))
+  }
 
 
   ## combine data with general interval info
@@ -117,6 +128,7 @@ split_data <- function(
   } else {
     info_cut <- cut
   }
+  
   int_info <- int_info(info_cut)
   split_df <- left_join(split_df, int_info, by = c("tstart" = "tstart"))
 
@@ -208,8 +220,6 @@ split_data_multistate <- function(
   cuts <- get_cut(data_list, formula, cut = cut, max_time = max_time,
     event = event, timescale = timescale)
   
-  print(cuts)
-
   ## create argument list to be passed to split_data
   dots <- list(...)
   dots$multiple_id <- TRUE # possible in case of multi-state models with back transitions
