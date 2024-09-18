@@ -41,6 +41,8 @@ Config/Needs/website:
   eha,
   etm,
   scam,
+  msm,
+  mvna,
   TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true
