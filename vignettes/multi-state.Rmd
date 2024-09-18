@@ -1,5 +1,5 @@
 ---
-title: "Multi-State"
+title: "Multi-State Modelling"
 author: "Johannes Piller, Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -49,7 +49,6 @@ library(pammtools)
 library(purrr)
 library(mstate)
 library(checkmate)
-library(tidyverse)
 library(dplyr)
 
 data(prothr, package = "mstate")
@@ -66,11 +65,10 @@ Transforming the survival data `prothr` into piecewise exponential data, we can 
 ```{r lib-ms-pammtools, echo = FALSE}
 # load function as it is not yet included in the package
 # devtools::load_all("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
+# devtools::install("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools")
 # source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/R/add-functions.R")
 # source("C:/Users/ra63liw/Documents/98_git/pammtools-multi-state/pammtools/tmp/add_transition_probabilities.R")
 library(checkmate)
-library(tidyverse)
-library(dplyr)
 ```
 ```{r ms-prothr-ped, echo = TRUE, dependson=c("lib-ms-pammtools")}
 # not necessary, prothr already contains all possible transitions
