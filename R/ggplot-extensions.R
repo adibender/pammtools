@@ -4,15 +4,15 @@
 #'
 #' \code{geom_stepribbon} is an extension of the \code{geom_ribbon}, and
 #' is optimized for Kaplan-Meier plots with pointwise confidence intervals
-#' or a confidence band. The default \code{direction}-argument \code{"hv"} is
-#' appropriate for right-continuous step functions like the hazard rates etc
+#' or a confidence band. The default \code{direction}-argument \code{"hv"} is 
+#' appropriate for right-continuous step functions like the hazard rates etc 
 #' returned by \code{pammtools}.
 #'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
 #'   inherits from \code{geom_ribbon}.
-#' @inheritParams ggplot2::geom_ribbon
-#' @inheritParams ggplot2::geom_step
+#' @inheritParams ggplot2:::geom_ribbon
+#' @inheritParams ggplot2:::geom_step
 #' @examples
 #' library(ggplot2)
 #' huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
@@ -25,15 +25,15 @@
 #' @importFrom ggplot2 layer GeomRibbon
 #' @export
 geom_stepribbon <- function(
-  mapping     = NULL,
-  data        = NULL,
-  stat        = "identity",
-  position    = "identity",
-  direction   = "hv",
-  na.rm       = FALSE,
-  show.legend = NA,
-  inherit.aes = TRUE, ...) {
-
+    mapping     = NULL,
+    data        = NULL,
+    stat        = "identity",
+    position    = "identity",
+    direction   = "hv", 
+    na.rm       = FALSE,
+    show.legend = NA,
+    inherit.aes = TRUE, ...) {
+  
   layer(
     data        = data,
     mapping     = mapping,
@@ -44,7 +44,7 @@ geom_stepribbon <- function(
     inherit.aes = inherit.aes,
     params      = list(na.rm = na.rm, direction = direction, ... )
   )
-
+  
 }
 
 #' @rdname geom_stepribbon
@@ -54,19 +54,19 @@ geom_stepribbon <- function(
 #' @export
 GeomStepribbon <- ggproto(
   "GeomStepribbon", GeomRibbon,
-
+  
   extra_params = c("na.rm"),
-
+  
   draw_group = function(data, panel_scales, coord, na.rm = FALSE, direction = "hv") {
-
+    
     if (na.rm) data <- data[complete.cases(data[c("x", "ymin", "ymax")]), ]
     data   <- rbind(data, data)
     data   <- data[order(data$x), ]
-    data   <- ggplot2_stairstep(data[complete.cases(data["x"]), ],
-                               direction = direction)
+    data   <- ggplot2_stairstep(data[complete.cases(data["x"]), ], 
+                                direction = direction)
     GeomRibbon$draw_group(data, panel_scales, coord, na.rm = na.rm)
   }
-
+  
 )
 
 
