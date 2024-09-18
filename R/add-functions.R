@@ -73,6 +73,7 @@ add_term <- function(
 
 #' Create model matrix from model object
 #' @param object a model object
+#' @keywords internal
 make_X <- function(object, ...) {
 
   UseMethod("make_X", object)
@@ -80,6 +81,7 @@ make_X <- function(object, ...) {
 }
 
 #' @inherit make_X
+#' @keywords internal
 make_X.default <- function(object, newdata, ...) {
 
   X <- model.matrix(object$formula[-2], data = newdata, ...)
@@ -940,7 +942,7 @@ get_sim_cumu <- function(newdata, ...) {
 }
 
 #' Add transition probabilities confidence intervals
-#' @export
+#' @keywords internal
 add_trans_ci <- function(newdata, object, n_sim=100L, alpha=0.05, ...) {
 
   X             <- predict.gam(object, newdata = newdata, type = "lpmatrix")

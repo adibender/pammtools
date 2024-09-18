@@ -19,6 +19,7 @@ reference:
       - ped_info
       - make_newdata
       - get_intervals
+      - add_counterfactual_transitions
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
     e.g., smooth effects for plotting"

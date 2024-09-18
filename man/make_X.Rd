@@ -12,3 +12,4 @@ make_X(object, ...)
 \description{
 Create model matrix from model object
 }
+\keyword{internal}

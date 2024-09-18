@@ -9,3 +9,4 @@ add_trans_ci(newdata, object, n_sim = 100L, alpha = 0.05, ...)
 \description{
 Add transition probabilities confidence intervals
 }
+\keyword{internal}

@@ -8,6 +8,7 @@ warn_about_new_time_points <- function(object, newdata, ...) {
 }
 
 #' @inherit warn_about_new_time_points
+#' @keywords internal
 warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
   is_pam <- (inherits(object, "gam" ) | inherits( object, "scam"))
