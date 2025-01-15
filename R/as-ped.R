@@ -372,7 +372,7 @@ as_ped_multistate <- function(
   dots$transition <- transition
   dots$min_events <- min_events
   dots$timescale  <- timescale
-
+  
   ped <- do.call(split_data_multistate, dots)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
 

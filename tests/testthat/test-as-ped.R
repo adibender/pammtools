@@ -134,3 +134,55 @@ test_that("Trafo works for recurrent events data", {
   )
 
 })
+
+
+test_that("Trafo works for multi-state data without recurrent events", {
+
+  test_df <- data.frame(
+    id     = c(1, 2,2),
+    tstart = c(0, 0,1.2),
+    tstop  = c(3, 1.2,3),
+    status = c(1, 1,1),
+    from = c(1, 1,2),
+    to = c(3, 2,3),
+    transition   = c("1->3", "1->2","2->3"),
+    age    = c(24, 36,36))
+
+  test_df <- test_df %>% add_counterfactual_transitions()
+
+   # CALENDAR timescale
+  cal_df <- as_ped(
+    data       = test_df,
+    formula    = Surv(tstart, tstop, status)~ .,
+    transition = "transition",
+    id         = "id",
+    timescale  = "calendar")
+
+   # according to code: order by transition -> id -> tstart
+  expect_data_frame(cal_df, nrows = 7L, ncols = 10L)
+  expect_identical(cal_df$transition,
+    as.factor(c("1->2", "1->2","1->2","1->3", "1->3","1->3","2->3")))
+  expect_identical(
+    cal_df$id,
+    c(1, 1, 2, 1, 1, 2, 2))
+  expect_identical(
+    round(cal_df$tstart, 1),
+    c(0.0, 1.2, 0.0, 0.0, 1.2, 0.0, 1.2))
+  expect_identical(
+    round(cal_df$tend, 1),
+    c(1.2, 3.0, 1.2, 1.2, 3.0, 1.2, 3.0))
+  expect_identical(
+    cal_df$ped_status,
+    c(0, 0, 1, 0, 1, 0, 1)
+  )
+  expect_identical(
+    cal_df$from,
+    c(1,1,1, 1,1,1, 2)
+  )
+  expect_identical(
+    cal_df$to,
+    c(2,2,2, 3,3,3, 3)
+  )
+
+  }
+)

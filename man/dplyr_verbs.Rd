@@ -97,10 +97,6 @@ the input. Weights are automatically standardised to sum to 1.}
 
 \item{.env}{DEPRECATED.}
 
-\item{y}{A pair of data frames, data frame extensions (e.g. a tibble), or
-lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
-more details.}
-
 \item{by}{A join specification created with \code{\link[dplyr:join_by]{join_by()}}, or a character
 vector of variables to join by.
 

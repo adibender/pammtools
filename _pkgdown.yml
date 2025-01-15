@@ -19,6 +19,7 @@ reference:
       - ped_info
       - make_newdata
       - get_intervals
+      - add_counterfactual_transitions
   - title: "Extract information from PAMMs"
     desc: "Functions that help extract information from fitted model objects,
     e.g., smooth effects for plotting"
@@ -38,6 +39,7 @@ reference:
       - add_hazard
       - add_surv_prob
       - add_cif
+      - add_trans_prob
   - title: "Convenience functions for visualization of model outputs."
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
@@ -88,6 +90,7 @@ articles:
     - convenience
     - competing-risks
     - recurrent-events
+    - multi-state
     - smj-tutorial
 
 navbar:
@@ -125,6 +128,8 @@ navbar:
       href: articles/competing-risks.html
     - text: Recurrent Events
       href: articles/recurrent-events.html
+    - text: Multi-State Modelling
+      href: articles/multi-state.html
     - text: 'Paper: A generalized additive model approach to time-to-event analysis'
       href: articles/smj-tutorial.html
   - text: News
