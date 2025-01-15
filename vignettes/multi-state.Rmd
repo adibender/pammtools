@@ -370,7 +370,7 @@ comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(
 comparison_aaljoh_ci
 ```
 
-```{r, eval=TRUE, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
+```{r, eval=TRUE, echo = FALSE, fig.width = 8, fig.height = 4, out.width = "600px", dependson=c("prothr-prep-mstate")}
 comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(package, treat), linetype = package)) + 
   geom_line(linetype = "solid") +
   geom_line(aes(y=trans_lower), linetype = "dotted") +
