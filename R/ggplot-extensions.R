@@ -11,8 +11,6 @@
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
 #'   inherits from \code{geom_ribbon}.
-#' @inheritParams ggplot2:::geom_ribbon
-#' @inheritParams ggplot2:::geom_step
 #' @examples
 #' library(ggplot2)
 #' huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))
@@ -23,6 +21,8 @@
 #'     geom_line(aes(y = level))
 #' @rdname geom_stepribbon
 #' @importFrom ggplot2 layer GeomRibbon
+#' @inheritParams ggplot2::geom_step
+#' @inheritParams ggplot2::geom_ribbon
 #' @export
 geom_stepribbon <- function(
   mapping     = NULL,

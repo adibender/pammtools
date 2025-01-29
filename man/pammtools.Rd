@@ -2,6 +2,7 @@
 % Please edit documentation in R/pammtools.R
 \docType{package}
 \name{pammtools}
+\alias{pammtools-package}
 \alias{pammtools}
 \title{pammtools: Piece-wise exponential Additive Mixed Modeling tools.}
 \description{
@@ -54,5 +55,28 @@ Biostatistics 20 (2): 315–31. https://doi.org/10.1093/biostatistics/kxy003.
 
 Bender, Andreas, and Fabian Scheipl. 2018.
 “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-ArXiv:1806.01042 \link{Stat}, June. https://arxiv.org/abs/1806.01042.
+ArXiv:1806.01042 Stat, June. https://arxiv.org/abs/1806.01042.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://adibender.github.io/pammtools/}
+  \item Report bugs at \url{https://github.com/adibender/pammtools/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Andreas Bender \email{andreas.bender@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-5628-8611}{ORCID})
+
+Authors:
+\itemize{
+  \item Fabian Scheipl \email{fabian.scheipl@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-8172-3603}{ORCID})
+  \item Philipp Kopper \email{philipp.kopper@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0002-5037-7135}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Lukas Burk \email{burk@leibniz-bips.de} (\href{https://orcid.org/0000-0001-7528-3795}{ORCID}) [contributor]
+}
+
 }
