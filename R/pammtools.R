@@ -50,6 +50,6 @@
 #'
 #' Bender, Andreas, and Fabian Scheipl. 2018.
 #' “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-#' ArXiv:1806.01042 [Stat], June. https://arxiv.org/abs/1806.01042.
+#' ArXiv:1806.01042 Stat, June. https://arxiv.org/abs/1806.01042.
 "_PACKAGE"
 NULL

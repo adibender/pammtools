@@ -71,26 +71,31 @@ add_term <- function(
 
 }
 
-#' Create design matrix from fitted model
+#' Create design matrix from a suitable object
 #'
 #' @keywords internal
+#' @param object A suitable object from which a design matrix can be generated.
+#' Often a model object.
 make_X <- function(object, ...) {
 
   UseMethod("make_X", object)
 
 }
 
+#' @rdname make_X
 #' @inherit make_X
+#' @param newdata A data frame from which design matrix will be constructed
 make_X.default <- function(object, newdata, ...) {
 
-  X <- model.matrix(object$formula[-2], data = newdata, ...)
+  model.matrix(object$formula[-2], data = newdata, ...)
 
 }
 
-#' @inherit make_X
+#' @inherit make_X.default
+#' @rdname make_X
 make_X.gam <- function(object, newdata, ...) {
 
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
 
 }
 

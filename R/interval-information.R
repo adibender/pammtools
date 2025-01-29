@@ -43,17 +43,16 @@ int_info.default <- function(
     x <- c(0, x)
   }
 
-  intlen <- diff(x)
   tstart <- x[-length(x)]
-  tend   <- c(tstart[-1], max(x))
+  tend   <- x[-1]
 
   tdf <- data.frame(
     tstart = tstart,
     tend   = tend,
     intlen = tend - tstart) %>%
     mutate(
-      intmid = tstart + intlen / 2,
-      interval = paste0("(", tstart, ",", tend, "]"),
+      intmid = .data$tstart + .data$intlen / 2,
+      interval = paste0("(", .data$tstart, ",", .data$tend, "]"),
       interval = factor(.data$interval, levels = unique(.data$interval))
     )
 

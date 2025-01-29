@@ -2,11 +2,23 @@
 % Please edit documentation in R/add-functions.R
 \name{make_X}
 \alias{make_X}
-\title{Create design matrix from fitted model}
+\alias{make_X.default}
+\alias{make_X.gam}
+\title{Create design matrix from a suitable object}
 \usage{
 make_X(object, ...)
+
+\method{make_X}{default}(object, newdata, ...)
+
+\method{make_X}{gam}(object, newdata, ...)
+}
+\arguments{
+\item{object}{A suitable object from which a design matrix can be generated.
+Often a model object.}
+
+\item{newdata}{A data frame from which design matrix will be constructed}
 }
 \description{
-Create design matrix from fitted model
+Create design matrix from a suitable object
 }
 \keyword{internal}

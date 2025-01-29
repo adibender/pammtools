@@ -21,6 +21,8 @@
 #'     geom_line(aes(y = level))
 #' @rdname geom_stepribbon
 #' @importFrom ggplot2 layer GeomRibbon
+#' @inheritParams ggplot2::geom_step
+#' @inheritParams ggplot2::geom_ribbon
 #' @export
 geom_stepribbon <- function(
   mapping     = NULL,

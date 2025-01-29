@@ -55,7 +55,7 @@ Biostatistics 20 (2): 315–31. https://doi.org/10.1093/biostatistics/kxy003.
 
 Bender, Andreas, and Fabian Scheipl. 2018.
 “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-ArXiv:1806.01042 \link{Stat}, June. https://arxiv.org/abs/1806.01042.
+ArXiv:1806.01042 Stat, June. https://arxiv.org/abs/1806.01042.
 }
 \seealso{
 Useful links:
