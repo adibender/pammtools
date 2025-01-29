@@ -15,6 +15,8 @@ Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?b
 [![MIT
 license](https://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/license/mit)
 <!-- badges: end -->
+<!-- Zaehlmarke VGWort -->
+<img src="http://vg05.met.vgwort.de/na/55cf63413d644d7e9bc1bd90640da933" width="1" height="1" alt="">
 
 # **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools
 
