@@ -1,5 +1,5 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   baseline: baseline.html
@@ -17,8 +17,7 @@ articles:
   strata: strata.html
   tdcovar: tdcovar.html
   tveffects: tveffects.html
-last_built: 2024-02-26T20:55Z
+last_built: 2025-01-29T20:58Z
 urls:
   reference: https://adibender.github.io/pammtools/reference
   article: https://adibender.github.io/pammtools/articles
-
