@@ -60,4 +60,4 @@ A general framework for the representation and estimation of cumulative effects
 
 
 <!-- Zaehlmarke VGWort -->
-<img src="http://vg05.met.vgwort.de/na/55cf63413d644d7e9bc1bd90640da933" width="1" height="1" alt="">
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">
