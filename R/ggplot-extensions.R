@@ -11,8 +11,6 @@
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
 #'   inherits from \code{geom_ribbon}.
-#' @inheritParams ggplot2:::geom_ribbon
-#' @inheritParams ggplot2:::geom_step
 #' @examples
 #' library(ggplot2)
 #' huron <- data.frame(year = 1875:1972, level = as.vector(LakeHuron))

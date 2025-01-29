@@ -71,18 +71,23 @@ add_term <- function(
 
 }
 
+#' Create design matrix from fitted model
+#'
+#' @keywords internal
 make_X <- function(object, ...) {
 
   UseMethod("make_X", object)
 
 }
 
+#' @inherit make_X
 make_X.default <- function(object, newdata, ...) {
 
   X <- model.matrix(object$formula[-2], data = newdata, ...)
 
 }
 
+#' @inherit make_X
 make_X.gam <- function(object, newdata, ...) {
 
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
