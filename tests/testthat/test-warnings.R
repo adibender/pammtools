@@ -1,4 +1,4 @@
-context("Warnings robustness")
+context("Warnings")
 
 test_that("direct warning methods enforce interval mismatch guardrails", {
   ped <- get_tumor_ped_fixture()

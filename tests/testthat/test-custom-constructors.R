@@ -1,4 +1,4 @@
-context("Penalized lag-lead robustness")
+context("Custom smooth constructors")
 
 test_that("fdl constructor sets penalty blocks and ranks consistently", {
   base <- construct_fdl_smooth(xt = list())

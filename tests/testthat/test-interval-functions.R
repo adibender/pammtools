@@ -45,3 +45,10 @@ test_that("ped info returned for (grouped) ped objects", {
 	# without covariates
 	expect_data_frame(ped_info(select(ped, -complications, -age)), nrows=4L, ncols=5L)
 })
+
+test_that("seq_range validates n/by and rounds boundaries for pretty by sequences", {
+  expect_error(seq_range(1:10, n = 5, by = 1), "May only specify one")
+
+  seq_pretty <- seq_range(c(0.3, 2.2), by = 1, pretty = TRUE)
+  expect_equal(seq_pretty, 0:3)
+})
