@@ -796,6 +796,8 @@ get_trans_prob <- function(
 
   interval_length <- sym(interval_length)
   transition <- sym(transition)
+  # FIXME: create time_var variable (="tend"), if time_var == NULL
+  # use time_var rather then "tend" below
 
   # include from and to, to obtain transition probability in multidim array
   newdata <- newdata %>%
@@ -809,10 +811,12 @@ get_trans_prob <- function(
                                      ungroup(!!transition) %>%
                                      select(!!tend)))
 
-  # transition matrix
-  m <- sapply(unique_transition[,c(2,3)], max) + 1 #transition starts at 0, integer of matrix at 1
-  M <- array(0, dim=c(max(m), max(m), nrow(unique_transition)))
 
+  # FIXME could think about writing a separate function that performs the below
+  # calculations (or use a function e.g. from etm that does that)
+  # transition matrix
+  m <- max(newdata$to) + 1 #transition starts at 0, integer of matrix at 1
+  M <- array(0, dim=c(max(m), max(m), nrow(unique_transition)))
 
   # create transition matrices to be used at every time point,
   # multiply matrices with "scalar" alpha_ij_k which is the delta cumu hazard at time t_k for transition i->j
@@ -828,16 +832,23 @@ get_trans_prob <- function(
     mutate(delta_cumu_hazard = cumu_hazard - ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard)))
 
   # create dA array, to calculate transition probabilities
-  alpha <- array(rep(0, nrow(unique_tend)*nrow(unique_transition)), dim=c(nrow(unique_tend), nrow(unique_transition)))
-  I <- array(rep(diag(max(m)), nrow(unique_tend))
-             , dim=c( max(m), max(m), nrow(unique_tend)))
-  A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
+  alpha <- array(
+    rep(0, nrow(unique_tend)*nrow(unique_transition)),
+    dim=c(nrow(unique_tend), nrow(unique_transition)))
+  I     <- array(
+    rep(diag(max(m)), nrow(unique_tend)),
+    dim=c( max(m), max(m), nrow(unique_tend)))
+  A     <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
   cum_A <- array(0, dim=c(max(m), max(m), nrow(unique_tend)))
 
   # calculate differences in hazards
-  alpha <- sapply(1:nrow(unique_transition), function(iter){
-    val <- newdata %>% ungroup() %>% filter(transition == unique_transition[iter,1]) %>% arrange(tend)
-    val$delta_cumu_hazard
+  alpha <- sapply(1:nrow(unique_transition),
+    function(iter) {
+      val <- newdata %>%
+        ungroup() %>%
+        filter(transition == unique_transition[iter,1]) %>%
+        arrange(tend)
+      val$delta_cumu_hazard
   })
   
   for (t in 1:nrow(unique_tend)) {
@@ -861,11 +872,22 @@ get_trans_prob <- function(
   }
 
   # transform array so that transition probability can be joined via tend and transition
-  tmp <- cbind(unique_tend
-               , sapply(1:nrow(unique_transition), function(row) cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]))
+  tmp <- cbind(
+    unique_tend,
+    sapply(
+      1:nrow(unique_transition),
+      function(row) {
+                cum_A[unique_transition$from[row] + 1, unique_transition$to[row] + 1, ]
+              }
+    )
+  )
+  # FIXME: replace "tend" with time_var
   colnames(tmp) <- c("tend", as.character(unique_transition$transition))
   trans_prob_df <- tmp %>%
-    pivot_longer(cols = c(as.character(unique_transition$transition)), names_to = "transition", values_to = "trans_prob") %>%
+    pivot_longer(
+      cols      = c(as.character(unique_transition$transition)),
+      names_to  = "transition",
+      values_to = "trans_prob") %>%
     mutate(trans_prob = pmin(pmax(trans_prob, 0), 1))
 
   # join probabilities and return matrix
@@ -913,13 +935,13 @@ add_trans_prob <- function(
       add_trans_ci(object) |>
       add_cumu_hazard(object, overwrite = T, ci=F)
   } else {
-    newdata <- newdata |> 
+    newdata <- newdata |>
       add_cumu_hazard(object, overwrite = T, ci=F)
   }
 
 
   old_groups <- dplyr::groups(newdata)
-  res_data <- newdata %>% ungroup(transition)
+  res_data <- newdata %>% ungroup("transition")
   out_data <- group_split(res_data) |>
     map(res_data, .f = ~ group_by(.x, transition))|>
     map(res_data, .f = ~ get_trans_prob(.x)) |>

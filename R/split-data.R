@@ -254,15 +254,6 @@ split_data_multistate <- function(
     split_df <- split_df %>% filter(.data[["tend"]] <= max_time)
   }
 
-  # if (timescale == "calendar") {
-  #   split_check <- split_df %>%
-  #     group_by(.data[[dots$id]]) %>%
-  #     summarize(dups = sum(duplicated(.data[["tstart"]])))
-
-  #   if (any(split_check[["dups"]]) != 0) {
-  #     stop("Something went wrong during data transformation. \n Please post an issue at 'https://github.com/adibender/pammtools/issues' with your code and data")
-  #   }
-  # }
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
