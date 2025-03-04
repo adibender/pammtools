@@ -108,8 +108,18 @@ test_that("make_newdata works for PED with matrix columns", {
 
 })
 
+test_that("make_newdata works for arbitrary time points", {
+  ped   <- tumor |> as_ped(Surv(days, status)~.)
+  nd6 <- ped |> make_newdata(tend = c(2, 12, 20))
+  expect_data_frame(nd6, nrows = 3L, ncols = 14L)
+  expect_equal(nd6$tend, c(2, 12, 20))
+  expect_equal(nd6$tstart, c(0, 10, 12))
+  expect_equal(nd6$intlen, c(2, 2, 8))
+})
+
 test_that("Errors are thrown", {
 
   expect_error(combine_df(data.frame(x = 1), x = 2))
 
 })
+
