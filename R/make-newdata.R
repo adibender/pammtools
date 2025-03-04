@@ -217,18 +217,19 @@ make_newdata.default <- function(x, ...) {
 #' @inherit make_newdata.default
 #' @export
 make_newdata.ped <- function(x, ...) {
-
   assert_data_frame(x, all.missing = FALSE, min.rows = 2, min.cols = 1)
 
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
 
-  orig_vars <- names(x)
-  int_df <- int_info(x)
+  orig_vars   <- names(x)
+  int_df      <- int_info(x)
+  brks        <- int_df$tend # get original estimation cut points
 
   expressions <- quos(...)
   dot_names   <- names(expressions)
   int_names   <- names(int_df)
+  
   # x <- select(x, -one_of(setdiff(int_names, c(dot_names, "intlen", "intmid"))))
   ndf <- x %>%
     select(-one_of(setdiff(int_names, c(dot_names, "intlen", "intmid")))) %>%
@@ -236,13 +237,23 @@ make_newdata.ped <- function(x, ...) {
     make_newdata(...)
 
   if (any(names(int_df) %in% names(ndf))) {
-    int_tend <- get_intervals(x, ndf$tend)$tend
+    times <- ndf$tend
+    ped_times <- sort(unique(union(c(0, brks), times)))
+    # extract relevant intervals only, keeps data small
+    ped_times <- ped_times[ped_times <= max(times)]
+    
+    info <- get_intervals(x, times)
+    int_tend <- info$tend  ## DEBUG: hier ggf times statt tend
     if (!all(ndf$tend == int_tend)) {
       message("Some values of 'tend' have been set to the respective interval end-points")
     }
     ndf$tend <- int_tend
+    map_times <- data.frame(tend = sort(unique(info$times)), tstart_lag = lag(unique(info$times), default = 0))
     suppressMessages(
-      ndf <- ndf %>% left_join(int_df)
+      ndf <- ndf %>% 
+        left_join(int_df) %>% mutate(tend = info$times) %>% 
+        left_join(map_times) %>% mutate(tstart = pmax(tstart, tstart_lag)) %>% 
+        select(-tstart_lag) # correct tend and tstart
       )
   } else {
     ndf <- combine_df(int_df[1, ], ndf)
@@ -353,6 +364,10 @@ adjust_ll <- function(out_df, data) {
   out_df
 
 }
+
+# expand_df
+# 
+# deduce_df
 
 # All variables that represent follow-up time should have the same values
 # adjust_time_vars <- function(out_df, data, dot_names) {
