@@ -148,6 +148,19 @@ test_that("cumulative hazard functions work for PAM", {
 
 })
 
+test_that("cumulative hazard function work for arbitrary time points", {
+  ndf1 = ped |> make_newdata(tend = unique(tend)[1:3], age = c(60, 70)) |>
+    group_by(age) |>
+    add_cumu_hazard(pam2)
+  
+  ndf2 = ped |> make_newdata(tend = unique(tend)[3], age = c(60, 70)) |>
+    group_by(age) |>
+    add_cumu_hazard(pam2)
+ 
+  expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
+  expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
+})
+
 test_that("cumulative hazard functions work for PEM", {
 
   expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pem),

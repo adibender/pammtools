@@ -105,16 +105,14 @@ test_that("make_newdata works for PED with matrix columns", {
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))
-
-})
-
-test_that("make_newdata works for arbitrary time points", {
+  
   ped   <- tumor |> as_ped(Surv(days, status)~.)
   nd6 <- ped |> make_newdata(tend = c(2, 12, 20))
   expect_data_frame(nd6, nrows = 3L, ncols = 14L)
   expect_equal(nd6$tend, c(2, 12, 20))
   expect_equal(nd6$tstart, c(0, 10, 12))
   expect_equal(nd6$intlen, c(2, 2, 8))
+
 })
 
 test_that("Errors are thrown", {
