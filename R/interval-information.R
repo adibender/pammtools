@@ -195,10 +195,15 @@ ped_info.ped <- function(ped) {
   if (is.null(sdf)) {
     return(int_df)
   } else {
-    bind_cols(
+    int_df <- bind_cols(
       int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
       sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
       grouped_df(vars = group_vars(sdf))
   }
+  
+  attr(int_df, "trafo_args") <- attr(ped, "trafo_args")
+  attr(int_df, "intvars") <- attr(ped, "intvars")
+  
+  int_df
 
 }

@@ -221,7 +221,6 @@ make_newdata.ped <- function(x, ...) {
 
   # prediction time points have to be interval end points so that piece-wise
   # constancy of predicted hazards is respected. If user overrides this, warn.
-
   orig_vars   <- names(x)
   int_df      <- int_info(x)
   brks        <- int_df$tend # get original estimation cut points
@@ -243,7 +242,7 @@ make_newdata.ped <- function(x, ...) {
     ped_times <- ped_times[ped_times <= max(times)]
     
     info <- get_intervals(x, times)
-    int_tend <- info$tend  ## DEBUG: hier ggf times statt tend
+    int_tend <- info$tend
     if (!all(ndf$tend == int_tend)) {
       message("Some values of 'tend' have been set to the respective interval end-points")
     }
@@ -260,11 +259,17 @@ make_newdata.ped <- function(x, ...) {
   }
 
   int_names <- intersect(int_names, c("intlen", orig_vars))
-  ndf %>% select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
+  ndf <- ndf %>% select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
     mutate(
       intlen = .data$tend - .data$tstart,
       offset = log(.data$tend - .data$tstart),
       ped_status = 0)
+  
+  # needed for expand df
+  attr(ndf, "trafo_args") <- attr(x, "trafo_args")
+  attr(ndf, "intvars") <- attr(x, "intvars")
+  
+  ndf
 
 }
 
@@ -365,9 +370,77 @@ adjust_ll <- function(out_df, data) {
 
 }
 
-# expand_df
-# 
-# deduce_df
+
+## apply expand df to complete make newdata for arbitrary time points
+expand_df <- function(
+    x,
+    object,
+    trafo_args = NULL,
+    intvars = NULL,
+    time_var   = NULL,
+    interval_length = "intlen",
+    ...) {
+
+  orig_vars   <- names(x)
+  
+  id_var     <- trafo_args[["id"]]
+  brks       <- trafo_args[["cut"]]
+  
+  int_names  <- setdiff(intvars, id_var)
+  cov_names  <- setdiff(names(object$var.summary), intersect(int_names, names(object$var.summary)))
+ 
+  expressions <- quos(...)
+  dot_names   <- names(expressions)
+  
+  times <- unique(x$tend)
+
+  ped_times <- sort(unique(union(c(0, brks), times)))
+  # extract relevant intervals only, keeps data small
+  ped_times <- ped_times[ped_times <= max(times)]
+  # obtain interval information
+  ped_info <- get_intervals(brks, ped_times[-1])
+  
+  ped_info[["intlen"]] <- c(ped_info[["times"]][1], diff(ped_info[["times"]]))
+  ped_info[["tend"]] <- ped_info[["times"]]
+  
+  if(length(cov_names) == 0) {
+    newdata <- ped_info
+  } else {
+    newdata <- x %>%
+      select(any_of(c(cov_names))) %>%
+      distinct() # otherwise combine_df duplicates rows
+    
+    newdata <- combine_df(ped_info, newdata) %>% select(-c("times")) 
+  }
+
+  map_times <- data.frame(tend = sort(ped_times), tstart_lag = lag(ped_times, default = 0))
+  suppressMessages(
+    newdata <- newdata %>% 
+      left_join(map_times) %>% 
+      mutate(
+        tstart = pmax(.data$tstart, .data$tstart_lag),
+        intlen = .data$tend - .data$tstart,
+        offset = log(.data$tend - .data$tstart),
+        ped_status = 0) %>% 
+      select(-tstart_lag) # correct tstart
+  )
+  
+  # if(length(haz_vars_in_data) != 0) {
+  #   if(length(setdiff(haz_vars_in_data, vars_exclude)) != 0){
+  #     newdata <- get_hazard(object, newdata, type = "response", ci = ci,
+  #                ci_type = ci_type, time_var = time_var, se_mult = se_mult, ...)
+  #   } else {
+  #     newdata <- get_hazard(object, newdata, type = "response", ci = FALSE,
+  #                time_var = time_var, ...)
+  #   }
+  # }
+  
+  newdata %>% select(any_of(c(orig_vars)))
+}
+
+deduce_df <- function(x, object, ...) {
+  
+}
 
 # All variables that represent follow-up time should have the same values
 # adjust_time_vars <- function(out_df, data, dot_names) {

@@ -257,7 +257,7 @@ get_hazard.default <- function(
   # throw warning or error if evaluation time points/intervals do not correspond
   # to evaluation time-points/intervals do not correspond to the ones used for
   # estimation
-  warn_about_new_time_points(object, newdata, time_var)
+  #warn_about_new_time_points(object, newdata, time_var)
 
   X <- prep_X(object, newdata, reference, ...)
   coefs <- coef(object)
@@ -306,9 +306,43 @@ add_cumu_hazard <- function(
         names(newdata))
       newdata <- newdata %>% select(-one_of(rm.vars))
   }
+  
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
+  if (is.null(time_var)) {
+    time_var <- ifelse(is_gam, "tend", "interval")
+  } else {
+    assert_string(time_var)
+    assert_choice(time_var, colnames(newdata))
+  }
 
-  get_cumu_hazard(newdata, object, ci = ci, se_mult = se_mult,
-    time_var = time_var, interval_length = interval_length, ...)
+
+  trafo_args <- attr(newdata, "trafo_args")
+  intvars    <- attr(newdata, "intvars")
+  
+  times <- setdiff(sort(unique(newdata[[time_var]])), c(0))
+  brks <- setdiff(trafo_args[["cut"]][trafo_args[["cut"]]<= max(times)], c(0))
+  
+  # if selected time points contain all times already, do not extend newdata
+  if (all(brks %in% times)) {
+    joindata <- newdata
+  } else {
+    if (length(groups(newdata))!=0) {
+      old_groups <- dplyr::groups(newdata)
+      joindata <- group_split(newdata) |>
+        map(newdata, .f = ~ expand_df(.x, object, trafo_args, intvars, time_var))|> #expand uses distinct, hence need to regroup
+        map(newdata, .f = ~ group_by(.x, !!!old_groups)) |>
+        bind_rows()
+    } else {
+      joindata <- newdata %>% expand_df(object, trafo_args, intvars)
+    }
+  }
+  
+  joindata <- get_cumu_hazard(joindata, object, ci = ci, se_mult = se_mult,
+                              time_var = time_var, interval_length = interval_length, ...)
+ 
+  suppressMessages(
+    newdata %>% left_join(joindata)
+  )
 
 }
 
