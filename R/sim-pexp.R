@@ -282,7 +282,7 @@ eta_cumu <- function(data, fcumu, cut, ...) {
 #'
 #'
 #' @keywords internal
-sim_pexp_cr <- function(formula, data, cut) {
+sim_pexp_cr <- function(formula, data, cut, round = NULL) {
 
   # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
   Form    <- Formula(formula)
@@ -307,37 +307,34 @@ sim_pexp_cr <- function(formula, data, cut) {
 
   # construct eta for time-constant part
   # offset (the log of the duration during which the subject was under risk in that interval)
-
   ped  <- split_data(
     formula = Surv(time, status)~.,
     data    = select_if(data, is_atomic),
     cut     = cut,
     id      = "id") %>%
     mutate(
+      t_original = t,
       t = t + .data$tstart
     )
 
   # calculate cause specific hazards
-
   for (i in seq_rhs) {
     ped[[paste0("hazard", i)]] <-  exp(eval(F_rhs[[i]], ped))
   }
   ped[["rate"]] <- reduce(ped[paste0("hazard", seq_rhs)], `+`)
 
   # simulate survival times
-
   sim_df <- ped %>%
     group_by(id) %>%
     mutate(
-      time   = rpexp(rate = .data$rate, t = .data$tstart),
-      status = 1L * (.data$time <= max(cut)),
-      time   = pmin(.data$time, max(cut)),
-      # t wieder ins "Original" zurückrechnen, muss später auf die Waitingtime drauf gerechnet werden
-      t = .data$t - .data$tstart
+      time_pexp   = rpexp(rate = .data$rate, t = .data$tstart),
+      time_event  = .data$time_pexp + .data$t_original,
+      time_event  = ifelse(is.null(round), .data$time_event, round(.data$time_event, digits = round)),
+      status      = 1L * (.data$time_event <= max(cut)),
+      time        = pmin(.data$time_event, max(cut)),
+      t           = .data$t_original # transform t back to original, since t serves as start time
     ) %>%
-    filter(.data$tstart < .data$time & .data$time <= .data$tend)
-
-
+    filter(.data$tstart + .data$t < .data$time & .data$time <= pmin(.data$tend + .data$t, max(cut))) # only a single row per id
 
   # Ziehe aus den möglichen hazards eins mit den entsprechenden Wahrscheinlichkeiten
   sim_df$type <- apply(sim_df[paste0("hazard", seq_rhs)], 1,
@@ -348,3 +345,208 @@ sim_pexp_cr <- function(formula, data, cut) {
     select(-one_of(c("tstart", "tend", "interval", "offset", "ped_status", "rate")))
 
 }
+
+
+#' Simulate data for multi-state modeling scenario
+#' via consecutive calls to \code{sim_pexp_cr}
+#' where start time and state are updated for each individual
+#'
+#' @keywords internal
+sim_pexp_msm <- function(formulas_list, data, cut, terminal_states, round = NULL) {
+
+  max_time <- max(cut)
+
+  # Initialize an empty list to accumulate simulated transitions.
+  sim_results <- list()
+
+  # current_data holds individuals still at risk for further transitions.
+  current_data <- data
+
+  while (nrow(current_data) > 0) {
+
+    # For each unique state in the current data:
+    current_states <- as.character(unique(current_data$from))
+
+    # For accumulating data for the next round:
+    next_round <- list()
+
+    for (state in current_states) {
+      # Select individuals currently in this state.
+      state_data <- current_data[current_data$from == state, ]
+
+      # Identify transitions possible from this state.
+      transitions <- names(formulas_list)[
+        sapply(names(formulas_list), function(trans) {
+          # Naming convention: "trans_{from}_{to}"
+          parts <- strsplit(trans, "_")[[1]]
+          return(parts[2] == as.character(state))
+        })
+      ]
+
+      # Skip if no transitions are defined for this state.
+      if (length(transitions) == 0) next
+
+      # Combine the hazard formulas for all transitions from this state into one formula.
+      # We assume each formula in formulas_list is a one-part formula (no LHS)
+      # and we combine their right-hand sides using "|".
+      combined_rhs <- sapply(transitions, function(trans) {
+        f <- formulas_list[[trans]]
+        # Extract the RHS; assuming a simple one-part formula, this is f[[2]]
+        deparse(f[[2]])
+      })
+      combined_formula <- as.formula(paste("~", paste(combined_rhs, collapse = " | ")))
+
+      # Simulate waiting times for all competing transitions from this state.
+      sim_df <- sim_pexp_cr(combined_formula, state_data, cut, round = round)
+
+      # Map the simulated 'type' (an index) back to the transition.
+      # For each row, the chosen type tells you which of the combined hazards fired.
+      sim_df <- sim_df %>%
+        mutate(from = state,
+               to = sapply(type, function(x) {
+                 parts <- strsplit(transitions[x], "_")[[1]]
+                 parts[3]
+               }),
+               transition = sapply(type, function(x) transitions[x])
+        )
+
+      # Combine the result from this state with the overall results.
+      sim_results[[as.character(state)]] <- sim_df
+
+      # Identify individuals who experienced an event (status==1),
+      # who are not censored (time < max_time), and whose new state is not terminal.
+      successful <- sim_df %>%
+        filter(status == 1, time < max_time, !(to %in% terminal_states))
+
+      # Update these individuals for the next round:
+      # The new starting time is the simulated event time (here in column 'time'),
+      # and their current state is updated to the 'to' state.
+      if (nrow(successful) > 0) {
+        updated <- state_data %>%
+          filter(id %in% successful$id) %>%
+          mutate(t = successful$time[match(id, successful$id)],
+                from = successful$to[match(id, successful$id)])
+        next_round[[as.character(state)]] <- updated
+      }
+    }
+
+    # Prepare for the next iteration:
+    current_data <- dplyr::bind_rows(next_round)
+
+    # If no individuals remain, break out of the loop.
+    if (nrow(current_data) == 0) break
+  }
+
+  # Combine all simulated transitions into the final multi-state data frame.
+  final_sim_df <- dplyr::bind_rows(sim_results) %>%
+    dplyr::select(-one_of(c("type", "t_original", "transition", "time_pexp", "time_event")), -dplyr::contains("hazard")) %>%
+    dplyr::mutate(transition = paste0(from, "->", to)) %>%
+    dplyr::relocate(to, .after = from) %>%
+    dplyr::rename(tstart = t, tstop = time) %>%
+    dplyr::arrange(id, tstart) %>%
+    add_counterfactual_transitions()
+  return(final_sim_df)
+}
+
+
+#' Add censoring on top of simulated data
+#' TBD: let user pass vector of times instead of imposing (parametric) censoring distribution
+#' TBD: implement pexp for right censoring with covariate-dependent hazard
+#' TBD: implement left-censoring
+#' @keywords internal
+add_censoring <- function(data, type = "right", distribution = "weibull", parameters = NULL) {
+
+  if (type == "right") {
+    # Check parameters length based on distribution
+    if (distribution %in% c("weibull", "lognormal")) {
+      if (length(parameters) != 2) {
+        stop("For 'weibull' or 'lognormal' distribution, 'parameters' must be of length 2 (e.g., shape & scale, or meanlog & sdlog).")
+      }
+    } else if (distribution == "exponential") {
+      if (length(parameters) != 1) {
+        stop("For 'exponential' distribution, 'parameters' must be of length 1 (i.e., rate).")
+      }
+    } else {
+      stop("Unsupported distribution. Choose 'weibull', 'exponential', or 'lognormal'.")
+    }
+
+    # Draw one censoring time per individual
+    data <- data %>%
+      group_by(id) %>%
+      mutate(censoring_time = {
+        if (distribution == "weibull") {
+          rweibull(1, shape = parameters[1], scale = parameters[2])
+        } else if (distribution == "exponential") {
+          rexp(1, rate = parameters[1])
+        } else if (distribution == "lognormal") {
+          rlnorm(1, meanlog = parameters[1], sdlog = parameters[2])
+        }
+      }) %>%
+      ungroup()
+
+    # For each id, update the status to 0 for the transition where censoring hits:
+    # i.e. where tstart <= censoring_time < tstop. Also, replace tstop with censoring_time
+    # and remove all subsequent rows.
+    data <- data %>%
+      group_by(id) %>%
+      arrange(tstart) %>%
+      mutate(censor_flag = (tstart <= censoring_time & censoring_time < tstop)) %>%
+      mutate(cum_censor = cumsum(censor_flag)) %>%  # remains 0 until first censor event, then >0
+      filter(cum_censor <= 1) %>%  # keep rows until (and including) the first censor event
+      mutate(
+        tstop = ifelse(censor_flag, censoring_time, tstop),
+        status = ifelse(censor_flag, 0, status)
+      ) %>%
+      ungroup() %>%
+      select(-c(censoring_time, censor_flag, cum_censor))
+
+    return(data)
+
+  } else if (type == "left") {
+    stop("Left-censoring not implemented yet.")
+  } else if (type == "interval") {
+    if (distribution != "uniform") {
+      stop("For interval censoring, only the 'uniform' distribution is supported.")
+    }
+
+    # For interval censoring, we assume that each row's tstart and tstop represent the true boundaries.
+    # We then impute a new event time for each transition (except the final row) by drawing
+    # from a uniform distribution over an interval defined by the current row's tstop and the next row's tstop.
+    # The imputed time will become the new tstop for the current row and the new tstart for the next row.
+    data_interval <- data %>%
+      arrange(id, tstart) %>%
+      group_by(id) %>%
+      group_modify(~ {
+        df <- .x[order(.x$tstart), ]
+        k <- nrow(df)
+        # If only one row is available, we leave it unchanged.
+        if(k < 2) return(df)
+
+        # Create vector to store imputed times for transitions (for rows 1 to k-1).
+        imputed <- numeric(k - 1)
+        for(j in 1:(k - 1)) {
+          # Draw imputed time from [current row's tstop, next row's tstop]
+          imputed[j] <- runif(1, min = df$tstop[j], max = df$tstop[j + 1])
+        }
+        # Update the first row: tstart remains unchanged; tstop becomes imputed[1]
+        df$tstop[1] <- imputed[1]
+        # For intermediate rows, update tstart and tstop
+        if(k > 2) {
+          for(j in 2:(k - 1)) {
+            df$tstart[j] <- imputed[j - 1]
+            df$tstop[j] <- imputed[j]
+          }
+        }
+        # For the last row, update tstart to the last imputed value; tstop remains unchanged.
+        df$tstart[k] <- imputed[k - 1]
+        return(df)
+      }) %>%
+      ungroup()
+
+    return(data_interval)
+
+  } else {
+    stop("Censoring type must be one of 'right', 'left', or 'interval'.")
+  }
+}
+
