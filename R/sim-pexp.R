@@ -334,6 +334,7 @@ sim_pexp_cr <- function(formula, data, cut, round = NULL) {
       time        = pmin(.data$time_event, max(cut)),
       t           = .data$t_original # transform t back to original, since t serves as start time
     ) %>%
+    ungroup() %>%
     filter(.data$tstart + .data$t < .data$time & .data$time <= pmin(.data$tend + .data$t, max(cut))) # only a single row per id
 
   # Ziehe aus den möglichen hazards eins mit den entsprechenden Wahrscheinlichkeiten
@@ -468,12 +469,10 @@ sim_pexp_msm <- function(formulas_list, data, cut, terminal_states, round = NULL
 #' TBD: implement pexp for right censoring with covariate-dependent hazard
 #' TBD: implement left-censoring
 #' @keywords internal
-library(dplyr)
-
-add_censoring <- function(data, type = "right", distribution = "weibull", parameters = NULL) {
+add_censoring <- function(data, type = "right", distribution = "weibull", parameters = NULL, round = NULL) {
 
   if (type == "right") {
-    # Check parameters length based on distribution
+    # (Right-censoring branch as before)
     if (distribution %in% c("weibull", "lognormal")) {
       if (length(parameters) != 2) {
         stop("For 'weibull' or 'lognormal' distribution, 'parameters' must be of length 2 (e.g., shape & scale, or meanlog & sdlog).")
@@ -497,7 +496,8 @@ add_censoring <- function(data, type = "right", distribution = "weibull", parame
         } else if (distribution == "lognormal") {
           rlnorm(1, meanlog = parameters[1], sdlog = parameters[2])
         }
-      }) %>%
+      },
+      censoring_time = ifelse(is.null(round), censoring_time, round(censoring_time, digits = round))) %>%
       ungroup()
 
     # For each individual, determine the first row in which censoring occurs
@@ -507,62 +507,127 @@ add_censoring <- function(data, type = "right", distribution = "weibull", parame
       arrange(tstart) %>%
       mutate(row_index = row_number(),
              censor_flag = (tstart <= censoring_time & censoring_time < tstop)) %>%
-      # Compute the index of the first censoring event (if any)
       mutate(first_censor = ifelse(any(censor_flag),
                                    min(row_index[censor_flag]),
                                    Inf)) %>%
-      # Keep only rows up to the first censoring event
       filter(row_index <= first_censor) %>%
-      # In the censoring row, replace tstop with the censoring time and set status = 0.
       mutate(tstop = ifelse(censor_flag, censoring_time, tstop),
              status = ifelse(censor_flag, 0, status)) %>%
       ungroup() %>%
-      # select(-c(censoring_time, censor_flag, row_index, first_censor)) %>%
+      filter(tstart < tstop) %>%  # remove any row with tstart == tstop
+      select(-c(censoring_time, censor_flag, row_index, first_censor)) %>%
       arrange(id, tstart)
 
     return(data)
 
   } else if (type == "left") {
-    stop("Left-censoring not implemented yet.")
+    # Left-censoring branch
+    # Apply left-censoring to individuals with >1 transition.
+    if (distribution %in% c("weibull", "lognormal")) {
+      if (length(parameters) != 2) {
+        stop("For 'weibull' or 'lognormal' distribution, 'parameters' must be of length 2 (e.g., shape & scale, or meanlog & sdlog).")
+      }
+    } else if (distribution == "exponential") {
+      if (length(parameters) != 1) {
+        stop("For 'exponential' distribution, 'parameters' must be of length 1 (i.e., rate).")
+      }
+    } else {
+      stop("Unsupported distribution. Choose 'weibull', 'exponential', or 'lognormal'.")
+    }
+
+    # For individuals with more than one transition, draw a left-censoring time L and adjust.
+    # For individuals with a single row, leave unchanged.
+    data_left <- data %>%
+      group_by(id) %>%
+      arrange(tstart) %>%
+      group_modify(~ {
+        df <- .x
+        if(nrow(df) < 2) return(df)  # Only one row, leave unchanged.
+
+        # Draw left-censoring time L for this individual.
+        L <- if (distribution == "weibull") {
+          rweibull(1, shape = parameters[1], scale = parameters[2])
+        } else if (distribution == "exponential") {
+          rexp(1, rate = parameters[1])
+        } else if (distribution == "lognormal") {
+          rlnorm(1, meanlog = parameters[1], sdlog = parameters[2])
+        }
+        if (!is.null(round)) {
+          L <- round(L, digits = round)
+        }
+        # Now, adjust the trajectory.
+        # If L <= the first observed tstart, leave the trajectory unchanged.
+        if (L <= df$tstart[1]) {
+          return(df)
+        } else {
+          # Find the first row i such that L <= tstop[i].
+          i <- which(L <= df$tstop)[1]
+          if (is.na(i)) {
+            # L is greater than all tstop values; drop the individual.
+            return(tibble())
+          } else {
+            # Drop rows 1 to (i-1) and update row i's tstart to L.
+            df_new <- df[i:nrow(df), ]
+            df_new$tstart[1] <- L
+            return(df_new)
+          }
+        }
+      }) %>% ungroup()
+
+    # Individuals with only one row are not left-censored.
+    data_nonleft <- data %>%
+      group_by(id) %>%
+      filter(n() == 1) %>%
+      ungroup()
+
+    data_final <- bind_rows(data_nonleft, data_left) %>%
+      arrange(id, tstart)
+
+    return(data_final)
+
   } else if (type == "interval") {
     if (distribution != "uniform") {
       stop("For interval censoring, only the 'uniform' distribution is supported.")
     }
 
-    # For interval censoring, impute a new event time for each interval as follows:
-    # For an individual with multiple transitions, suppose the true boundaries are:
-    # t0, t1, t2, ..., t_k. We leave t0 (first tstart) and t_k (final tstop) unchanged.
-    # For each intermediate interval j (1 <= j < k), draw an imputed event time uniformly
-    # from [t_stop[j], t_stop[j+1]], and set that as the new tstop for row j and the new
-    # tstart for row j+1.
     data_interval <- data %>%
       arrange(id, tstart) %>%
       group_by(id) %>%
       group_modify(~ {
         df <- .x[order(.x$tstart), ]
         k <- nrow(df)
-        if(k < 2) return(df)  # Nothing to impute if only one row.
+        if (k < 2) return(df)  # Nothing to impute if only one row.
 
-        # Preallocate vector for imputed times (for rows 1 to k-1).
         imputed <- numeric(k - 1)
-        for(j in 1:(k - 1)) {
-          imputed[j] <- runif(1, min = df$tstop[j], max = df$tstop[j + 1])
+        for (j in 1:(k - 1)) {
+          if (is.null(round)) {
+            imputed[j] <- runif(1, min = df$tstop[j], max = df$tstop[j + 1])
+          } else {
+            step <- 10^(-round)
+            lower <- ceiling(df$tstop[j] * 10^round) / 10^round
+            grid_max <- df$tstop[j + 1] - step
+            if (grid_max < lower) {
+              imputed[j] <- round(runif(1, min = df$tstop[j], max = df$tstop[j + 1]), round)
+            } else {
+              possible_vals <- seq(lower, grid_max, by = step)
+              if (length(possible_vals) == 0) {
+                imputed[j] <- round(runif(1, min = df$tstop[j], max = df$tstop[j + 1]), round)
+              } else {
+                imputed[j] <- sample(possible_vals, 1)
+              }
+            }
+          }
         }
-        # Update the rows:
-        # Row 1: leave tstart unchanged; tstop becomes imputed[1]
         df$tstop[1] <- imputed[1]
-        # Rows 2 to k-1: tstart becomes previous imputed value, tstop becomes new imputed value
-        if(k > 2) {
-          for(j in 2:(k - 1)) {
+        if (k > 2) {
+          for (j in 2:(k - 1)) {
             df$tstart[j] <- imputed[j - 1]
             df$tstop[j] <- imputed[j]
           }
         }
-        # Last row: tstart becomes the last imputed value; tstop remains unchanged.
         df$tstart[k] <- imputed[k - 1]
         return(df)
-      }) %>%
-      ungroup()
+      }) %>% ungroup()
 
     return(data_interval)
 
@@ -570,5 +635,3 @@ add_censoring <- function(data, type = "right", distribution = "weibull", parame
     stop("Censoring type must be one of 'right', 'left', or 'interval'.")
   }
 }
-
-
