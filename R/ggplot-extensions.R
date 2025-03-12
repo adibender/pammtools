@@ -10,7 +10,6 @@
 #'
 #' @seealso
 #'   \code{\link[ggplot2]{geom_ribbon}} \code{geom_stepribbon}
-#'   inherits from \code{geom_ribbon}.
 #' @inheritParams ggplot2::geom_ribbon
 #' @inheritParams ggplot2::geom_step
 #' @examples
@@ -29,11 +28,11 @@ geom_stepribbon <- function(
     data        = NULL,
     stat        = "identity",
     position    = "identity",
-    direction   = "hv", 
+    direction   = "hv",
     na.rm       = FALSE,
     show.legend = NA,
     inherit.aes = TRUE, ...) {
-  
+
   layer(
     data        = data,
     mapping     = mapping,
@@ -44,7 +43,7 @@ geom_stepribbon <- function(
     inherit.aes = inherit.aes,
     params      = list(na.rm = na.rm, direction = direction, ... )
   )
-  
+
 }
 
 #' @rdname geom_stepribbon
@@ -54,11 +53,11 @@ geom_stepribbon <- function(
 #' @export
 GeomStepribbon <- ggproto(
   "GeomStepribbon", GeomRibbon,
-  
+
   extra_params = c("na.rm"),
-  
+
   draw_group = function(data, panel_scales, coord, na.rm = FALSE, direction = "hv") {
-    
+
     if (na.rm) data <- data[complete.cases(data[c("x", "ymin", "ymax")]), ]
     data   <- rbind(data, data)
     data   <- data[order(data$x), ]
@@ -66,7 +65,7 @@ GeomStepribbon <- ggproto(
                                 direction = direction)
     GeomRibbon$draw_group(data, panel_scales, coord, na.rm = na.rm)
   }
-  
+
 )
 
 

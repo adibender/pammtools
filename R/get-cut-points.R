@@ -52,7 +52,7 @@ get_cut.default <- function(
       cut <- c(cut, max_time)
     }
   }
-  
+
   return(sort(unique(cut)))
 
 }

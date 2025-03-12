@@ -10,12 +10,63 @@ add_trans_prob(
   overwrite = FALSE,
   ci = FALSE,
   alpha = 0.05,
-  n_sim = 100L,
+  nsim = 100L,
   time_var = NULL,
   interval_length = "intlen",
   ...
 )
 }
+\arguments{
+\item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
+  are required. If this is not provided then predictions corresponding to the
+                original data are returned. If \code{newdata} is provided then
+                it should contain all the variables needed for prediction: a
+                warning is generated if not. See details for use with \code{link{linear.functional.terms}}. }
+
+\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
+                }
+
+\item{overwrite}{Should hazard columns be overwritten if already present in
+the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
+\code{c("hazard", "se", "lower", "upper")} will be overwritten.}
+
+\item{ci}{\code{logical}. Indicates if confidence intervals should be
+calculated. Defaults to \code{TRUE}.}
+
+\item{alpha}{The alpha level for confidence/credible intervals.}
+
+\item{nsim}{Number of simulations (draws from posterior of estimated coefficients)
+on which estimation of CIFs and their confidence/credible intervals will be
+based on.}
+
+\item{time_var}{Name of the variable used for the baseline hazard. If
+not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
+\code{"interval"}. The latter is assumed to be a factor, the former
+numeric.}
+
+\item{interval_length}{The variable in newdata containing the interval lengths.
+Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
+
+\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
+\code{\link{get_hazard}}}
+}
 \description{
-Add transition probabilities
+Add (cumulative) hazard based on the provided data set and model.
+If \code{ci=TRUE} confidence intervals (CI) are also added. Their width can
+be controlled via the \code{se_mult} argument. The method by which the
+CI are calculated can be specified by \code{ci_type}.
+This is a wrapper around
+\code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
+(log-)hazard ratio is calculated.
+}
+\examples{
+ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
+pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
+ped_info(ped) \%>\% add_hazard(pam, type="link")
+ped_info(ped) \%>\% add_hazard(pam, type = "response")
+ped_info(ped) \%>\% add_cumu_hazard(pam)
+}
+\seealso{
+\code{\link[mgcv]{predict.gam}},
+\code{\link[pammtools]{add_surv_prob}}
 }

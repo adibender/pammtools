@@ -24,3 +24,5 @@
 ^revdep$
 ^\.github$
 ^CRAN-SUBMISSION$
+^\sim
+^\tmp

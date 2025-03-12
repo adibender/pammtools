@@ -13,7 +13,7 @@ add_cif(newdata, object, ...)
   ci = TRUE,
   overwrite = FALSE,
   alpha = 0.05,
-  n_sim = 500L,
+  nsim = 500L,
   cause_var = "cause",
   time_var = NULL,
   ...
@@ -41,7 +41,7 @@ the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 
 \item{alpha}{The alpha level for confidence/credible intervals.}
 
-\item{n_sim}{Number of simulations (draws from posterior of estimated coefficients)
+\item{nsim}{Number of simulations (draws from posterior of estimated coefficients)
 on which estimation of CIFs and their confidence/credible intervals will be
 based on.}
 

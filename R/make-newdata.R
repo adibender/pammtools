@@ -195,6 +195,14 @@ make_newdata.default <- function(x, ...) {
   expr_evaluated <- map(expressions, lazyeval::f_eval, data = x) |>
     map(c)
 
+  if ("tend" %in% names(expressions)) {
+
+    if (any(expr_evaluated[["tend"]] <= 0)) {
+      stop("'tend' variable must take values > 0.")
+    }
+
+  }
+
   # construct data parts depending on input type
   lgl_atomic <- map_lgl(expr_evaluated, is_atomic)
   # part1 <- expr_evaluated[lgl_atomic] |> cross_df()
@@ -244,10 +252,13 @@ make_newdata.ped <- function(x, ...) {
     info <- get_intervals(x, times)
     int_tend <- info$tend
     if (!all(ndf$tend == int_tend)) {
-      message("Some values of 'tend' have been set to the respective interval end-points")
+      message("Not all requested timepoints correspond to original cut points.")
     }
     ndf$tend <- int_tend
-    map_times <- data.frame(tend = sort(unique(info$times)), tstart_lag = lag(unique(info$times), default = 0))
+    map_times <- data.frame(
+      tend = sort(unique(info$times)),
+      tstart_lag = lag(sort(unique(info$times)), default = 0)
+    )
     suppressMessages(
       ndf <- ndf %>% 
         left_join(int_df) %>% mutate(tend = info$times) %>% 
@@ -259,7 +270,8 @@ make_newdata.ped <- function(x, ...) {
   }
 
   int_names <- intersect(int_names, c("intlen", orig_vars))
-  ndf <- ndf %>% select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
+  ndf <- ndf %>%
+    select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
     mutate(
       intlen = .data$tend - .data$tstart,
       offset = log(.data$tend - .data$tstart),
@@ -285,12 +297,10 @@ make_newdata.fped <- function(x, ...) {
   # constancy of predicted hazards is respected. If user overrides this, warn.
   expressions <- quos(...)
   dot_names   <- names(expressions)
-  orig_vars   <- names(x)
   cumu_vars   <- setdiff(unlist(attr(x, "func_mat_names")), dot_names)
   cumu_smry   <- smry_cumu_vars(x, attr(x, "time_var")) %>%
     select(one_of(cumu_vars))
 
-  int_names   <- attr(x, "intvars")
   ndf <- x %>%
     select(one_of(setdiff(names(x), cumu_vars))) %>%
     unfped() %>%

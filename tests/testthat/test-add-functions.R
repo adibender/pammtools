@@ -27,8 +27,7 @@ ped_msm <- as_ped(
   # cut = seq(2000, 4000, length.out = 100),
   transition = "transition",
   id         = "id",
-  timescale  = "calendar",
-  tdc_specials="concurrent"
+  timescale  = "calendar"
 )
 
 pam_msm <- gam(ped_status ~ s(tend, by=transition, bs="cr") + transition
@@ -205,13 +204,13 @@ test_that("adding terms works for PEM", {
       nrows = 5L, ncols = 10L)
 })
 
-test_that("warns about / aborts for unknown intervals", {
+# test_that("warns about / aborts for unknown intervals", {
+#   # not needed anymore (sanity is checked when applied to ped data, anything else we can't check)
+#   # weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
+#   # expect_warning(add_hazard(weird, pam), "not equivalent")
+#   # expect_error(add_hazard(weird, pem), "not equivalent")
 
-  weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
-  expect_warning(add_hazard(weird, pam), "not equivalent")
-  expect_error(add_hazard(weird, pem), "not equivalent")
-
-})
+# })
 
 test_that("works for nonstandard baseline arguments", {
 

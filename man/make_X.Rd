@@ -2,7 +2,7 @@
 % Please edit documentation in R/add-functions.R
 \name{make_X}
 \alias{make_X}
-\title{Create model matrix from model object}
+\title{Create model matrix from fitted model object}
 \usage{
 make_X(object, ...)
 }
@@ -10,6 +10,6 @@ make_X(object, ...)
 \item{object}{a model object}
 }
 \description{
-Create model matrix from model object
+Create model matrix from fitted model object
 }
 \keyword{internal}

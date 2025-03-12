@@ -30,9 +30,3 @@ If data only contains one row per transition that took place, this function
 adds additional rows for each transition that was possible at that time
 (for each subject in the data).
 }
-\examples{
-
-res <- add_counterfactual_transitions(data, list(c(2,3), 3))
-res <- add_counterfactual_transitions(data)
-res \%>\% select(id, from, to, status, tstart, tstop, transition, trans)
-}

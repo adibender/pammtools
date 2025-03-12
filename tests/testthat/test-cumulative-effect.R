@@ -105,14 +105,14 @@ test_that("Cumulative effects are calculated correctly", {
     tolerance = 10e-3)
 
   ## partial effects
-  partial <- gg_partial(ped, pam, "z.tz3", tend = seq(0, 10, by = 1),
+  partial <- gg_partial(ped, pam, "z.tz3", tend = seq(1, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial, c("gg", "ggplot"))
-  expect_data_frame(partial$data, nrows = 143L, ncols = 15L)
-  partial_ll <- gg_partial_ll(ped, pam, "z.tz3", tend = seq(0, 10, by = 1),
+  expect_data_frame(partial$data, nrows = 130L, ncols = 15L)
+  partial_ll <- gg_partial_ll(ped, pam, "z.tz3", tend = seq(1, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial_ll, c("gg", "ggplot"))
-  expect_data_frame(partial_ll$data, nrows = 53L, ncols = 8L)
+  expect_data_frame(partial_ll$data, nrows = 50L, ncols = 8L)
 
   ## cumulative effect visualization helpers:
   cumu_eff <- get_cumu_eff(ped, pam, term = "z.tz3",

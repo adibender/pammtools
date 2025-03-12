@@ -2,7 +2,7 @@
 % Please edit documentation in R/add-functions.R
 \name{make_X.gam}
 \alias{make_X.gam}
-\title{Create model matrix from model object}
+\title{Create model matrix from fitted model object}
 \usage{
 \method{make_X}{gam}(object, newdata, ...)
 }
@@ -10,6 +10,6 @@
 \item{object}{a model object}
 }
 \description{
-Create model matrix from model object
+Create model matrix from fitted model object
 }
 \keyword{internal}

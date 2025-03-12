@@ -13,18 +13,21 @@ warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
   is_pam <- (inherits(object, "gam" ) | inherits( object, "scam"))
 
-  if(is_pam & is.null(object$model)){
+  if (is_pam && is.null(object$model)) {
     return(invisible())
   }
 
   original_intervals <- if (is_pam) {
     unique(model.frame(object)[[time_var]])
-  } else levels(model.frame(object)[[time_var]])
+  } else {
+    levels(model.frame(object)[[time_var]])
+  }
   prediction_intervals <- if (is_pam) {
     unique(newdata[[time_var]])
-  } else levels(factor(newdata[[time_var]]))
+  } else {
+    levels(factor(newdata[[time_var]]))
+  }
   new_ints <- which(!(prediction_intervals %in% original_intervals))
-  n_out <- pmin(10, length(new_ints))
   if (length(new_ints)) {
    message <- paste0(
     "Time points/intervals in new data not equivalent to time points/intervals during model fit.",

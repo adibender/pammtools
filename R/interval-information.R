@@ -39,18 +39,18 @@ int_info.default <- function(
   if (is.unsorted(x)) {
     x <- sort(x)
   }
-  if (min(x != 0)) {
+  if (min(x) != 0) {
     x <- c(0, x)
   }
 
   intlen <- diff(x)
   tstart <- x[-length(x)]
-  tend   <- tstart + intlen
+  tend   <- c(tstart[-1], max(x))
 
   tdf <- data.frame(
     tstart = tstart,
     tend   = tend,
-    intlen = intlen) %>%
+    intlen = tend - tstart) %>%
     mutate(
       intmid = tstart + intlen / 2,
       interval = paste0("(", tstart, ",", tend, "]"),
@@ -155,7 +155,7 @@ get_intervals.default <- function(
   int_df <- int_info(x)
   int    <- findInterval(
     x                = times,
-    vec              = sort(union(int_df$tstart, int_df$tend)),
+    vec              = c(int_df$tstart[1], int_df$tend),
     left.open        = left.open,
     rightmost.closed = rightmost.closed)
 

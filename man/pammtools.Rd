@@ -2,7 +2,6 @@
 % Please edit documentation in R/pammtools.R
 \docType{package}
 \name{pammtools}
-\alias{pammtools-package}
 \alias{pammtools}
 \title{pammtools: Piece-wise exponential Additive Mixed Modeling tools.}
 \description{

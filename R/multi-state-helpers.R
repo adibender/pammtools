@@ -1,17 +1,14 @@
-#' @examples
-#' t_mat <- matrix(data = NA, nrow = 4, ncol = 4)
-#' t_mat[1,2] <- "-1 - sin(x2)"
-#' t_mat[1,3] <- "-1.3 + 0.1*x2*x3"
-#' t_mat[2,3] <- "-1.5 + 0.8*x1 + 0.3*x2 - 0.1*x3"
+#' Extract transition information from different objects
+#'
 #' @keywords internal
 from_to_pairs <- function(t_mat) {
 
-
+  UseMethod("from_to_pairs", t_mat)
 
 }
 
-#' @examples
-#' ftp <- from_to_pairs2(t_mat)
+#' @rdname from_to_pairs
+#' @keywords internal
 from_to_pairs2 <- function(t_mat) {
 
   res <- apply(t_mat, 1, function(x) which(x) - 1)
@@ -22,12 +19,16 @@ from_to_pairs2 <- function(t_mat) {
 
 }
 
-from_to_pairs.data.frame <- function(data, from_col = "from", to_col = "to") {
+#' @rdname from_to_pairs
+#' @examples
+#' df = data.frame(id = c(1,1, 2,2), from = c(1, 1, 2, 2), to = c(2, 3, 2, 2))
+#' from_to_pairs(df)
+from_to_pairs.data.frame <- function(t_mat, from_col = "from", to_col = "to", ...) {
 
   map(
-    .x = sort(unique(data[[from_col]])),
+    .x = sort(unique(t_mat[[from_col]])),
     .f = ~{
-      data %>%
+      t_mat %>%
         filter(.data[[from_col]] == .x) %>%
         pull(to_col) %>%
         unique()
@@ -48,11 +49,6 @@ from_to_pairs.data.frame <- function(data, from_col = "from", to_col = "to") {
 #' @param from_col Name of the column that stores initial state.
 #' @param to_col Name of the column that stores end state.
 #' @param transition_col Name of the column that contains the transition identifier (factor variable).
-#' @examples
-#'
-#' res <- add_counterfactual_transitions(data, list(c(2,3), 3))
-#' res <- add_counterfactual_transitions(data)
-#' res %>% select(id, from, to, status, tstart, tstop, transition, trans)
 #' @export
 add_counterfactual_transitions <- function(
   data,
@@ -70,10 +66,10 @@ add_counterfactual_transitions <- function(
   l_from <- split(data, data[[from_col]])
 
   orig_status <- data %>%
-    select(id, from, to, tstart, status) %>%
+    select(one_of(c("id", "from", "to", "tstart", "status"))) %>%
     rename(
-      orig_to = to,
-      orig_status = status)
+      "orig_to" = "to",
+      "orig_status" = "status")
 
   res <- map2_dfr(
     from_to_pairs,
@@ -101,30 +97,9 @@ add_counterfactual_transitions <- function(
   res %>%
     ungroup() %>%
     left_join(orig_status) %>%
-    mutate(status = status * (to == orig_to)) %>%
-    select(-orig_status, -orig_to) %>%
-    arrange(id, tstart, tstop, from, to, status)
+    mutate(status = .data$status * (.data$to == .data$orig_to)) %>%
+    select(-one_of("orig_status", "orig_to")) %>%
+    arrange(.data$id, .data$tstart, .data$tstop, .data$from, .data$to, .data$status)
 
 
 }
-
-# ped_msm <- res %>% as_ped(
-#   formula = Surv(tstart, tstop, status)~.,
-#   transition = "transition",
-#   timescale = "calendar")
-# data %>%
-#   select(id, tstart, tstop, status, transition)
-# res %>%
-#   select(id, tstart, tstop, status, from, to, transition)
-# ped_msm %>%
-#   group_by(id, transition) %>%
-#   slice(1,n()) %>%
-#   select(id, tstart, tend, ped_status, transition) %>%
-#   filter(id %in% c(1, 4, 5))
-
-# split_df  %>%
-#   mutate(row_number = row_number()) %>%
-#   group_by(id, transition) %>%
-#   slice(1,n()) %>%
-#   select(row_number, id, tstart, tend, ped_status, transition) %>%
-#   filter(id %in% c(1, 4, 5))
