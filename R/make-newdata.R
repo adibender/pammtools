@@ -385,9 +385,9 @@ adjust_ll <- function(out_df, data) {
 expand_df <- function(
     x,
     object,
-    trafo_args = NULL,
-    intvars = NULL,
-    time_var   = NULL,
+    trafo_args      = NULL,
+    intvars         = NULL,
+    time_var        = NULL,
     interval_length = "intlen",
     ...) {
 
@@ -423,7 +423,7 @@ expand_df <- function(
     newdata <- combine_df(ped_info, newdata) %>% select(-c("times")) 
   }
 
-  map_times <- data.frame(tend = sort(ped_times), tstart_lag = lag(ped_times, default = 0))
+  map_times <- data.frame("tend" = sort(ped_times), "tstart_lag" = lag(ped_times, default = 0))
   suppressMessages(
     newdata <- newdata %>% 
       left_join(map_times) %>% 
@@ -432,7 +432,7 @@ expand_df <- function(
         intlen = .data$tend - .data$tstart,
         offset = log(.data$tend - .data$tstart),
         ped_status = 0) %>% 
-      select(-tstart_lag) # correct tstart
+      select(-.data$tstart_lag) # correct tstart
   )
   
   # if(length(haz_vars_in_data) != 0) {

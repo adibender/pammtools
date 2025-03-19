@@ -929,12 +929,12 @@ get_trans_prob <- function(
       cols      = c(as.character(unique_transition$transition)),
       names_to  = "transition",
       values_to = "trans_prob") %>%
-    mutate(trans_prob = pmin(pmax(trans_prob, 0), 1))
+    mutate(trans_prob = pmin(pmax(.data$trans_prob, 0), 1))
 
   # join probabilities and return matrix
   newdata <- newdata %>%
     left_join(trans_prob_df, by=c("tend", "transition")) %>%
-    select(-delta_cumu_hazard, -from, -to)
+    select(-one_of(c("delta_cumu_hazard", "from", "to")))
 
   return(newdata)
 
@@ -1021,7 +1021,7 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
 
   # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
   groups_array <- group_indices(newdata)
-  groups_trans <- newdata %>% ungroup(transition) %>% group_indices()
+  groups_trans <- newdata %>% ungroup(.data$transition) %>% group_indices()
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)

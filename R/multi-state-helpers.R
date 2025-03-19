@@ -1,5 +1,6 @@
 #' Extract transition information from different objects
 #'
+#' @rdname from_to_pairs
 #' @keywords internal
 from_to_pairs <- function(t_mat) {
 
@@ -20,9 +21,12 @@ from_to_pairs2 <- function(t_mat) {
 }
 
 #' @rdname from_to_pairs
+#' @keywords internal
 #' @examples
+#' \dontrun{
 #' df = data.frame(id = c(1,1, 2,2), from = c(1, 1, 2, 2), to = c(2, 3, 2, 2))
 #' from_to_pairs(df)
+#' }
 from_to_pairs.data.frame <- function(t_mat, from_col = "from", to_col = "to", ...) {
 
   map(

@@ -16,7 +16,9 @@ from_to_pairs2(t_mat)
 Extract transition information from different objects
 }
 \examples{
+\dontrun{
 df = data.frame(id = c(1,1, 2,2), from = c(1, 1, 2, 2), to = c(2, 3, 2, 2))
 from_to_pairs(df)
+}
 }
 \keyword{internal}
