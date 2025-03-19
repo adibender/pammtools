@@ -43,17 +43,16 @@ int_info.default <- function(
     x <- c(0, x)
   }
 
-  intlen <- diff(x)
   tstart <- x[-length(x)]
-  tend   <- c(tstart[-1], max(x))
+  tend   <- x[-1]
 
   tdf <- data.frame(
     tstart = tstart,
     tend   = tend,
     intlen = tend - tstart) %>%
     mutate(
-      intmid = tstart + intlen / 2,
-      interval = paste0("(", tstart, ",", tend, "]"),
+      intmid = .data$tstart + .data$intlen / 2,
+      interval = paste0("(", .data$tstart, ",", .data$tend, "]"),
       interval = factor(.data$interval, levels = unique(.data$interval))
     )
 
@@ -200,10 +199,10 @@ ped_info.ped <- function(ped) {
       sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
       grouped_df(vars = group_vars(sdf))
   }
-  
+
   attr(int_df, "trafo_args") <- attr(ped, "trafo_args")
   attr(int_df, "intvars") <- attr(ped, "intvars")
-  
+
   int_df
 
 }

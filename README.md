@@ -16,6 +16,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?b
 license](https://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/license/mit)
 <!-- badges: end -->
 
+
 # **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools
 
 ### Installation
@@ -56,3 +57,7 @@ A general framework for the representation and estimation of cumulative effects
 
 - Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
  -->
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

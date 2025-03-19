@@ -71,10 +71,12 @@ add_term <- function(
 
 }
 
-#' Create model matrix from fitted model object
-#' @param object a model object
+
+#' Create design matrix from a suitable object
 #'
 #' @keywords internal
+#' @param object A suitable object from which a design matrix can be generated.
+#' Often a model object.
 make_X <- function(object, ...) {
 
   UseMethod("make_X", object)
@@ -83,21 +85,27 @@ make_X <- function(object, ...) {
 
 #' @inherit make_X
 #' @keywords internal
+#' @rdname make_X
+#' @inherit make_X
+#' @param newdata A data frame from which design matrix will be constructed
 make_X.default <- function(object, newdata, ...) {
 
-  X <- model.matrix(object$formula[-2], data = newdata, ...)
+  model.matrix(object$formula[-2], data = newdata, ...)
 
 }
 
 #' @inherit make_X
+#' @inherit make_X.default
+#' @rdname make_X
 #' @keywords internal
 make_X.gam <- function(object, newdata, ...) {
 
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
 
 }
 
 #' @inherit make_X
+#' @importFrom scam predict.scam
 #' @keywords internal
 make_X.scam <- function(object, newdata, ...) {
 
@@ -131,7 +139,7 @@ preproc_reference <- function(reference, cnames, n_rows) {
   # transform to list if inherits from data frame, so it can be processed
   # in mutate via !!!
   if (inherits(reference, "data.frame")) {
-    if (!(nrow(reference) == n_rows | nrow(reference) == 1)) {
+    if (!(nrow(reference) == n_rows || nrow(reference) == 1)) {
       stop("If reference is provided as data frame, number of rows must be
         either 1 or the number of rows in newdata.")
     }
@@ -1021,7 +1029,7 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
 
   # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
   groups_array <- group_indices(newdata)
-  groups_trans <- newdata %>% ungroup(.data$transition) %>% group_indices()
+  groups_trans <- newdata %>% ungroup("transition") %>% group_indices()
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z)

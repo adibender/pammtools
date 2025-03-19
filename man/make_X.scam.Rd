@@ -2,14 +2,17 @@
 % Please edit documentation in R/add-functions.R
 \name{make_X.scam}
 \alias{make_X.scam}
-\title{Create model matrix from fitted model object}
+\title{Create design matrix from a suitable object}
 \usage{
 \method{make_X}{scam}(object, newdata, ...)
 }
 \arguments{
-\item{object}{a model object}
+\item{object}{A suitable object from which a design matrix can be generated.
+Often a model object.}
+
+\item{newdata}{A data frame from which design matrix will be constructed}
 }
 \description{
-Create model matrix from fitted model object
+Create design matrix from a suitable object
 }
 \keyword{internal}

@@ -261,9 +261,11 @@ make_newdata.ped <- function(x, ...) {
     )
     suppressMessages(
       ndf <- ndf %>% 
-        left_join(int_df) %>% mutate(tend = info$times) %>% 
-        left_join(map_times) %>% mutate(tstart = pmax(tstart, tstart_lag)) %>% 
-        select(-tstart_lag) # correct tend and tstart
+        left_join(int_df) %>%
+        mutate(tend = info$times) %>%
+        left_join(map_times) %>%
+        mutate(tstart = pmax(.data$tstart, .data$tstart_lag)) %>%
+        select(-one_of("tstart_lag")) # correct tend and tstart
       )
   } else {
     ndf <- combine_df(int_df[1, ], ndf)
@@ -432,7 +434,7 @@ expand_df <- function(
         intlen = .data$tend - .data$tstart,
         offset = log(.data$tend - .data$tstart),
         ped_status = 0) %>% 
-      select(-.data$tstart_lag) # correct tstart
+      select(-one_of("tstart_lag")) # correct tstart
   )
   
   # if(length(haz_vars_in_data) != 0) {
