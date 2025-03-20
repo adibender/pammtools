@@ -91,7 +91,6 @@ articles:
     - competing-risks
     - recurrent-events
     - multi-state
-    - smj-tutorial
 
 navbar:
   type: default

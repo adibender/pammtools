@@ -42,8 +42,6 @@ Specifying time-varying effects.
 Estimation for left-truncated data.
 \item \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}:
 Competing risks analysis.
-\item \href{https://adibender.github.io/pammtools/articles/multi-state.html}{multi-state}:
-Multi-state models.
 }
 }
 \references{
@@ -76,6 +74,7 @@ Useful links:
 Authors:
 \itemize{
   \item Fabian Scheipl \email{fabian.scheipl@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-8172-3603}{ORCID})
+  \item Johannes Piller \email{johannes.piller@stat.uni-muenchen.de}
   \item Philipp Kopper \email{philipp.kopper@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0002-5037-7135}{ORCID})
 }
 
