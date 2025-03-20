@@ -126,3 +126,6 @@ cbind(pam=coef(pam2)[5:7], cox=coef(cph2))
 
 Again, covariate estimates are very similar between the two models and
 can be interpreted in the same way.
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

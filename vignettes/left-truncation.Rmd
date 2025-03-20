@@ -90,3 +90,6 @@ ggplot(ndf, aes(x = tend, y = cumu_hazard)) +
   geom_ribbon(aes(ymin = cumu_lower, ymax = cumu_upper), alpha = .3) +
   geom_step(data = base, aes(x = time, y = hazard), col = 2)
 ```
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">
