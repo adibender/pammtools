@@ -1,8 +1,5 @@
 ## Test environments
-* Local Ubuntu Linux R 4.2.1
-* R release with Travis CI
-* Appveyor (patched)
-* win-builder
+* Release and dev for linux, mac and windows
 
 ## R CMD check results
 
@@ -12,4 +9,4 @@
 No problems.
 
 ## Comments
-- Maintenance updates
+Adds multi-state support
