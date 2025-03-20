@@ -1,13 +1,18 @@
 #' New basis for penalized lag selection
+#'
 #' See Obermeier et al., 2015, Flexible Distributed Lags for Modelling Earthquake Data,
 #' Journal of the Royal Statistical Society: Series C (Applied Statistics),
 #' 10.1111/rssc.12077
-
+#'
+#' @param object An object handled by mgcv
+#' @param data The data set
+#' @param knots A vector of knots
+#' @keywords internal
 smooth.construct.fdl.smooth.spec <- function(object, data, knots) {
 
   # modify object so that it's fitted as a p-spline signal regression term:
   object$bs <- "ps"
-  object <- mgcv:::smooth.construct.ps.smooth.spec(object, data, knots)
+  object <- mgcv::smooth.construct.ps.smooth.spec(object, data, knots)
 
   if (!is.null(object$xt$fullrankpen) && object$xt$fullrankpen) {
     # add ridge penalty to first <order of B-spline>+1 (=m+2) basis functions with
