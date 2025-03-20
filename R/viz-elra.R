@@ -94,7 +94,7 @@ gg_partial_ll <- function(
         levels = c("ci_lower", "fit", "ci_upper")))
   }
 
-  gg_base <- ggplot(ll_df, aes(x = .data[["intmid"]], y =  tz_var)) +
+  gg_base <- ggplot(ll_df, aes(x = .data[["intmid"]], y =  .data[[tz_var]])) +
     geom_tile(aes(fill = .data[["fit"]]), colour = "grey30") +
     scale_fill_gradient2(high = "firebrick2", low = "steelblue",
       na.value = "grey30") +
