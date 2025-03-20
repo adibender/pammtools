@@ -3,6 +3,7 @@ context("Convenience functions for calculation of hazard and similar")
 data("tumor")
 ped <- tumor[1:200,] %>% as_ped(Surv(days, status)~ age + complications,
   cut = c(0, 50, 100, 200, 300, 400))
+
 pam <- mgcv::gam(ped_status ~ s(tend, k = 5) + complications, data = ped,
   family = poisson(), offset = offset)
 pam2 <- mgcv::gam(ped_status ~ s(tend, k = 5) + complications + s(age), data = ped,
@@ -14,6 +15,25 @@ pem <- glm(ped_status ~ 0 + interval + complications, data = ped,
 
 pam3 <- mgcv::gam(ped_status ~ s(tend, k = 5, by = as.factor(complications)) + as.factor(complications),
   data = ped, family = poisson(), offset = offset)
+
+data("prothr", package = "mstate")
+prothr <- prothr[1:200,] |> 
+  filter(Tstart != Tstop) |> 
+  mutate(transition = as.factor(paste0(from, "->", to))) |> 
+  select(-trans, -treat)
+ped_msm <- as_ped(
+  data       = prothr,
+  formula    = Surv(Tstart, Tstop, status)~ .,
+  # cut = seq(2000, 4000, length.out = 100),
+  transition = "transition",
+  id         = "id",
+  timescale  = "calendar"
+)
+
+pam_msm <- gam(ped_status ~ s(tend, by=transition, bs="cr") + transition
+               , data = ped_msm
+               , family = poisson()
+               , offset = offset)
 
 test_that("hazard functions work for PAM", {
 
@@ -127,6 +147,19 @@ test_that("cumulative hazard functions work for PAM", {
 
 })
 
+test_that("cumulative hazard function work for arbitrary time points", {
+  ndf1 = ped |> make_newdata(tend = unique(tend)[1:3], age = c(60, 70)) |>
+    group_by(age) |>
+    add_cumu_hazard(pam2)
+  
+  ndf2 = ped |> make_newdata(tend = unique(tend)[3], age = c(60, 70)) |>
+    group_by(age) |>
+    add_cumu_hazard(pam2)
+ 
+  expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
+  expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
+})
+
 test_that("cumulative hazard functions work for PEM", {
 
   expect_data_frame(haz <- add_cumu_hazard(ped_info(ped), pem),
@@ -171,13 +204,13 @@ test_that("adding terms works for PEM", {
       nrows = 5L, ncols = 10L)
 })
 
-test_that("warns about / aborts for unknown intervals", {
+# test_that("warns about / aborts for unknown intervals", {
+#   # not needed anymore (sanity is checked when applied to ped data, anything else we can't check)
+#   # weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
+#   # expect_warning(add_hazard(weird, pam), "not equivalent")
+#   # expect_error(add_hazard(weird, pem), "not equivalent")
 
-  weird <- make_newdata(ped_info(ped), tend = c(150), interval = c("(1.4, 4]"))
-  expect_warning(add_hazard(weird, pam), "not equivalent")
-  expect_error(add_hazard(weird, pem), "not equivalent")
-
-})
+# })
 
 test_that("works for nonstandard baseline arguments", {
 
@@ -277,4 +310,21 @@ test_that("CIF works", {
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
 
+})
+
+test_that("Transition Probability works", {
+  
+  ndf <- ped_msm %>%
+    make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+    group_by(transition) %>%
+    arrange(transition, tend) |>
+    add_trans_prob(pam_msm, ci=T)
+  expect_data_frame(ndf, nrows = 380L, ncols = 11L) 
+  expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
+  expect_true(all(ndf$trans_prob < ndf$trans_upper))
+  expect_true(all(ndf$trans_prob > ndf$trans_lower))
+  expect_true(all(ndf$trans_prob <= 1 & ndf$trans_prob >= 0))
+  expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
+  expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
+  
 })

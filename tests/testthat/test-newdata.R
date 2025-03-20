@@ -105,11 +105,30 @@ test_that("make_newdata works for PED with matrix columns", {
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))
+  
 
 })
 
 test_that("Errors are thrown", {
 
   expect_error(combine_df(data.frame(x = 1), x = 2))
+  expect_error(tumor[1:4,1:2] |>
+    as_ped(Surv(days, status)~1) |>
+    make_newdata(tend = c(0)))
+
+})
+
+
+test_that("Newdata correct for new time points", {
+
+  ped   <- tumor[1:5, 1:3] |> as_ped(Surv(days, status)~.)
+  nd6 <- ped |> make_newdata(tend = c(2, 33, 100))
+  expect_data_frame(nd6, nrows = 3L, ncols = 8L)
+  expect_equal(nd6$tend, c(2, 33, 100))
+  expect_equal(nd6$tstart, c(0, 2, 33))
+  expect_equal(nd6$intlen, c(2, 31, 67))
+
+  ## TODO: add test for same but more complex ped data (cumulative effects)
+
 
 })

@@ -34,3 +34,5 @@ revdep
 /vignettes/tdcovar.pdf
 /vignettes/tveffects.pdf
 /data-raw/staph.xlsx
+sim/
+tmp/

@@ -1,21 +1,21 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/adibender/pammtools/workflows/R-CMD-check/badge.svg)](https://github.com/adibender/pammtools/actions)
+[![R-CMD-check](https://github.com/adibender/pammtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/adibender/pammtools/actions/workflows/R-CMD-check.yaml)
 [![cran
-checks](https://badges.cranchecks.info/worst/pammtools.svg)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
+checks](https://cranchecks.info/badges/worst/pammtools)](https://cran.r-project.org/web/checks/check_results_pammtools.html)
 [![lifecycle](https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Build
-Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://app.travis-ci.com/adibender/pammtools)
-[![Build
-Status](https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&svg=true)](https://ci.appveyor.com/project/adibender/pammtools/branch/master)
-[![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://app.codecov.io/github/adibender/pammtools/branch/master)
+Status](https://travis-ci.org/adibender/pammtools.svg?branch=master)](https://travis-ci.org/adibender/pammtools)
+Status\](<https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&svg=true>)\](<https://ci.appveyor.com/project/adibender/pammtools/branch/master>)
+[![codecov.io](https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master)](https://codecov.io/github/adibender/pammtools/branch/master)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-ago/pammtools)](https://cran.r-project.org/package=pammtools)
 [![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/pammtools)](https://cran.r-project.org/package=pammtools)
 [![MIT
-license](https://img.shields.io/badge/license-MIT-brightgreen.svg)]( https://opensource.org/license/mit)
+license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/license/mit)
+[![Codecov test
+coverage](https://codecov.io/gh/adibender/pammtools/graph/badge.svg)](https://app.codecov.io/gh/adibender/pammtools)
 <!-- badges: end -->
-
 
 # **`pammtools`**: Piece-Wise Exponential Additive Mixed Modeling Tools
 
@@ -42,22 +42,13 @@ To get started, see the
 [Articles](https://adibender.github.io/pammtools/articles/) section.
 
 <!-- An overview over the packages functionality is given in
-
-- Andreas Bender and Fabian Scheipl, "pammtools: Piece-wise exponential
+&#10;- Andreas Bender and Fabian Scheipl, "pammtools: Piece-wise exponential
 Additive Mixed Modeling tools", arXiv eprint, 2018, https://arxiv.org/abs/1806.01042
-
-
+&#10;
 For a tutorial-like introduction to PAMMs see:
-
-  - Andreas Bender, Andreas Groll, and Fabian Scheipl, “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
-
-
+&#10;  - Andreas Bender, Andreas Groll, and Fabian Scheipl, “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
+&#10;
 A general framework for the representation and estimation of cumulative effects
 (or exposure-lag-response associations) is described in:
-
-- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
+&#10;- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
  -->
-
-
-<!-- Zaehlmarke VGWort -->
-<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

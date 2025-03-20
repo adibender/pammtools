@@ -174,10 +174,10 @@ as_ped.list <- function(
   # form  <- Formula(formula)
   has_tdc <- has_tdc_form(formula, tdc_specials = tdc_specials)
 
-  if (nl == 1 & !has_tdc) {
+  if (nl == 1 && !has_tdc) {
     ped <- data[[1]] %>% as_ped(formula = formula, tdc_specials = tdc_specials, ...)
   } else {
-    if (nl == 2 & !has_tdc) {
+    if (nl == 2 && !has_tdc) {
     stop("Two data sets provided in 'data' but no specification of
       time-dependent covariate effects in 'formula'")
     } else {
@@ -253,7 +253,6 @@ as_ped_cr <- function(
   lhs_vars <- get_lhs_vars(formula)
   n_lhs <- length(lhs_vars)
   event_types <- get_event_types(data, formula, censor_code)
-  n_events <- sum(event_types != censor_code)
 
   cut <- map2(
     event_types,
@@ -262,7 +261,7 @@ as_ped_cr <- function(
       get_cut(data, formula = formula, cut = .cut, max_time = NULL, event = .event)
     }
   )
-  if(length(cut) > 1 & combine) {
+  if (length(cut) > 1 && combine) {
     cut <- list(reduce(cut, union))
   }
 
@@ -372,7 +371,7 @@ as_ped_multistate <- function(
   dots$transition <- transition
   dots$min_events <- min_events
   dots$timescale  <- timescale
-
+  
   ped <- do.call(split_data_multistate, dots)
   attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
 

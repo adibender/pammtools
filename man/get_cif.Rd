@@ -13,7 +13,7 @@ get_cif(newdata, object, ...)
   ci,
   time_var,
   alpha,
-  n_sim,
+  nsim,
   cause_var,
   coefs,
   V,
