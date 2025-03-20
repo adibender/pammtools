@@ -1,4 +1,7 @@
 #' New basis for penalized lag selection
+#' See Obermeier et al., 2015, Flexible Distributed Lags for Modelling Earthquake Data,
+#' Journal of the Royal Statistical Society: Series C (Applied Statistics),
+#' 10.1111/rssc.12077
 
 smooth.construct.fdl.smooth.spec <- function(object, data, knots) {
 
