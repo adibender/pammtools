@@ -6,11 +6,18 @@
 \alias{from_to_pairs.data.frame}
 \title{Extract transition information from different objects}
 \usage{
-from_to_pairs(t_mat)
+from_to_pairs(t_mat, ...)
 
-from_to_pairs2(t_mat)
+from_to_pairs2(t_mat, ...)
 
 \method{from_to_pairs}{data.frame}(t_mat, from_col = "from", to_col = "to", ...)
+}
+\arguments{
+\item{t_mat}{an object that contains information about possible transitions.}
+
+\item{from_col}{The name of the column in the data frame that contains "from" states.}
+
+\item{to_col}{The name of the column in the data frame that contains "to" states.}
 }
 \description{
 Extract transition information from different objects

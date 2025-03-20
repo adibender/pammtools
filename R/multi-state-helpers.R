@@ -1,8 +1,9 @@
 #' Extract transition information from different objects
 #'
 #' @rdname from_to_pairs
+#' @param t_mat an object that contains information about possible transitions.
 #' @keywords internal
-from_to_pairs <- function(t_mat) {
+from_to_pairs <- function(t_mat, ...) {
 
   UseMethod("from_to_pairs", t_mat)
 
@@ -10,7 +11,7 @@ from_to_pairs <- function(t_mat) {
 
 #' @rdname from_to_pairs
 #' @keywords internal
-from_to_pairs2 <- function(t_mat) {
+from_to_pairs2 <- function(t_mat, ...) {
 
   res <- apply(t_mat, 1, function(x) which(x) - 1)
   names(res) <- seq_len(nrow(t_mat)) - 1
@@ -21,6 +22,8 @@ from_to_pairs2 <- function(t_mat) {
 }
 
 #' @rdname from_to_pairs
+#' @param from_col The name of the column in the data frame that contains "from" states.
+#' @param to_col The name of the column in the data frame that contains "to" states.
 #' @keywords internal
 #' @examples
 #' \dontrun{

@@ -42,6 +42,8 @@ Specifying time-varying effects.
 Estimation for left-truncated data.
 \item \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}:
 Competing risks analysis.
+\item \href{https://adibender.github.io/pammtools/articles/multi-state.html}{multi-state}:
+Multi-state models.
 }
 }
 \references{
@@ -55,7 +57,7 @@ Biostatistics 20 (2): 315–31. https://doi.org/10.1093/biostatistics/kxy003.
 
 Bender, Andreas, and Fabian Scheipl. 2018.
 “pammtools: Piece-Wise Exponential Additive Mixed Modeling Tools.”
-ArXiv:1806.01042 \link{Stat}, June. https://arxiv.org/abs/1806.01042.
+ArXiv:1806.01042 Stat, June. https://arxiv.org/abs/1806.01042.
 Ramjith J, Bender A, Roes KCB, Jonker MA. Recurrent events analysis
 with piece-wise exponential additive mixed models. 2022. Statistical
 Modelling., 2022
