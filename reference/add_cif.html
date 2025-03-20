@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.01</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.01</span>
       </span>
     </div>
 
@@ -80,6 +80,9 @@
       <a href="../articles/recurrent-events.html">Recurrent Events</a>
     </li>
     <li>
+      <a href="../articles/multi-state.html">Multi-State Modelling</a>
+    </li>
+    <li>
       <a href="../articles/smj-tutorial.html">Paper: A generalized additive model approach to time-to-event analysis</a>
     </li>
   </ul></li>
@@ -125,7 +128,7 @@
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  n_sim <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  cause_var <span class="op">=</span> <span class="st">"cause"</span>,</span>
 <span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -168,7 +171,7 @@ the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with
 <dd><p>The alpha level for confidence/credible intervals.</p></dd>
 
 
-<dt id="arg-n-sim">n_sim<a class="anchor" aria-label="anchor" href="#arg-n-sim"></a></dt>
+<dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
 <dd><p>Number of simulations (draws from posterior of estimated coefficients)
 on which estimation of CIFs and their confidence/credible intervals will be
 based on.</p></dd>

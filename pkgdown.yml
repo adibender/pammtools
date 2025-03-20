@@ -11,13 +11,14 @@ articles:
   frailty: frailty.html
   left-truncation: left-truncation.html
   model-evaluation: model-evaluation.html
+  multi-state: multi-state.html
   recurrent-events: recurrent-events.html
   smj-tutorial: smj-tutorial.html
   splines: splines.html
   strata: strata.html
   tdcovar: tdcovar.html
   tveffects: tveffects.html
-last_built: 2025-01-29T21:43Z
+last_built: 2025-03-20T12:48Z
 urls:
   reference: https://adibender.github.io/pammtools/reference
   article: https://adibender.github.io/pammtools/articles

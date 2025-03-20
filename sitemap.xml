@@ -12,6 +12,7 @@
 <url><loc>https://adibender.github.io/pammtools/articles/index.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/left-truncation.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/model-evaluation.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/articles/multi-state.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/recurrent-events.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/smj-tutorial.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/splines.html</loc></url>
@@ -22,10 +23,13 @@
 <url><loc>https://adibender.github.io/pammtools/index.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/news/index.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/add_cif.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/add_counterfactual_transitions.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/add_hazard.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/add_surv_prob.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/add_tdc.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/add_term.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/add_trans_ci.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/add_trans_prob.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/as.data.frame.crps.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/as_ped.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/as_ped_cr.html</loc></url>
@@ -38,6 +42,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/elra_matrix.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/fcumu.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/formula_helpers.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/from_to_pairs.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/geom_hazard.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/geom_stepribbon.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_cif.html</loc></url>
@@ -52,6 +57,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/get_ped_form.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_plotinfo.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_sim_ci.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/get_sim_cumu.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_surv_prob.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_tdc_form.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_tdc_vars.html</loc></url>
@@ -68,6 +74,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/index.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/int_info.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/make_X.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/make_X.scam.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/modus.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/nest_tdc.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/newdata.html</loc></url>

@@ -28,7 +28,7 @@ add_hazard, etc."><meta property="og:image" content="https://adibender.github.io
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.01</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.01</span>
       </span>
     </div>
 
@@ -83,6 +83,9 @@ add_hazard, etc."><meta property="og:image" content="https://adibender.github.io
     </li>
     <li>
       <a href="../articles/recurrent-events.html">Recurrent Events</a>
+    </li>
+    <li>
+      <a href="../articles/multi-state.html">Multi-State Modelling</a>
     </li>
     <li>
       <a href="../articles/smj-tutorial.html">Paper: A generalized additive model approach to time-to-event analysis</a>
@@ -282,13 +285,13 @@ See examples below.</p>
 <span class="r-in"><span><span class="fu"><a href="seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">ped</span><span class="op">$</span><span class="va">tend</span>, <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]    1.0 1517.5 3034.0</span>
 <span class="r-in"><span><span class="fu">make_newdata</span><span class="op">(</span><span class="va">ped</span>, tend <span class="op">=</span> <span class="fu"><a href="seq_range.html">seq_range</a></span><span class="op">(</span><span class="va">tend</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Some values of 'tend' have been set to the respective interval end-points</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Not all requested timepoints correspond to original cut points.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 14</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   tstart  tend intlen interval       id offset ped_status charlson_score   age</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>      0     1      1 (0,1]        393.   0             0           2.73  61.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>   <span style="text-decoration: underline;">1</span>502  <span style="text-decoration: underline;">1</span>538     36 (1502,1538]  393.   3.58          0           2.73  61.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>   <span style="text-decoration: underline;">2</span>808  <span style="text-decoration: underline;">3</span>034    226 (2808,3034]  393.   5.42          0           2.73  61.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>      0    1     1   (0,1]        393.   0             0           2.73  61.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>   <span style="text-decoration: underline;">1</span>502 <span style="text-decoration: underline;">1</span>518.   15.5 (1502,1538]  393.   2.74          0           2.73  61.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>   <span style="text-decoration: underline;">2</span>808 <span style="text-decoration: underline;">3</span>034   226   (2808,3034]  393.   5.42          0           2.73  61.3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: sex &lt;fct&gt;, transfusion &lt;fct&gt;, complications &lt;fct&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   metastases &lt;fct&gt;, resection &lt;fct&gt;</span></span>
 </code></pre></div>

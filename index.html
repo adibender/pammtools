@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.01</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.01</span>
       </span>
     </div>
 
@@ -101,6 +101,9 @@
       <a href="articles/recurrent-events.html">Recurrent Events</a>
     </li>
     <li>
+      <a href="articles/multi-state.html">Multi-State Modelling</a>
+    </li>
+    <li>
       <a href="articles/smj-tutorial.html">Paper: A generalized additive model approach to time-to-event analysis</a>
     </li>
   </ul>
@@ -135,7 +138,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-
+<p><a href="https://github.com/adibender/pammtools/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/adibender/pammtools/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/web/checks/check_results_pammtools.html" class="external-link"><img src="https://cranchecks.info/badges/worst/pammtools" alt="cran checks"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://lifecycle.r-lib.org/articles/figures/lifecycle-stable.svg" alt="lifecycle"></a> <a href="https://travis-ci.org/adibender/pammtools" class="external-link"><img src="https://travis-ci.org/adibender/pammtools.svg?branch=master" alt="Build Status"></a> Status](<a href="https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&amp;svg=true" class="external-link uri">https://ci.appveyor.com/api/projects/status/github/adibender/pammtools?branch=master&amp;svg=true</a>)](<a href="https://ci.appveyor.com/project/adibender/pammtools/branch/master" class="external-link uri">https://ci.appveyor.com/project/adibender/pammtools/branch/master</a>) <a href="https://codecov.io/github/adibender/pammtools/branch/master" class="external-link"><img src="https://codecov.io/github/adibender/pammtools/coverage.svg?branch=master" alt="codecov.io"></a> <a href="https://cran.r-project.org/package=pammtools" class="external-link"><img src="https://www.r-pkg.org/badges/version-ago/pammtools" alt="CRAN_Status_Badge"></a> <a href="https://cran.r-project.org/package=pammtools" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/pammtools" alt="CRAN_Download_Badge"></a> <a href="https://opensource.org/license/mit" class="external-link"><img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT license"></a> <a href="https://app.codecov.io/gh/adibender/pammtools" class="external-link"><img src="https://codecov.io/gh/adibender/pammtools/graph/badge.svg" alt="Codecov test coverage"></a> <!-- badges: end --></p>
 <div class="section level1">
 <div class="page-header"><h1 id="pammtools-piece-wise-exponential-additive-mixed-modeling-tools">
 <strong><code>pammtools</code></strong>: Piece-Wise Exponential Additive Mixed Modeling Tools<a class="anchor" aria-label="anchor" href="#pammtools-piece-wise-exponential-additive-mixed-modeling-tools"></a>
@@ -154,23 +157,16 @@
 <p><strong><code>pammtools</code></strong> facilitates the estimation of Piece-wise exponential Additive Mixed Models (PAMMs) for time-to-event data. PAMMs can be represented as generalized additive models and can therefore be estimated using GAM software (e.g. <strong><code>mgcv</code></strong>), which, compared to other packages for survival analysis, often offers more flexibility w.r.t. to the specification of covariate effects (e.g. non-linear, time-varying effects, cumulative effects, etc.).</p>
 <p>To get started, see the <a href="https://adibender.github.io/pammtools/articles/">Articles</a> section.</p>
 <!-- An overview over the packages functionality is given in
-
-- Andreas Bender and Fabian Scheipl, "pammtools: Piece-wise exponential
+&#10;- Andreas Bender and Fabian Scheipl, "pammtools: Piece-wise exponential
 Additive Mixed Modeling tools", arXiv eprint, 2018, https://arxiv.org/abs/1806.01042
-
-
+&#10;
 For a tutorial-like introduction to PAMMs see:
-
-  - Andreas Bender, Andreas Groll, and Fabian Scheipl, “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
-
-
+&#10;  - Andreas Bender, Andreas Groll, and Fabian Scheipl, “A Generalized Additive Model Approach to Time-to-Event Analysis.” Statistical Modelling. https://doi.org/10.1177/1471082X17748083.
+&#10;
 A general framework for the representation and estimation of cumulative effects
 (or exposure-lag-response associations) is described in:
-
-- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
+&#10;- Andreas Bender, Fabian Scheipl, Wolfgang Hartl, Andrew G Day, Helmut Küchenhoff, "Penalized estimation of complex, non-linear exposure-lag-response associations", Biostatistics, , kxy003, 2018, https://doi.org/10.1093/biostatistics/kxy003
  -->
-<!-- Zaehlmarke VGWort -->
-<p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
 </div>
 </div>
 
