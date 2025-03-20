@@ -3,7 +3,7 @@ title: "Frailty and random effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{frailty}
+  %\VignetteIndexEntry{Frailty and random effects}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -67,3 +67,6 @@ gg_re(pamm_icu)
 
 
 Note that the `pamm` function calls `mgcv::gam` by default. Depending on the requirements for the random effect estimation, other mixed modeling software might be more appropriate/efficient, e.g. **`nlme`**, **`lme4`**, **`gamm4`** or for example using function `mgcv::gamm`.
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

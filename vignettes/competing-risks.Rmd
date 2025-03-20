@@ -4,7 +4,7 @@ author: "Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{competing-risks}
+  %\VignetteIndexEntry{Competing Risks}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -24,6 +24,9 @@ theme_set(theme_bw())
 
 In this article we illustrate how to fit cause specific hazards models to competing risks data. The standard way to estimate cause specific hazards is to create one data set for each event type and fit a separate model.
 However, it is also possible to create one combined data set and enter the event type as a covariate (with interactions), such that it is possible to estimate shared effects (i.e., effects that contribute equally to the hazard of multiple event types).
+
+
+# `fourD` Data
 
 For illustration we use the `fourD` data set from the **`etm`** package. The data set contains time-constant covariates like `age` and `sex` as
 well as time-to-event (`time`) and event type indicator `status` (0 = censored, 1 = death from cardiovascular events, 2 = death from other causes).
@@ -153,3 +156,7 @@ ggplot(ndf, aes(x = tend, y = cif)) +
     alpha = .3) +
   facet_wrap(~cause, labeller = label_both)
 ```
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

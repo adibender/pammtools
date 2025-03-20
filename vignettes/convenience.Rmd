@@ -3,7 +3,7 @@ title: "Workflow and convenience functions"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{convenience}
+  %\VignetteIndexEntry{Workflow and convenience functions}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes
@@ -194,3 +194,7 @@ gg_slice(ped, pam, "age", age = seq_range(age, n = 25),
 
 
 ## References
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

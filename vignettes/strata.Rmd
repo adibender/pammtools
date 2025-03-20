@@ -3,7 +3,7 @@ title: "Stratified baseline"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{strata}
+  %\VignetteIndexEntry{Stratified baseline}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -43,7 +43,7 @@ from the `survival` package,
 where the cell type of the lung cancer had four levels:
 
 ```{r}
-data("veteran") # load veteran data
+veteran <- survival::veteran # load veteran data
 veteran <- veteran %>%
   mutate(
     trt   = 1*(trt == 2),
@@ -126,3 +126,6 @@ cbind(pam=coef(pam2)[5:7], cox=coef(cph2))
 
 Again, covariate estimates are very similar between the two models and
 can be interpreted in the same way.
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

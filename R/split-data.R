@@ -2,6 +2,9 @@
 #' exponential data format
 #'
 #' @inheritParams as_ped
+#' @param multiple_id Are occurences of same id allowed (per transition).
+#' Defaults to \code{FALSE}, but is sometimes set to \code{TRUE}, e.g., in case of
+#' multi-state models with back transitions.
 #' @import survival checkmate dplyr
 #' @importFrom stats as.formula update
 #' @importFrom purrr set_names
@@ -11,8 +14,9 @@
 split_data <- function(
   formula,
   data,
-  cut      = NULL,
-  max_time = NULL,
+  cut         = NULL,
+  max_time    = NULL,
+  multiple_id = FALSE,
   ...) {
 
   dots_in         <- list(...)
@@ -58,6 +62,7 @@ split_data <- function(
 
   # obtain interval breaks points
   cut <- get_cut(data, formula_cut, cut = cut, max_time = max_time)
+  cut <- sort(unique(cut))
 
   ## crate argument list to be passed to survSplit
   dots         <- list(...)
@@ -66,8 +71,8 @@ split_data <- function(
   dots$cut     <- dots_in$cut <- cut
   rm(data)
 
-  # if id allready in the data set, remove id variable from dots but keep
-  # id variable for later rearrangment
+  # if id already in the data set, remove id variable from dots but keep
+  # id variable for later rearrangement
   if (!is.null(dots$id)) {
     id_var <- dots$id
   } else {
@@ -76,7 +81,7 @@ split_data <- function(
   }
 
   if (id_var %in% names(dots$data)) {
-    if (length(unique(dots$data[[id_var]])) != nrow(dots$data)) {
+    if (length(unique(dots$data[[id_var]])) != nrow(dots$data) & !multiple_id) {
       stop(paste0("Specified ID variable (", id_var, ") must have same number of
         unique values as number of rows in 'data'."))
     }
@@ -87,7 +92,7 @@ split_data <- function(
       dots$formula <- update(dots$formula, paste0("~ . + ", id_var))
     }
   }
-
+  
   # create data in ped format
   split_df <- do.call(survSplit, args = dots)
   if("ped_start" %in% colnames(split_df)) {
@@ -96,6 +101,16 @@ split_data <- function(
 
 
   # Add variables for piece-wise exponential (additive) model
+  if(length(surv_vars) == 3) {
+    split_df  <- split_df %>%
+      mutate(
+        ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
+                            0L, .data$ped_status),
+        tstart     = pmin(.data$tstart, max(cut)),
+        ped_time   = pmin(.data$ped_time, max(cut)),
+        offset     = ifelse(.data$ped_time  == .data$tstart, -Inf, log(.data$ped_time - .data$tstart))) %>%
+      filter(!(.data$tstart == .data$ped_time))
+  } else {
   split_df  <- split_df %>%
     mutate(
       ped_status = ifelse(.data$ped_status == 1 & .data$ped_time > max(cut),
@@ -103,6 +118,7 @@ split_data <- function(
       ped_time   = pmin(.data$ped_time, max(cut)),
       offset     = log(.data$ped_time - .data$tstart)) %>%
     filter(!(.data$tstart == .data$ped_time))
+  }
 
 
   ## combine data with general interval info
@@ -112,6 +128,7 @@ split_data <- function(
   } else {
     info_cut <- cut
   }
+  
   int_info <- int_info(info_cut)
   split_df <- left_join(split_df, int_info, by = c("tstart" = "tstart"))
 
@@ -124,7 +141,7 @@ split_data <- function(
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
-  attr(split_df, "breaks") <- cut
+  attr(split_df, "breaks") <- sort(unique(cut))
   attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
@@ -148,7 +165,7 @@ split_data <- function(
 #' Defaults to \code{"gaptime"}.
 #' @param min_events Minimum number of events for each event number.
 #' @keywords internal
-split_data_recurrent <- function(
+split_data_multistate <- function(
   formula,
   data,
   transition    = character(),
@@ -202,12 +219,13 @@ split_data_recurrent <- function(
   data_list <- data_list[map_dbl(data_list, ~sum(.x[[surv_vars[3]]])) >= min_events]
   cuts <- get_cut(data_list, formula, cut = cut, max_time = max_time,
     event = event, timescale = timescale)
-
+  
   ## create argument list to be passed to split_data
   dots <- list(...)
+  dots$multiple_id <- TRUE # possible in case of multi-state models with back transitions
 
-  # if id allready in the data set, remove id variable from dots but keep
-  # id variable for later rearrangment
+  # if id already in the data set, remove id variable from dots but keep
+  # id variable for later rearrangement
   if (!is.null(dots$id)) {
     id_var <- dots$id
   } else {
@@ -236,15 +254,6 @@ split_data_recurrent <- function(
     split_df <- split_df %>% filter(.data[["tend"]] <= max_time)
   }
 
-  if (timescale == "calendar") {
-    split_check <- split_df %>%
-      group_by(.data[[dots$id]]) %>%
-      summarize(dups = sum(duplicated(.data[["tstart"]])))
-
-    if (any(split_check[["dups"]]) != 0) {
-      stop("Something went wrong during data transformation. \n Please post an issue at 'https://github.com/adibender/pammtools/issues' with your code and data")
-    }
-  }
 
   ## set class and and attributes
   class(split_df) <- c("ped", class(split_df))
@@ -252,7 +261,14 @@ split_data_recurrent <- function(
   attr(split_df, "id_var") <- dots_in$id <- id_var
   attr(split_df, "intvars") <- c(id_var, "tstart", "tend", "interval", "offset",
     "ped_status")
+  dots_in$transition           <- transition
+  dots_in$timescale            <- timescale
+  dots_in$cut                  <- sort(unique(cuts))
+  dots_in$max_time             <- max_time
+  dots_in$event                <- event
+  dots_in$min_events           <- min_events
   attr(split_df, "trafo_args") <- dots_in
+  class(split_df)              <- unique(class(split_df))
 
   split_df
 

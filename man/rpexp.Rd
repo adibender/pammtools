@@ -8,13 +8,12 @@ rpexp(n = 1, rate = 1, t = 0)
 }
 \arguments{
 \item{n}{number of observations. If \code{length(n) > 1}, the length is
-    taken to be the number required.}
+taken to be the number required.}
 
 \item{rate}{vector of rates.}
 
-\item{t}{vector of the same length as \code{rate}, giving the times at
-    which the rate changes. The first element of \code{t} should be 0,
-    and \code{t} should be in increasing order.}
+\item{t}{vector of the same length as \code{rate}, giving the times at which
+the rate changes. The values of \code{t} should be in increasing order.}
 }
 \description{
 This is a copy of the same function from \code{rpexp} from package

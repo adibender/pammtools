@@ -20,8 +20,8 @@ get_cut.default <- function(
   event    = 1L,
   ...) {
 
+  outcome_vars <- get_lhs_vars(formula)
   if (is.null(cut)) {
-    outcome_vars <- get_lhs_vars(formula)
     if (length(outcome_vars) == 2) {
       cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
     } else {
@@ -33,14 +33,33 @@ get_cut.default <- function(
       cut <- cut[cut < max_time]
       cut <- c(cut, max_time)
     }
+  } else {
+    if (length(outcome_vars) == 2) {
+      # sort interval cut points in case they are not (so that interval factor
+      # variables will be in correct ordering)
+      cut <- sort(unique(cut))
+    } else {
+      # sort interval cut points in case they are not (so that interval factor
+      # variables will be in correct ordering)
+      # add transitions within interval cut points to not lose information
+      cut <- sort(unique(union(cut, data[[outcome_vars[2]]][1L * (data[[outcome_vars[3]]]) == event &
+                         1L * (data[[outcome_vars[2]]]) < max(cut)])
+                         )
+                  )
+    }
+    if (!is.null(max_time)) {
+      cut <- cut[cut < max_time]
+      cut <- c(cut, max_time)
+    }
   }
-  # sort interval cut points in case they are not (so that interval factor
-  # variables will be in correct ordering)
-  sort(cut)
+
+  return(sort(unique(cut)))
 
 }
 
 
+#' @rdname get_cut
+#' @inherit get_cut
 get_cut.list <- function (
   data,
   formula,
@@ -71,5 +90,6 @@ get_cut.list <- function (
   )
 
   cuts <- Reduce(union, cuts)
+  sort(unique(cuts))
 
 }

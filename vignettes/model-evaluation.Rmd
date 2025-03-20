@@ -3,7 +3,7 @@ title: "Model evaluation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{model-evaluation}
+  %\VignetteIndexEntry{Model evaluation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes
@@ -100,3 +100,7 @@ cindex(
   eval.times = quantile(tumor$days[tumor$status == 1], c(.25, .5, .75)))
 ```
 ## References
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

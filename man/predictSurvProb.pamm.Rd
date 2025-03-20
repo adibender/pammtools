@@ -4,7 +4,7 @@
 \alias{predictSurvProb.pamm}
 \title{S3 method for pamm objects for compatibility with package pec}
 \usage{
-\method{predictSurvProb}{pamm}(object, newdata, times)
+\method{predictSurvProb}{pamm}(object, newdata, times, ...)
 }
 \arguments{
 \item{object}{A fitted model from which to extract predicted survival
@@ -16,6 +16,8 @@ which to compute predicted survival probabilities.}
 \item{times}{A vector of times in the range of the response variable, e.g.
 times when the response is a survival object, at which to return the
 survival probabilities.}
+
+\item{...}{Additional arguments that are passed on to the current method.}
 }
 \description{
 S3 method for pamm objects for compatibility with package pec

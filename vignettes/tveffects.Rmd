@@ -3,7 +3,7 @@ title: "Time-varying effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{tveffects}
+  %\VignetteIndexEntry{Time-varying effects}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -71,7 +71,7 @@ Karnofsky performance scores `karno` (the higher the better), `age` and whether
 
 ```{r}
 # for some reason the prior variable is coded 0/10 instead of 0/1
-data("veteran", package = "survival")
+veteran <- survival::veteran
 veteran <- veteran %>%
   mutate(
     trt   = 1L * (trt == 2),
@@ -318,3 +318,7 @@ and its uncertainty.
 gg_tensor(pam3, ci = TRUE) +
   xlab("t") + ylab(expression(x[plain(karno)]))
 ```
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">

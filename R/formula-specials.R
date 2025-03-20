@@ -310,35 +310,39 @@ make_mat_names <- function(x, ...) {
 
 #' @keywords internal
 make_mat_names.default <- function(
-  col_vars,
+  x,
   latency_var = NULL,
   tz_var      = NULL,
   suffix      = NULL,
-  nfunc       = 1) {
+  nfunc       = 1,
+  ...) {
 
   if (!is.null(suffix)) {
-    return(paste(col_vars, suffix, sep = "_"))
+    return(paste(x, suffix, sep = "_"))
   } else {
     if (!is.null(tz_var) & nfunc > 1)  {
-      tz_ind <- col_vars == tz_var
-      col_vars[!tz_ind] <- paste(col_vars[!tz_ind], tz_var,  sep = "_")
+      tz_ind <- x == tz_var
+      x[!tz_ind] <- paste(x[!tz_ind], tz_var,  sep = "_")
     }
     if (!is.null(latency_var)) {
-      latency_ind <- col_vars == latency_var
-      col_vars[latency_ind] <- paste(col_vars[latency_ind], "latency",
+      latency_ind <- x == latency_var
+      x[latency_ind] <- paste(x[latency_ind], "latency",
         sep = "_")
     }
   }
 
-  return(col_vars)
+  return(x)
 
 }
 
 #' @keywords internal
-make_mat_names.list <- function(func_list, time_var) {
-  hist_names <- map(func_list, ~ make_mat_names(c(.x[["col_vars"]], "LL"),
+make_mat_names.list <- function(
+  x,
+  time_var,
+  ...) {
+  hist_names <- map(x, ~ make_mat_names(c(.x[["col_vars"]], "LL"),
     .x[["latency_var"]], .x[["tz_var"]], .x[["suffix"]],
-    nfunc = length(func_list)))
+    nfunc = length(x)))
 
   time_mat_ind <- map(hist_names, ~grepl(time_var, .))
   for (i in seq_along(time_mat_ind)) {

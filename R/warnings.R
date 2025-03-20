@@ -7,23 +7,27 @@ warn_about_new_time_points <- function(object, newdata, ...) {
 
 }
 
-
+#' @inherit warn_about_new_time_points
+#' @keywords internal
 warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
-  is_pam <- inherits(object, "gam")
+  is_pam <- (inherits(object, "gam" ) | inherits( object, "scam"))
 
-  if(is_pam & is.null(object$model)){
+  if (is_pam && is.null(object$model)) {
     return(invisible())
   }
 
   original_intervals <- if (is_pam) {
     unique(model.frame(object)[[time_var]])
-  } else levels(model.frame(object)[[time_var]])
+  } else {
+    levels(model.frame(object)[[time_var]])
+  }
   prediction_intervals <- if (is_pam) {
     unique(newdata[[time_var]])
-  } else levels(factor(newdata[[time_var]]))
+  } else {
+    levels(factor(newdata[[time_var]]))
+  }
   new_ints <- which(!(prediction_intervals %in% original_intervals))
-  n_out <- pmin(10, length(new_ints))
   if (length(new_ints)) {
    message <- paste0(
     "Time points/intervals in new data not equivalent to time points/intervals during model fit.",
@@ -41,7 +45,7 @@ warn_about_new_time_points.pamm <- function(object, newdata, ...) {
     int_original <- int_info(object)
     if ("interval" %in% colnames(newdata)) {
       int_new <- unique(newdata[["interval"]])
-      if(!all(int_new %in% int_original)) {
+      if(!all(int_new %in% int_original[["interval"]])) {
         warning(
           paste0(
             "Time points/intervals in new data not equivalent to time points/intervals during model fit.",
@@ -71,11 +75,14 @@ warn_about_new_time_points.pamm <- function(object, newdata, ...) {
 # }
 
 
-status_error <- function(data, formula) {
+status_error <- function(data, formula, censor_code = 0L) {
 
   outcome_vars <- get_lhs_vars(formula)
-  if (!any(1L * (unique(data[[outcome_vars[length(outcome_vars)]]])) == 1)) {
-    stop(paste("No events in data! Check your", outcome_vars[2], "variable."))
+  if (!any(unique(data[[outcome_vars[length(outcome_vars)]]]) != censor_code)) {
+    stop(paste(
+      "No events in data! Check your",
+      outcome_vars[length(outcome_vars)],
+      "variable."))
   }
 
 }

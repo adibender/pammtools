@@ -1,7 +1,7 @@
 Package: pammtools
 Title: Piece-Wise Exponential Additive Mixed Modeling Tools for Survival Analysis
-Version: 0.5.8
-Date: 2022-01-04
+Version: 0.7.02
+Date: 2025-03-19
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut"), comment = c(ORCID = "0000-0001-8172-3603")),
@@ -16,7 +16,7 @@ Description: The Piece-wise exponential (Additive Mixed) Model
     including data simulation, transformation and other functions for data
     preprocessing and model post-processing as well as visualization.
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Imports:
     mgcv,
     survival (>= 2.39-5),
@@ -32,13 +32,23 @@ Imports:
     Formula,
     mvtnorm,
     pec,
-    vctrs (>= 0.3.0)
+    vctrs (>= 0.3.0),
+    scam
 Suggests:
-    testthat
+    testthat,
+    mstate
+Config/Needs/website:
+  coxme,
+  eha,
+  etm,
+  scam,
+  msm,
+  mvna,
+  TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true
 URL: https://adibender.github.io/pammtools/
 BugReports: https://github.com/adibender/pammtools/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

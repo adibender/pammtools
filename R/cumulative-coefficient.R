@@ -44,11 +44,11 @@ get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
   cumu_coef <- model[["cum"]] %>%
     as_tibble() %>%
     select(one_of(terms)) %>%
-    gather("variable", "cumu_hazard", -.data$time)
+    gather("variable", "cumu_hazard", -.data[["time"]])
   cumu_var <- model[["var.cum"]] %>%
     as_tibble() %>%
     select(terms) %>%
-    gather("variable", "cumu_var", -.data$time)
+    gather("variable", "cumu_var", -.data[["time"]])
 
     suppressMessages(
       left_join(cumu_coef, cumu_var) %>%

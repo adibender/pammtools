@@ -39,21 +39,20 @@ int_info.default <- function(
   if (is.unsorted(x)) {
     x <- sort(x)
   }
-  if (min(x != 0)) {
+  if (min(x) != 0) {
     x <- c(0, x)
   }
 
-  intlen <- diff(x)
   tstart <- x[-length(x)]
-  tend   <- tstart + intlen
+  tend   <- x[-1]
 
   tdf <- data.frame(
     tstart = tstart,
     tend   = tend,
-    intlen = intlen) %>%
+    intlen = tend - tstart) %>%
     mutate(
-      intmid = tstart + intlen / 2,
-      interval = paste0("(", tstart, ",", tend, "]"),
+      intmid = .data$tstart + .data$intlen / 2,
+      interval = paste0("(", .data$tstart, ",", .data$tend, "]"),
       interval = factor(.data$interval, levels = unique(.data$interval))
     )
 
@@ -155,7 +154,7 @@ get_intervals.default <- function(
   int_df <- int_info(x)
   int    <- findInterval(
     x                = times,
-    vec              = sort(union(int_df$tstart, int_df$tend)),
+    vec              = c(int_df$tstart[1], int_df$tend),
     left.open        = left.open,
     rightmost.closed = rightmost.closed)
 
@@ -195,10 +194,15 @@ ped_info.ped <- function(ped) {
   if (is.null(sdf)) {
     return(int_df)
   } else {
-    bind_cols(
+    int_df <- bind_cols(
       int_df %>% slice(rep(seq_len(nrow(int_df)), times = nrow(sdf))),
       sdf %>% slice(rep(seq_len(nrow(sdf)), each = nrow(int_df)))) %>%
       grouped_df(vars = group_vars(sdf))
   }
+
+  attr(int_df, "trafo_args") <- attr(ped, "trafo_args")
+  attr(int_df, "intvars") <- attr(ped, "intvars")
+
+  int_df
 
 }
