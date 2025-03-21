@@ -5,7 +5,7 @@ Date: 2025-03-20
 Authors@R: c(
     person("Andreas", "Bender", , "andreas.bender@stat.uni-muenchen.de", role = c("aut", "cre"), comment=c(ORCID = "0000-0001-5628-8611")),
     person("Fabian", "Scheipl", , "fabian.scheipl@stat.uni-muenchen.de", role = c("aut"), comment = c(ORCID = "0000-0001-8172-3603")),
-    person("Johannes", "Piller", , "johannes.piller@lmu.de", role = c("aut"), comment = c(ORCID = "")),
+    person("Johannes", "Piller", , "johannes.piller@lmu.de", role = c("aut"), comment = c(ORCID = "0009-0008-3010-9556")),
     person("Philipp", "Kopper", , "philipp.kopper@stat.uni-muenchen.de", role = c("aut"), comment = c(ORCID="0000-0002-5037-7135")),
     person("Lukas", "Burk", , "burk@leibniz-bips.de", role = c("ctb"), comment = c(ORCID="0000-0001-7528-3795")))
 Description: The Piece-wise exponential (Additive Mixed) Model
