@@ -14,8 +14,11 @@
 \item{knots}{A vector of knots}
 }
 \description{
-See Obermeier et al., 2015, Flexible Distributed Lags for Modelling Earthquake Data,
+Originally proposed in  Obermeier et al., 2015, Flexible Distributed Lags for Modelling Earthquake Data,
 Journal of the Royal Statistical Society: Series C (Applied Statistics),
-10.1111/rssc.12077
+10.1111/rssc.12077.
+Here extended in order to penalize lead times in addition to lag times.
+Ideally the lag-lead window would then be selected in a data-driven fashion.
+Treat as experimental.
 }
 \keyword{internal}
