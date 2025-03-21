@@ -13,12 +13,11 @@ articles:
   model-evaluation: model-evaluation.html
   multi-state: multi-state.html
   recurrent-events: recurrent-events.html
-  smj-tutorial: smj-tutorial.html
   splines: splines.html
   strata: strata.html
   tdcovar: tdcovar.html
   tveffects: tveffects.html
-last_built: 2025-03-20T15:52Z
+last_built: 2025-03-21T09:39Z
 urls:
   reference: https://adibender.github.io/pammtools/reference
   article: https://adibender.github.io/pammtools/articles

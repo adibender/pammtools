@@ -14,7 +14,6 @@
 <url><loc>https://adibender.github.io/pammtools/articles/model-evaluation.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/multi-state.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/recurrent-events.html</loc></url>
-<url><loc>https://adibender.github.io/pammtools/articles/smj-tutorial.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/splines.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/strata.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/tdcovar.html</loc></url>
@@ -91,6 +90,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/sim_pexp.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/sim_pexp_cr.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/simdf_elra.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/smooth.construct.fdl.smooth.spec.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/specials.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/split_data.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/split_data_multistate.html</loc></url>
