@@ -74,7 +74,7 @@ Useful links:
 Authors:
 \itemize{
   \item Fabian Scheipl \email{fabian.scheipl@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-8172-3603}{ORCID})
-  \item Johannes Piller \email{johannes.piller@lmu.de}
+  \item Johannes Piller \email{johannes.piller@lmu.de} (\href{https://orcid.org/0009-0008-3010-9556}{ORCID})
   \item Philipp Kopper \email{philipp.kopper@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0002-5037-7135}{ORCID})
 }
 
