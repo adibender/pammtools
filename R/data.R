@@ -69,6 +69,17 @@
 "tumor"
 
 
+#' Time until nuclear power plant construction in different regions.
+#'
+#' This dataset originates from IAEA and contains 730 power.
+#' The data contains the following variables:
+#' \describe{
+#'  \item{months}{Construction time}
+#'  \item{status}{Event indicator (0 = censored, 1 = construction finished).}
+#'  \item{region}{Continent, Africa/Asia, America, Europe, Soviet Union and Warsaw Pact}
+#' }
+"nuclear"
+
 #' Time until staphylococcus aureaus infection in children, with possible recurrence
 #'
 #' This dataset originates from the Drakenstein child health study.
