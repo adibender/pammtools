@@ -23,7 +23,11 @@ get_cut.default <- function(
   outcome_vars <- get_lhs_vars(formula)
   if (is.null(cut)) {
     if (length(outcome_vars) == 2) {
-      cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
+      if (is.logical(data[[outcome_vars[2]]])) {
+        cut <- unique(data[[outcome_vars[1]]][1L * (data[[outcome_vars[2]]]) == event])
+      } else {
+        cut <- unique(data[[outcome_vars[1]]][as.character(data[[outcome_vars[2]]]) == as.character(event)])
+      }
     } else {
       cut_start <- unique(data[[outcome_vars[1]]])
       cut_end   <- unique(data[[outcome_vars[2]]])
