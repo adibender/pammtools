@@ -264,20 +264,20 @@ as_ped_cr <- function(
   if (length(cut) > 1 && combine) {
     cut <- list(reduce(cut, union))
   }
-
+  
   ped <- map2(
     event_types,
     cut,
     function(.event, .cut) {
       ped_i <- data %>%
-        mutate(!!lhs_vars[n_lhs] := 1L * (.data[[lhs_vars[n_lhs]]] == .env[[".event"]])) %>%
+        mutate(!!lhs_vars[n_lhs] := 1L * (as.character(.data[[lhs_vars[n_lhs]]]) == as.character(.env[[".event"]]))) %>%
         as_ped(
           formula      = formula,
           cut          = .cut,
           max_time     = max_time,
           tdc_specials = tdc_specials,
           ...)
-      ped_i$cause <- .event
+      ped_i$cause <- as.factor(.event)
       ped_i
     })
 
@@ -315,8 +315,13 @@ get_event_types <- function(data, formula, censor_code) {
 
   lhs_vars <- get_lhs_vars(formula)
   status_values <- unique(data[[lhs_vars[length(lhs_vars)]]]) %>% sort()
-  status_values[status_values != censor_code]
-
+  status_values <- status_values[status_values != censor_code]
+  if (is.factor(status_values)) {
+    droplevels(status_values[status_values != censor_code])
+  } else {
+    status_values
+  }
+  
 }
 
 
