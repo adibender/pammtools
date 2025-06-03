@@ -772,13 +772,14 @@ get_cif.default <- function(
   }
 
 
-  causes_model <- as.factor(object$attr_ped$risks)
+  # causes_model <- as.factor(object$attr_ped$risks)
+  causes_model <- as.factor(levels(newdata[[cause_var]]))
   cause_data   <- unique(newdata[[cause_var]])
 
   if(length(cause_data) > 1) {
     stop("Did you forget to group by cause?")
   }
-
+  
   hazards <- map(
     causes_model,
     ~ {
