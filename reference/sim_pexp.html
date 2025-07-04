@@ -171,12 +171,12 @@ below.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      id  time status     x1    x2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1  1.00      1 -<span style="color: #BB0000;">2.87</span>   4.14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     2  4.20      1  1.20   5.61</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3  4.53      1 -<span style="color: #BB0000;">0.951</span>  2.46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     4  2.07      1  0.331  3.71</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     5  3.02      1  2.98   4.98</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>     6  2.32      1 -<span style="color: #BB0000;">1.91</span>   1.43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1 5.26       1 -<span style="color: #BB0000;">0.991</span> 2.60 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     2 4.72       1 -<span style="color: #BB0000;">1.81</span>  0.673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3 1.43       1 -<span style="color: #BB0000;">1.39</span>  4.52 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     4 0.139      1 -<span style="color: #BB0000;">0.653</span> 2.25 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     5 3.01       1  0.463 2.52 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>     6 2.85       1  2.46  5.70 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html" class="external-link">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">sim_df</span> <span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -184,7 +184,7 @@ below.</p></dd>
 <span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/pspline.html" class="external-link">pspline</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sim_df</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         x1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -0.5711059 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -0.4888887 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/termplot.html" class="external-link">termplot</a></span><span class="op">(</span><span class="va">mod</span>, se <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-2.png" alt="" width="700" height="433"></span>
@@ -199,11 +199,11 @@ below.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:dplyr’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     collapse</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This is mgcv 1.9-1. For overview type 'help("mgcv-package")'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> This is mgcv 1.9-3. For overview type 'help("mgcv-package")'.</span>
 <span class="r-in"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">x1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="va">poisson</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         x1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -0.5534093 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -0.4855289 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pam</span>, page<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_pexp-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -262,7 +262,7 @@ below.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>
