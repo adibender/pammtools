@@ -72,3 +72,24 @@ test_that("Trafo works for more than two risks.", {
   expect_equal(sum(ped$ped_status[ped$cause == 3L]), 1)
 
 })
+
+test_that("Trafo works for status as factor.", {
+  # create data set with status as factor
+  dat <- data.frame(
+    status_fct = factor(c(0, 0, 0, 0, 1, 1, 1, 2, 2, 2)),
+    time = seq(from = 10, to = 100, by = 10)
+  )
+  
+  # create as ped with status as factor
+  ped <- as_ped(
+    data = dat,
+    formula = Surv(time, status_fct) ~ .
+  )
+  
+  expect_data_frame(ped, nrow = 50L, ncols = 7L)
+  expect_is(ped, "ped_cr_union")
+  expect_subset(c("ped_status", "tstart", "tend",
+                  "interval", "offset", "cause"), names(ped))
+  expect_is(attr(ped, "risks"), "factor")
+  expect_equal(levels(ped$cause), c("1", "2"))
+})
