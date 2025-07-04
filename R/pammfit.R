@@ -61,8 +61,13 @@ pamm <- function(
     trafo_args$data <- data
     data <- do.call(split_data, trafo_args)
   }
+  
   dots$data   <- data
   dots$offset <- data$offset
+  
+  if (is.null(data$offset)) {
+    warning(paste0(deparse(substitute(data)), " does not contain an offset. PAMM assumes a risk time of 1 for all subjects"))
+  }
 
   pamm_fit        <- do.call(engine, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))

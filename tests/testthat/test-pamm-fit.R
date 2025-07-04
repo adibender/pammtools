@@ -28,5 +28,9 @@ context("Test pamm wrapper function")
   expect_true(inherits(pam3, "bam"))
   expect_data_frame(int_info(pam3), nrows = 9L, ncols = 5L)
   expect_identical(is.pamm(pam), TRUE)
+  
+  # warning if no offset in ped data
+  ped_nooffset <- ped |> select(-offset)
+  expect_warning(pamm(ped_status ~ s(tend, k=3) + age, data = ped_nooffset))
 
  })
