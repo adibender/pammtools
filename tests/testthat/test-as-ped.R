@@ -61,6 +61,39 @@ test_that("Trafo works for list objects (with TDCs)", {
 
 })
 
+test_that("Trafo returns correct event times (with TDCs)", {
+  
+  data <- data.frame(
+    id = factor(1:5),
+    status = c(0L, 1L, 1L, 0L, 2L),
+    time = seq(from = 20, to = 100, by = 20)
+  )
+  
+  tdcs <- data.frame(
+    id = factor(c(1:5, 1:5)),
+    var = rbinom(10, 1, 0.3),
+    tt = c(rep(0, 5), seq(5, 23, 4))
+  )
+  
+  true_event_times <- c(seq(5, 23, 4), data[data$status != 0L, "time"])
+  
+  ped <- as_ped(
+    data = list(data, tdcs),
+    formula = Surv(time, status) ~ . + concurrent(var, tz_var = "tt"),
+    id = "id"
+  )
+
+  expect_identical(
+    sort(unique(ped[ped$cause == 1, "tend"]))
+    , sort(unique(true_event_times))
+  )
+  expect_identical(
+    sort(unique(ped[ped$cause == 2, "tend"]))
+    , sort(unique(true_event_times))
+  )
+  
+})
+
 
 test_that("Trafo works for left truncated data", {
 

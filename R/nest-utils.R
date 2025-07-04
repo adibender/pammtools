@@ -60,8 +60,10 @@ nest_tdc.default <- function(data, formula, ...) {
 #' @export
 nest_tdc.list <- function(data, formula, ...) {
 
+
   dots <- list(...)
   cut  <- dots[["cut"]]
+  censor_code <- dots[["censor_code"]]
 
   data_dummy <- suppressMessages(
     map(data, ~.x[1,]) %>% do.call(what = left_join))
@@ -105,9 +107,23 @@ nest_tdc.list <- function(data, formula, ...) {
     reduce(left_join) %>% as_tibble()
     )
 
-  ## add atrributes
-  cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
-
+  # case distinction for single event vs cr
+  event_types <- get_event_types(nested_df, formula, censor_code)
+  if (length(event_types) > 1) {
+    cut <- map2(
+      event_types,
+      if(is.list(cut)) cut else list(cut),
+      function(.event, .cut) {
+        get_cut(nested_df, formula = formula, cut = .cut, max_time = NULL, event = .event)
+      }
+    )
+    if (length(cut) > 1) {                                                        ## FIXME combine argument was excluded, implement?
+      cut <- sort(unique(unlist(reduce(cut, union))))
+    }
+  } else {
+    cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
+  }
+  
   id_n <- nested_df %>%
     pull(time_var) %>%
     pmin(max(cut)) %>%

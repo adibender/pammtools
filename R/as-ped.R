@@ -47,6 +47,7 @@
 #' @return A data frame class \code{ped} in piece-wise exponential data format.
 #' @export
 as_ped <- function(data, ...) {
+  
   UseMethod("as_ped", data)
 }
 
@@ -182,8 +183,8 @@ as_ped.list <- function(
       time-dependent covariate effects in 'formula'")
     } else {
 
-      nested_fdf <- nest_tdc(data, formula, ...)
-      ped <- as_ped(nested_fdf, formula, ...)
+      nested_fdf <- nest_tdc(data, formula, censor_code = censor_code, ...)
+      ped <- as_ped(nested_fdf, formula, censor_code = censor_code, ...)
 
     }
   }
