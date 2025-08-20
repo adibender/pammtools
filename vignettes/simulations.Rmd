@@ -1,0 +1,441 @@
+---
+title: "Simulating Time-To-Event Data"
+date: "`r Sys.Date()`"
+author: "Andreas Bender, Johannes Piller"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulating Time-To-Event Data}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+---
+
+```{r, warning = FALSE, echo = FALSE}
+library(knitr)
+opts_chunk$set(
+  fig.align  = "center",
+  fig.width  = 4,
+  fig.height = 4,
+  crop       = TRUE)
+```
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(survival)
+library(mgcv)
+library(pammtools)
+
+theme_set(theme_bw())
+```
+
+For convenience, the `pammtools` package contains a lightweight, but
+versatile function for the simulation of time-to-event data, with potentially
+smooth, smoothly time-varying effects. For the simulation of survival times we
+use the Piece-wise exponential distribution $t \sim \text{PEXP}(\boldsymbol{\lambda}, \textbf{t})$,
+which is implemented in the `msm` package [@Jackson2011].
+Here $\boldsymbol{\lambda}$ is a vector of hazards at time points $\textbf{t}$ and
+$\boldsymbol{\lambda}$ can be specified conveniently using a `formula` notation.
+
+In Section [Motivation](#motivation), we empirically demonstrate that
+even crude PEXP hazards can be used to simulate survival times from continuous
+distributions. 
+In Section [Flexible, covariate dependent simulation of survival times](#sim:tcc), 
+we illustrate the simulation of survival times based on hazard rates that 
+flexibly depend on time-constant covariates. Lastly, Section 
+[Simulation of survival times with cumulative effects](#sim:tdc) 
+shows how to simulate from hazards with cumulative effects of TDCs.
+
+## Motivation {#motivation}
+We use a simple Weibull baseline hazard model to illustrate that
+the function indeed simulates event times from the desired distribution,
+even though the hazards $\boldsymbol{\lambda}$ are assumed to be piece-wise constant
+between two time-points in $\textbf{t}$.
+
+```{r}
+# Weibull hazard function
+hweibull <- function(t, alpha, lambda) {
+  dweibull(t, alpha, lambda)/pweibull(t, alpha, lambda, lower.tail=FALSE)
+}
+
+# plot hazard and survival probability:
+alpha <- 1.5
+lambda <- 10
+t <- seq(0, 10, by=.01)
+wb_df <- data.frame(t = t) %>%
+  mutate(
+    hazard   = hweibull(t, alpha, lambda),
+    survival = pweibull(t, alpha, lambda, lower.tail = FALSE))
+```
+
+The figure below depicts the hazard rate and survivor function of
+a Weibull distribution with $T \sim WB(\alpha = 1.5, \lambda = 10)$.
+
+```{r viz_wb, fig.width=3.6, fig.height=1.8, echo=FALSE, fig.cap="Hazard rate (left) and survivor function (right) of the $WB(1.5, 10)$ distribution."}
+ggplot(gather(wb_df, key, value, hazard, survival), aes(x=t, y=value)) +
+  geom_line() +
+  facet_wrap(~key, scales = "free_y") + xlab("time")
+```
+
+```{r sim-weibull, echo = FALSE}
+  # set number of simulated survival times
+  n <- 1000
+  # set seed for RNG
+  set.seed(24032018)
+  sim_df_weibull <- data.frame(
+    time = rweibull(n, 1.5, 10),
+    status = 1)
+  
+  ped <- split_data(Surv(time, status)~., cut=seq(0, 10, by = 1), data=sim_df_weibull)
+  pem <- glm(ped_status ~ interval, data = ped, family=poisson(), offset=offset)
+  pem_haz_df <- int_info(ped) %>%
+    mutate(offset = log(tend - tstart))
+  pem_haz_df <- pem_haz_df %>%
+    mutate(hazard=predict(object=pem, ., type="response"))
+```
+
+```{r gg-pem-hazard, fig.width=4, fig.height=1.5, echo=FALSE, cache=FALSE, warning = FALSE, fig.cap= "PEM estimates of the baseline hazard $\\lambda(t)$ (left panel) and survival probability $S(t)$ (right panel). Red lines indicate the true Weibull hazard and survival probability, respectively."}
+  # hazard
+  gg_pem_haz <- ggplot(pem_haz_df, aes(x=tend, y= hazard)) +
+    geom_stephazard() +
+    geom_line(data=data.frame(tend = t, hazard=hweibull(t, 1.5, 10)), col=2) +
+    ylab(expression(lambda(t))) + xlab("time")
+  
+  # survival
+  gg_pem_surv <- ggplot(
+    data    = mutate(pem_haz_df, surv = exp(-cumsum(hazard*intlen))),
+    mapping = aes(x = tend, y = surv)) +
+    geom_line(
+      data = data.frame(tend = t, surv=pweibull(t, 1.5, 10, lower.tail=FALSE)),
+      col = 2) +
+    geom_surv() +
+    ylim(c(0,1)) +
+    ylab(expression(S(t))) + xlab("time")
+  # combine
+  gridExtra::grid.arrange(gg_pem_haz, gg_pem_surv, nrow = 1)
+```
+
+```{r sim_wb_pem, echo = FALSE, eval = TRUE, warning = FALSE}
+  sim_df_pem <- data.frame(
+      time   = msm::rpexp(n, rate =pem_haz_df$hazard, t =pem_haz_df$tstart),
+      status = 1)
+  sim_df_compare <- list(Weibull=sim_df_weibull, PEXP=sim_df_pem) %>%
+    purrr::imap_dfr(~broom::tidy(survfit(Surv(time, status)~1, .x)) %>% mutate(method=.y))
+  
+  gg_sim_comp <- ggplot(sim_df_compare, aes(x = time, y = estimate)) +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill=method), alpha=0.3) +
+    geom_line(aes(col = method)) +
+    xlim(c(0, 10)) +
+    geom_line(data = wb_df, aes(x = t, y = survival)) +
+    ylab(expression(hat(S)[KM]))
+```
+
+The figure above (left panel) shows the baseline hazard estimated
+by a PEM with 10 intervals based on $n=1000$ survival times simulated from
+$WB(1.5, 10)$. Although the approximation of the underlying smooth hazard is
+relatively crude, the survival function calculated from this step hazard
+is very close to the true survivor function
+(cf. right panel).
+
+Finally, below, we depict the distribution of survival
+times (Kaplan-Meier estimates) for $n=1000$ survival times simulated
+directly from the correct Weibull distribution (`rweibull(n, 1.5, 10)`) on
+the one hand and  from the $PEXP$ distribution (based on the crude hazard) 
+on the other hand.
+
+```{r gg-pem-wb-surv, fig.width = 3.6, fig.height=1.8, echo=FALSE, warning = FALSE, fig.cap="Comparison of Kaplan-Meier survival probability estimates based on survival times simulated directly from the Weibull distribution $WB(1.5, 10)$ and based on survival times simulated from the $PEXP$ distribution based on the hazards depicted above. The black line indicates the true Weibull survival probability on $t\\in [0, 10]$."}
+  gg_sim_comp
+```
+
+## Flexible, covariate dependent simulation of survival times {#sim:tcc}
+
+To simulate survival times from the PEXP distribution conveniently,
+`pammtools` provides the `sim_pexp` function. Similar to the
+`as_ped` function, it uses a formula interface, which allows to
+specify complex hazards relatively easily.
+To start, we simulate data from
+$$
+  \log(\lambda(t|x_1, x_2)) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2},
+$$
+where $f_0(t)$ is based on the Gamma(8,2) density function. Any existing or
+previously defined function can be used in the `formula` argument to `sim_pexp`. The
+argument `cut` defines the time-points at which the piece-wise constant
+hazard will change its value, for example, the hazard will change its value 
+at $t=1, t=2, \ldots$ with $f_0(t)$ (and other time-varying effects) evaluated 
+at the respective interval end-points. `sim_pexp` returns the original data 
+augmented by the simulated survival times (`time`) as well as a `status` column.
+
+```{r sim-pexp, echo=FALSE}
+# basic data
+set.seed(7042018)
+# create data set with covariates
+n <-1000
+df <- tibble::tibble(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6))
+# baseline hazard function
+f0 <- function(t) {dgamma(t, 8, 2) * 6}
+# simulate data from PEXP
+sim_df <- sim_pexp(
+  formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2),
+  data    = df,
+  cut     = 0:10)
+```
+
+```{r sim-pexp2, ref.label="sim-pexp", eval=FALSE, rexample=TRUE}
+head(sim_df)
+plot(survfit(Surv(time, status)~1, data = sim_df ))
+```
+  
+We evaluate the simulated data by comparing estimates of the Cox PH model
+and the PAM estimates.
+  
+```{r sim-pexp-eval-cph}
+# for comparison, estimate with Cox PH
+mod_cph <- coxph(Surv(time, status) ~ x1 + pspline(x2), data=sim_df)
+# and using PAMs
+ped <- split_data(Surv(time, status)~., data = sim_df, cut = seq(0, 10))
+ 
+mod_pam <- gam(
+  formula = ped_status ~ s(tend) + x1 + s(x2),
+  data    = ped,
+  family  = poisson,
+  offset  = offset)
+cbind(PAM = coef(mod_pam)[2] , COX = coef(mod_cph)[1])
+```
+    
+Note that the simulation could be easily extended to contain time-varying effects,
+e.g. by defining a function
+```{r, eval=FALSE}
+f_tx <- function(t, x) sqrt(x)*log(t)
+```
+and calling
+```{r eval=FALSE}
+sim_pexp(~ -3.5 + f0(t) -0.5*x1 + f_tx(t, x2), data = df, cut = 0:10)
+```
+
+## Simulation of survival times with cumulative effects {#sim:tdc}
+
+### Weighted cumulative exposure
+In this section we demonstrate how to simulate data with hazard rates
+
+$$
+\log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2} +
+  \int_{\mathcal{T}(t)} h(t-t_z)z(t_z) \text{d}t_z.
+$$
+
+which constitutes a so-called weighted cumulative exposure model [@Sylvestre2009].
+The static part of the data set as well as the baseline hazard and TCC effects
+are identical to the [previous section](#sim:tdc).
+For the cumulative effect, we define the exposure time grid (i.e., the time points
+$t_z$ at which the TDC was observed) and use the function `add_tdc` (mnemonic:
+*add time-dependent covariate*) to add the information on the exposure times
+and the $z(t_z)$ to the data.
+
+```{r wce-ex-init, echo=FALSE}
+# define follow-up time grid for simulation
+# (arbitrary, but check that enough events are observed over follow-up)
+time_grid <- seq(0, 10, by = 0.5)
+# baseline hazard
+f0 <- function(t) {dgamma(t, 8, 2) * 6}
+
+# define time grid on which TDC is observed
+# (arbitrary, but lag-lead matrix will depend on it)
+tz <- seq(-5, 5, by = .25)
+# define function that generates nz exposures z(t_{z,1}), ..., z(t_{z,Q})
+rng_z = function(nz) {
+  as.numeric(arima.sim(n = nz, list(ar = c(.8, -.1))))
+}
+## add TDCs to data set
+df <- df %>% add_tdc(tz, rng_z)
+df %>% slice(1) %>% pull("tz")
+```
+
+The partial effect $h(t-t_z)z(t_z)$ (see function `f_wce`) and the
+lag-lead window $\mathcal{T}(t)$ (see function `ll_fun`) are defined and depicted 
+below.
+
+The left panel of the figure shows the
+latency-dependent weight function $h(t-t_z)$ for the exposures $z(t_z)$.
+The middle panel shows the lag-lead window with partial effects.
+Note that $h(t-t_z)$ only depends on the latency, not the specific combination
+of $t$ and $t_z$.
+The right panel shows that the cumulative effect $g(\textbf{z}, t)$ varies over
+$t$ even for constant exposure $z(t_z) = z$ since it is integrated over different 
+windows of effectiveness $\mathcal{T}(t)$.
+
+```{r wce-ll-df}
+# define lag-lead function: integrate over the preceding 12 time units
+ll_fun <- function(t, tz) ((t - tz) >= 0) & ((t - tz) <=  12)
+# gg_laglead(0:10, -5:5, ll_fun)
+
+# partial effect h(t - tz) * z
+f_wce <- function(t, tz, z) {
+  0.5 * (dnorm(t - tz, 6, 2.5)) * z
+}
+```
+
+<details>
+  <summary>*Expand here to see R-Code*</summary>
+```{r partial_wce}
+LL_df  <- get_laglead(0:10, -5:5, ll_fun)
+LL_df <- LL_df %>%
+  mutate(latency = t - tz,
+         partial = f_wce(t, tz, z = 1)) %>%
+  filter(t != 0)
+
+gg_partial <- LL_df %>% filter(LL!=0) %>%
+  ggplot(aes(x = t - tz, y = partial)) +
+  geom_line() +
+  ylab(expression(h(t - t[z]))) + xlab(expression(t - t[z]))
+
+LL_df$partial[LL_df$LL == 0] <- NA
+gg_partial_LL <- ggplot(LL_df,
+                        aes(x = t, y = tz, fill = partial * LL, z = partial * LL)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(name = expression(t[z]), expand = c(0, 0)) +
+  geom_tile(colour = NA) +
+  scale_fill_gradient2(name = expression(h(t - t[z])),
+                       na.value = "grey30", low = "steelblue", high = "firebrick2")
+
+gg_cumeff <- LL_df %>%  group_by(t) %>%
+  summarize(g_z = sum(partial*LL, na.rm=T)) %>%
+  ggplot(aes(x = t, y = g_z)) +
+  geom_line() +
+  ylab(expression(g(bold(z) == 1, t))) +
+  ylim(c(.2, .6))
+```
+</details>
+  
+```{r gg_partial_wce, fig.width=8, fig.height=2.5, echo=FALSE, fig.cap = "Left: Partial effect $h(t-t_z)$ for different latencies  $t-t_z$. Middle: The lag-lead window $\\mathcal{T}(t)$ and respective partial effects for each combination of $t$ and $t_z$. Combinations of $t$ and $t_z$ outside the specified lag-lead window in dark gray. Partial effects of exposures at different time-points $t$, $t_z$ are the same if the latency $t-t_z$ is the same, i.e. $h(5-1) = h(6-2) = h(4)$. Right: Cumulative effect $g(\textbf{z},t)$ for constant $z(t_z)=1, \forall t_z$."}
+
+gridExtra::grid.arrange(gg_partial, gg_partial_LL, gg_cumeff, nrow = 1,
+                          widths = c(1, 1.5, 1))
+```
+
+Given the above setup with cumulative effects $g(\textbf{z},t)=\int_{\mathcal{T}(t)}h(t-t_z)z(t_z) \text{d}t_z$, 
+we can now simulate the data using the `sim_pexp` function.
+
+```{r}
+simdf_wce <- sim_pexp(
+  formula = ~ -3.5 + f0(t) -0.5*x1 + sqrt(x2)|
+  fcumu(t, tz, z.tz, f_xyz=f_wce, ll_fun=ll_fun),
+  data = df, cut = time_grid
+  )
+```
+
+### Bivariate, smooth partial effects
+In this section, we illustrate an extension of the previous simulation, where
+the exposure $z(t_z)$ affects the hazard non-linearly
+$$
+\log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x2} +
+  \int_{\mathcal{T}(t)} h(t-t_z,z(t_z)) \text{d}t_z
+$$
+
+Using the `sim_pexp` function, we can extend the previous
+simulation by changing the partial effect function (function `f_dlnm`).
+The figure below depicts the bivariate, smooth partial effect
+$h(t-t_z, z(t_z))$ and the resulting cumulative effects $g(\textbf{z},t)$ for a
+simplified exposure history with constant $z(t_z)=1$ for all $t_z$.
+
+```{r sim-dlnm}
+# partial effect h(t - tz) * z
+f_dlnm <- function(t, tz, z) {
+   20 * ((dnorm(t - tz, 6, 2.5)) * (dnorm(z, 1.25, 2.5) - dnorm(-1, 1.25, 2.5)))
+}
+
+simdf_dlnm <- sim_pexp(
+  formula = ~ -4.5 + f0(t) -0.5*x1 + sqrt(x2)|
+     fcumu(t, tz, z.tz, f_xyz=f_dlnm, ll_fun=ll_fun),
+  data = df, cut = time_grid)
+```
+
+<details>
+  <summary>*Expand here to see R-Code*</summary>
+
+```{r dlnm_partial}
+viz_df <- get_laglead(time_grid, tz, ll_fun = ll_fun) %>%
+combine_df(data.frame(z = seq(-3, 3, by = 0.25))) %>%
+mutate(
+  latency = t - tz,
+  partial = f_dlnm(t, tz, z))
+
+gg_partial_dlnm <- viz_df %>% filter(t == 6) %>% filter(LL == 1) %>%
+  ggplot(aes(x = z, y = latency, z = partial)) +
+  geom_tile(aes(fill=partial)) +
+  scale_y_reverse() +
+  scale_fill_gradient2(name = expression(h(t-t[z])),
+                       low = "steelblue", high="firebrick2")+
+  geom_contour(col = "grey30") +
+  ylab(expression(t-t[z])) + xlab(expression(z))
+gg_z_dlnm <- viz_df %>% filter(z %in% c(1)) %>%
+  group_by(t, z) %>%
+  summarize(g_z = sum(0.25*partial)) %>%
+  ungroup() %>%
+  ggplot(aes(x=t, y = g_z)) +
+  geom_line()
+```
+</details>
+
+```{r gg-partial-dlnm, fig.width=6, fig.height=2, echo=FALSE, fig.cap = "**Left**: Partial effect $h(t-t_z, z(t_z))$ used for the simulation of survival times. **Right**: The cumulative effects $g(\textbf{z},t)$ resulting from constant exposure histories $z(t_z)=1, \\forall t_z$."}
+  gridExtra::grid.arrange(gg_partial_dlnm, gg_z_dlnm, nrow=1, widths=c(1.5, 1))
+```
+
+### Bivariate smooth of time and exposure time
+In this subsection, we simulate the data with hazard
+$$
+  \log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2} +
+    \int_{\mathcal{T}(t)} h(t,t_z)z(t_z)\text{d} t_z.
+$$
+Using the `sim_pexp` function, we can again extend the previous
+simulation with the updated partial effect function `f_elra`.
+
+```{r sim-elra}
+# partial effect h(t,tz) * z
+f_elra <- function(t, tz, z) {
+   5*(-(dnorm(tz, -1, 2.5)) * (dnorm(t, 5, 1.5) - dnorm(5, 5, 1.5)))*z
+}
+
+simdf_tv_wce <- sim_pexp(formula = ~ -4.5 + f0(t) -0.5*x1 + sqrt(x2)|
+     fcumu(t, tz, z.tz, f_xyz = f_elra, ll_fun = ll_fun),
+  data = df, cut = time_grid)
+```
+
+<details>
+  <summary>*Expand here to see R-Code*</summary>
+  
+```{r prep-p-elra}
+LL_df_elra <- get_laglead(seq(0,10, by=0.25), seq(-5, 5, by=0.25), ll_fun) %>%
+  mutate(partial = f_elra(t, tz, z = 1)) %>%
+   filter(LL == 1)
+cumu_df_elra <- LL_df_elra %>%
+  group_by(t) %>%
+  summarize(cumu_eff = sum(0.25*partial))
+
+p_partial_elra_truth <- ggplot(LL_df_elra, aes(x = t, y = tz, z = partial)) +
+    geom_tile(aes(fill = partial)) +
+    scale_x_continuous(expand=c(0,0)) +
+    scale_y_continuous(expand = c(0,0)) +
+    scale_fill_gradient2(name = expression(h(t,t[z])),
+      low = "steelblue", high = "firebrick2") +
+    geom_contour(col = "grey30") +
+    ylab(expression(t[z]))
+
+p_cumu_elra_truth <- ggplot(cumu_df_elra, aes(x=t, y = cumu_eff)) +
+  geom_line() +
+  ylab(expression(g(bold(z), t)))
+```
+</details>
+
+The figure below depicts the bivariate, smooth partial effect
+$h(t, t_z)$ (left panel) and the resulting cumulative
+effect $g(\textbf{z},t)$ for a simplified exposure history with $z(t_z)=1 \forall t_z$
+(right panel).
+
+```{r, fig.width = 6, fig.height = 2, echo= FALSE, fig.cap = "**Left**: Bivariate partial effect surface $h(t, t_z)$, combinations of $t$ and $t_z$ that lie outside the lag-lead window $\\mathcal{T}(t)$ are omitted. **Right**: The cumulative effect resulting from the partial effect depicted in the left panel for a simplified exposure profile with $z(t_z)=1, \\forall t_z$."}
+gridExtra::grid.arrange(p_partial_elra_truth, p_cumu_elra_truth, nrow=1, widths=c(1.5,1))
+```
+
+## References
+
+
+<!-- Zaehlmarke VGWort -->
+<img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt="">
