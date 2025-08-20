@@ -41,7 +41,8 @@ Imports:
     scam
 Suggests:
     testthat,
-    mstate
+    mstate,
+    broom
 Config/Needs/website:
   coxme,
   eha,
