@@ -92,6 +92,7 @@ articles:
     - competing-risks
     - recurrent-events
     - multi-state
+    - simulations
 
 navbar:
   type: default
@@ -130,6 +131,8 @@ navbar:
       href: articles/recurrent-events.html
     - text: Multi-State Modelling
       href: articles/multi-state.html
+    - text: Simulating Time-To-Event Data
+      href: articles/simulations.html
   - text: News
     href: news/index.html
   right:
