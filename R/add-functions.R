@@ -1007,8 +1007,11 @@ add_trans_prob <- function(
   if (!has_cumu) {
     out_df[["cumu_hazard"]] <- NULL
   }
+  
+  # re-attach attribute
+  attr(out_df, "trans_prob_matrix") <- attr(newdata, "trans_prob_matrix")
 
-  out_df
+  return(out_df)
 
 }
 
