@@ -992,7 +992,7 @@ add_trans_prob <- function(
   }
   if (ci) {
     newdata <- newdata |>
-      arrange(old_groups, tend) |>
+      # arrange(old_groups, tend) |>
       add_trans_ci(object)
   }
 
