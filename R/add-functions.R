@@ -945,6 +945,7 @@ get_trans_prob <- function(
     left_join(trans_prob_df, by=c("tend", "transition")) %>%
     select(-one_of(c("delta_cumu_hazard", "from", "to")))
 
+  attr(newdata, "trans_prob_matrix") <- cum_A
   return(newdata)
 
 }
@@ -984,16 +985,17 @@ add_trans_prob <- function(
 
   # add confidence intervals if wanted
   has_cumu = "cumu_hazard" %in% colnames(newdata)
+  old_groups <- group_vars(newdata)
   if (!has_cumu) {
     newdata <- newdata |>
     add_cumu_hazard(object, ci = FALSE)
   }
   if (ci) {
     newdata <- newdata |>
+      arrange(old_groups, tend) |>
       add_trans_ci(object)
   }
 
-  old_groups <- group_vars(newdata)
   out_df <- newdata |>
     ungroup("transition") |>
     group_split() |>
