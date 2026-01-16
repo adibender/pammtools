@@ -20,7 +20,7 @@ data("prothr", package = "mstate")
 prothr <- prothr[1:200,] |> 
   filter(Tstart != Tstop) |> 
   mutate(transition = as.factor(paste0(from, "->", to))) |> 
-  select(-trans, -treat)
+  select(-trans)
 ped_msm <- as_ped(
   data       = prothr,
   formula    = Surv(Tstart, Tstop, status)~ .,
@@ -30,10 +30,19 @@ ped_msm <- as_ped(
   timescale  = "calendar"
 )
 
-pam_msm <- gam(ped_status ~ s(tend, by=transition, bs="cr") + transition
+pam_msm <- mgcv::gam(ped_status ~ s(tend, by=transition, bs="cr") + transition
                , data = ped_msm
                , family = poisson()
                , offset = offset)
+
+pam_msm_treat <- mgcv::bam(
+  ped_status ~ s(tend, by=interaction(treat, transition)) + treat*transition,
+  data = ped_msm,
+  offset = offset,
+  family = poisson(),
+  method = "fREML",
+  discrete = TRUE
+)
 
 test_that("hazard functions work for PAM", {
 
@@ -360,9 +369,8 @@ test_that("Transition Probability works", {
   ndf <- ped_msm %>%
     make_newdata(tend = unique(tend), transition = unique(transition)) %>%
     group_by(transition) %>%
-    arrange(transition, tend) |>
     add_trans_prob(pam_msm, ci=T)
-  expect_data_frame(ndf, nrows = 380L, ncols = 11L) 
+  expect_data_frame(ndf, nrows = 380L, ncols = 12L) 
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
   expect_true(all(ndf$trans_prob < ndf$trans_upper))
   expect_true(all(ndf$trans_prob > ndf$trans_lower))
@@ -370,4 +378,19 @@ test_that("Transition Probability works", {
   expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
   expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
   
+  ndf_grouped <- ped_msm %>%
+    make_newdata(
+      tend = unique(tend), 
+      transition = unique(transition), 
+      treat = unique(treat)
+      ) %>%
+    group_by(treat, transition) %>%
+    add_trans_prob(pam_msm_treat, ci=T)
+  expect_data_frame(ndf_grouped, nrows = 760L, ncols = 12L) 
+  expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
+  expect_true(all(ndf$trans_prob < ndf$trans_upper))
+  expect_true(all(ndf$trans_prob > ndf$trans_lower))
+  expect_true(all(ndf$trans_prob <= 1 & ndf$trans_prob >= 0))
+  expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
+  expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
 })
