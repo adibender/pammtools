@@ -950,9 +950,51 @@ get_trans_prob <- function(
 }
 
 #' Add transition probabilities
+#' @description
+#' \code{add_trans_prob} adds transition probabilities on the provided data set and model.
+#' Optionally, confidence intervals (CI) are added if \code{ci=TRUE}.
+#' The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam} models.
 #'
-#' @inherit add_hazard
-#' @inherit add_cif
+#' @param newdata A data frame or list containing the values of the model 
+#' covariates at which predictions are required. If this is not provided then 
+#' predictions corresponding to the original data are returned. If newdata is 
+#' provided then it should contain all the variables needed for prediction: 
+#' a warning is generated if not. See details for use with 
+#' \link[mgcv]{linear.functional.terms}.
+#' @param object A fitted \code{gam} object as produced by \code{mgcv::gam}
+#' @param overwrite Should transition probability columns be overwritten if 
+#' already present in the data set? Defaults to \code{FALSE}. 
+#' If \code{TRUE}, columns with names \code{c("trans_prob", "trans_upper", "trans_lower")} 
+#' will be overwritten.
+#' @param ci \code{Logical}, defaults to \code{TRUE}. Decides if confidence 
+#' intervals for transition probabilities are calculated.
+#' @param alpha Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}
+#' @param nsim Sets the number of iterations for simulated confidence intervals.
+#' Defaults to \code{100L}
+#' @param time_var Name of the variable used for the baseline hazard. If
+#'   not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
+#'   \code{"interval"}. The latter is assumed to be a factor, the former
+#'   numeric.
+#' @param interval_length \code{Character}, defaults to \code{"intlen"}.
+#'   contains the interval length in `newdata`.
+#' @param ... Further arguments passed to underlying methods.
+#' @examplesIf require("mstate")
+#'   data("prothr", package = "mstate")
+#'   prothr <- prothr |> 
+#'     mutate(transition = as.factor(paste0(from, "->", to))
+#'     , treat = as.factor(treat)) |>
+#'     filter(Tstart != Tstop, id <= 100) |> select(-trans)
+#'   ped <- as_ped(data= prothr, formula= Surv(Tstart, Tstop, status)~ .,
+#'     transition = "transition", id= "id", timescale  = "calendar")
+#'   pam <- mgcv::bam(ped_status ~ s(tend, by=transition) + transition * treat, 
+#'     data = ped, family = poisson(), offset = offset, 
+#'     method = "fREML", discrete = TRUE)
+#'   ndf <- make_newdata(ped, tend  = unique(tend), 
+#'     treat  = unique(treat), 
+#'     transition = unique(transition)) |>
+#'     group_by(treat, transition) |>  # important!
+#'     arrange(treat, transition, tend) |>
+#'     add_trans_prob(pam)
 #' @export
 add_trans_prob <- function(
     newdata
