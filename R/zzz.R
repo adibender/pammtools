@@ -2,7 +2,7 @@
 
   if (getRversion() >= "2.5.1") {
 
-    utils::globalVariables(".")
+    utils::globalVariables(c(".", "id"))
 
   }
   invisible()
