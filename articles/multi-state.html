@@ -140,7 +140,7 @@
                         <h4 data-toc-skip class="author">Johannes
 Piller, Andreas Bender</h4>
             
-            <h4 data-toc-skip class="date">2025-08-20</h4>
+            <h4 data-toc-skip class="date">2026-01-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/multi-state.Rmd" class="external-link"><code>vignettes/multi-state.Rmd</code></a></small>
       <div class="hidden name"><code>multi-state.Rmd</code></div>
@@ -373,7 +373,7 @@ convenience function <code>add_trans_prob</code> crates a new column
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Transition Probability"</span>, x <span class="op">=</span> <span class="st">"time"</span>, color <span class="op">=</span> <span class="st">"Treatment"</span>, fill<span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="multi-state_files/figure-html/prothr-viz-1.png" width="600px" style="display: block; margin: auto;"></p>
+<p><img src="multi-state_files/figure-html/prothr-viz-1.png" class="r-plt" alt="" width="600px" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="comparison-of-the-results-with-aalen-johannsen-estimator">Comparison of the results with Aalen-Johannsen estimator<a class="anchor" aria-label="anchor" href="#comparison-of-the-results-with-aalen-johannsen-estimator"></a>
@@ -410,17 +410,21 @@ indeed correct. The following code shows the comparison between the
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">comparison_nelaal</span></span></code></pre></div>
-<p><img src="multi-state_files/figure-html/unnamed-chunk-4-1.png" width="600px" style="display: block; margin: auto;">
+<pre><code><span><span class="co">## Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_line()`).</span></span></code></pre>
+<p><img src="multi-state_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="600px" style="display: block; margin: auto;">
 Second, we compare the transition probabilities, which are calculated
 using the cumulative hazards</p>
 <p>Third, we compare the width of the confidence bands</p>
-<pre><code><span><span class="co">## Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">## (`geom_line()`).</span></span>
-<span><span class="co">## Removed 2 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">## (`geom_line()`).</span></span>
-<span><span class="co">## Removed 2 rows containing missing values or values outside the scale range</span></span>
+<pre><code><span><span class="co">## Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">## (`geom_line()`).</span></span></code></pre>
-<p><img src="multi-state_files/figure-html/unnamed-chunk-7-1.png" width="600px" style="display: block; margin: auto;"></p>
+<pre><code><span><span class="co">## Warning: Removed 14 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_line()`).</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_line()`).</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: Removed 138 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">## (`geom_ribbon()`).</span></span></code></pre>
+<p><img src="multi-state_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="600px" style="display: block; margin: auto;"></p>
 <!-- Zaehlmarke VGWort -->
 <p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
 </div>
@@ -442,7 +446,7 @@ using the cumulative hazards</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
