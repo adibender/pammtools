@@ -11,6 +11,28 @@ test_that("Lag-lead is calculated correctly", {
   expect_equal(LL$LL, c(rep(0, 5), rep(1, 3), rep(0, 2), rep(1, 4), 0))
 })
 
+test_that("single-point latency grids produce finite lag-lead matrices", {
+
+  df <- tibble::tibble(x1 = c(0.1, -0.3))
+  tz_single <- 0
+  df <- df %>% add_tdc(tz_single, function(nz) rep(1, nz))
+  sim_df <- sim_pexp(
+    formula = ~ -2 + 0.5 * x1,
+    data = df,
+    cut = 0:5
+  )
+  sim_df$time <- 5
+  ped <- as_ped(
+    sim_df,
+    Surv(time, status) ~ x1 + cumulative(time, z.tz_single, tz_var = "tz_single"),
+    cut = 0:5
+  )
+
+  expect_true(all(is.finite(ped$LL)))
+  expect_false(any(is.nan(ped$LL)))
+
+})
+
 test_that("LL helpers and as_ped produce equivalent LL windows", {
   n <- 1
   # create data set with variables which will affect the hazard rate.
@@ -92,6 +114,12 @@ test_that("Cumulative effects are calculated correctly", {
   ped <- as_ped(sim_df, Surv(time, status)~ x1 + x2 +
       cumulative(latency(tz3), z.tz3, tz_var = "tz3"),
     cut = 0:10)
+  ped_dat <- pammtools:::make_ped_dat(ped, term = "z.tz3", z_vec = 1)
+  ind_term <- pammtools:::get_term_ind(ped, "z.tz3")
+  func_mat_names <- attr(ped, "func_mat_names")[[ind_term]]
+  ll_name <- grep("LL", func_mat_names, value = TRUE)
+  lat_name <- grep("latency", func_mat_names, value = TRUE)
+  expect_true(all(ped_dat[[lat_name]][ped_dat[[ll_name]] == 0] == 0))
   ped5 <- subset(ped, id == 5)
   expect_identical(ped5$LL[1, ], c(2.5, 2, 3, rep(0, 2)))
   expect_identical(ped5$LL[9, ], c(2.5, 2, 3, 3, 2))
@@ -109,6 +137,9 @@ test_that("Cumulative effects are calculated correctly", {
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial, c("gg", "ggplot"))
   expect_data_frame(partial$data, nrows = 130L, ncols = 15L)
+  partial_no_ci <- gg_partial(ped, pam, "x1", x1 = seq_range(x1, 10), ci = FALSE)
+  expect_is(partial_no_ci, c("gg", "ggplot"))
+  expect_error(ggplot2::ggplot_build(partial_no_ci), NA)
   partial_ll <- gg_partial_ll(ped, pam, "z.tz3", tend = seq(1, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial_ll, c("gg", "ggplot"))

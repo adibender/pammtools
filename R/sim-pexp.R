@@ -123,9 +123,13 @@ sim_pexp <- function(formula, data, cut) {
   if (!is.null(f2)) {
     terms_f2  <- terms(f2, specials = "fcumu")
     f2_ev     <- list()
+    f2_env <- environment(f2)
+    if (is.null(f2_env)) {
+      f2_env <- parent.frame()
+    }
     f2_tl <- attr(terms_f2, "term.labels")
     for (i in seq_along(f2_tl)) {
-      f2_ev[[i]] <- eval(expr = parse(text = f2_tl[[i]]), envir = .GlobalEnv)
+      f2_ev[[i]] <- eval(expr = parse(text = f2_tl[[i]]), envir = f2_env)
     }
     ll_funs   <- map(f2_ev, ~.x[["ll_fun"]])
     tz_vars   <- map_chr(f2_ev, ~.x[["vars"]][1])
@@ -269,7 +273,10 @@ eta_cumu <- function(data, fcumu, cut, ...) {
     group_by(.data$id, .data$t) %>%
     mutate(
       LL = ll_fun(t, !!sym(vars[1])) * 1,
-      delta = c(mean(abs(diff(!!sym(vars[1])))), abs(diff(!!sym(vars[1]))))) %>%
+      delta = {
+        delta <- abs(diff(!!sym(vars[1])))
+        if (length(delta) == 0) rep(1, dplyr::n()) else c(mean(delta), delta)
+      }) %>%
     ungroup() %>%
     filter(.data$LL != 0) %>%
     group_by(.data$id, .data$t) %>%

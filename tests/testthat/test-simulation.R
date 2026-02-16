@@ -41,3 +41,40 @@ test_that("Simulation function works", {
    cut = 0:10)
 
 })
+
+test_that("sim_pexp evaluates cumulative terms in formula environment", {
+
+  local({
+    helper_weight <- function(t, tz, z) z
+    ll_local <- function(t, tz) t >= tz
+    df <- tibble::tibble(x1 = runif(3, -3, 3))
+    tz_local <- 0:2
+    df <- df %>% add_tdc(tz_local, function(nz) rep(1, nz))
+    form <- ~ -2 + 0.1 * x1 |
+      fcumu(t, tz_local, z.tz_local, f_xyz = helper_weight, ll_fun = ll_local)
+
+    sim_df <- sim_pexp(formula = form, data = df, cut = 0:5)
+
+    expect_true(all(is.finite(sim_df$time)))
+  })
+})
+
+test_that("Simulation with single exposure time has finite cumulative effect", {
+
+  set.seed(24032018)
+  df <- tibble::tibble(x1 = runif(3, -3, 3))
+  tz_single <- 0
+  df <- df %>% add_tdc(tz_single, function(nz) rep(1, nz))
+
+  sim_df <- sim_pexp(
+    formula = ~ -2 + 0.2 * x1 |
+      fcumu(t, tz_single, z.tz_single,
+        f_xyz = function(t, tz, z) z,
+        ll_fun = function(t, tz) t >= tz),
+    data = df,
+    cut = 0:5
+  )
+
+  expect_true(all(is.finite(sim_df$time)))
+
+})
