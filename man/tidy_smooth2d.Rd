@@ -8,6 +8,7 @@ tidy_smooth2d(
   x,
   keep = c("x", "y", "fit", "se", "xlab", "ylab", "main"),
   ci = FALSE,
+  conf_level = 0.95,
   ...
 )
 }
@@ -18,6 +19,10 @@ tidy_smooth2d(
 
 \item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
+
+\item{conf_level}{Numeric scalar in (0, 1). Confidence level used for the
+returned confidence intervals when \code{ci = TRUE}. Defaults to
+\code{0.95}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
