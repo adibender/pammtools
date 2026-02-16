@@ -1,3 +1,21 @@
+# pammtools 0.7.4
+
+## Bug fixes
+* Fixed competing risks data transformation when status variable is a factor (#220, #216, #233)
+* Fixed CIF calculation to use factor levels from newdata instead of model attribute (#245)
+* Fixed cut point extraction for factor/character status variables
+* Fixed transition probability matrix initialization for states starting at 0 or 1
+* Fixed CRAN NOTE: added `id` to global variables for dplyr compatibility (#260)
+
+## Enhancements
+* Improved `add_trans_prob`: better documentation, proper examples, attribute attachment, and base R speedup
+* Added warning in `pamm()` when data does not contain an offset column
+* Added `broom` to Suggests
+
+## Documentation
+* Updated `add_trans_prob` help page with proper parameter descriptions and working example
+* Added simulations vignette
+
 # pamtools 0.5.93
 + Maintnance (some tidyverse deprecations, link fixes, etc., smaller bugs)
 

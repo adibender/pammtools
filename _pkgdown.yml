@@ -63,7 +63,6 @@ reference:
       - daily
       - staph
       - simdf_elra
-      - nuclear
   - title: "Utilities"
     desc: "Utility functions"
     contents:
