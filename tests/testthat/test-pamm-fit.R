@@ -34,3 +34,33 @@ context("Test pamm wrapper function")
   expect_warning(pamm(ped_status ~ s(tend, k=3) + age, data = ped_nooffset))
 
  })
+
+test_that("pamm trafo_args uses as_ped for list-based data", {
+
+  data("pbc", package = "survival")
+  event_df <- pbc %>%
+    filter(id <= 5) %>%
+    mutate(status = 1L * (status == 2)) %>%
+    select(id, time, status, sex)
+  tdc_df <- pbcseq %>%
+    filter(id <= 5) %>%
+    select(id, day, bili)
+
+  pam <- pamm(
+    formula = ped_status ~ s(tend, k = 3),
+    data = list(event_df, tdc_df),
+    trafo_args = list(
+      formula = Surv(time, status) ~ . + concurrent(bili, tz_var = "day"),
+      id = "id"
+    )
+  )
+
+  expect_is(pam, "pamm")
+  expect_true(
+    grepl(
+      "concurrent",
+      paste(deparse(pam[["trafo_args"]][["formula"]]), collapse = " ")
+    )
+  )
+
+})

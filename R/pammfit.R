@@ -59,7 +59,7 @@ pamm <- function(
   dots$family  <- poisson()
   if (!is.null(trafo_args)) {
     trafo_args$data <- data
-    data <- do.call(split_data, trafo_args)
+    data <- do.call(as_ped, trafo_args)
   }
   
   dots$data   <- data

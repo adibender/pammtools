@@ -11,10 +11,11 @@ predictSurvProb.pamm <- function(
   times,
   ...) {
 
+  trafo_args <- object[["trafo_args"]]
+  id_var <- trafo_args[["id"]]
+
   if (!is.ped(newdata)) {
 
-    trafo_args <- object[["trafo_args"]]
-    id_var     <- trafo_args[["id"]]
     brks       <- trafo_args[["cut"]]
     if ( max(times) > max(brks) ) {
       stop("Can not predict beyond the last time point used during model estimation.
@@ -40,8 +41,8 @@ predictSurvProb.pamm <- function(
     newdata = newdata,
     type    = "response"))
   newdata <- newdata %>%
-    arrange(.data$id, .data$times) %>%
-    group_by(.data$id) %>%
+    arrange(.data[[id_var]], .data$times) %>%
+    group_by(.data[[id_var]]) %>%
     mutate(pred = exp(-cumsum(.data$pred * .data$intlen))) %>%
     ungroup() %>%
     filter(.data[["times"]] %in% env_times)
