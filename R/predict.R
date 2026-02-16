@@ -12,11 +12,19 @@ predictSurvProb.pamm <- function(
   ...) {
 
   trafo_args <- object[["trafo_args"]]
-  id_var <- trafo_args[["id"]]
+  id_var <- if (!is.null(trafo_args)) trafo_args[["id"]] else NULL
+  if (is.null(id_var)) id_var <- object[["attr_ped"]][["id_var"]]
+  if (is.null(id_var)) id_var <- attr(newdata, "id_var")
+  if (is.null(id_var)) id_var <- "id"
 
   if (!is.ped(newdata)) {
 
-    brks       <- trafo_args[["cut"]]
+    brks <- if (!is.null(trafo_args)) trafo_args[["cut"]] else NULL
+    if (is.null(brks)) brks <- object[["attr_ped"]][["breaks"]]
+    if (is.null(brks)) {
+      stop("Can not derive interval cut points from the fitted model.
+        Refit with transformation metadata or provide PED newdata.")
+    }
     if ( max(times) > max(brks) ) {
       stop("Can not predict beyond the last time point used during model estimation.
         Check the 'times' argument.")
