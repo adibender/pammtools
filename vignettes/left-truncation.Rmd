@@ -44,7 +44,7 @@ knit_hooks$set(output = function(x, options) {
 ```
 
 In this vignette we briefly illustrate how to fit PAMMs for left-truncated data.
-As an example we use the data already discussed in the [left-truncation section](data.transformation.html#left-truncated-data) of the data transformation vignette.
+As an example we use the data already discussed in the [left-truncation section](data-transformation.html#left-truncated-data) of the data transformation vignette.
 
 We first we load some libraries as well as the data.
 
