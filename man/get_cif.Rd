@@ -18,8 +18,13 @@ get_cif(newdata, object, ...)
   coefs,
   V,
   sim_coef_mat,
+  causes_model,
   ...
 )
+}
+\arguments{
+\item{causes_model}{Character vector of all cause labels represented in the
+model. Used to construct cause-specific hazards for CIF integration.}
 }
 \description{
 Calculate CIF for one cause
