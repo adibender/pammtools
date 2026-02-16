@@ -38,9 +38,10 @@ split_data <- function(
       all.vars(formula)
     }
   uvars <- union(surv_vars, vars)
-  if (!all(uvars %in% vars)) {
+  missing_vars <- setdiff(uvars, names(data))
+  if (length(missing_vars) > 0) {
     stop(paste("Variables provided in formula not in data set:",
-      paste0(setdiff(uvars, vars), collapse = ", ")))
+      paste0(missing_vars, collapse = ", ")))
   }
 
 

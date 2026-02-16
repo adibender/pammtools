@@ -192,6 +192,10 @@ test_that("adding terms works for PAM", {
   df_mean <- sample_info(ndf2)
   pred4 <- ndf2 %>% add_term(pam2, term = "age", reference = df_mean)
   expect_equal(pred4$fit, pred2$fit)
+  expect_error(
+    add_term(ndf2, pam2, term = "does_not_exist"),
+    "No model coefficients matched"
+  )
 
 })
 
@@ -199,9 +203,11 @@ test_that("adding terms works for PEM", {
 
   expect_data_frame(term <- add_term(ped_info(ped), pem, term = "complications"),
     nrows = 5L, ncols = 10L)
-  expect_data_frame(ped_info(ped) %>%
+  expect_error(
+    ped_info(ped) %>%
       add_term(pem, term = "age", reference = list(age = mean(.$age))),
-      nrows = 5L, ncols = 10L)
+    "No model coefficients matched"
+  )
 })
 
 # test_that("warns about / aborts for unknown intervals", {
