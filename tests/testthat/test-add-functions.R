@@ -387,10 +387,84 @@ test_that("Transition Probability works", {
     group_by(treat, transition) %>%
     add_trans_prob(pam_msm_treat, ci=T)
   expect_data_frame(ndf_grouped, nrows = 760L, ncols = 12L) 
-  expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
-  expect_true(all(ndf$trans_prob < ndf$trans_upper))
-  expect_true(all(ndf$trans_prob > ndf$trans_lower))
+  expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf_grouped))
+  expect_true(all(ndf_grouped$trans_prob <= ndf_grouped$trans_upper))
+  expect_true(all(ndf_grouped$trans_prob >= ndf_grouped$trans_lower))
+  expect_true(all(ndf_grouped$trans_prob <= 1 & ndf_grouped$trans_prob >= 0))
+  expect_true(all(ndf_grouped$trans_lower <= 1 & ndf_grouped$trans_lower >= 0))
+  expect_true(all(ndf_grouped$trans_upper <= 1 & ndf_grouped$trans_upper >= 0))
+})
+
+test_that("Transition Probability works with nonstandard time variable", {
+
+  ndf <- ped_msm %>%
+    make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+    group_by(transition) %>%
+    add_cumu_hazard(pam_msm, ci = FALSE) %>%
+    rename(stop = tend, length = intlen) %>%
+    add_trans_prob(
+      pam_msm,
+      ci = FALSE,
+      time_var = "stop",
+      interval_length = "length"
+    )
+
+  expect_subset("trans_prob", colnames(ndf))
   expect_true(all(ndf$trans_prob <= 1 & ndf$trans_prob >= 0))
-  expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
-  expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
+
+})
+
+test_that("Transition Probability CI is invariant to grouping order", {
+
+  set.seed(42)
+  ndf_a <- ped_msm %>%
+    make_newdata(
+      tend = unique(tend),
+      transition = unique(transition),
+      treat = unique(treat)
+    ) %>%
+    group_by(treat, transition) %>%
+    add_trans_prob(pam_msm_treat, ci = TRUE) %>%
+    ungroup() %>%
+    arrange(treat, transition, tend)
+
+  set.seed(42)
+  ndf_b <- ped_msm %>%
+    make_newdata(
+      tend = unique(tend),
+      transition = unique(transition),
+      treat = unique(treat)
+    ) %>%
+    group_by(transition, treat) %>%
+    add_trans_prob(pam_msm_treat, ci = TRUE) %>%
+    ungroup() %>%
+    arrange(treat, transition, tend)
+
+  expect_equal(ndf_a$trans_prob, ndf_b$trans_prob)
+  expect_equal(ndf_a$trans_lower, ndf_b$trans_lower)
+  expect_equal(ndf_a$trans_upper, ndf_b$trans_upper)
+})
+
+test_that("Transition Probability works for single-transition data", {
+
+  single_transition <- as.character(unique(ped_msm$transition)[1])
+  ped_single <- ped_msm %>%
+    filter(.data$transition == single_transition)
+
+  pam_single <- mgcv::gam(
+    ped_status ~ s(tend, bs = "cr"),
+    data = ped_single,
+    family = poisson(),
+    offset = offset
+  )
+
+  ndf_single <- ped_single %>%
+    make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+    group_by(transition) %>%
+    add_trans_prob(pam_single, ci = TRUE)
+
+  expect_data_frame(ndf_single)
+  expect_true(all(ndf_single$trans_prob <= 1 & ndf_single$trans_prob >= 0))
+  expect_true(all(ndf_single$trans_lower <= ndf_single$trans_prob))
+  expect_true(all(ndf_single$trans_prob <= ndf_single$trans_upper))
 })

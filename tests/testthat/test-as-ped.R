@@ -186,3 +186,29 @@ test_that("Trafo works for multi-state data without recurrent events", {
 
   }
 )
+
+test_that("add_counterfactual_transitions honors custom column names", {
+
+  test_df <- data.frame(
+    id = c(1, 2, 2),
+    tstart = c(0, 0, 1.2),
+    tstop = c(3, 1.2, 3),
+    status = c(1, 1, 1),
+    state_from = c(1, 1, 2),
+    state_to = c(3, 2, 3),
+    edge = c("1->3", "1->2", "2->3")
+  )
+
+  cf_df <- add_counterfactual_transitions(
+    data = test_df,
+    from_col = "state_from",
+    to_col = "state_to",
+    transition_col = "edge"
+  )
+
+  expect_data_frame(cf_df, nrows = 5L, ncols = 7L)
+  expect_false("transition" %in% names(cf_df))
+  expect_subset(c("state_from", "state_to", "edge"), names(cf_df))
+  expect_true(all(grepl("->", as.character(cf_df$edge))))
+
+})

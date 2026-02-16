@@ -823,114 +823,114 @@ get_trans_prob <- function(
     cumu_hazard     = "cumu_hazard",
     ...
 ) {
-  
-  ## --- assertions (unchanged logic) ---
+
+  if (is.null(time_var)) {
+    time_var <- tend
+  }
+
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_character(transition)
   assert_subset(transition, colnames(newdata))
-  assert_character(tend)
-  assert_subset(tend, colnames(newdata))
+  assert_character(time_var)
+  assert_subset(time_var, colnames(newdata))
   assert_character(cumu_hazard)
   assert_subset(cumu_hazard, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  
-  ## --- parse transitions (no dplyr) ---
-  is_arrow <- grepl("^\\d+->\\d+$", newdata[[transition]])
+
+  transition_var <- transition
+  is_arrow <- grepl("^\\d+->\\d+$", as.character(newdata[[transition_var]]))
   if (!all(is_arrow)) {
     stop("`transition` must be in arrow notation (l->o).")
   }
-  
-  newdata$from <- as.integer(sub("->.*", "", newdata[[transition]]))
-  newdata$to   <- as.integer(sub(".*->", "", newdata[[transition]]))
-  
-  # indexing in R starts at 1, shift by 1
-  if(min(newdata$from) == 0) {
-    newdata$from = newdata$from + 1
-    newdata$to = newdata$to + 1
-  }
-  
-  ## --- unique transitions and times (base R) ---
-  unique_transition <- unique(newdata[, c(transition, "from", "to")])
-  unique_tend <- sort(unique(newdata[[tend]]))
-  
+
+  from_vals <- as.integer(sub("->.*", "", as.character(newdata[[transition_var]])))
+  to_vals <- as.integer(sub(".*->", "", as.character(newdata[[transition_var]])))
+
+  state_min <- min(c(from_vals, to_vals), na.rm = TRUE)
+  shift <- if (state_min == 0L) 1L else 0L
+  newdata[[from]] <- from_vals + shift
+  newdata[[to]] <- to_vals + shift
+
+  unique_transition <- unique(newdata[, c(transition_var, from, to), drop = FALSE])
+  unique_tend <- sort(unique(newdata[[time_var]]))
+
   n_trans <- nrow(unique_transition)
   n_t     <- length(unique_tend)
-  
-  ## --- transition matrix calculation starts here ---
-  # initializations
-  m <- max(unique_transition$to)
+
+  m <- max(unique_transition[[to]])
   M <- array(0, dim = c(m, m, n_trans))
-  
+
   idx <- cbind(
-    unique_transition$from ,
-    unique_transition$to,
+    unique_transition[[from]],
+    unique_transition[[to]],
     seq_len(n_trans)
   )
   M[idx] <- 1
-  M[cbind(unique_transition$from,
-          unique_transition$from,
+  M[cbind(unique_transition[[from]],
+          unique_transition[[from]],
           seq_len(n_trans))] <- -1
-  
-  ## --- delta cumulative hazard, base R to improve runtime ---
+
   newdata$delta_cumu_hazard <- 0
-  split_idx <- split(seq_len(nrow(newdata)), newdata[[transition]])
-  for (ii in split_idx) {
-    ch <- newdata[[cumu_hazard]][ii]
-    newdata$delta_cumu_hazard[ii] <- ch - c(0, ch[-length(ch)])
+  split_idx <- split(seq_len(nrow(newdata)), as.character(newdata[[transition_var]]))
+  for (idx_group in split_idx) {
+    idx_group <- idx_group[order(newdata[[time_var]][idx_group])]
+    ch <- newdata[[cumu_hazard]][idx_group]
+    newdata$delta_cumu_hazard[idx_group] <- ch - c(0, ch[-length(ch)])
   }
-  
-  ## --- alpha matrix ---
+
   alpha <- matrix(0, nrow = n_t, ncol = n_trans)
-  t_idx  <- match(newdata[[tend]], unique_tend)
-  tr_idx <- match(newdata[[transition]], unique_transition[[transition]])
+  t_idx <- match(newdata[[time_var]], unique_tend)
+  tr_idx <- match(
+    as.character(newdata[[transition_var]]),
+    as.character(unique_transition[[transition_var]])
+  )
   alpha[cbind(t_idx, tr_idx)] <- newdata$delta_cumu_hazard
-  
-  ## --- build A(t) and cumulative A ---
+
   M_mat <- matrix(M, nrow = m * m, ncol = n_trans)
   I <- diag(m)
-  
-  A_flat <- matrix(NA_real_, nrow = m*m, ncol = n_t)
+
+  A_flat <- matrix(NA_real_, nrow = m * m, ncol = n_t)
   for (t in seq_len(n_t)) {
     A_flat[, t] <- as.vector(matrix(M_mat %*% alpha[t, ], m, m) + I)
   }
-  
-  ## --- vectorized cumulative multiplication to improve runtime ---
+
   mat_mult_flat <- function(x, y) {
-    matrix(x, nrow = m, ncol = m) %*% matrix(y, nrow = m, ncol = m) |> as.vector()
+    as.vector(matrix(x, nrow = m, ncol = m) %*% matrix(y, nrow = m, ncol = m))
   }
   cum_A_list <- Reduce(
     f = mat_mult_flat,
-    x = split(A_flat, col(A_flat)),  # split into list of columns
+    x = split(A_flat, col(A_flat)),
     accumulate = TRUE
   )
-  
+
   cum_A <- array(NA_real_, dim = c(m, m, n_t))
   for (t in seq_len(n_t)) {
     cum_A[,,t] <- matrix(cum_A_list[[t]], m, m)
   }
-  
-  ## --- extract transition probabilities (no pivot_longer) ---
+
   prob_mat <- matrix(0, nrow = n_t, ncol = n_trans)
   for (k in seq_len(n_trans)) {
-    prob_mat[, k] <- cum_A[unique_transition$from[k],
-                           unique_transition$to[k], ]
+    prob_mat[, k] <- cum_A[
+      unique_transition[[from]][k],
+      unique_transition[[to]][k],
+      ]
   }
+  colnames(prob_mat) <- as.character(unique_transition[[transition_var]])
 
-  colnames(prob_mat) <- unique_transition[[transition]]
-  
-  ## --- join back to newdata (no left_join, runtime!) ---
-  t_idx  <- match(newdata[[tend]], unique_tend)
-  tr_idx <- match(newdata[[transition]], unique_transition[[transition]])
-  
+  t_idx <- match(newdata[[time_var]], unique_tend)
+  tr_idx <- match(
+    as.character(newdata[[transition_var]]),
+    as.character(unique_transition[[transition_var]])
+  )
   newdata$trans_prob <- pmin(pmax(prob_mat[cbind(t_idx, tr_idx)], 0), 1)
-  
+
   newdata$delta_cumu_hazard <- NULL
-  newdata$from <- NULL
-  newdata$to   <- NULL
-  
+  newdata[[from]] <- NULL
+  newdata[[to]] <- NULL
+
   list(
-    data   = newdata,
+    data = newdata,
     matrix = cum_A
   )
 }
@@ -952,6 +952,10 @@ add_trans_prob <- function(
     ...
 ) {
 
+  transition_var <- "transition"
+  if (is.null(time_var)) {
+    time_var <- "tend"
+  }
 
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {
@@ -968,66 +972,94 @@ add_trans_prob <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
+  assert_subset(transition_var, names(newdata))
+  assert_subset(time_var, names(newdata))
+  assert_subset(interval_length, names(newdata))
+
   # add confidence intervals if wanted
-  has_cumu = "cumu_hazard" %in% colnames(newdata)
+  has_cumu <- "cumu_hazard" %in% colnames(newdata)
   old_groups <- group_vars(newdata)
-  split_groups <- setdiff(old_groups, "transition")
-  
-  # Pre-order newdata to ensure correct cumulative hazard / transition probabilities
-  ordering_vars <- c(setdiff(old_groups, "transition"), "transition", "tend")
-  
-  # safe base-R approach
-  newdata <- newdata[do.call(order, newdata[, ordering_vars, drop = FALSE]), ]
-  
+
+  if (!(transition_var %in% old_groups)) {
+    new_groups <- c(old_groups, transition_var)
+    newdata <- newdata %>% group_by(across(all_of(new_groups)))
+    old_groups <- group_vars(newdata)
+  }
+
+  split_groups <- setdiff(old_groups, transition_var)
+  ordering_vars <- c(split_groups, transition_var, time_var)
+  newdata <- newdata[do.call(order, newdata[, ordering_vars, drop = FALSE]), , drop = FALSE]
+
   if (!has_cumu) {
-    newdata <- newdata |>
-    add_cumu_hazard(object, ci = FALSE)
+    newdata <- do.call(
+      add_cumu_hazard,
+      list(
+        newdata = newdata,
+        object = object,
+        ci = FALSE,
+        time_var = time_var,
+        interval_length = interval_length
+      )
+    )
   }
   if (ci) {
     newdata <- newdata |>
-      add_trans_ci(object)
+      add_trans_ci(
+        object = object,
+        nsim = nsim,
+        alpha = alpha,
+        time_var = time_var,
+        interval_length = interval_length,
+        transition = transition_var
+      )
   }
 
-  # if data is only grouped by transition
   if (length(split_groups) == 0L) {
-    # single group: use all rows
     grp_index <- list(seq_len(nrow(newdata)))
   } else {
-    grp <- interaction(newdata[, split_groups], drop = TRUE)
+    grp <- interaction(newdata[, split_groups, drop = FALSE], drop = TRUE, lex.order = TRUE)
     grp_index <- split(seq_len(nrow(newdata)), grp)
   }
-  
-  # preallocate output
+
   n_grp <- length(grp_index)
-  res_data   <- vector("list", n_grp)
+  res_data <- vector("list", n_grp)
   res_matrix <- vector("list", n_grp)
-  
-  # magic happens here.
+
   for (i in seq_len(n_grp)) {
     idx <- grp_index[[i]]
-    tmp <- newdata[idx, , drop = FALSE]
-    
-    tmp <- dplyr::group_by(tmp, .data$transition)
-    
-    res <- get_trans_prob(tmp)
-    
-    res_data[[i]]   <- res$data
+    tmp <- newdata[idx, , drop = FALSE] %>%
+      group_by(across(all_of(transition_var)))
+
+    res <- get_trans_prob(
+      newdata = tmp,
+      time_var = time_var,
+      interval_length = interval_length,
+      transition = transition_var
+    )
+
+    res_data[[i]] <- res$data
     res_matrix[[i]] <- res$matrix
   }
-  
-  out_df <- do.call(rbind, res_data)
-  
+
+  out_df <- bind_rows(res_data)
+
   if (length(split_groups) == 0L) {
-    group_keys <- data.frame(trans_prob_matrix = I(res_matrix))
+    group_keys <- data.frame(trans_prob_matrix = I(list(res_matrix[[1]])))
   } else {
-    group_keys <- unique(out_df[split_groups])
+    group_keys <- out_df %>%
+      ungroup() %>%
+      distinct(across(all_of(split_groups)))
     group_keys$trans_prob_matrix <- res_matrix
   }
-  
+
   if (!has_cumu) {
     out_df$cumu_hazard <- NULL
   }
-  
+
+  if (length(old_groups) > 0L) {
+    out_df <- out_df %>% group_by(across(all_of(old_groups)))
+  }
+
   attr(out_df, "matrix") <- group_keys
   out_df
 
@@ -1046,83 +1078,92 @@ get_sim_cumu <- function(newdata, ...) {
 #' Add transition probabilities confidence intervals
 #' @keywords internal
 add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
-  
-  X     <- predict.gam(object, newdata = newdata, type = "lpmatrix")
+  dots <- list(...)
+  time_var <- dots[["time_var"]]
+  interval_length <- dots[["interval_length"]]
+  transition <- dots[["transition"]]
+  if (is.null(time_var)) time_var <- "tend"
+  if (is.null(interval_length)) interval_length <- "intlen"
+  if (is.null(transition)) transition <- "transition"
+
+  assert_subset(time_var, names(newdata))
+  assert_subset(interval_length, names(newdata))
+  assert_subset(transition, names(newdata))
+
+  group_vars_orig <- dplyr::group_vars(newdata)
+  if (!(transition %in% group_vars_orig)) {
+    new_groups <- c(group_vars_orig, transition)
+    newdata <- newdata %>% group_by(across(all_of(new_groups)))
+    group_vars_orig <- dplyr::group_vars(newdata)
+  }
+  group_vars_trans <- setdiff(group_vars_orig, transition)
+  group_vars_ordered <- c(group_vars_trans, transition)
+
+  df <- as.data.frame(newdata)
+  df$.orig_row <- seq_len(nrow(df))
+  ordering_vars <- c(group_vars_ordered, time_var)
+  df <- df[do.call(order, df[, ordering_vars, drop = FALSE]), , drop = FALSE]
+
+  X <- predict.gam(object, newdata = df, type = "lpmatrix")
   coefs <- coef(object)
-  V     <- object$Vp
-  
-  # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
-  group_vars <- dplyr::group_vars(newdata)
-  group_vars_trans <- setdiff(group_vars, "transition")
-  # delete grouping meta data
-  newdata <- as.data.frame(newdata)
-  # start with base data
-  df <- newdata
-  ordering_vars <- c(setdiff(group_vars, "transition"), "transition", "tend")
-  df <- df[do.call(order, df[, ordering_vars, drop = FALSE]), ]
-  
-  # ids for grouping all group vars and only non-transition group vars
-  groups_array <- interaction(
-    df[, group_vars, drop = FALSE],
-    drop = TRUE
-  )
-  array_idx_list <- lapply(unique(groups_array), function(g) which(groups_array == g))
-  
-  # case distinction if grouping consists only of transition
+  V <- object$Vp
+
+  groups_array <- interaction(df[, group_vars_ordered, drop = FALSE], drop = TRUE, lex.order = TRUE)
+  array_idx_list <- split(seq_len(nrow(df)), groups_array)
+
   if (length(group_vars_trans) > 0) {
-    groups_trans <- interaction(df[, group_vars_trans, drop = FALSE], drop = TRUE)
-    trans_idx_list <- lapply(unique(groups_trans), function(g) which(groups_trans == g))
+    groups_trans <- interaction(df[, group_vars_trans, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    trans_idx_list <- split(seq_len(nrow(df)), groups_trans)
   } else {
     trans_idx_list <- list(seq_len(nrow(df)))
   }
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
-  sim_fit_mat <- apply(sim_coef_mat, 1, function(z)
-    exp(X %*% z))
+  sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+  if (is.null(dim(sim_fit_mat))) {
+    sim_fit_mat <- matrix(sim_fit_mat, ncol = 1L)
+  }
 
-  nrows <- nrow(newdata)
-  nlst <- vector("list", nsim)
-  sim_trans_probs <- matrix(NA_real_, nrow = nrows, ncol = nsim) # preallocate
-  
+  nrows <- nrow(df)
+  sim_trans_probs <- matrix(NA_real_, nrow = nrows, ncol = nsim)
+  time_vals <- df[[time_var]]
+  intlen_vals <- df[[interval_length]]
+
   for (i in seq_len(nsim)) {
-    #df <- df[order(df$tend), ]
-    df$hazard <- sim_fit_mat[, i]
-    df$hazard_intlen <- df$hazard * df$intlen
-    
-    # --- add cumu hazard ---
-    # Preallocate cumu_hazard vector
+    haz_i <- sim_fit_mat[, i]
     cumu_hazard <- numeric(nrows)
-    # Compute cumulative hazard per group_array
-    for (j in seq_along(array_idx_list)) {
-      idx <- array_idx_list[[j]]
-      cumu_hazard[idx] <- cumsum(df$hazard_intlen[idx])
+    for (idx in array_idx_list) {
+      idx_ord <- idx[order(time_vals[idx])]
+      cumu_hazard[idx_ord] <- cumsum(haz_i[idx_ord] * intlen_vals[idx_ord])
     }
-    df[, "cumu_hazard"] <- cumu_hazard
-    
-    # --- add trans prob ---
-    # Preallocate trans_prob vector
-    trans_prob <- numeric(nrows)
-    # Compute trans_prob per group_trans
-    for (j in seq_along(trans_idx_list)) {
-      idx <- trans_idx_list[[j]]
-      res <- get_trans_prob(df[idx, , drop = FALSE])
-      trans_prob[idx] <- res[["data"]][["trans_prob"]]
-    }
-    
-    df[, "trans_prob"] <- trans_prob
 
-    
-    # Store in list
-    nlst[[i]] <- df
+    trans_prob <- numeric(nrows)
+    for (idx in trans_idx_list) {
+      idx_ord <- idx[order(time_vals[idx], as.character(df[[transition]][idx]))]
+      tmp <- df[idx_ord, , drop = FALSE]
+      tmp$cumu_hazard <- cumu_hazard[idx_ord]
+      res <- get_trans_prob(
+        newdata = tmp,
+        time_var = time_var,
+        interval_length = interval_length,
+        transition = transition
+      )
+      trans_prob[idx_ord] <- res$data$trans_prob
+    }
+
     sim_trans_probs[, i] <- trans_prob
   }
 
-  # Compute quantiles directly on preallocated matrix
-  newdata$trans_lower <- apply(sim_trans_probs, 1, quantile, probs = alpha / 2, na.rm = TRUE)
-  newdata$trans_upper <- apply(sim_trans_probs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
-  
-  newdata
- 
+  df$trans_lower <- apply(sim_trans_probs, 1, quantile, probs = alpha / 2, na.rm = TRUE)
+  df$trans_upper <- apply(sim_trans_probs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
+
+  df <- df[order(df$.orig_row), , drop = FALSE]
+  df$.orig_row <- NULL
+
+  out <- as_tibble(df)
+  if (length(group_vars_orig) > 0L) {
+    out <- out %>% group_by(across(all_of(group_vars_orig)))
+  }
+
+  out
 }
-
-
