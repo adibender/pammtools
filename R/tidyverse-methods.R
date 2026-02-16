@@ -10,6 +10,31 @@ re_attribute <- function(.data, attr2) {
   attr1 <- attributes(.data)
   attributes(.data) <- c(attr1,
     attr2[setdiff(names(attr1), names(attr2))])
+  .data <- sanitize_ped_attributes(.data)
+
+  .data
+
+}
+
+sanitize_ped_attributes <- function(.data) {
+
+  id_var <- attr(.data, "id_var")
+  if (!is.null(id_var) && !(id_var %in% names(.data))) {
+    attr(.data, "id_var") <- NULL
+  }
+
+  intvars <- attr(.data, "intvars")
+  if (!is.null(intvars)) {
+    attr(.data, "intvars") <- intersect(intvars, names(.data))
+  }
+
+  trafo_args <- attr(.data, "trafo_args")
+  if (!is.null(trafo_args) && !is.null(trafo_args[["id"]])) {
+    if (!(trafo_args[["id"]] %in% names(.data))) {
+      trafo_args[["id"]] <- NULL
+      attr(.data, "trafo_args") <- trafo_args
+    }
+  }
 
   .data
 
@@ -178,7 +203,7 @@ sample_frac.ped <- function(tbl, size = 1, replace = FALSE, weight = NULL, .env 
 
   classes_ped <- ped_classes(tbl)
   attr_ped    <- attributes(tbl)
-  tbl         <- sample_n(unped(tbl, classes_ped), size, replace, weight, .env, ...)
+  tbl         <- sample_frac(unped(tbl, classes_ped), size, replace, weight, .env, ...)
   tbl         <- reped(tbl, classes_ped)
 
   re_attribute(tbl, attr_ped)
@@ -340,7 +365,7 @@ right_join.ped <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y")
   classes_ped_x <- ped_classes(x)
   classes_ped_y <- ped_classes(y)
   attr_ped_x    <- attributes(x)
-  .data         <- inner_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
+  .data         <- right_join(unped(x, classes_ped_x), unped(y, classes_ped_y), by, copy, suffix, ...)
   .data         <- reped(.data, classes_ped_x)
 
   re_attribute(.data, attr_ped_x)

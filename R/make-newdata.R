@@ -54,10 +54,13 @@ sample_info.ped <- function(x) {
   grps <- group_vars(x)
   iv <- attr(x, "intvars")
   id_var <- attr(x, "id_var")
+  if (!is.null(id_var) && id_var %in% names(x)) {
+    x <- x %>%
+      group_by(!!sym(id_var)) %>%
+      slice(1) %>%
+      ungroup()
+  }
   x <- x %>%
-    group_by(!!sym(id_var)) %>%
-    slice(1) %>%
-    ungroup() %>%
     grouped_df(grps) %>%
     select(-one_of(iv))
   if (test_data_frame(x, min.rows = 1, min.cols = 1)) {
