@@ -176,17 +176,17 @@ test_that("adding terms works for PAM", {
   ndf2  <- make_newdata(ped, age = seq_range(age, 3))
   pred2 <- ndf2 %>% add_term(pam2, term = "age")
   expect_equal(round(pred2$fit, 3), c(-.604, -.236, .851))
-  expect_data_frame(pred2, nrows = 3L, ncols = 12L)
+  expect_data_frame(pred2, nrows = 3L, ncols = 6L)
   # with custom reference
   pred2 <- ndf2 %>%
     add_term(pam2, term = "age", reference = list(age = mean(.$age)))
   expect_equal(round(pred2$fit, 3), c(-.368, 0, 1.087))
-  expect_data_frame(pred2, nrows = 3L, ncols = 12L)
+  expect_data_frame(pred2, nrows = 3L, ncols = 6L)
   expect_equal(pred2$fit[2], 0)
   # with overall function application
   pred3 <- ndf2 %>% add_term(pam2, term = "age", reference = identity(.))
   expect_equal(pred3$fit, rep(0, 3))
-  expect_data_frame(pred3, nrows = 3L, ncols = 12L)
+  expect_data_frame(pred3, nrows = 3L, ncols = 6L)
   expect_equal(pred3$fit, rep(0, 3))
   # with separately created data frame
   df_mean <- sample_info(ndf2)
@@ -302,7 +302,7 @@ test_that("CIF works with pamm", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 11L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif < ndf$cif_upper))
   expect_true(all(ndf$cif > ndf$cif_lower))
@@ -323,7 +323,7 @@ test_that("CIF works with mgcv::gam", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 11L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif < ndf$cif_upper))
   expect_true(all(ndf$cif > ndf$cif_lower))
@@ -345,7 +345,7 @@ test_that("CIF works with character causes", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 11L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif < ndf$cif_upper))
   expect_true(all(ndf$cif > ndf$cif_lower))
@@ -362,7 +362,7 @@ test_that("Transition Probability works", {
     group_by(transition) %>%
     arrange(transition, tend) |>
     add_trans_prob(pam_msm, ci=T)
-  expect_data_frame(ndf, nrows = 380L, ncols = 11L) 
+  expect_data_frame(ndf, nrows = 380L, ncols = 6L) 
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
   expect_true(all(ndf$trans_prob < ndf$trans_upper))
   expect_true(all(ndf$trans_prob > ndf$trans_lower))

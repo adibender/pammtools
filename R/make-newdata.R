@@ -273,16 +273,17 @@ make_newdata.ped <- function(x, ...) {
 
   int_names <- intersect(int_names, c("intlen", orig_vars))
   ndf <- ndf %>%
-    select(one_of(c(int_names, setdiff(orig_vars, int_names)))) %>%
-    mutate(
-      intlen = .data$tend - .data$tstart,
-      offset = log(.data$tend - .data$tstart),
-      ped_status = 0)
-  
+    select(one_of(c(int_names, setdiff(orig_vars, int_names))))
+
+  # drop internal columns not needed for prediction (keep id if explicitly requested)
+  drop_vars <- c("tstart", "intlen", "interval", "offset", "ped_status")
+  if (!"id" %in% dot_names) drop_vars <- c(drop_vars, "id")
+  ndf <- ndf %>% select(-any_of(drop_vars))
+
   # needed for expand df
   attr(ndf, "trafo_args") <- attr(x, "trafo_args")
   attr(ndf, "intvars") <- attr(x, "intvars")
-  
+
   ndf
 
 }
@@ -317,6 +318,11 @@ make_newdata.fped <- function(x, ...) {
 
   # adjust lag-lead indicator
   out_df <- adjust_ll(out_df, x)
+
+  # drop internal columns not needed for prediction (keep id if explicitly requested)
+  drop_vars <- c("tstart", "intlen", "interval", "offset", "ped_status")
+  if (!"id" %in% dot_names) drop_vars <- c(drop_vars, "id")
+  out_df <- out_df %>% select(-any_of(drop_vars))
 
   out_df
 
@@ -383,6 +389,26 @@ adjust_ll <- function(out_df, data) {
 }
 
 
+#' Reconstruct intlen from tend and stored cut points
+#'
+#' Computes interval lengths from the sorted unique tend values in newdata.
+#' This is used by add_* functions that need intlen for cumulative calculations.
+#' @param newdata A data frame with a \code{tend} column and \code{trafo_args}
+#'   attribute containing the original cut points.
+#' @return The input data frame with an \code{intlen} column added.
+#' @importFrom stats setNames
+#' @keywords internal
+reconstruct_intlen <- function(newdata) {
+
+  if ("intlen" %in% colnames(newdata)) return(newdata)
+  times <- sort(unique(newdata[["tend"]]))
+  intlen_map <- setNames(c(times[1], diff(times)), times)
+  newdata[["intlen"]] <- unname(intlen_map[as.character(newdata[["tend"]])])
+  newdata
+
+}
+
+
 ## apply expand df to complete make newdata for arbitrary time points
 expand_df <- function(
     x,
@@ -427,13 +453,11 @@ expand_df <- function(
 
   map_times <- data.frame("tend" = sort(ped_times), "tstart_lag" = lag(ped_times, default = 0))
   suppressMessages(
-    newdata <- newdata %>% 
-      left_join(map_times) %>% 
+    newdata <- newdata %>%
+      left_join(map_times) %>%
       mutate(
         tstart = pmax(.data$tstart, .data$tstart_lag),
-        intlen = .data$tend - .data$tstart,
-        offset = log(.data$tend - .data$tstart),
-        ped_status = 0) %>% 
+        intlen = .data$tend - .data$tstart) %>%
       select(-one_of("tstart_lag")) # correct tstart
   )
   
@@ -447,7 +471,8 @@ expand_df <- function(
   #   }
   # }
   
-  newdata %>% select(any_of(c(orig_vars)))
+  newdata %>% select(any_of(c(orig_vars, "intlen")))
+  
 }
 
 deduce_df <- function(x, object, ...) {

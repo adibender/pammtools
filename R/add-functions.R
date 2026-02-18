@@ -333,7 +333,7 @@ add_cumu_hazard <- function(
 
   # if selected time points contain all times already, do not extend newdata
   if (all(brks %in% times)) {
-    joindata <- newdata
+    joindata <- reconstruct_intlen(newdata)
   } else {
     if (length(groups(newdata))!=0) {
       old_groups <- dplyr::groups(newdata)
@@ -463,6 +463,10 @@ add_surv_prob <- function(
         c("surv_prob", "surv_lower", "surv_upper"),
         names(newdata))
       newdata <- newdata %>% select(-one_of(rm.vars))
+  }
+
+  if (!"intlen" %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(newdata)
   }
 
   get_surv_prob(newdata, object, ci = ci, se_mult = se_mult,
@@ -724,6 +728,10 @@ add_cif.default <- function(
   cause_var = "cause",
   time_var  = NULL,
   ...) {
+
+  if (!"intlen" %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(newdata)
+  }
 
   coefs        <- coef(object)
   V            <- object$Vp
@@ -1008,6 +1016,10 @@ add_trans_prob <- function(
     ...
 ) {
 
+
+  if (!"intlen" %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(newdata)
+  }
 
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {

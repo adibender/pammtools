@@ -157,6 +157,9 @@ get_cumu_coef_baseline <- function(data, model, ...) {
 #' @keywords internal
 compute_cumu_diff <-  function(d1, d2, model, alpha = 0.05, nsim = 100L) {
 
+  if (!"intlen" %in% colnames(d1)) d1 <- reconstruct_intlen(d1)
+  if (!"intlen" %in% colnames(d2)) d2 <- reconstruct_intlen(d2)
+
   X1    <- predict.gam(model, newdata = d1, type = "lpmatrix")
   X2    <- predict.gam(model, newdata = d2, type = "lpmatrix")
   V     <- model$Vp
