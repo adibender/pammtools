@@ -127,5 +127,13 @@ test_that("Newdata correct for new time points", {
 
   ## TODO: add test for same but more complex ped data (cumulative effects)
 
+  # test CR for new time points
+  ped   <- tumor[3:5, 1:3]
+  ped$status = c(0, 1, 2) # create competing risk data for testing
+  
+  ped <- ped |> as_ped(Surv(days, status)~.)
+  nd7 <- ped |> make_newdata(tend = c(10, 100), cause = unique(cause))
+  expect_data_frame(nd7, nrows = 4L, ncols = 3L)  
+  expect_equal(nd7$tend, c(10, 100, 10, 100))   
 
 })

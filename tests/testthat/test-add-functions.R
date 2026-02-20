@@ -155,7 +155,7 @@ test_that("cumulative hazard function work for arbitrary time points", {
   ndf2 = ped |> make_newdata(tend = unique(tend)[3], age = c(60, 70)) |>
     group_by(age) |>
     add_cumu_hazard(pam2)
- 
+
   expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
   expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
 })
@@ -294,36 +294,48 @@ test_that("survival probabilities functions work for PAM", {
 test_that("CIF works with pamm", {
 
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = TRUE))
+  df <- data.frame(time = rexp(100), status = sample(c(0,1, 2), 100, replace = TRUE))
   ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
     mutate(cause = as.factor(cause))
-  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  pam <- pamm(ped_status ~ s(tend, by = cause) + cause, data = ped_cr)
   ndf <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 132L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif < ndf$cif_upper))
   expect_true(all(ndf$cif > ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
-
+  
+  # compare CIF with arbitrary time points.
+  tmax = max(ndf$tend)
+  ndf1 <- ndf |> dplyr::filter(tend == tmax)
+  ndf2 <- ped_cr %>%
+    make_newdata(tend = c(2, tmax), cause = unique(cause)) %>%
+    group_by(cause) |>
+    add_cif(pam) |>
+    dplyr::filter(tend == tmax)
+  
+  expect_message(ped_cr %>% make_newdata(tend = c(2, tmax), cause = unique(cause)))
+  expect_equal(round(ndf1$cif, 2), round(ndf2$cif, 2))
+  
 })
 
 test_that("CIF works with mgcv::gam", {
   
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = TRUE))
+  df <- data.frame(time = rexp(100), status = sample(c(0,1, 2), 100, replace = TRUE))
   ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
     mutate(cause = as.factor(cause))
-  pam <- gam(ped_status ~ s(tend, by = cause), data = ped_cr, family = poisson(), offset = offset)
+  pam <- gam(ped_status ~ s(tend, by = cause) + cause, data = ped_cr, family = poisson(), offset = offset)
   ndf <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 132L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif < ndf$cif_upper))
   expect_true(all(ndf$cif > ndf$cif_lower))
