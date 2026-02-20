@@ -418,15 +418,14 @@ expand_df <- function(
     time_var        = NULL,
     interval_length = "intlen",
     ...) {
-
-  orig_vars   <- names(x)
   
+  orig_vars   <- names(x)
   id_var     <- trafo_args[["id"]]
   brks       <- trafo_args[["cut"]]
   
   int_names  <- setdiff(intvars, id_var)
   cov_names  <- setdiff(names(object$var.summary), intersect(int_names, names(object$var.summary)))
- 
+
   expressions <- quos(...)
   dot_names   <- names(expressions)
   
@@ -437,12 +436,12 @@ expand_df <- function(
   ped_times <- ped_times[ped_times <= max(times)]
   # obtain interval information
   ped_info <- get_intervals(brks, ped_times[-1])
-  
   ped_info[["intlen"]] <- c(ped_info[["times"]][1], diff(ped_info[["times"]]))
   ped_info[["tend"]] <- ped_info[["times"]]
   
   if(length(cov_names) == 0) {
-    newdata <- ped_info
+    extra_data <- x %>% select(setdiff(orig_vars, names(ped_info))) %>% distinct()
+    newdata <- combine_df(ped_info, extra_data)
   } else {
     newdata <- x %>%
       select(any_of(c(cov_names))) %>%
