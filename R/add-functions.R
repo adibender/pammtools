@@ -729,20 +729,54 @@ add_cif.default <- function(
   time_var  = NULL,
   ...) {
 
-  if (!"intlen" %in% colnames(newdata)) {
-    newdata <- reconstruct_intlen(newdata)
-  }
 
+  # if (!"intlen" %in% colnames(newdata)) {
+  #   newdata <- reconstruct_intlen(newdata)
+  # }
+
+  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
+  if (is.null(time_var)) {
+    time_var <- ifelse(is_gam, "tend", "interval")
+  } else {
+    assert_string(time_var)
+    assert_choice(time_var, colnames(newdata))
+  }
+  
+  trafo_args <- attr(newdata, "trafo_args")
+  intvars    <- attr(newdata, "intvars")
+  
+  times <- setdiff(sort(unique(newdata[[time_var]])), c(0))
+  brks  <- setdiff(trafo_args[["cut"]][trafo_args[["cut"]] <= max(times)], c(0))
+  
+  # fill missing timepoints if needed
+  if (all(brks %in% times)) {
+    joindata <- reconstruct_intlen(newdata)
+  } else {
+    if (length(groups(newdata)) != 0) {
+      old_groups <- dplyr::groups(newdata)
+      joindata <- group_split(newdata) |>
+        map(.f = ~ expand_df(.x, object, trafo_args, intvars, time_var)) |>
+        map(.f = ~ group_by(.x, !!!old_groups)) |>
+        bind_rows()
+    } else {
+      joindata <- newdata %>% expand_df(object, trafo_args, intvars)
+    }
+  }
+  
   coefs        <- coef(object)
   V            <- object$Vp
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
 
-  map_dfr(
-    split(newdata, group_indices(newdata)),
+  joindata <- map_dfr(
+    split(joindata, group_indices(joindata)),
     ~get_cif(
       newdata = .x, object = object, ci = ci, alpha = alpha, nsim = nsim,
       cause_var = cause_var, coefs = coefs, V = V, sim_coef_mat = sim_coef_mat,
       time_var = time_var, ...)
+  )
+  
+  suppressMessages(
+    newdata %>% left_join(joindata)
   )
 
 }
