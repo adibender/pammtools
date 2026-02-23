@@ -37,10 +37,8 @@ property of interest from its posterior based on the normal distribution of
 the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
 for details and empirical evaluation.}
 
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
+\item{time_var}{Name of the variable used for the baseline hazard. Defaults
+to \code{"tend"}.}
 
 \item{se_mult}{Factor by which standard errors are multiplied for calculating
 the confidence intervals.}

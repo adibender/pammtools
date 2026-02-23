@@ -2,19 +2,21 @@
 % Please edit documentation in R/make-newdata.R
 \name{reconstruct_intlen}
 \alias{reconstruct_intlen}
-\title{Reconstruct intlen from tend and stored cut points}
+\title{Reconstruct intlen from sorted unique time values}
 \usage{
-reconstruct_intlen(newdata)
+reconstruct_intlen(newdata, time_var = "tend")
 }
 \arguments{
-\item{newdata}{A data frame with a \code{tend} column and \code{trafo_args}
-attribute containing the original cut points.}
+\item{newdata}{A data frame with a time column.}
+
+\item{time_var}{Character string naming the time variable in
+\code{newdata}. Defaults to \code{"tend"}.}
 }
 \value{
 The input data frame with an \code{intlen} column added.
 }
 \description{
-Computes interval lengths from the sorted unique tend values in newdata.
+Computes interval lengths from the sorted unique values of the time variable.
 This is used by add_* functions that need intlen for cumulative calculations.
 }
 \keyword{internal}
