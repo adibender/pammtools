@@ -129,3 +129,15 @@ test_that("Newdata correct for new time points", {
 
 
 })
+
+test_that("reconstruct_intlen validates inputs and uses tstart when available", {
+
+  expect_error(reconstruct_intlen(data.frame(x = 1:2), time_var = "tend"))
+  expect_error(reconstruct_intlen(data.frame(tend = factor(c(1, 2)))))
+
+  out <- reconstruct_intlen(
+    data.frame(tstart = c(10, 12), stop = c(11, 15)),
+    time_var = "stop")
+  expect_equal(out$intlen, c(1, 3))
+
+})

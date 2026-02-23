@@ -241,6 +241,58 @@ test_that("works for nonstandard baseline arguments", {
     add_cumu_hazard(pseudonymous[1:5, ], p_pem, time_var = "int",
       interval_length = "length")$cumu_hazard,
     add_cumu_hazard(ped[1:5, ], pem)$cumu_hazard)
+  expect_equal(
+    add_cumu_hazard(dplyr::select(pseudonymous[1:5, ], -length), p_pam,
+      time_var = "stop", interval_length = "length", ci = FALSE)$cumu_hazard,
+    add_cumu_hazard(ped[1:5, ], pam, ci = FALSE)$cumu_hazard)
+  expect_equal(
+    add_surv_prob(pseudonymous[1:5, ], p_pam, time_var = "stop",
+      ci = FALSE)$surv_prob,
+    add_surv_prob(ped[1:5, ], pam, ci = FALSE)$surv_prob)
+  expect_equal(
+    add_surv_prob(dplyr::select(pseudonymous[1:5, ], -length), p_pam,
+      time_var = "stop", interval_length = "length", ci = FALSE)$surv_prob,
+    add_surv_prob(ped[1:5, ], pam, ci = FALSE)$surv_prob)
+
+  ndf_partial <- ped %>%
+    make_newdata(tend = c(50, 300), complications = unique(complications)) %>%
+    group_by(complications)
+  expect_data_frame(
+    add_cumu_hazard(ndf_partial, pam, ci = FALSE),
+    nrows = 4L
+  )
+
+  ndf_partial_stop <- ndf_partial %>%
+    rename(stop = tend)
+  attr(ndf_partial_stop, "trafo_args") <- attr(ndf_partial, "trafo_args")
+  intvars_partial <- attr(ndf_partial, "intvars")
+  intvars_partial <- replace(intvars_partial, intvars_partial == "tend", "stop")
+  attr(ndf_partial_stop, "intvars") <- intvars_partial
+  expect_equal(
+    add_cumu_hazard(ndf_partial_stop, p_pam, time_var = "stop",
+      interval_length = "length", ci = FALSE)$cumu_hazard,
+    add_cumu_hazard(ndf_partial, pam, ci = FALSE)$cumu_hazard
+  )
+
+  d1 <- ped[1:5, ]
+  d2 <- d1 %>% mutate(complications = complications[1])
+  pd1 <- dplyr::select(pseudonymous[1:5, ], -length)
+  pd2 <- pd1 %>% mutate(complications = complications[1])
+  expect_equal(
+    get_cumu_diff(pd1, pd2, p_pam, nsim = 5L, time_var = "stop",
+      interval_length = "length")$cumu_hazard,
+    get_cumu_diff(d1, d2, pam, nsim = 5L)$cumu_hazard)
+
+  pseudo_ped <- pseudonymous
+  intvars <- attr(pseudo_ped, "intvars")
+  attr(pseudo_ped, "intvars") <- replace(intvars, intvars == "tend", "stop")
+  intvars <- attr(pseudo_ped, "intvars")
+  attr(pseudo_ped, "intvars") <- replace(intvars, intvars == "interval", "int")
+  if (identical(attr(pseudo_ped, "time_var"), "tend")) attr(pseudo_ped, "time_var") <- "stop"
+  expect_equal(
+    get_cumu_coef(p_pam, pseudo_ped, terms = "(Intercept)", time_var = "stop",
+      interval_length = "length")$cumu_hazard,
+    get_cumu_coef(pam, ped, terms = "(Intercept)")$cumu_hazard)
 
 })
 
@@ -333,6 +385,35 @@ test_that("CIF works with mgcv::gam", {
   
 })
 
+test_that("CIF works with nonstandard time variable names", {
+
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0,1, 2), 20, replace = TRUE))
+  ped_cr <- as_ped(df, Surv(time, status)~., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- gam(ped_status ~ s(stop, by = cause), data = rename(ped_cr, stop = tend),
+    family = poisson(), offset = offset)
+  ndf_stop <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    rename(stop = tend) %>%
+    group_by(cause)
+  set.seed(211758)
+  ndf <- ndf_stop %>%
+    add_cif(pam, time_var = "stop", ci = FALSE, nsim = 20L)
+  expect_data_frame(ndf, nrows = 26L)
+  expect_subset(c("cif"), colnames(ndf))
+  expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
+
+  set.seed(211758)
+  ndf_len <- ndf_stop %>%
+    reconstruct_intlen(time_var = "stop") %>%
+    mutate(length = intlen) %>%
+    select(-intlen) %>%
+    add_cif(pam, time_var = "stop", interval_length = "length", ci = FALSE, nsim = 20L)
+  expect_equal(ndf_len$cif, ndf$cif)
+
+})
+
 
 test_that("CIF works with character causes", {
   
@@ -370,4 +451,91 @@ test_that("Transition Probability works", {
   expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
   expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
   
+})
+
+test_that("Transition Probability works with nonstandard time and interval columns", {
+
+  pam_msm_stop <- gam(
+    ped_status ~ s(stop, by = transition, bs = "cr") + transition,
+    data = rename(ped_msm, stop = tend),
+    family = poisson(),
+    offset = offset)
+
+  ndf_stop <- ped_msm %>%
+    make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+    group_by(transition) %>%
+    arrange(transition, tend) %>%
+    rename(stop = tend)
+
+  expect_data_frame(
+    tp <- add_trans_prob(ndf_stop, pam_msm_stop, ci = FALSE, time_var = "stop"),
+    nrows = 380L)
+  expect_subset(c("trans_prob"), colnames(tp))
+  expect_true(all(tp$trans_prob <= 1 & tp$trans_prob >= 0))
+
+  ndf_stop_len <- reconstruct_intlen(ndf_stop, time_var = "stop") %>%
+    mutate(length = intlen) %>%
+    select(-intlen)
+
+  expect_data_frame(
+    tp_ci <- add_trans_prob(
+      ndf_stop_len,
+      pam_msm_stop,
+      ci = TRUE,
+      nsim = 20L,
+      time_var = "stop",
+      interval_length = "length"),
+    nrows = 380L)
+  expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(tp_ci))
+  expect_true(all(tp_ci$trans_prob <= 1 & tp_ci$trans_prob >= 0))
+
+  ped_msm_stop_trans <- rename(ped_msm, stop = tend, trans = transition)
+  pam_msm_stop_trans <- gam(
+    ped_status ~ s(stop, by = trans, bs = "cr") + trans,
+    data = ped_msm_stop_trans,
+    family = poisson(),
+    offset = offset)
+
+  ndf_stop_trans <- ndf_stop_len %>%
+    rename(trans = transition) %>%
+    group_by(trans) %>%
+    arrange(trans, stop)
+
+  expect_data_frame(
+    tp_trans <- add_trans_prob(
+      ndf_stop_trans,
+      pam_msm_stop_trans,
+      ci = FALSE,
+      time_var = "stop",
+      interval_length = "length",
+      transition = "trans"),
+    nrows = 380L)
+  expect_subset(c("trans_prob"), colnames(tp_trans))
+  expect_true(all(tp_trans$trans_prob <= 1 & tp_trans$trans_prob >= 0))
+
+})
+
+test_that("Transition Probability is invariant to input row order", {
+
+  ndf_sorted <- ped_msm %>%
+    make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+    group_by(transition) %>%
+    arrange(transition, tend)
+
+  ndf_unsorted <- ndf_sorted %>%
+    group_by(transition) %>%
+    arrange(transition, desc(tend))
+
+  tp_sorted <- ndf_sorted %>%
+    add_trans_prob(pam_msm, ci = FALSE) %>%
+    ungroup() %>%
+    arrange(transition, tend)
+
+  tp_unsorted <- ndf_unsorted %>%
+    add_trans_prob(pam_msm, ci = FALSE) %>%
+    ungroup() %>%
+    arrange(transition, tend)
+
+  expect_equal(tp_unsorted$trans_prob, tp_sorted$trans_prob)
+
 })

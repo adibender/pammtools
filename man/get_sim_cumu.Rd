@@ -4,7 +4,7 @@
 \alias{get_sim_cumu}
 \title{helper function for add_trans_ci}
 \usage{
-get_sim_cumu(newdata, ...)
+get_sim_cumu(newdata, interval_length = "intlen", ...)
 }
 \description{
 helper function for add_trans_ci
