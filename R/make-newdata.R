@@ -389,21 +389,23 @@ adjust_ll <- function(out_df, data) {
 }
 
 
-#' Reconstruct intlen from tend and stored cut points
+#' Reconstruct intlen from time variable and stored cut points
 #'
-#' Computes interval lengths from the sorted unique tend values in newdata.
-#' This is used by add_* functions that need intlen for cumulative calculations.
-#' @param newdata A data frame with a \code{tend} column and \code{trafo_args}
-#'   attribute containing the original cut points.
+#' Computes interval lengths from the sorted unique values of the time variable
+#' in newdata. This is used by add_* functions that need intlen for cumulative
+#' calculations.
+#' @param newdata A data frame with a time column (default \code{tend}).
+#' @param time_var Character name of the time variable. Defaults to
+#'   \code{"tend"}.
 #' @return The input data frame with an \code{intlen} column added.
 #' @importFrom stats setNames
 #' @keywords internal
-reconstruct_intlen <- function(newdata) {
+reconstruct_intlen <- function(newdata, time_var = "tend") {
 
   if ("intlen" %in% colnames(newdata)) return(newdata)
-  times <- sort(unique(newdata[["tend"]]))
+  times <- sort(unique(newdata[[time_var]]))
   intlen_map <- setNames(c(times[1], diff(times)), times)
-  newdata[["intlen"]] <- unname(intlen_map[as.character(newdata[["tend"]])])
+  newdata[["intlen"]] <- unname(intlen_map[as.character(newdata[[time_var]])])
   newdata
 
 }

@@ -333,7 +333,11 @@ add_cumu_hazard <- function(
 
   # if selected time points contain all times already, do not extend newdata
   if (all(brks %in% times)) {
-    joindata <- reconstruct_intlen(newdata)
+    joindata <- if (interval_length %in% colnames(newdata)) {
+      newdata
+    } else {
+      reconstruct_intlen(newdata, time_var = time_var)
+    }
   } else {
     if (length(groups(newdata))!=0) {
       old_groups <- dplyr::groups(newdata)
