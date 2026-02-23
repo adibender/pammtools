@@ -1,30 +1,3 @@
-# pammtools 0.7.5
-
-## Breaking changes
-* `make_newdata()` output no longer contains internal PED columns (`tstart`, `intlen`, `interval`, `offset`, `ped_status`). The `id` column is also removed unless explicitly requested via `...`. Output now contains only `tend` + user covariates (plus `cause`/`transition` for competing risks / multi-state models). `ped_info()` output is unchanged.
-* `intlen` is now reconstructed on demand by downstream functions (`add_cumu_hazard`, `add_surv_prob`, `add_cif`, `add_trans_prob`) via the new internal helper `reconstruct_intlen()`.
-
-## Documentation
-* Updated convenience vignette to use `tend` instead of `interval` in `select()` calls
-
-# pammtools 0.7.4
-
-## Bug fixes
-* Fixed competing risks data transformation when status variable is a factor (#220, #216, #233)
-* Fixed CIF calculation to use factor levels from newdata instead of model attribute (#245)
-* Fixed cut point extraction for factor/character status variables
-* Fixed transition probability matrix initialization for states starting at 0 or 1
-* Fixed CRAN NOTE: added `id` to global variables for dplyr compatibility (#260)
-
-## Enhancements
-* Improved `add_trans_prob`: better documentation, proper examples, attribute attachment, and base R speedup
-* Added warning in `pamm()` when data does not contain an offset column
-* Added `broom` to Suggests
-
-## Documentation
-* Updated `add_trans_prob` help page with proper parameter descriptions and working example
-* Added simulations vignette
-
 # pamtools 0.5.93
 + Maintnance (some tidyverse deprecations, link fixes, etc., smaller bugs)
 
