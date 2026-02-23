@@ -30,3 +30,28 @@ context("Predict functions")
 
   }
 )
+
+test_that("get_terms returns tidy partial effects for requested terms", {
+  fit <- survival::coxph(
+    survival::Surv(time, status) ~
+      survival::pspline(karno) + survival::pspline(age),
+    data = survival::veteran
+  )
+
+  terms_df <- get_terms(
+    data = survival::veteran,
+    fit = fit,
+    terms = c("karno", "age")
+  )
+
+  expect_true(is.data.frame(terms_df))
+  expect_identical(
+    names(terms_df),
+    c("term", "x", "eff", "se", "ci_lower", "ci_upper")
+  )
+  expect_equal(sort(unique(terms_df$term)), c("age", "karno"))
+  expect_equal(as.integer(table(terms_df$term)[["age"]]), 100L)
+  expect_equal(as.integer(table(terms_df$term)[["karno"]]), 100L)
+  expect_true(all(terms_df$ci_lower <= terms_df$eff))
+  expect_true(all(terms_df$ci_upper >= terms_df$eff))
+})

@@ -186,3 +186,30 @@ test_that("Trafo works for multi-state data without recurrent events", {
 
   }
 )
+
+test_that("get_cut.list combines cuts in gap-timescale recurrent setting", {
+  d1 <- data.frame(
+    id = c(1, 1, 1),
+    tstart = c(0, 1, 2),
+    tstop = c(1, 2, 3),
+    status = c(1, 0, 1),
+    enum = c(1, 2, 3),
+    age = c(50, 50, 50)
+  )
+  d2 <- data.frame(
+    id = c(2, 2),
+    tstart = c(0, 1.5),
+    tstop = c(1.5, 2.5),
+    status = c(0, 1),
+    enum = c(1, 2),
+    age = c(40, 40)
+  )
+
+  cuts <- pammtools:::get_cut.list(
+    data = list(d1, d2),
+    formula = survival::Surv(tstart, tstop, status) ~ enum + age,
+    timescale = "gap"
+  )
+
+  expect_equal(cuts, c(1, 2.5, 3))
+})
