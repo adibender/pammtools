@@ -140,7 +140,7 @@
                         <h4 data-toc-skip class="author">Andreas Bender,
 Johannes Piller</h4>
             
-            <h4 data-toc-skip class="date">2026-01-19</h4>
+            <h4 data-toc-skip class="date">2026-02-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/simulations.Rmd" class="external-link"><code>vignettes/simulations.Rmd</code></a></small>
       <div class="hidden name"><code>simulations.Rmd</code></div>
@@ -497,8 +497,12 @@ for all
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">t</span>, y <span class="op">=</span> <span class="va">g_z</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## `summarise()` has grouped output by 't'. You can override using the `.groups`</span></span>
-<span><span class="co">## argument.</span></span></code></pre>
+<pre><code><span><span class="co">## `summarise()` has regrouped the output.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Summaries were computed grouped by <span style="color: #0000BB;">t</span> and <span style="color: #0000BB;">z</span>.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Output is grouped by <span style="color: #0000BB;">t</span>.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Use `summarise(.groups = "drop_last")` to silence this message.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Use `summarise(.by = c(t, z))` for per-operation grouping</span></span>
+<span><span class="co">##   (`?dplyr::dplyr_by`) instead.</span></span></code></pre>
 </details><div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/gg-partial-dlnm-1.png" class="r-plt" alt="**Left**: Partial effect $h(t-t_z, z(t_z))$ used for the simulation of survival times. **Right**: The cumulative effects $g(  extbf{z},t)$ resulting from constant exposure histories $z(t_z)=1, \forall t_z$." width="576"><p class="caption">
 <strong>Left</strong>: Partial effect
