@@ -918,6 +918,13 @@ add_cif.default <- function(
   coefs <- coef(object)
   V <- object$Vp
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  assert_string(cause_var)
+  assert_choice(cause_var, colnames(newdata))
+  causes_model <- if (is.factor(newdata[[cause_var]])) {
+    levels(newdata[[cause_var]])
+  } else {
+    sort(unique(as.character(newdata[[cause_var]])))
+  }
 
   joindata <- map_dfr(
     split(joindata, group_indices(joindata)),
@@ -931,6 +938,7 @@ add_cif.default <- function(
       coefs = coefs,
       V = V,
       sim_coef_mat = sim_coef_mat,
+      causes_model = causes_model,
       time_var = time_var,
       ...
     )
@@ -943,6 +951,9 @@ add_cif.default <- function(
 }
 
 #' Calculate CIF for one cause
+#'
+#' @param causes_model Character vector of all cause labels represented in the
+#'   model. Used to construct cause-specific hazards for CIF integration.
 #'
 #' @keywords internal
 get_cif <- function(newdata, object, ...) {
@@ -962,18 +973,15 @@ get_cif.default <- function(
   coefs,
   V,
   sim_coef_mat,
+  causes_model,
   ...
 ) {
-  if (is.null(time_var)) {
-    time_var <- "tend"
-  } else {
-    assert_string(time_var)
-    assert_choice(time_var, colnames(newdata))
-  }
+  # time_var is always set by add_cif.default; sort newdata so hazard rows
 
-  # causes_model <- as.factor(object$attr_ped$risks)
-  causes_model <- as.factor(levels(newdata[[cause_var]]))
-  cause_data <- unique(newdata[[cause_var]])
+  # and intlen are in consistent order for cumsum-based CIF accumulation
+  newdata <- arrange(newdata, .data[[time_var]])
+
+  cause_data <- unique(as.character(newdata[[cause_var]]))
 
   if (length(cause_data) > 1) {
     stop("Did you forget to group by cause?")
@@ -982,8 +990,12 @@ get_cif.default <- function(
   hazards <- map(
     causes_model,
     ~ {
-      .df <- mutate(newdata, cause = .x) %>%
-        arrange(.data[[time_var]], .by_group = TRUE)
+      .df <- newdata
+      if (is.factor(.df[[cause_var]])) {
+        .df[[cause_var]] <- factor(.x, levels = causes_model)
+      } else {
+        .df[[cause_var]] <- .x
+      }
       X <- predict(object, .df, type = "lpmatrix")
       apply(sim_coef_mat, 1, function(z) exp(X %*% z))
     }
@@ -996,14 +1008,16 @@ get_cif.default <- function(
   names(hazards) <- causes_model
   # calculate cif
   hazard <- hazards[[cause_data]]
-  # Value of survival just prior to time-point
-  survival <- overall_survivals - 1e-20
+  survival <- rbind(
+    rep(1, ncol(overall_survivals)),
+    overall_survivals[-nrow(overall_survivals), , drop = FALSE]
+  )
   hps <- hazard * survival
   cifs <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
-  newdata[["cif"]] <- rowMeans(cifs)
+  newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
-    newdata[["cif_lower"]] <- apply(cifs, 1, quantile, alpha / 2)
-    newdata[["cif_upper"]] <- apply(cifs, 1, quantile, 1 - alpha / 2)
+    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2), 0), 1)
+    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2), 0), 1)
   }
 
   newdata

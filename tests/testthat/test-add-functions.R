@@ -415,8 +415,8 @@ test_that("CIF works with pamm", {
     add_cif(pam)
   expect_data_frame(ndf, nrows = 132L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
@@ -456,8 +456,8 @@ test_that("CIF works with mgcv::gam", {
     add_cif(pam)
   expect_data_frame(ndf, nrows = 132L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
@@ -479,11 +479,90 @@ test_that("CIF works with character causes", {
     add_cif(pam)
   expect_data_frame(ndf, nrows = 26L, ncols = 6L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+})
+
+test_that("CIF works with non-default cause_var names", {
+
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(event_type = factor(cause, labels = c("Death", "Discharge"))) %>%
+    select(-cause)
+  pam <- pamm(ped_status ~ s(tend, by = event_type), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), event_type = unique(event_type)) %>%
+    group_by(event_type) %>%
+    add_cif(pam, cause_var = "event_type")
+
+  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
+  expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
+  expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+
+})
+
+test_that("CIF uses survival at the start of each interval", {
+
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    group_by(cause)
+
+  nsim <- 40L
+  target_cause <- levels(ndf$cause)[1]
+  ndf_target <- ndf %>%
+    filter(cause == target_cause) %>%
+    arrange(tend) %>%
+    reconstruct_intlen()
+  coefs <- coef(pam)
+  V <- pam$Vp
+  causes_model <- levels(ndf$cause)
+
+  set.seed(42)
+  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  hazards <- map(
+    causes_model,
+    ~ {
+      .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
+      X <- predict(pam, .df, type = "lpmatrix")
+      apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+    }
+  )
+  names(hazards) <- causes_model
+  overall_survivals <- apply(
+    Reduce("+", hazards),
+    2,
+    function(z) exp(-cumsum(z * ndf_target$intlen))
+  )
+  lagged_survival <- rbind(
+    rep(1, ncol(overall_survivals)),
+    overall_survivals[-nrow(overall_survivals), , drop = FALSE]
+  )
+  expected_cif <- apply(
+    hazards[[target_cause]] * lagged_survival,
+    2,
+    function(z) cumsum(z * ndf_target$intlen)
+  ) %>%
+    rowMeans()
+
+  set.seed(42)
+  observed <- ndf %>%
+    add_cif(pam, ci = FALSE, nsim = nsim) %>%
+    filter(cause == target_cause) %>%
+    arrange(tend)
+
+  expect_equal(observed$cif, expected_cif, tolerance = 1e-8)
+
 })
 
 test_that("Transition Probability works", {
