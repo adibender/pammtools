@@ -49,6 +49,15 @@ add_term <- function(
 
   col_ind <- map(term, grep, x = names(object$coefficients)) %>%
     unlist() %>% unique() %>% sort()
+  if (length(col_ind) == 0) {
+    stop(
+      paste0(
+        "No model coefficients matched `term`: ",
+        paste(term, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
   is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
 
   X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
@@ -1097,5 +1106,4 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
 
   newdata
 }
-
 

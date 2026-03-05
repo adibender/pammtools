@@ -32,15 +32,17 @@ split_data <- function(
 
   ## extract names for event time and status variables
   surv_vars <- all.vars(update(formula, .~0))
+  formula_vars <- setdiff(all.vars(formula), ".")
   vars <- if ("." %in% all.vars(formula)) {
       names(data)
     } else {
-      all.vars(formula)
+      formula_vars
     }
-  uvars <- union(surv_vars, vars)
-  if (!all(uvars %in% vars)) {
+  uvars <- union(surv_vars, formula_vars)
+  missing_vars <- setdiff(uvars, names(data))
+  if (length(missing_vars) > 0) {
     stop(paste("Variables provided in formula not in data set:",
-      paste0(setdiff(uvars, vars), collapse = ", ")))
+      paste0(missing_vars, collapse = ", ")))
   }
 
 

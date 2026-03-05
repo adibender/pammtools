@@ -63,6 +63,14 @@ test_that("Error on wrong input", {
   ## tests
   expect_error(as_ped(tumor, x ~ y, cut = c(0:5, 10, 40)))
   expect_error(as_ped(tumor, Surv(days2, status) ~., cut = c(0:5, 10, 40)))
+  expect_error(
+    split_data(data = tumor, Surv(days, status) ~ foo, cut = c(0:5, 10, 40)),
+    regexp = "Variables provided in formula not in data set: foo"
+  )
+  expect_error(
+    split_data(data = tumor, Surv(days, status) ~ . + foo, cut = c(0:5, 10, 40)),
+    regexp = "Variables provided in formula not in data set: foo"
+  )
   expect_error(as_ped(
     data = rename(tumor, ped_time = time),
     formula = Surv(ped_time, status) ~.))
