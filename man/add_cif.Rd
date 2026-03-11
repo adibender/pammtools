@@ -16,6 +16,7 @@ add_cif(newdata, object, ...)
   nsim = 500L,
   cause_var = "cause",
   time_var = NULL,
+  interval_length = "intlen",
   ...
 )
 }
@@ -51,6 +52,9 @@ based on.}
 not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
 \code{"interval"}. The latter is assumed to be a factor, the former
 numeric.}
+
+\item{interval_length}{\code{Character}, defaults to \code{"intlen"}.
+contains the interval length in \code{newdata}.}
 }
 \description{
 Add cumulative incidence function to data

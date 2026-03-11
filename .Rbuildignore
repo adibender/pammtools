@@ -26,3 +26,4 @@
 ^CRAN-SUBMISSION$
 ^\sim
 ^\tmp
+^\.claude$
