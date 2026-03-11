@@ -67,13 +67,21 @@
 
 \method{transmute}{ped}(.data, ...)
 
-\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+\method{inner_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep = NULL, na_matches = c("na", "never"), multiple = "all",
+  unmatched = "drop", relationship = NULL)
 
-\method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+\method{full_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep = NULL, na_matches = c("na", "never"), multiple = "all",
+  relationship = NULL)
 
-\method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+\method{left_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep = NULL, na_matches = c("na", "never"), multiple = "all",
+  unmatched = "drop", relationship = NULL)
 
-\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...)
+\method{right_join}{ped}(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"),
+  ..., keep = NULL, na_matches = c("na", "never"), multiple = "all",
+  unmatched = "drop", relationship = NULL)
 }
 \arguments{
 \item{.data}{an  object of class \code{ped}, see \code{\link{as_ped}}.}
@@ -134,6 +142,19 @@ it is a potentially expensive operation so you must opt into it.}
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
+
+\item{keep}{Should the join keys from both \code{x} and \code{y} be preserved in the
+output?}
+
+\item{na_matches}{Should two \code{NA} or two \code{NaN} values match?}
+
+\item{multiple}{Handling of rows in \code{x} with multiple matches in \code{y}.}
+
+\item{unmatched}{How should unmatched keys that would result in dropped rows
+be handled?}
+
+\item{relationship}{Handling of the expected relationship between the keys of
+\code{x} and \code{y}.}
 }
 \value{
 a modified \code{ped} object (except for \code{do})
