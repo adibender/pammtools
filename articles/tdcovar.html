@@ -104,6 +104,9 @@
     <li>
       <a href="../articles/simulations.html">Simulating Time-To-Event Data</a>
     </li>
+    <li>
+      <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -168,10 +171,15 @@ the respective vignette <a href="https://socserv.socsci.mcmaster.ca/jfox/Books/C
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># raw data</span></span>
 <span><span class="co"># https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R</span></span>
-<span><span class="va">recidivism</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span></span>
+<span><span class="va">recidivism</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"carData"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">carData</span><span class="fu">::</span><span class="va">Rossi</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span></span>
 <span>    file   <span class="op">=</span> <span class="st">"https://math.unm.edu/~james/Rossi.txt"</span>,</span>
-<span>    header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>subject<span class="op">=</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    header <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
 </h3>
