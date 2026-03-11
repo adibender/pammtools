@@ -353,11 +353,8 @@ add_cumu_hazard <- function(
     if (length(groups(newdata)) != 0) {
       old_groups <- dplyr::groups(newdata)
       joindata <- group_split(newdata) |>
-        map(
-          newdata,
-          .f = ~ expand_df(.x, object, trafo_args, intvars, time_var)
-        ) |> #expand uses distinct, hence need to regroup
-        map(newdata, .f = ~ group_by(.x, !!!old_groups)) |>
+        map(.f = ~ expand_df(.x, object, trafo_args, intvars, time_var)) |> #expand uses distinct, hence need to regroup
+        map(.f = ~ group_by(.x, !!!old_groups)) |>
         bind_rows()
     } else {
       joindata <- newdata %>% expand_df(object, trafo_args, intvars)

@@ -3,7 +3,7 @@
   pkgname = "pammtools"
 ) {
   if (requireNamespace("mgcv", quietly = TRUE)) {
-    registerS3method(
+    base::registerS3method(
       "smooth.construct",
       "fdl.smooth.spec",
       smooth.construct.fdl.smooth.spec,

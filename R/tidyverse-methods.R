@@ -6,7 +6,21 @@ ped_classes <- function(ped) {
 
 re_attribute <- function(.data, attr2) {
   attr1 <- attributes(.data)
-  attributes(.data) <- c(attr1, attr2[setdiff(names(attr1), names(attr2))])
+  ped_attr_names <- c(
+    "breaks",
+    "id_var",
+    "intvars",
+    "combine",
+    "censor_code",
+    "risks",
+    "trafo_args",
+    "time_var"
+  )
+  missing_ped_attrs <- setdiff(
+    intersect(names(attr2), ped_attr_names),
+    names(attr1)
+  )
+  attributes(.data) <- c(attr1, attr2[missing_ped_attrs])
   .data <- sanitize_ped_attributes(.data)
 
   .data

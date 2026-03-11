@@ -18,10 +18,11 @@ normal_ci_multiplier <- function(level = 0.95) {
 calc_ci <- function(ftab) {
   colnames(ftab) <- c("coef", "se")
   rnames <- rownames(ftab)
+  ci_mult <- normal_ci_multiplier()
   ftab <- as_tibble(ftab)
   ftab$variable <- rnames
-  ftab$ci_lower <- ftab$coef - 2 * ftab$se
-  ftab$ci_upper <- ftab$coef + 2 * ftab$se
+  ftab$ci_lower <- ftab$coef - ci_mult * ftab$se
+  ftab$ci_upper <- ftab$coef + ci_mult * ftab$se
   ftab$se <- NULL
 
   ftab[, c("variable", "coef", "ci_lower", "ci_upper")]
