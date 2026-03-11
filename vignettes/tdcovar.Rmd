@@ -12,7 +12,7 @@ bibliography: Remote.bib
 library(knitr)
 opts_chunk$set(
   fig.align  = "center",
-  cache      = TRUE,
+  cache      = FALSE,
   message    = FALSE,
   fig.height = 5,
   fig.width  = 5

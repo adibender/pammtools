@@ -108,7 +108,7 @@ test_that("Cumulative effects are calculated correctly", {
   partial <- gg_partial(ped, pam, "z.tz3", tend = seq(1, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial, c("gg", "ggplot"))
-  expect_data_frame(partial$data, nrows = 130L, ncols = 15L)
+  expect_data_frame(partial$data, nrows = 130L, ncols = 9L)
   partial_ll <- gg_partial_ll(ped, pam, "z.tz3", tend = seq(1, 10, by = 1),
     tz3_latency = 0:12, z.tz3 = c(1), reference = list(z.tz3 = 1))
   expect_is(partial_ll, c("gg", "ggplot"))
@@ -117,7 +117,7 @@ test_that("Cumulative effects are calculated correctly", {
   ## cumulative effect visualization helpers:
   cumu_eff <- get_cumu_eff(ped, pam, term = "z.tz3",
     z1 = seq(-1, 1, length.out = 5), z2 = 0)
-  expect_identical(unique(ped$interval), unique(cumu_eff$interval))
+  expect_equal(unique(ped$tend), unique(cumu_eff$tend))
   expect_matrix(cumu_eff$z.tz3, nrows = 10L, ncols = 5L, any.missing = FALSE)
   expect_identical(cumu_eff$z.tz3[1, ], cumu_eff$z.tz3[2, ])
   expect_subset(

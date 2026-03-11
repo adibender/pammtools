@@ -62,8 +62,8 @@ reference:
       - patient
       - daily
       - staph
-      - simdf_elra
       - nuclear
+      - simdf_elra
   - title: "Utilities"
     desc: "Utility functions"
     contents:

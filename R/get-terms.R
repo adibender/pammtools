@@ -11,6 +11,7 @@
 #' @importFrom rlang UQ
 #' @keywords internal
 get_term <- function(data, fit, term, n = 100, ...) {
+  z_value <- normal_ci_multiplier()
 
   # values at which term contribution will be evaluated
   seq_term <- data %>% pull(term) %>% seq_range(n = n)
@@ -24,24 +25,31 @@ get_term <- function(data, fit, term, n = 100, ...) {
 
   term_name <- term
   # extract term contribution information (+ standard errors)
-  new_df              <- new_df[rep(1, length(seq_term)), ]
+  new_df <- new_df[rep(1, length(seq_term)), ]
   new_df[[term_name]] <- seq_term
-  term_info           <- predict(fit, newdata = new_df, type = "terms",
-    se.fit = TRUE)
-  index_term          <- grep(term, colnames(term_info$fit), value = TRUE)
+  term_info <- predict(fit, newdata = new_df, type = "terms", se.fit = TRUE)
+  index_term <- grep(term, colnames(term_info$fit), value = TRUE)
 
   new_df %>%
     mutate(
       term = term_name,
-      eff  = as.numeric(term_info$fit[, index_term]),
-      se   = as.numeric(term_info$se.fit[, index_term])) %>%
+      eff = as.numeric(term_info$fit[, index_term]),
+      se = as.numeric(term_info$se.fit[, index_term])
+    ) %>%
     mutate(
-      ci_lower = .data$eff - 2 * .data$se,
-      ci_upper = .data$eff + 2 * .data$se) %>%
-  select(one_of(c("term", term_name, "eff", "se", "ci_lower", "ci_upper"))) %>%
-  rename(x = UQ(term_name)) %>%
-  as_tibble()
-
+      ci_lower = .data$eff - z_value * .data$se,
+      ci_upper = .data$eff + z_value * .data$se
+    ) %>%
+    select(one_of(c(
+      "term",
+      term_name,
+      "eff",
+      "se",
+      "ci_lower",
+      "ci_upper"
+    ))) %>%
+    rename(x = UQ(term_name)) %>%
+    as_tibble()
 }
 
 #' Extract the partial effects of non-linear model terms
@@ -66,12 +74,10 @@ get_term <- function(data, fit, term, n = 100, ...) {
 #' tail(terms_df)
 #' @export
 get_terms <- function(data, fit, terms, ...) {
-
   # check inputs
   assert_class(data, "data.frame")
   assert_character(terms, min.len = 1, unique = TRUE)
 
   # apply get_term to each element of terms
   map_dfr(terms, function(x) get_term(data = data, fit = fit, term = x), ...)
-
 }

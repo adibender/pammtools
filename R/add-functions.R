@@ -154,6 +154,18 @@ preproc_reference <- function(reference, cnames, n_rows) {
   reference
 }
 
+resolve_time_var <- function(time_var, object, newdata) {
+  if (is.null(time_var)) {
+    is_gam <- inherits(object, "gam") || inherits(object, "scam")
+    time_var <- if (is_gam) "tend" else "interval"
+  } else {
+    assert_string(time_var)
+  }
+  assert_choice(time_var, colnames(newdata))
+
+  time_var
+}
+
 #' Add predicted (cumulative) hazard to data set
 #'
 #' Add (cumulative) hazard based on the provided data set and model.
@@ -269,13 +281,7 @@ get_hazard.default <- function(
   type <- match.arg(type)
   ci_type <- match.arg(ci_type)
 
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
-  if (is.null(time_var)) {
-    time_var <- ifelse(is_gam, "tend", "interval")
-  } else {
-    assert_string(time_var)
-    assert_choice(time_var, colnames(newdata))
-  }
+  time_var <- resolve_time_var(time_var, object, newdata)
 
   # throw warning or error if evaluation time points/intervals do not correspond
   # to evaluation time-points/intervals do not correspond to the ones used for
@@ -332,13 +338,7 @@ add_cumu_hazard <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
-  if (is.null(time_var)) {
-    time_var <- ifelse(is_gam, "tend", "interval")
-  } else {
-    assert_string(time_var)
-    assert_choice(time_var, colnames(newdata))
-  }
+  time_var <- resolve_time_var(time_var, object, newdata)
 
   trafo_args <- attr(newdata, "trafo_args")
   intvars <- attr(newdata, "intvars")
@@ -348,17 +348,48 @@ add_cumu_hazard <- function(
 
   # if selected time points contain all times already, do not extend newdata
   if (all(brks %in% times)) {
-    joindata <- newdata
+    joindata <- if (interval_length %in% colnames(newdata)) {
+      newdata
+    } else {
+      reconstruct_intlen(
+        newdata,
+        time_var = time_var,
+        interval_length = interval_length
+      )
+    }
   } else {
     if (length(groups(newdata)) != 0) {
       old_groups <- dplyr::groups(newdata)
       joindata <- group_split(newdata) |>
-        map(.f = ~ expand_df(.x, object, trafo_args, intvars, time_var)) |> #expand uses distinct, hence need to regroup
-        map(.f = ~ group_by(.x, !!!old_groups)) |>
+        map(\(.x) {
+          expand_df(
+            .x,
+            object = object,
+            trafo_args = trafo_args,
+            intvars = intvars,
+            time_var = time_var,
+            interval_length = interval_length
+          )
+        }) |> # expand uses distinct, hence need to regroup
+        map(\(.x) group_by(.x, !!!old_groups)) |>
         bind_rows()
     } else {
-      joindata <- newdata %>% expand_df(object, trafo_args, intvars)
+      joindata <- newdata %>%
+        expand_df(
+          object = object,
+          trafo_args = trafo_args,
+          intvars = intvars,
+          time_var = time_var,
+          interval_length = interval_length
+        )
     }
+  }
+  if (!interval_length %in% colnames(joindata)) {
+    joindata <- reconstruct_intlen(
+      joindata,
+      time_var = time_var,
+      interval_length = interval_length
+    )
   }
 
   joindata <- get_cumu_hazard(
@@ -401,6 +432,7 @@ get_cumu_hazard <- function(
 
   ci_type <- match.arg(ci_type)
 
+  interval_length_name <- interval_length
   interval_length <- sym(interval_length)
 
   mutate_args <- list(
@@ -438,7 +470,13 @@ get_cumu_hazard <- function(
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(add_delta_ci_cumu, object = object, se_mult = se_mult, ...)
+          map_dfr(
+            add_delta_ci_cumu,
+            object = object,
+            se_mult = se_mult,
+            interval_length = interval_length_name,
+            ...
+          )
       }
     } else {
       if (ci_type == "sim") {
@@ -451,7 +489,13 @@ get_cumu_hazard <- function(
           ...
         )
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(get_sim_ci_cumu, object = object, nsim = nsim, ...)
+          map_dfr(
+            get_sim_ci_cumu,
+            object = object,
+            nsim = nsim,
+            interval_length = interval_length_name,
+            ...
+          )
       }
     }
   } else {
@@ -503,6 +547,7 @@ add_surv_prob <- function(
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
+  time_var <- resolve_time_var(time_var, object, newdata)
 
   if (!overwrite) {
     if ("surv_prob" %in% names(newdata)) {
@@ -517,6 +562,14 @@ add_surv_prob <- function(
       names(newdata)
     )
     newdata <- newdata %>% select(-one_of(rm.vars))
+  }
+
+  if (!interval_length %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(
+      newdata,
+      time_var = time_var,
+      interval_length = interval_length
+    )
   }
 
   get_surv_prob(
@@ -553,6 +606,7 @@ get_surv_prob <- function(
 
   ci_type <- match.arg(ci_type)
 
+  interval_length_name <- interval_length
   interval_length <- sym(interval_length)
 
   mutate_args <- list(
@@ -596,7 +650,13 @@ get_surv_prob <- function(
       } else {
         # ci delta rule
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(add_delta_ci_surv, object = object, se_mult = se_mult, ...)
+          map_dfr(
+            add_delta_ci_surv,
+            object = object,
+            se_mult = se_mult,
+            interval_length = interval_length_name,
+            ...
+          )
       }
     } else {
       if (ci_type == "sim") {
@@ -609,7 +669,13 @@ get_surv_prob <- function(
           ...
         )
         newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(get_sim_ci_surv, object = object, nsim = nsim, ...)
+          map_dfr(
+            get_sim_ci_surv,
+            object = object,
+            nsim = nsim,
+            interval_length = interval_length_name,
+            ...
+          )
       }
     }
   } else {
@@ -698,37 +764,49 @@ add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
     )
 }
 
-add_delta_ci_cumu <- function(newdata, object, se_mult = 2, ...) {
+add_delta_ci_cumu <- function(
+  newdata,
+  object,
+  se_mult = 2,
+  interval_length = "intlen",
+  ...
+) {
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V <- object$Vp
+  intlen <- newdata[[interval_length]]
 
-  Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(newdata$intlen)
+  Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
   Jacobi <- diag(newdata$hazard) %*% X
   LHS <- Delta %*% Jacobi
   newdata %>%
     mutate(
       se = sqrt(rowSums((LHS %*% V) * LHS)),
-      cumu_lower = cumsum(.data[["intlen"]] * .data[["hazard"]]) -
-        .data[["se"]] * se_mult,
-      cumu_upper = cumsum(.data[["intlen"]] * .data[["hazard"]]) +
-        .data[["se"]] * se_mult
+      cumu_lower = cumsum(intlen * .data[["hazard"]]) - .data[["se"]] * se_mult,
+      cumu_upper = cumsum(intlen * .data[["hazard"]]) + .data[["se"]] * se_mult
     )
 }
 
-add_delta_ci_surv <- function(newdata, object, se_mult = 2, ...) {
+add_delta_ci_surv <- function(
+  newdata,
+  object,
+  se_mult = 2,
+  interval_length = "intlen",
+  ...
+) {
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V <- object$Vp
+  intlen <- newdata[[interval_length]]
 
-  Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(newdata$intlen)
+  Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
   Jacobi <- diag(newdata$hazard) %*% X
   LHS <- -diag(exp(-rowSums(Delta %*% diag(newdata$hazard)))) %*%
     (Delta %*% Jacobi)
   newdata %>%
     mutate(
       se = sqrt(rowSums((LHS %*% V) * LHS)),
-      surv_lower = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) -
+      surv_lower = exp(-cumsum(.data[["hazard"]] * intlen)) -
         .data[["se"]] * se_mult,
-      surv_upper = exp(-cumsum(.data[["hazard"]] * .data[["intlen"]])) +
+      surv_upper = exp(-cumsum(.data[["hazard"]] * intlen)) +
         .data[["se"]] * se_mult
     )
 }
@@ -753,16 +831,24 @@ get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
 }
 
 
-get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
+get_sim_ci_cumu <- function(
+  newdata,
+  object,
+  alpha = 0.05,
+  nsim = 100L,
+  interval_length = "intlen",
+  ...
+) {
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V <- object$Vp
   coefs <- coef(object)
+  intlen <- newdata[[interval_length]]
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
-    function(z) cumsum(newdata$intlen * exp(X %*% z))
+    function(z) cumsum(intlen * exp(X %*% z))
   )
 
   newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
@@ -771,16 +857,24 @@ get_sim_ci_cumu <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
   newdata
 }
 
-get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
+get_sim_ci_surv <- function(
+  newdata,
+  object,
+  alpha = 0.05,
+  nsim = 100L,
+  interval_length = "intlen",
+  ...
+) {
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
   V <- object$Vp
   coefs <- coef(object)
+  intlen <- newdata[[interval_length]]
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
-    function(z) exp(-cumsum(newdata$intlen * exp(X %*% z)))
+    function(z) exp(-cumsum(intlen * exp(X %*% z)))
   )
 
   newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
@@ -800,6 +894,8 @@ get_sim_ci_surv <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
 #' on which estimation of CIFs and their confidence/credible intervals will be
 #' based on.
 #' @param cause_var Character. Column name of the 'cause' variable.
+#' @param interval_length \code{Character}, defaults to \code{"intlen"}.
+#'   contains the interval length in `newdata`.
 #'
 #' @export
 add_cif <- function(
@@ -822,8 +918,20 @@ add_cif.default <- function(
   nsim = 500L,
   cause_var = "cause",
   time_var = NULL,
+  interval_length = "intlen",
   ...
 ) {
+  interval_length <- quo_name(enquo(interval_length))
+  time_var <- resolve_time_var(time_var, object, newdata)
+
+  if (!interval_length %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(
+      newdata,
+      time_var = time_var,
+      interval_length = interval_length
+    )
+  }
+
   coefs <- coef(object)
   V <- object$Vp
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
@@ -841,6 +949,7 @@ add_cif.default <- function(
       V = V,
       sim_coef_mat = sim_coef_mat,
       time_var = time_var,
+      interval_length = interval_length,
       ...
     )
   )
@@ -860,6 +969,7 @@ get_cif.default <- function(
   object,
   ci,
   time_var,
+  interval_length = "intlen",
   alpha,
   nsim,
   cause_var,
@@ -868,13 +978,9 @@ get_cif.default <- function(
   sim_coef_mat,
   ...
 ) {
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
-  if (is.null(time_var)) {
-    time_var <- ifelse(is_gam, "tend", "interval")
-  } else {
-    assert_string(time_var)
-    assert_choice(time_var, colnames(newdata))
-  }
+  time_var <- resolve_time_var(time_var, object, newdata)
+  assert_string(interval_length)
+  assert_choice(interval_length, colnames(newdata))
 
   # causes_model <- as.factor(object$attr_ped$risks)
   causes_model <- as.factor(levels(newdata[[cause_var]]))
@@ -896,7 +1002,7 @@ get_cif.default <- function(
   overall_survivals <- apply(
     Reduce("+", hazards),
     2,
-    function(z) exp(-cumsum(z * newdata[["intlen"]]))
+    function(z) exp(-cumsum(z * newdata[[interval_length]]))
   )
   names(hazards) <- causes_model
   # calculate cif
@@ -904,7 +1010,7 @@ get_cif.default <- function(
   # Value of survival just prior to time-point
   survival <- overall_survivals - 1e-20
   hps <- hazard * survival
-  cifs <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
+  cifs <- apply(hps, 2, function(z) cumsum(z * newdata[[interval_length]]))
   newdata[["cif"]] <- rowMeans(cifs)
   if (ci) {
     newdata[["cif_lower"]] <- apply(cifs, 1, quantile, alpha / 2)
@@ -919,10 +1025,9 @@ get_cif.default <- function(
 get_trans_prob <- function(
   newdata,
   # object,
-  time_var = NULL,
+  time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
-  tend = "tend",
   cumu_hazard = "cumu_hazard",
   ...
 ) {
@@ -933,18 +1038,16 @@ get_trans_prob <- function(
   assert_character(transition)
   assert_subset(transition, colnames(newdata))
   # time
-  assert_character(tend)
-  assert_subset(tend, colnames(newdata))
+  assert_string(time_var)
+  assert_choice(time_var, colnames(newdata))
   # cumu_hazard
   assert_character(cumu_hazard)
   assert_subset(cumu_hazard, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
 
-  interval_length <- sym(interval_length)
-  transition <- sym(transition)
-  tend <- sym(tend)
-  # FIXME: create time_var variable (="tend"), if time_var == NULL
-  # use time_var rather then "tend" below
+  transition_var <- transition
+  time_var_sym <- sym(time_var)
+  transition <- sym(transition_var)
 
   # include from and to, to obtain transition probability in multidim array
   newdata <- newdata %>%
@@ -952,7 +1055,7 @@ get_trans_prob <- function(
       from = as.numeric(gsub("->.*", "", !!transition)),
       to = as.numeric(gsub(".*->", "", !!transition))
     ) %>%
-    arrange(!!transition, !!tend)
+    arrange(!!transition, !!time_var_sym)
 
   # get unique transitions to build transition matrix
   unique_transition <- newdata %>%
@@ -960,10 +1063,11 @@ get_trans_prob <- function(
     unique() %>%
     data.frame()
   # get unique time points
-  unique_tend <- newdata %>%
+  unique_times <- newdata %>%
     ungroup(!!transition) %>%
-    select(!!tend) %>%
+    select(!!time_var_sym) %>%
     unique() %>%
+    arrange(!!time_var_sym) %>%
     data.frame()
 
   # FIXME could think about writing a separate function that performs the below
@@ -988,36 +1092,42 @@ get_trans_prob <- function(
     ] <- -1
   }
 
-  # add cumu hazards to dataset
-  newdata <- newdata %>%
+  # compute hazard increments on time-sorted rows, but keep `newdata` for final join
+  newdata_delta <- newdata %>%
     group_by(!!transition) %>%
+    arrange(!!time_var_sym, .by_group = TRUE) %>%
     mutate(
-      delta_cumu_hazard = cumu_hazard -
-        ifelse(is.na(lag(cumu_hazard)), 0, lag(cumu_hazard))
+      delta_cumu_hazard = .data[[cumu_hazard]] -
+        ifelse(is.na(lag(.data[[cumu_hazard]])), 0, lag(.data[[cumu_hazard]]))
     )
 
   # create dA array, to calculate transition probabilities
   alpha <- array(
-    rep(0, nrow(unique_tend) * nrow(unique_transition)),
-    dim = c(nrow(unique_tend), nrow(unique_transition))
+    rep(0, nrow(unique_times) * nrow(unique_transition)),
+    dim = c(nrow(unique_times), nrow(unique_transition))
   )
   I <- array(
-    rep(diag(max(m)), nrow(unique_tend)),
-    dim = c(max(m), max(m), nrow(unique_tend))
+    rep(diag(max(m)), nrow(unique_times)),
+    dim = c(max(m), max(m), nrow(unique_times))
   )
-  A <- array(0, dim = c(max(m), max(m), nrow(unique_tend)))
-  cum_A <- array(0, dim = c(max(m), max(m), nrow(unique_tend)))
+  A <- array(0, dim = c(max(m), max(m), nrow(unique_times)))
+  cum_A <- array(0, dim = c(max(m), max(m), nrow(unique_times)))
 
   # calculate differences in hazards
   alpha <- sapply(seq_len(nrow(unique_transition)), function(iter) {
-    val <- newdata %>%
+    val <- newdata_delta %>%
       ungroup() %>%
-      filter(transition == unique_transition[iter, 1]) %>%
-      arrange(tend)
+      filter(
+        .data[[transition_var]] == unique_transition[[transition_var]][iter]
+      ) %>%
+      arrange(.data[[time_var]])
     val$delta_cumu_hazard
   })
+  if (is.null(dim(alpha))) {
+    alpha <- matrix(alpha, ncol = 1)
+  }
 
-  for (t in seq_len(nrow(unique_tend))) {
+  for (t in seq_len(nrow(unique_times))) {
     for (trans in seq_len(nrow(unique_transition))) {
       A[,, t] <- A[,, t] + M[,, trans] * alpha[t, trans]
     }
@@ -1029,7 +1139,7 @@ get_trans_prob <- function(
   # prepare transition probabilities
   A <- I + A
 
-  for (iter in seq_len(nrow(unique_tend))) {
+  for (iter in seq_len(nrow(unique_times))) {
     if (iter == 1) {
       cum_A[,, iter] = A[,, iter]
     } else {
@@ -1039,7 +1149,7 @@ get_trans_prob <- function(
 
   # transform array so that transition probability can be joined via tend and transition
   tmp <- cbind(
-    unique_tend,
+    unique_times,
     sapply(
       seq_len(nrow(unique_transition)),
       function(row) {
@@ -1047,20 +1157,22 @@ get_trans_prob <- function(
       }
     )
   )
-  # FIXME: replace "tend" with time_var
-  colnames(tmp) <- c("tend", as.character(unique_transition$transition))
+  colnames(tmp) <- c(
+    time_var,
+    as.character(unique_transition[[transition_var]])
+  )
   trans_prob_df <- tmp %>%
     pivot_longer(
-      cols = c(as.character(unique_transition$transition)),
-      names_to = "transition",
+      cols = c(as.character(unique_transition[[transition_var]])),
+      names_to = transition_var,
       values_to = "trans_prob"
     ) %>%
     mutate(trans_prob = pmin(pmax(.data$trans_prob, 0), 1))
 
   # join probabilities and return matrix
   newdata <- newdata %>%
-    left_join(trans_prob_df, by = c("tend", "transition")) %>%
-    select(-one_of(c("delta_cumu_hazard", "from", "to")))
+    left_join(trans_prob_df, by = c(time_var, transition_var)) %>%
+    select(-any_of(c("delta_cumu_hazard", "from", "to")))
 
   return(newdata)
 }
@@ -1093,6 +1205,8 @@ get_trans_prob <- function(
 #'   numeric.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
+#' @param transition \code{Character}, defaults to \code{"transition"}.
+#'   contains the transition labels in `newdata`.
 #' @param ... Further arguments passed to underlying methods.
 #' @examplesIf require("mstate")
 #'   data("prothr", package = "mstate")
@@ -1121,8 +1235,22 @@ add_trans_prob <- function(
   nsim = 100L,
   time_var = NULL,
   interval_length = "intlen",
+  transition = "transition",
   ...
 ) {
+  interval_length <- quo_name(enquo(interval_length))
+  transition <- quo_name(enquo(transition))
+  time_var <- resolve_time_var(time_var, object, newdata)
+  assert_string(transition)
+  assert_choice(transition, colnames(newdata))
+
+  if (!interval_length %in% colnames(newdata)) {
+    newdata <- reconstruct_intlen(
+      newdata,
+      time_var = time_var,
+      interval_length = interval_length
+    )
+  }
   if (!overwrite) {
     if ("trans_prob" %in% names(newdata)) {
       stop(
@@ -1141,20 +1269,43 @@ add_trans_prob <- function(
   # add confidence intervals if wanted
   has_cumu = "cumu_hazard" %in% colnames(newdata)
   if (!has_cumu) {
-    newdata <- newdata |>
-      add_cumu_hazard(object, ci = FALSE)
+    newdata <- do.call(
+      add_cumu_hazard,
+      list(
+        newdata = newdata,
+        object = object,
+        ci = FALSE,
+        time_var = time_var,
+        interval_length = interval_length
+      )
+    )
   }
   if (ci) {
     newdata <- newdata |>
-      add_trans_ci(object)
+      add_trans_ci(
+        object,
+        nsim = nsim,
+        alpha = alpha,
+        time_var = time_var,
+        interval_length = interval_length,
+        transition = transition
+      )
   }
 
   old_groups <- group_vars(newdata)
+  transition_sym <- sym(transition)
   out_df <- newdata |>
-    ungroup("transition") |>
+    ungroup(!!transition_sym) |>
     group_split() |>
-    map(.f = ~ group_by(.x, transition)) |>
-    map(.f = ~ get_trans_prob(.x)) |>
+    map(.f = ~ group_by(.x, !!transition_sym)) |>
+    map(
+      .f = ~ get_trans_prob(
+        .x,
+        time_var = time_var,
+        interval_length = interval_length,
+        transition = transition
+      )
+    ) |>
     bind_rows() |>
     group_by(across(all_of(old_groups)))
 
@@ -1167,39 +1318,59 @@ add_trans_prob <- function(
 
 #' helper function for add_trans_ci
 #' @keywords internal
-get_sim_cumu <- function(newdata, ...) {
-  newdata$cumu_hazard <- cumsum(newdata$intlen * newdata$hazard)
+get_sim_cumu <- function(newdata, interval_length = "intlen", ...) {
+  newdata$cumu_hazard <- cumsum(newdata[[interval_length]] * newdata$hazard)
 
   newdata
 }
 
 #' Add transition probabilities confidence intervals
 #' @keywords internal
-add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
+add_trans_ci <- function(
+  newdata,
+  object,
+  nsim = 100L,
+  alpha = 0.05,
+  time_var = NULL,
+  interval_length = "intlen",
+  transition = "transition",
+  ...
+) {
+  time_var <- resolve_time_var(time_var, object, newdata)
+  assert_string(interval_length)
+  assert_choice(interval_length, colnames(newdata))
+  assert_string(transition)
+  assert_choice(transition, colnames(newdata))
+
   X <- predict.gam(object, newdata = newdata, type = "lpmatrix")
   coefs <- coef(object)
   V <- object$Vp
 
   # define groups: 1. all grouping variables -> cumu hazards, 2. all but transition -> trans_prob
+  transition_sym <- sym(transition)
   groups_array <- group_indices(newdata)
-  groups_trans <- newdata %>% ungroup("transition") %>% group_indices()
+  groups_trans <- newdata %>% ungroup(!!transition_sym) %>% group_indices()
 
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
   # create list with replicated newdata
-  nlst <- as.list(replicate(
-    nsim,
-    newdata[, c("tend", "transition", "intlen")],
-    simplify = F
-  ))
+  keep_cols <- c(time_var, transition, interval_length)
+  nlst <- as.list(replicate(nsim, newdata[, keep_cols], simplify = FALSE))
 
   # add cumu-hazard in each element and calculate trans_prob with perturbed hazards
   nlst <- lapply(1:nsim, function(i) {
     nlst[[i]] <- cbind(nlst[[i]], hazard = sim_fit_mat[, i]) # add hazard
     # split by group and calculate cumu hazard
-    nlst[[i]] <- split(nlst[[i]], groups_array) %>% map_dfr(get_sim_cumu)
-    nlst[[i]] <- split(nlst[[i]], groups_trans) %>% map_dfr(get_trans_prob)
+    nlst[[i]] <- split(nlst[[i]], groups_array) %>%
+      map_dfr(get_sim_cumu, interval_length = interval_length)
+    nlst[[i]] <- split(nlst[[i]], groups_trans) %>%
+      map_dfr(
+        get_trans_prob,
+        time_var = time_var,
+        interval_length = interval_length,
+        transition = transition
+      )
 
     nlst[[i]]
   })

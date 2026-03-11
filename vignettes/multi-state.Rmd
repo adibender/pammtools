@@ -4,7 +4,7 @@ author: "Johannes Piller, Andreas Bender"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{multi-state}
+  %\VignetteIndexEntry{Multi-State Modelling}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -12,7 +12,7 @@ vignette: >
 library(knitr)
 opts_chunk$set(
   fig.align  = "center",
-  cache      = TRUE,
+  cache      = FALSE,
   message    = FALSE,
   fig.height = 5,
   fig.width  = 5,
@@ -157,7 +157,6 @@ ndf <- ndf |>
 ```{r prothr-prep-mstate, eval=TRUE, echo = FALSE, warning = FALSE, dependson=c("lib-ms-pammtools")}
 library(mstate)
 library(msm)
-library(mvna)
 library(etm)
 
 # code from mstate documentation
