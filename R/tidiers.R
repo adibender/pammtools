@@ -73,14 +73,23 @@ tidy_fixed.coxph <- function(x, ...) {
 #' @param keep A vector of variables to keep.
 #' @param ci A logical value indicating whether confidence intervals should be
 #' calculated and returned. Defaults to \code{TRUE}.
+#' @param conf_level Numeric scalar in (0, 1). Confidence level used for the
+#' returned confidence intervals when \code{ci = TRUE}. Defaults to
+#' \code{0.95}.
 #' @importFrom dplyr bind_rows
 #' @export
 tidy_smooth <- function(
   x,
   keep = c("x", "fit", "se", "xlab", "ylab"),
   ci = TRUE,
+  conf_level = 0.95,
   ...
 ) {
+  checkmate::assert_number(conf_level, lower = 0, upper = 1)
+  if (conf_level <= 0 || conf_level >= 1) {
+    stop("`conf_level` must be strictly between 0 and 1.", call. = FALSE)
+  }
+  z_value <- normal_ci_multiplier(conf_level)
   po <- get_plotinfo(x, ...)
   # index of list elements that are 1d smooths and not random effects
   ind1d <- vapply(
@@ -92,10 +101,9 @@ tidy_smooth <- function(
   po <- lapply(po[ind1d], "[", i = keep, drop = TRUE)
 
   # transform to data.frame
-  z_value <- normal_ci_multiplier()
-  po <- lapply(po, function(z) {
-    z[["fit"]] <- as.vector(z[["fit"]])
-    temp <- as_tibble(z)
+  po <- lapply(po, function(sm) {
+    sm[["fit"]] <- as.vector(sm[["fit"]])
+    temp <- as_tibble(sm)
     if (ci) {
       temp <- temp %>%
         mutate(
@@ -121,8 +129,14 @@ tidy_smooth2d <- function(
   x,
   keep = c("x", "y", "fit", "se", "xlab", "ylab", "main"),
   ci = FALSE,
+  conf_level = 0.95,
   ...
 ) {
+  checkmate::assert_number(conf_level, lower = 0, upper = 1)
+  if (conf_level <= 0 || conf_level >= 1) {
+    stop("`conf_level` must be strictly between 0 and 1.", call. = FALSE)
+  }
+  z_value <- normal_ci_multiplier(conf_level)
   po <- get_plotinfo(x, ...)
 
   ind2d <- vapply(
@@ -135,11 +149,10 @@ tidy_smooth2d <- function(
   po <- lapply(po[ind2d], "[", i = keep, drop = TRUE)
 
   # transform to data.frame
-  z_value <- normal_ci_multiplier()
-  po <- lapply(po, function(z) {
-    z[["fit"]] <- as.vector(z[["fit"]])
-    p1 <- as_tibble(z[setdiff(keep, c("x", "y"))])
-    xy <- cross_df(z[c("x", "y")])
+  po <- lapply(po, function(sm) {
+    sm[["fit"]] <- as.vector(sm[["fit"]])
+    p1 <- as_tibble(sm[setdiff(keep, c("x", "y"))])
+    xy <- cross_df(sm[c("x", "y")])
     xy <- bind_cols(xy, p1)
     if (ci) {
       xy <- xy %>%

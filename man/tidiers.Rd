@@ -4,7 +4,13 @@
 \alias{tidy_smooth}
 \title{Extract 1d smooth objects in tidy data format.}
 \usage{
-tidy_smooth(x, keep = c("x", "fit", "se", "xlab", "ylab"), ci = TRUE, ...)
+tidy_smooth(
+  x,
+  keep = c("x", "fit", "se", "xlab", "ylab"),
+  ci = TRUE,
+  conf_level = 0.95,
+  ...
+)
 }
 \arguments{
 \item{x}{ a fitted \code{gam} object as produced by \code{gam()}.}
@@ -13,6 +19,10 @@ tidy_smooth(x, keep = c("x", "fit", "se", "xlab", "ylab"), ci = TRUE, ...)
 
 \item{ci}{A logical value indicating whether confidence intervals should be
 calculated and returned. Defaults to \code{TRUE}.}
+
+\item{conf_level}{Numeric scalar in (0, 1). Confidence level used for the
+returned confidence intervals when \code{ci = TRUE}. Defaults to
+\code{0.95}.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{plot.gam}}}
 }
