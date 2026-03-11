@@ -63,7 +63,7 @@ make_ped_dat <- function(x, term, z_vec) {
     matrix(q_weights$ll_weight, nrow = nrow(ped_df), ncol = nz, byrow = TRUE)
   if (func$latency_var != "") {
     ped_df[[tz_var_mat]] <- outer(ped_df$tend, tz, FUN = "-")
-    ped_df[[tz_var_mat]] * (ped_df[[LL_name]] != 0)
+    ped_df[[tz_var_mat]] <- ped_df[[tz_var_mat]] * (ped_df[[LL_name]] != 0)
   } else {
     ped_df[[tz_var]] <- matrix(tz, nrow = nrow(ped_df), ncol = nz, byrow = TRUE)
     ped_df[[tz_var]] <- ped_df[[tz_var]] * (ped_df[[LL_name]] != 0)

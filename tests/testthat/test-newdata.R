@@ -1,45 +1,54 @@
 context("create newdata")
 
 test_that("creating newdata works on ungrouped data", {
-
-  iris2 <- iris %>%  group_by(Species) %>% slice(1:2) %>% ungroup()
+  iris2 <- iris %>% group_by(Species) %>% slice(1:2) %>% ungroup()
   expect_data_frame(
     make_newdata(iris2),
-    any.missing = FALSE, nrows = 1L, ncols = 5L)
+    any.missing = FALSE,
+    nrows = 1L,
+    ncols = 5L
+  )
   expect_equal(colnames(make_newdata(iris2)), colnames(iris2))
   expect_data_frame(
     make_newdata(iris2, Sepal.Length = c(5)),
-    any.missing = FALSE, nrows = 1L, ncols = 5L)
+    any.missing = FALSE,
+    nrows = 1L,
+    ncols = 5L
+  )
   expect_equal(make_newdata(iris2, Sepal.Length = c(5))$Sepal.Length, 5)
   expect_data_frame(
     make_newdata(iris2, Sepal.Length = c(5, 6)),
-    any.missing = FALSE, nrows = 2L, ncols = 5L)
+    any.missing = FALSE,
+    nrows = 2L,
+    ncols = 5L
+  )
   expect_data_frame(
     make_newdata(iris2, Sepal.Length = seq_range(Sepal.Length, 2)),
-    any.missing = FALSE, nrows = 2L, ncols = 5L)
+    any.missing = FALSE,
+    nrows = 2L,
+    ncols = 5L
+  )
   expect_equal(
     make_newdata(iris2, Sepal.Length = seq_range(Sepal.Length, 2))$Sepal.Length,
-    c(4.9, 7.0))
+    c(4.9, 7.0)
+  )
 })
 
 
 test_that("creating newdata fails on ungrouped data", {
-
   iris2 <- iris %>% group_by(Species) %>% slice(2) %>% ungroup()
 
   expect_warning(make_newdata(iris2, Sepal.length = c(5)))
   expect_error(make_newdata(iris2, Sepal.Length = 5))
   expect_error(make_newdata(iris2, Sepal.Length = seq_range(Sepal.length, 2)))
   expect_warning(make_newdata(iris2, Sepal.length = seq_range(Sepal.Length, 2)))
-
 })
 
 
 test_that("make_newdata works for PED data", {
-
   ped <- simdf_elra %>%
     slice(1:6) %>%
-    as_ped(Surv(time, status)~x1 + x2, cut = seq(0, 10, by = 5))
+    as_ped(Surv(time, status) ~ x1 + x2, cut = seq(0, 10, by = 5))
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2))
   expect_data_frame(mdf, nrows = 2L, ncols = 3L)
   expect_equal(mdf$tend, c(5, 5))
@@ -51,18 +60,25 @@ test_that("make_newdata works for PED data", {
   expect_data_frame(mdf, nrows = 4L, ncols = 3L)
   mdf <- ped %>% make_newdata(tend = unique(tend), x2 = seq_range(x2, 2))
   expect_data_frame(mdf, nrows = 4L, ncols = 3L)
-
 })
 
 
 test_that("make_newdata works for PED with matrix columns", {
-
-  ped_simdf <- simdf_elra %>% as_ped(
-    Surv(time, status) ~ x1 + x2 +
-      cumulative(time, latency(tz1), z.tz1, tz_var = "tz1",
-        ll_fun = function(t, tz) t >= tz + 2) +
-      cumulative(latency(tz2), z.tz2, tz_var = "tz2"),
-    cut = 0:10)
+  ped_simdf <- simdf_elra %>%
+    as_ped(
+      Surv(time, status) ~
+        x1 +
+          x2 +
+          cumulative(
+            time,
+            latency(tz1),
+            z.tz1,
+            tz_var = "tz1",
+            ll_fun = function(t, tz) t >= tz + 2
+          ) +
+          cumulative(latency(tz2), z.tz2, tz_var = "tz2"),
+      cut = 0:10
+    )
 
   ## sample info
   expect_data_frame(sdf <- sample_info(ped_simdf), nrows = 1, ncols = 2)
@@ -99,45 +115,40 @@ test_that("make_newdata works for PED with matrix columns", {
   nd5 <- ped_simdf %>%
     make_newdata(
       tend = c(1:10),
-      tz1_latency = seq(1:5))
+      tz1_latency = seq(1:5)
+    )
   expect_data_frame(nd5, nrows = 50L, ncols = 10L)
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))
-  
-
 })
 
 test_that("Errors are thrown", {
-
   expect_error(combine_df(data.frame(x = 1), x = 2))
-  expect_error(tumor[1:4,1:2] |>
-    as_ped(Surv(days, status)~1) |>
-    make_newdata(tend = c(0)))
-
+  expect_error(
+    tumor[1:4, 1:2] |>
+      as_ped(Surv(days, status) ~ 1) |>
+      make_newdata(tend = c(0))
+  )
 })
 
 
 test_that("Newdata correct for new time points", {
-
-  ped   <- tumor[1:5, 1:3] |> as_ped(Surv(days, status)~.)
+  ped <- tumor[1:5, 1:3] |> as_ped(Surv(days, status) ~ .)
   nd6 <- ped |> make_newdata(tend = c(2, 33, 100))
   expect_data_frame(nd6, nrows = 3L, ncols = 2L)
   expect_equal(nd6$tend, c(2, 33, 100))
 
   ## TODO: add test for same but more complex ped data (cumulative effects)
-
-
 })
 
 test_that("reconstruct_intlen validates inputs and uses tstart when available", {
-
   expect_error(reconstruct_intlen(data.frame(x = 1:2), time_var = "tend"))
   expect_error(reconstruct_intlen(data.frame(tend = factor(c(1, 2)))))
 
   out <- reconstruct_intlen(
     data.frame(tstart = c(10, 12), stop = c(11, 15)),
-    time_var = "stop")
+    time_var = "stop"
+  )
   expect_equal(out$intlen, c(1, 3))
-
 })
