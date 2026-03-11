@@ -138,7 +138,14 @@ errors are calculated using the delta method.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'gam'</span></span>
-<span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">get_cumu_coef</span><span class="op">(</span></span>
+<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">terms</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="st">"tend"</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'aalen'</span></span>
 <span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, ci <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -166,6 +173,16 @@ coefficient should be calculated.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to methods.</p></dd>
+
+
+<dt id="arg-time-var">time_var<a class="anchor" aria-label="anchor" href="#arg-time-var"></a></dt>
+<dd><p>Name of the evaluation time variable in <code>data</code>. Defaults to
+<code>"tend"</code>.</p></dd>
+
+
+<dt id="arg-interval-length">interval_length<a class="anchor" aria-label="anchor" href="#arg-interval-length"></a></dt>
+<dd><p>Name of the interval-length variable in <code>data</code>.
+Defaults to <code>"intlen"</code>.</p></dd>
 
 
 <dt id="arg-ci">ci<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
