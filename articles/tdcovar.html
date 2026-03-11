@@ -138,7 +138,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time-dependent covariates</h1>
             
-            <h4 data-toc-skip class="date">2026-03-05</h4>
+            <h4 data-toc-skip class="date">2026-03-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/tdcovar.Rmd" class="external-link"><code>vignettes/tdcovar.Rmd</code></a></small>
       <div class="hidden name"><code>tdcovar.Rmd</code></div>
@@ -215,12 +215,12 @@ rates.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">##   variable         coef ci_lower ci_upper</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> fin           -<span style="color: #BB0000;">0.349</span>    -<span style="color: #BB0000;">0.732</span>   0.034<span style="text-decoration: underline;">9</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> race           0.330    -<span style="color: #BB0000;">0.289</span>   0.949 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> wexp          -<span style="color: #BB0000;">0.019</span><span style="color: #BB0000; text-decoration: underline;">2</span>   -<span style="color: #BB0000;">0.449</span>   0.411 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> mar           -<span style="color: #BB0000;">0.325</span>    -<span style="color: #BB0000;">1.09</span>    0.444 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> paro          -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">1</span>   -<span style="color: #BB0000;">0.444</span>   0.343 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> employed.lag1 -<span style="color: #BB0000;">0.767</span>    -<span style="color: #BB0000;">1.20</span>   -<span style="color: #BB0000;">0.331</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> fin           -<span style="color: #BB0000;">0.349</span>    -<span style="color: #BB0000;">0.725</span>   0.027<span style="text-decoration: underline;">3</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> race           0.330    -<span style="color: #BB0000;">0.276</span>   0.937 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> wexp          -<span style="color: #BB0000;">0.019</span><span style="color: #BB0000; text-decoration: underline;">2</span>   -<span style="color: #BB0000;">0.440</span>   0.402 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> mar           -<span style="color: #BB0000;">0.325</span>    -<span style="color: #BB0000;">1.08</span>    0.429 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> paro          -<span style="color: #BB0000;">0.050</span><span style="color: #BB0000; text-decoration: underline;">1</span>   -<span style="color: #BB0000;">0.436</span>   0.336 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> employed.lag1 -<span style="color: #BB0000;">0.767</span>    -<span style="color: #BB0000;">1.19</span>   -<span style="color: #BB0000;">0.340</span></span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## respective extended cox model</span></span>
 <span><span class="va">cph</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span></span>
@@ -232,12 +232,12 @@ rates.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">##   variable          coef ci_lower ci_upper</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> fin           -<span style="color: #BB0000;">0.341</span>     -<span style="color: #BB0000;">0.727</span>   0.045<span style="text-decoration: underline;">1</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> race           0.368     -<span style="color: #BB0000;">0.254</span>   0.991 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> wexp          -<span style="color: #BB0000;">0.005</span><span style="color: #BB0000; text-decoration: underline;">69</span>   -<span style="color: #BB0000;">0.438</span>   0.427 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> mar           -<span style="color: #BB0000;">0.277</span>     -<span style="color: #BB0000;">1.05</span>    0.498 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> paro          -<span style="color: #BB0000;">0.109</span>     -<span style="color: #BB0000;">0.505</span>   0.288 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> employed.lag1 -<span style="color: #BB0000;">0.765</span>     -<span style="color: #BB0000;">1.20</span>   -<span style="color: #BB0000;">0.327</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> fin           -<span style="color: #BB0000;">0.341</span>     -<span style="color: #BB0000;">0.719</span>   0.037<span style="text-decoration: underline;">4</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> race           0.368     -<span style="color: #BB0000;">0.242</span>   0.978 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> wexp          -<span style="color: #BB0000;">0.005</span><span style="color: #BB0000; text-decoration: underline;">69</span>   -<span style="color: #BB0000;">0.430</span>   0.418 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> mar           -<span style="color: #BB0000;">0.277</span>     -<span style="color: #BB0000;">1.04</span>    0.482 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> paro          -<span style="color: #BB0000;">0.109</span>     -<span style="color: #BB0000;">0.498</span>   0.280 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> employed.lag1 -<span style="color: #BB0000;">0.765</span>     -<span style="color: #BB0000;">1.19</span>   -<span style="color: #BB0000;">0.336</span></span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="graphical-comparison-of-the-two-models">Graphical comparison of the two models<a class="anchor" aria-label="anchor" href="#graphical-comparison-of-the-two-models"></a>

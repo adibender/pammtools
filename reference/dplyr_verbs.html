@@ -164,16 +164,24 @@ description and examples.</p>
 <span><span class="fu">transmute</span><span class="op">(</span><span class="va">.data</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'ped'</span></span>
-<span><span class="fu">inner_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">inner_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>, keep <span class="op">=</span> <span class="cn">NULL</span>, na_matches <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"never"</span><span class="op">)</span>, multiple <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  unmatched <span class="op">=</span> <span class="st">"drop"</span>, relationship <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'ped'</span></span>
-<span><span class="fu">full_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">full_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>, keep <span class="op">=</span> <span class="cn">NULL</span>, na_matches <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"never"</span><span class="op">)</span>, multiple <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  relationship <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'ped'</span></span>
-<span><span class="fu">left_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">left_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>, keep <span class="op">=</span> <span class="cn">NULL</span>, na_matches <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"never"</span><span class="op">)</span>, multiple <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  unmatched <span class="op">=</span> <span class="st">"drop"</span>, relationship <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'ped'</span></span>
-<span><span class="fu">right_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">right_join</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">FALSE</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".x"</span>, <span class="st">".y"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>, keep <span class="op">=</span> <span class="cn">NULL</span>, na_matches <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"na"</span>, <span class="st">"never"</span><span class="op">)</span>, multiple <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  unmatched <span class="op">=</span> <span class="st">"drop"</span>, relationship <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -253,6 +261,29 @@ it is a potentially expensive operation so you must opt into it.</p></dd>
 <dd><p>If there are non-joined duplicate variables in <code>x</code> and
 <code>y</code>, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.</p></dd>
+
+
+<dt id="arg-keep">keep<a class="anchor" aria-label="anchor" href="#arg-keep"></a></dt>
+<dd><p>Should the join keys from both <code>x</code> and <code>y</code> be preserved in the
+output?</p></dd>
+
+
+<dt id="arg-na-matches">na_matches<a class="anchor" aria-label="anchor" href="#arg-na-matches"></a></dt>
+<dd><p>Should two <code>NA</code> or two <code>NaN</code> values match?</p></dd>
+
+
+<dt id="arg-multiple">multiple<a class="anchor" aria-label="anchor" href="#arg-multiple"></a></dt>
+<dd><p>Handling of rows in <code>x</code> with multiple matches in <code>y</code>.</p></dd>
+
+
+<dt id="arg-unmatched">unmatched<a class="anchor" aria-label="anchor" href="#arg-unmatched"></a></dt>
+<dd><p>How should unmatched keys that would result in dropped rows
+be handled?</p></dd>
+
+
+<dt id="arg-relationship">relationship<a class="anchor" aria-label="anchor" href="#arg-relationship"></a></dt>
+<dd><p>Handling of the expected relationship between the keys of
+<code>x</code> and <code>y</code>.</p></dd>
 
 </dl></div>
     <div id="value">
