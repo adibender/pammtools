@@ -14,7 +14,7 @@ library(knitr)
 opts_chunk$set(
   fig.align = "center",
   crop      = TRUE,
-  cache     = TRUE)
+  cache     = FALSE)
 ```
 
 ```{r, message=FALSE}

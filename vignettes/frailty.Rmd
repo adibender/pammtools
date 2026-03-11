@@ -20,7 +20,6 @@ opts_chunk$set(
 ```{r message=FALSE}
 library(dplyr)
 library(survival)
-library(coxme)
 library(pammtools)
 library(mgcv)
 library(ggplot2)
