@@ -38,6 +38,7 @@ test_that("predict functions work correctly", {
 })
 
 test_that("get_terms returns tidy partial effects for requested terms", {
+  z95 <- stats::qnorm(0.975)
   fit <- survival::coxph(
     survival::Surv(time, status) ~
       survival::pspline(karno) + survival::pspline(age),
@@ -60,4 +61,8 @@ test_that("get_terms returns tidy partial effects for requested terms", {
   expect_equal(as.integer(table(terms_df$term)[["karno"]]), 100L)
   expect_true(all(terms_df$ci_lower <= terms_df$eff))
   expect_true(all(terms_df$ci_upper >= terms_df$eff))
+  expect_equal(
+    terms_df$ci_upper - terms_df$eff,
+    z95 * terms_df$se
+  )
 })
