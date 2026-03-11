@@ -41,10 +41,15 @@ the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Com
 ```{r}
 # raw data
 # https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R
-recidivism <- read.table(
+recidivism <- if (requireNamespace("carData", quietly = TRUE)) {
+  carData::Rossi
+} else {
+  read.table(
     file   = "https://math.unm.edu/~james/Rossi.txt",
-    header = TRUE) %>%
-  mutate(subject=row_number())
+    header = TRUE
+  )
+} %>%
+  mutate(subject = row_number())
 ```
 
 
@@ -168,7 +173,7 @@ gridExtra::grid.arrange(
 
 </details>
 
-```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prison_prep", echo=FALSE}
+```{r, fig.width=7, fig.height=5, message=FALSE, dependson="prisonPrep", echo=FALSE}
 ## put all plots together
 
 gridExtra::grid.arrange(
