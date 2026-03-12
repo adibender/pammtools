@@ -14,7 +14,7 @@ library(knitr)
 opts_chunk$set(
   fig.align = "center",
   crop      = TRUE,
-  cache     = TRUE)
+  cache     = FALSE)
 ```
 
 ```{r, message=FALSE}
@@ -85,8 +85,8 @@ created data.
 
 ```{r}
 ped_df <- ped_df %>% add_hazard(pam)
-ped_df %>% select(interval, hazard, ci_lower, ci_upper) %>% head()
-ped_df %>% select(interval, hazard, ci_lower, ci_upper) %>% tail()
+ped_df %>% select(tend, hazard, ci_lower, ci_upper) %>% head()
+ped_df %>% select(tend, hazard, ci_lower, ci_upper) %>% tail()
 ```
 
 Which in turn can be conveniently plotted using respective functions, e.g.

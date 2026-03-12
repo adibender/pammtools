@@ -79,7 +79,6 @@
 #'  \item{region}{Continent, Africa/Asia, America, Europe, Soviet Union and Warsaw Pact}
 #' }
 "nuclear"
-
 #' Time until staphylococcus aureaus infection in children, with possible recurrence
 #'
 #' This dataset originates from the Drakenstein child health study.

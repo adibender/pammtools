@@ -3,7 +3,7 @@ title: "Basic Modeling"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{basics}
+  %\VignetteIndexEntry{Basic Modeling}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes
@@ -13,7 +13,7 @@ link-citations: yes
 library(knitr)
 opts_chunk$set(
   fig.align  = "center",
-  cache      = TRUE,
+  cache      = FALSE,
   message    = FALSE,
   fig.height = 5,
   fig.width  = 5

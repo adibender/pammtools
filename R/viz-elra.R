@@ -34,10 +34,15 @@ gg_partial <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
 
   gg_base <- ggplot(ndf, aes(x = .data[[vars[1]]])) + xlab(vars[1])
   if (n_vars == 1) {
-    gg_out <- gg_base +
-      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
-        alpha = 0.3) +
-      geom_line(aes(y = .data[["fit"]]))
+    gg_out <- gg_base
+    if (ci) {
+      gg_out <- gg_out +
+        geom_ribbon(
+          aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
+          alpha = 0.3
+        )
+    }
+    gg_out <- gg_out + geom_line(aes(y = .data[["fit"]]))
   } else {
     # if (n_vars == 2) {
       gg_out <- gg_base + aes(y = .data[[vars[2]]], z = .data[["fit"]]) +

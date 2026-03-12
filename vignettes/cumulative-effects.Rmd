@@ -16,7 +16,7 @@ opts_chunk$set(
   fig.width  = 4,
   fig.height = 4,
   crop       = TRUE,
-  cache      = TRUE)
+  cache      = FALSE)
 ## output hooks, e.g., to truncate rows of output
 hook_output <- knit_hooks$get("output")
 knit_hooks$set(output = function(x, options) {
@@ -62,6 +62,8 @@ library(ggplot2)
 theme_set(theme_bw())
 library(mgcv)
 library(pammtools)
+
+has_tbfmultinomial <- requireNamespace("TBFmultinomial", quietly = TRUE)
 ```
 
 </details>
@@ -167,6 +169,16 @@ data analyzed in @Heyard2018 and provided in the package **`TBFmultinomial`**
 (note that their analyses had a totally different goal, including modeling
 of competing risks; here we simply use the data for illustrative purposes).
 
+```{r, echo = FALSE, results = "asis"}
+if (!has_tbfmultinomial) {
+  cat(
+    "The worked example below requires the optional package ",
+    "`TBFmultinomial` and is skipped when that package is not installed.\n\n",
+    sep = ""
+  )
+}
+```
+
 In the following analysis, we will model the (cause-specific) hazard for
 the event `extubation`, considering all competing events as censoring events.
 Covariates include `gender`, `type` (admission type), `SAPSadmission`
@@ -184,7 +196,7 @@ produces two data sets:
 <details>
   <summary>R-Code data preprocessing</summary>
 
-```{r, warning = FALSE, results = "hide"}
+```{r, warning = FALSE, results = "hide", eval = has_tbfmultinomial}
 data(VAP_data, package = "TBFmultinomial")
 # create unique IDs
 VAP_data <- VAP_data %>%
@@ -220,12 +232,12 @@ tdc_df <- VAP_complete %>%
 
 An overview of the preprocessed data is given below:
 
-```{r}
+```{r, eval = has_tbfmultinomial}
 event_df %>% head()
 tdc_df %>% head()
 ```
 
-```{r fig.width = 6, fig.height = 4, echo = FALSE, out.width = "600px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement."}
+```{r fig.width = 6, fig.height = 4, echo = FALSE, out.width = "600px", fig.cap = "SOFA profiles for individual patients. Each line represents a patient, each pixel represents a measurement.", eval = has_tbfmultinomial}
 tdc_df %>% group_by(ID) %>%
   mutate(
     sort = 1000 * sum(!is.na(SOFA)) +
@@ -256,7 +268,7 @@ as the definition of the lag-lead window are important parts of the analysis
 and need to be considered at the beginning of the analysis as this information
 goes into the code for the data transformation:
 
-```{r, message = FALSE}
+```{r, message = FALSE, eval = has_tbfmultinomial}
 ped <- as_ped(
   list(event_df, tdc_df),
   Surv(time, outcome) ~ . + cumulative(latency(day), SOFA, tz_var = "day",
@@ -279,11 +291,11 @@ Note that the data now contains 3 matrix columns (`day_latency`, `SOFA` and
 
 
 
-```{r, output.lines = c(1:4, 10:13)}
+```{r, output.lines = c(1:4, 10:13), eval = has_tbfmultinomial}
 str(ped, 1)
 ```
 
-```{r, echo = FALSE, fig.width = 4, fig.height = 4, out.width = "400px", fig.cap = "Lag-lead window for the first 10 days of the follow-up."}
+```{r, echo = FALSE, fig.width = 4, fig.height = 4, out.width = "400px", fig.cap = "Lag-lead window for the first 10 days of the follow-up.", eval = has_tbfmultinomial}
 ll_df <- get_laglead(ped)
 ll_df <- ll_df %>% filter(t <= 10, tz <= 10)
 class(ll_df) <- c("LL_df", class(ll_df))
@@ -297,7 +309,7 @@ will inform `gam` to estimate cumulative effects. In our case the the following
 call estimates the DLNM with a cumulative effect (of the SOFA score) as specified
 above:
 
-```{r}
+```{r, eval = has_tbfmultinomial}
 mod <- gam(ped_status ~ s(tend) + type + gender + SAPSadmission +
    te(day_latency, SOFA, by = LL),
   method = "REML", offset = offset, family = poisson(), data = ped)
@@ -330,7 +342,7 @@ The code below visualizes the estimated 2D partial effect $\hat h(t-t_z, z(t_z))
 combination of latency and SOFA score (including confidence intervals).
 The gray areas indicate combinations that did not occur in the data.
 
-```{r fig.width = 9, fig.height = 4, warning = FALSE, out.width="650px"}
+```{r fig.width = 9, fig.height = 4, warning = FALSE, out.width="650px", eval = has_tbfmultinomial}
 gg_tensor(mod, ci = TRUE) + ylab("SOFA") + xlab("latency (day)") +
   theme(legend.position = "bottom")
 ```
@@ -348,7 +360,7 @@ visualizations and allows more control over the inputs. For example, the
 following code produces the partial effect surface plot evaluated only at
 latencies 0 through 5 and calculates the partial effects relative to a patient
 with SOFA score 10 (everything else being equal):
-```{r fig.width = 4, fig.height = 4, out.width = "400px"}
+```{r fig.width = 4, fig.height = 4, out.width = "400px", eval = has_tbfmultinomial}
 gg_partial(ped, mod, term = "SOFA", day_latency = 0:5,
   SOFA = seq_range(SOFA, n = 20), LL = c(1), reference = list(SOFA = 10))
 ```
@@ -359,7 +371,7 @@ time-variation was specified.
 
 #### 1D conditional effects (slices through the 2D surface):
 
-```{r, fig.width = 8, fig.height = 4, out.width = "650px"}
+```{r, fig.width = 8, fig.height = 4, out.width = "650px", eval = has_tbfmultinomial}
 p_slice_latency <- gg_slice(ped, mod, term = "SOFA",
   day_latency = unique(day_latency), SOFA = c(0, 5, 10))
 p_slice_sofa <- gg_slice(ped, mod, term = "SOFA",
@@ -396,7 +408,7 @@ of SOFA score profiles:
   score 20 on the following 20 days and score 5 on the last 20 days of the
   follow-up.
 
-```{r fig.width = 8, fig.height = 4, out.width = "650px"}
+```{r fig.width = 8, fig.height = 4, out.width = "650px", eval = has_tbfmultinomial}
 p_cumu1 <- gg_cumu_eff(ped, mod, term = "SOFA",
   z1 = seq(20, 0, length.out = 50), z2 = 10) +
   geom_point(size = rel(.5)) + geom_vline(xintercept = c(5, 25), lty = 2)

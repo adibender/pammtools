@@ -4,7 +4,15 @@
 \alias{compute_cumu_diff}
 \title{Calculate difference in cumulative hazards and respective standard errors}
 \usage{
-compute_cumu_diff(d1, d2, model, alpha = 0.05, nsim = 100L)
+compute_cumu_diff(
+  d1,
+  d2,
+  model,
+  alpha = 0.05,
+  nsim = 100L,
+  time_var = "tend",
+  interval_length = "intlen"
+)
 }
 \arguments{
 \item{d1}{A data set used as \code{newdata} in \code{predict.gam}}
