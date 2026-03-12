@@ -67,7 +67,7 @@ pamm <- function(
       )
     )
     trafo_args$data <- data
-    data <- do.call(as_ped, trafo_args)
+    data <- do.call(split_data, trafo_args)
   }
   
   dots$data   <- data
