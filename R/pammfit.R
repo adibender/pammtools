@@ -27,8 +27,9 @@ append_ped_attr <- function(pamm, ped) {
 #'
 #' @inheritParams mgcv::gam
 #' @param ... Further arguments passed to \code{engine}.
-#' @param trafo_args A named list. If data is not in PED format, \code{as_ped}
-#' will be called internally with arguments provided in \code{trafo_args}.
+#' @param trafo_args \strong{Deprecated.} A named list passed to \code{as_ped}
+#' for inline data transformation. Convert your data with \code{as_ped()} before
+#' calling \code{pamm()} instead.
 #' @param engine Character name of the function that will be called to fit the
 #' model. The intended entries are either \code{"gam"} or \code{"bam"}
 #' (both from package \code{mgcv}).
@@ -41,11 +42,9 @@ append_ped_attr <- function(pamm, ped) {
 #'  as_ped(Surv(days, status) ~ complications, cut = seq(0, 3000, by = 50))
 #' pam <- pamm(ped_status ~ s(tend) + complications, data = ped)
 #' summary(pam)
-#' ## Alternatively
-#' pamm(
-#'  ped_status ~ s(tend) + complications,
-#'  data = tumor[1:100, ],
-#' trafo_args = list(formula = Surv(days, status)~complications))
+#' ## Deprecated: trafo_args inline transformation (use as_ped() instead)
+#' # ped2 <- as_ped(tumor[1:100, ], Surv(days, status) ~ complications)
+#' # pamm(ped_status ~ s(tend) + complications, data = ped2)
 #' @export
 pamm <- function(
   formula,
@@ -58,6 +57,15 @@ pamm <- function(
   dots$formula <- formula
   dots$family  <- poisson()
   if (!is.null(trafo_args)) {
+    .Deprecated(
+      msg = paste0(
+        "The 'trafo_args' argument of pamm() is deprecated and will be removed ",
+        "in a future version.\n",
+        "Please convert your data first:\n",
+        "  ped <- as_ped(data, formula = ...)\n",
+        "  pamm(formula, data = ped)"
+      )
+    )
     trafo_args$data <- data
     data <- do.call(as_ped, trafo_args)
   }
