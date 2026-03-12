@@ -83,10 +83,7 @@ fit <- coxreg(
   data = infants)
 # fit pam to left-truncated data
 infants_ped <- infants %>% as_ped(Surv(enter, exit, event)~.)
-pam <- pamm(
-  formula = ped_status ~ s(tend)+ mother,
-  trafo_args = list(formula = Surv(enter, exit, event)~.),
-  data = infants)
+pam <- pamm(ped_status ~ s(tend) + mother, data = infants_ped)
 # compare coefficients
 cbind(coef(pam)[2], coef(fit))
 ```
