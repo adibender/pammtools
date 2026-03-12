@@ -141,7 +141,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Left Truncation</h1>
             
-            <h4 data-toc-skip class="date">2026-03-11</h4>
+            <h4 data-toc-skip class="date">2026-03-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/left-truncation.Rmd" class="external-link"><code>vignettes/left-truncation.Rmd</code></a></small>
       <div class="hidden name"><code>left-truncation.Rmd</code></div>
@@ -189,10 +189,7 @@ by the Cox model for left truncated data as implemented in
 <span>  data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span></span>
 <span><span class="co"># fit pam to left-truncated data</span></span>
 <span><span class="va">infants_ped</span> <span class="op">&lt;-</span> <span class="va">infants</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span><span class="op">~</span><span class="va">.</span><span class="op">)</span></span>
-<span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">+</span> <span class="va">mother</span>,</span>
-<span>  trafo_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span><span class="op">~</span><span class="va">.</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span></span>
+<span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pamm.html">pamm</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">mother</span>, data <span class="op">=</span> <span class="va">infants_ped</span><span class="op">)</span></span>
 <span><span class="co"># compare coefficients</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">pam</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               [,1]    [,2]</span></span>

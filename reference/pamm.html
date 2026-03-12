@@ -222,6 +222,10 @@ model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
 <span class="r-in"><span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span> <span class="op">+</span> <span class="va">complications</span>,</span></span>
 <span class="r-in"><span> data <span class="op">=</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span>,</span></span>
 <span class="r-in"><span>trafo_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span><span class="va">complications</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The 'trafo_args' argument of pamm() is deprecated and will be removed in a future version.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Please convert your data first:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   ped &lt;- as_ped(data, formula = ...)</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   pamm(formula, data = ped)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Family: poisson </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Link function: log </span>
