@@ -916,75 +916,10 @@ add_cif.default <- function(
   nsim = 500L,
   cause_var = "cause",
   time_var = NULL,
-  ...
-) {
-  if (!overwrite) {
-    if ("cif" %in% names(newdata)) {
-      stop(
-        "Data set already contains 'cif' column.
-        Set `overwrite=TRUE` to overwrite"
-      )
-    }
-  } else {
-    rm.vars <- intersect(c("cif", "cif_lower", "cif_upper"), names(newdata))
-    newdata <- newdata %>% select(-one_of(rm.vars))
-  }
-
-  orig_names <- names(newdata)
-
-  if (is.null(time_var)) {
-    time_var <- "tend"
-  } else {
-    assert_string(time_var)
-    assert_choice(time_var, colnames(newdata))
-  }
-
-  trafo_args <- attr(newdata, "trafo_args")
-  intvars <- attr(newdata, "intvars")
-
-  times <- setdiff(sort(unique(newdata[[time_var]])), c(0))
-  brks <- if (!is.null(trafo_args)) {
-    setdiff(trafo_args[["cut"]][trafo_args[["cut"]] <= max(times)], c(0))
-  } else {
-    times
-  }
-
-  # fill missing timepoints if needed
-  if (all(brks %in% times)) {
-    joindata <- reconstruct_intlen(newdata, time_var = time_var)
-  } else {
-    if (length(groups(newdata)) != 0) {
-      old_groups <- dplyr::groups(newdata)
-      joindata <- group_split(newdata) %>%
-        map(~ expand_df(.x, object, trafo_args, intvars, time_var)) %>%
-        map(~ group_by(.x, !!!old_groups)) %>%
-        bind_rows()
-    } else {
-      joindata <- newdata %>% expand_df(object, trafo_args, intvars)
-    }
-  }
-
-  coefs <- coef(object)
-  V <- object$Vp
-  sim_coef_mat <- if (ci==FALSE) {
-    matrix(coefs, nrow = 1)  # single row = posterior mean, no simulation
-  } else { # simulate only when you construct CIs
-    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
-  }
-  # sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
-  assert_string(cause_var)
-  assert_choice(cause_var, colnames(newdata))
-  causes_model <- if (is.factor(newdata[[cause_var]])) {
-    levels(newdata[[cause_var]])
-  } else {
-    sort(unique(as.character(newdata[[cause_var]])))
-  }
-
-  joindata <- map_dfr(
-    split(joindata, group_indices(joindata)),
   interval_length = "intlen",
   ...
 ) {
+  
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
 
@@ -998,7 +933,11 @@ add_cif.default <- function(
 
   coefs <- coef(object)
   V <- object$Vp
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- if (ci==FALSE) {
+    matrix(coefs, nrow = 1)  # single row = posterior mean, no simulation
+  } else { # simulate only when you construct CIs
+    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  }
 
   map_dfr(
     split(newdata, group_indices(newdata)),
@@ -1045,6 +984,7 @@ get_cif.default <- function(
   sim_coef_mat,
   ...
 ) {
+
   time_var <- resolve_time_var(time_var, object, newdata)
   assert_string(interval_length)
   assert_choice(interval_length, colnames(newdata))
@@ -1075,16 +1015,13 @@ get_cif.default <- function(
   # calculate cif
   hazard <- hazards[[cause_data]]
 
-  survival <- rbind(
-    rep(1, ncol(overall_survivals)),
-    overall_survivals[-nrow(overall_survivals), , drop = FALSE]
-  )
+  survival <- rbind(1, head(overall_survivals, -1))
 
   # total hazard h_j
   total_hazard <- Reduce("+", hazards)
-  
+
   # interval lengths
-  dt <- newdata[["intlen"]]
+  dt <- newdata[[interval_length]]
 
   # CIF increment using exact formula
   cif_increments <- (hazard / total_hazard) *
@@ -1096,16 +1033,8 @@ get_cif.default <- function(
   
   newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
-    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2), 0), 1)
-    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2), 0), 1)
-  # Value of survival just prior to time-point
-  survival <- overall_survivals - 1e-20
-  hps <- hazard * survival
-  cifs <- apply(hps, 2, function(z) cumsum(z * newdata[[interval_length]]))
-  newdata[["cif"]] <- rowMeans(cifs)
-  if (ci) {
-    newdata[["cif_lower"]] <- apply(cifs, 1, quantile, alpha / 2)
-    newdata[["cif_upper"]] <- apply(cifs, 1, quantile, 1 - alpha / 2)
+    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0), 1)
+    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0), 1)
   }
 
   newdata

@@ -504,7 +504,7 @@ test_that("CIF works with pamm", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 132L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
@@ -545,7 +545,7 @@ test_that("CIF works with mgcv::gam", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 132L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
@@ -608,7 +608,7 @@ test_that("CIF works with character causes", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
@@ -630,7 +630,7 @@ test_that("CIF works with non-default cause_var names", {
     group_by(event_type) %>%
     add_cif(pam, cause_var = "event_type")
 
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
