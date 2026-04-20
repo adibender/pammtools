@@ -982,7 +982,6 @@ get_cif.default <- function(
   ...
 ) {
   # time_var is always set by add_cif.default; sort newdata so hazard rows
-
   # and intlen are in consistent order for cumsum-based CIF accumulation
   newdata <- arrange(newdata, .data[[time_var]])
 
@@ -1019,13 +1018,7 @@ get_cif.default <- function(
     rep(1, ncol(overall_survivals)),
     overall_survivals[-nrow(overall_survivals), , drop = FALSE]
   )
-  
-  # ## ---- old ----
-  # ## change code to recursive cif definition
-  # hps <- hazard * survival
-  # cifs <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
-  
-  ## ---- new ----
+
   # total hazard h_j
   total_hazard <- Reduce("+", hazards)
   
