@@ -338,67 +338,9 @@ add_cumu_hazard <- function(
 
   time_var <- resolve_time_var(time_var, object, newdata)
 
-  trafo_args <- attr(newdata, "trafo_args")
-  intvars <- attr(newdata, "intvars")
-
-  times <- setdiff(sort(unique(newdata[[time_var]])), c(0))
-  brks <- setdiff(trafo_args[["cut"]][trafo_args[["cut"]] <= max(times)], c(0))
-
-  # if selected time points contain all times already, do not extend newdata
-  if (all(brks %in% times)) {
-    joindata <- if (interval_length %in% colnames(newdata)) {
-      newdata
-    } else {
-      reconstruct_intlen(
-        newdata,
-        time_var = time_var,
-        interval_length = interval_length
-      )
-    }
-  } else {
-    if (length(groups(newdata)) != 0) {
-      old_groups <- dplyr::groups(newdata)
-      joindata <- group_split(newdata) |>
-        map(\(.x) {
-          expand_df(
-            .x,
-            object = object,
-            trafo_args = trafo_args,
-            intvars = intvars,
-            time_var = time_var,
-            interval_length = interval_length
-          )
-        }) |> # expand uses distinct, hence need to regroup
-        map(\(.x) group_by(.x, !!!old_groups)) |>
-        bind_rows()
-    } else {
-      joindata <- newdata %>%
-        expand_df(
-          object = object,
-          trafo_args = trafo_args,
-          intvars = intvars,
-          time_var = time_var,
-          interval_length = interval_length
-        )
-    }
-  }
-  if (!interval_length %in% colnames(joindata)) {
-    joindata <- reconstruct_intlen(
-      joindata,
-      time_var = time_var,
-      interval_length = interval_length
-    )
-  }
-
-  joindata <- get_cumu_hazard(
-    joindata,
-    object,
-    ci = ci,
-    se_mult = se_mult,
-    time_var = time_var,
-    interval_length = interval_length,
-    ...
-  )
+  joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
+  joindata <- get_cumu_hazard(joindata, object, ci = ci, se_mult = se_mult,
+                              time_var = time_var, interval_length = interval_length, ...)
 
   suppressMessages(
     newdata %>% left_join(joindata)
@@ -923,6 +865,8 @@ add_cif.default <- function(
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
 
+  joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
+  
   if (!interval_length %in% colnames(newdata)) {
     newdata <- reconstruct_intlen(
       newdata,
@@ -940,7 +884,7 @@ add_cif.default <- function(
   }
 
   map_dfr(
-    split(newdata, group_indices(newdata)),
+    split(joindata, group_indices(joindata)),
     ~ get_cif(
       newdata = .x,
       object = object,

@@ -209,7 +209,8 @@ test_that("cumulative hazard functions work for PAM", {
   expect_data_frame(newdata, nrows = 5L, ncols = 11L)
 })
 
-test_that("cumulative hazard function work for arbitrary time points", {
+test_that("cumulative hazard function works for arbitrary time points", {
+  # with grouping
   ndf1 = ped |>
     make_newdata(tend = unique(tend)[1:3], age = c(60, 70)) |>
     group_by(age) |>
@@ -222,6 +223,32 @@ test_that("cumulative hazard function work for arbitrary time points", {
 
   expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
   expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
+  
+  #without grouping
+  set.seed(211758)
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1), 20, replace = TRUE)
+  )
+  ped_sim <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam_sim <- pamm(ped_status ~ tend, data = ped_sim)
+
+  tmax = max(ped_sim$tend)
+  ndf1 <- ped_sim %>%
+    make_newdata(tend = unique(tend)) %>%
+    add_cumu_hazard(pam_sim) |> 
+    dplyr::filter(tend == tmax)
+  
+  ndf2 <- ped_sim %>%
+    make_newdata(tend = c(2, tmax)) %>%
+    add_cumu_hazard(pam_sim) |>
+    dplyr::filter(tend == tmax)
+  
+  expect_message(
+    ped_sim %>% make_newdata(tend = c(2, tmax))
+  )
+  expect_equal(ndf1$cumu_hazard, ndf2$cumu_hazard, tolerance = 0.1)
+  
 })
 
 test_that("cumulative hazard functions work for PEM", {
@@ -499,7 +526,7 @@ test_that("CIF works with pamm", {
   )
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(cause = as.factor(cause))
-  pam <- pamm(ped_status ~ s(tend, by = cause) + cause, data = ped_cr)
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
   ndf <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
@@ -511,14 +538,34 @@ test_that("CIF works with pamm", {
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+})
 
+
+test_that("CIF works with arbitrary time points", {
+  set.seed(211758)
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    group_by(cause) %>%
+    add_cif(pam)
   # compare CIF with arbitrary time points.
   tmax = max(ndf$tend)
-  ndf1 <- ndf |> dplyr::filter(tend == tmax)
+  ndf1 <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) |>
+    group_by(cause) |>
+    add_cif(pam, ci=FALSE) |>
+    dplyr::filter(tend == tmax)
+
   ndf2 <- ped_cr %>%
     make_newdata(tend = c(2, tmax), cause = unique(cause)) %>%
     group_by(cause) |>
-    add_cif(pam) |>
+    add_cif(pam, ci=FALSE) |>
     dplyr::filter(tend == tmax)
 
   expect_message(

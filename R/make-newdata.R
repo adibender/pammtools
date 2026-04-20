@@ -464,6 +464,7 @@ expand_df <- function(
   interval_length = "intlen",
   ...
 ) {
+
   orig_vars <- names(x)
   if (is.null(time_var)) {
     time_var <- attr(x, "time_var")
@@ -476,11 +477,14 @@ expand_df <- function(
   brks <- trafo_args[["cut"]]
 
   int_names <- setdiff(intvars, id_var)
-  cov_names <- setdiff(
-    names(object$var.summary),
-    intersect(int_names, names(object$var.summary))
-  )
+  # cov_names <- setdiff(
+  #   names(object$var.summary),
+  #   intersect(int_names, names(object$var.summary))
+  # )
 
+  interval_struct_vars <- c(time_var, "tstart", interval_length, "offset", "ped_status")
+  cov_names <- setdiff(names(x), c(id_var, interval_struct_vars))
+  
   expressions <- quos(...)
   dot_names <- names(expressions)
 
@@ -538,6 +542,67 @@ expand_df <- function(
 
 deduce_df <- function(x, object, ...) {
 }
+
+#' Ensure all breakpoints are present in newdata for cumulative calculations
+#'
+#' Checks whether all cut points up to the maximum observed time are present in
+#' \code{newdata}. If not, expands the data frame to include the missing
+#' breakpoints via \code{expand_df}. In either case the function guarantees that
+#' an interval-length column (default \code{intlen}) exists on return.
+#' Existing grouping is preserved after expansion.
+#'
+#' @param newdata A data frame with a time column and, optionally, grouping.
+#'   Must carry the \code{trafo_args} and \code{intvars} attributes set by
+#'   \code{as_ped}.
+#' @param object A fitted PAM/PAMM model object, passed to \code{expand_df}.
+#' @param time_var Character name of the time variable (e.g. \code{"tend"}).
+#' @param interval_length Character name of the interval-length column. If
+#'   absent from \code{newdata} it is created via \code{reconstruct_intlen}.
+#' @return A data frame with all required breakpoints present and an
+#'   \code{interval_length} column guaranteed to exist.
+#' @keywords internal
+reconstruct_cutpoints <- function(
+    newdata,
+    object,
+    time_var,
+    interval_length
+) {
+  trafo_args <- attr(newdata, "trafo_args")
+  intvars    <- attr(newdata, "intvars")
+  times      <- setdiff(sort(unique(newdata[[time_var]])), 0)
+  brks       <- setdiff(trafo_args[["cut"]][trafo_args[["cut"]] <= max(times)], 0)
+  
+  if (all(brks %in% times)) {
+    # all breakpoints already present, just ensure intlen exists
+    if (!interval_length %in% colnames(newdata)) {
+      newdata <- reconstruct_intlen(newdata, time_var = time_var,
+                                    interval_length = interval_length)
+    }
+    return(newdata)
+  }
+
+  # need to expand -- respect existing groups
+  old_groups <- dplyr::groups(newdata)
+  expanded <- group_split(newdata) |>
+    map(\(.x) expand_df(
+      .x,
+      object        = object,
+      trafo_args    = trafo_args,
+      intvars       = intvars,
+      time_var      = time_var,
+      interval_length = interval_length
+    )) |>
+    map(\(.x) if (length(old_groups)) group_by(.x, !!!old_groups) else .x) |>
+    bind_rows()
+  
+  if (!interval_length %in% colnames(expanded)) {
+    expanded <- reconstruct_intlen(expanded, time_var = time_var,
+                                   interval_length = interval_length)
+  }
+
+  expanded
+}
+
 
 # All variables that represent follow-up time should have the same values
 # adjust_time_vars <- function(out_df, data, dot_names) {

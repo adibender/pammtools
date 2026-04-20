@@ -152,3 +152,102 @@ test_that("reconstruct_intlen validates inputs and uses tstart when available", 
   )
   expect_equal(out$intlen, c(1, 3))
 })
+
+test_that("reconstruct_cutpoints expands missing breakpoints and adds intlen", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam <- pamm(ped_status ~ s(tend), data = ped)
+  
+  # subset to every other time point -- deliberately incomplete
+  all_times  <- sort(unique(ped$tend))
+  some_times <- all_times[seq(1, length(all_times), by = 2)]
+  
+  newdata <- ped %>%
+    filter(tend %in% some_times) %>%
+    make_newdata(tend = some_times)
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # all breakpoints up to max observed time must now be present
+  trafo_args <- attr(newdata, "trafo_args")
+  max_time   <- max(some_times)
+  expected_brks <- setdiff(
+    trafo_args[["cut"]][trafo_args[["cut"]] <= max_time],
+    0
+  )
+  expect_true(all(expected_brks %in% result$tend))
+  
+  # intlen column must exist
+  expect_true("intlen" %in% colnames(result))
+  
+  # intlen must be positive everywhere
+  expect_true(all(result$intlen > 0))
+})
+
+test_that("reconstruct_cutpoints is a no-op when all breakpoints present", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam <- pamm(ped_status ~ s(tend), data = ped)
+  
+  # use all time points -- already complete
+  newdata <- ped %>%
+    make_newdata(tend = sort(unique(ped$tend)))
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # row count must be unchanged
+  expect_equal(nrow(result), nrow(newdata))
+  
+  # intlen must exist and be positive
+  expect_true("intlen" %in% colnames(result))
+  expect_true(all(result$intlen > 0))
+})
+
+test_that("reconstruct_cutpoints preserves grouping after expansion", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE),
+    x1      = rnorm(30)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ x1, id = "id")
+  pam <- pamm(ped_status ~ s(tend) + x1, data = ped)
+  
+  all_times  <- sort(unique(ped$tend))
+  some_times <- all_times[seq(1, length(all_times), by = 2)]
+  
+  newdata <- ped %>%
+    make_newdata(tend = some_times, x1 = c(-1, 1)) %>%
+    group_by(x1)
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # grouping must be preserved
+  expect_equal(dplyr::group_vars(result), "x1")
+  
+  # both covariate strata must be present
+  expect_setequal(unique(result$x1), c(-1, 1))
+})
