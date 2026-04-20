@@ -12,6 +12,7 @@ get_cif(newdata, object, ...)
   object,
   ci,
   time_var,
+  interval_length = "intlen",
   alpha,
   nsim,
   cause_var,

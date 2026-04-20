@@ -4,7 +4,16 @@
 \alias{add_trans_ci}
 \title{Add transition probabilities confidence intervals}
 \usage{
-add_trans_ci(newdata, object, nsim = 100L, alpha = 0.05, ...)
+add_trans_ci(
+  newdata,
+  object,
+  nsim = 100L,
+  alpha = 0.05,
+  time_var = NULL,
+  interval_length = "intlen",
+  transition = "transition",
+  ...
+)
 }
 \description{
 Add transition probabilities confidence intervals

@@ -13,6 +13,7 @@ add_trans_prob(
   nsim = 100L,
   time_var = NULL,
   interval_length = "intlen",
+  transition = "transition",
   ...
 )
 }
@@ -44,6 +45,9 @@ to \code{"tend"}.}
 
 \item{interval_length}{\code{Character}, defaults to \code{"intlen"}.
 contains the interval length in \code{newdata}.}
+
+\item{transition}{\code{Character}, defaults to \code{"transition"}.
+contains the transition labels in \code{newdata}.}
 
 \item{...}{Further arguments passed to underlying methods.}
 }

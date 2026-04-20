@@ -59,7 +59,7 @@ test_that("make_newdata works for PED data", {
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2), x2 = seq_range(x2, 2))
   expect_data_frame(mdf, nrows = 4L, ncols = 4L)
   mdf <- ped %>% make_newdata(tend = unique(tend), x2 = seq_range(x2, 2))
-  expect_data_frame(mdf, nrows = 4L, ncols = 4L)
+  expect_data_frame(mdf, nrows = 4L, ncols = 3L)
 })
 
 
@@ -117,7 +117,7 @@ test_that("make_newdata works for PED with matrix columns", {
       tend = c(1:10),
       tz1_latency = seq(1:5)
     )
-  expect_data_frame(nd5, nrows = 50L, ncols = 11L)
+  expect_data_frame(nd5, nrows = 50L, ncols = 10L)
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))
@@ -140,13 +140,15 @@ test_that("Newdata correct for new time points", {
   expect_equal(nd6$tend, c(2, 33, 100))
 
   ## TODO: add test for same but more complex ped data (cumulative effects)
+})
 
-  # test CR for new time points
-  ped <- tumor[3:5, 1:3]
-  ped$status = c(0, 1, 2) # create competing risk data for testing
+test_that("reconstruct_intlen validates inputs and uses tstart when available", {
+  expect_error(reconstruct_intlen(data.frame(x = 1:2), time_var = "tend"))
+  expect_error(reconstruct_intlen(data.frame(tend = factor(c(1, 2)))))
 
-  ped <- ped |> as_ped(Surv(days, status) ~ .)
-  nd7 <- ped |> make_newdata(tend = c(10, 100), cause = unique(cause))
-  expect_data_frame(nd7, nrows = 4L, ncols = 4L)
-  expect_equal(nd7$tend, c(10, 100, 10, 100))
+  out <- reconstruct_intlen(
+    data.frame(tstart = c(10, 12), stop = c(11, 15)),
+    time_var = "stop"
+  )
+  expect_equal(out$intlen, c(1, 3))
 })

@@ -23,13 +23,50 @@ get_cumu_coef <- function(model, data = NULL, terms, ...) {
 
 
 #' @rdname cumulative_coefficient
+#' @param time_var Name of the evaluation time variable in `data`. Defaults to
+#'   \code{"tend"}.
+#' @param interval_length Name of the interval-length variable in `data`.
+#'   Defaults to \code{"intlen"}.
 #' @export
-get_cumu_coef.gam <- function(model, data, terms, ...) {
-
-  data    <- ped_info(data)
-  map(terms, ~cumu_coef(data, model, quo_name(sym(.)), ...)) %>%
+get_cumu_coef.gam <- function(
+  model,
+  data,
+  terms,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+) {
+  data <- ped_info(data)
+  if (time_var != "tend" && "tend" %in% names(data)) {
+    data[[time_var]] <- data[["tend"]]
+  }
+  if (interval_length != "intlen" && "intlen" %in% names(data)) {
+    data[[interval_length]] <- data[["intlen"]]
+  }
+  if (!time_var %in% names(data)) {
+    if ("tend" %in% names(data)) {
+      data[[time_var]] <- data[["tend"]]
+    } else {
+      stop(
+        "Column '",
+        time_var,
+        "' not found in `data`, and fallback column 'tend' is unavailable."
+      )
+    }
+  }
+  map(
+    terms,
+    \(term_i)
+      cumu_coef(
+        data,
+        model,
+        quo_name(sym(term_i)),
+        time_var = time_var,
+        interval_length = interval_length,
+        ...
+      )
+  ) %>%
     bind_rows()
-
 }
 
 #' @rdname cumulative_coefficient
@@ -37,9 +74,10 @@ get_cumu_coef.gam <- function(model, data, terms, ...) {
 #' well.
 #' @export
 get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
-
-  terms <- map(c("time", terms),
-      ~grep(.x, colnames(model$cum), value = TRUE)) %>%
+  terms <- map(
+    c("time", terms),
+    ~ grep(.x, colnames(model$cum), value = TRUE)
+  ) %>%
     reduce(union)
   cumu_coef <- model[["cum"]] %>%
     as_tibble() %>%
@@ -50,43 +88,75 @@ get_cumu_coef.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
     select(terms) %>%
     gather("variable", "cumu_var", -.data[["time"]])
 
-    suppressMessages(
-      left_join(cumu_coef, cumu_var) %>%
+  suppressMessages(
+    left_join(cumu_coef, cumu_var) %>%
       mutate(
-        method     = class(model)[1],
-        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var ** 0.5,
-        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var ** 0.5) %>%
-      select(one_of(c("method", "variable", "time")), everything(),
-        -one_of("cumu_var"))
+        method = class(model)[1],
+        cumu_lower = .data$cumu_hazard - 2 * .data$cumu_var**0.5,
+        cumu_upper = .data$cumu_hazard + 2 * .data$cumu_var**0.5
+      ) %>%
+      select(
+        one_of(c("method", "variable", "time")),
+        everything(),
+        -one_of("cumu_var")
       )
-
+  )
 }
 
 #' @rdname cumulative_coefficient
 #' @export
 get_cumu_coef.cox.aalen <- function(model, data = NULL, terms, ci = TRUE, ...) {
-
   get_cumu_coef.aalen(model = model, data = data, terms = terms, ci = ci, ...)
-
 }
 
-get_cumu_diff <- function(d1, d2, model, nsim = 100L) {
-
-  lp <- compute_cumu_diff(d1, d2, model, nsim = nsim)
+get_cumu_diff <- function(
+  d1,
+  d2,
+  model,
+  nsim = 100L,
+  alpha = 0.05,
+  time_var = "tend",
+  interval_length = "intlen"
+) {
+  lp <- compute_cumu_diff(
+    d1,
+    d2,
+    model,
+    alpha = alpha,
+    nsim = nsim,
+    time_var = time_var,
+    interval_length = interval_length
+  )
   d2 %>%
     mutate(
       cumu_hazard = lp[["cumu_diff"]],
-      cumu_lower =  lp[["cumu_lower"]],
-      cumu_upper =  lp[["cumu_upper"]])
+      cumu_lower = lp[["cumu_lower"]],
+      cumu_upper = lp[["cumu_upper"]]
+    )
 }
 
 #' @import dplyr purrr
 #' @importFrom rlang sym enquo quo_name
 #' @keywords internal
-cumu_coef <- function(data, model, term, ...) {
-
+cumu_coef <- function(
+  data,
+  model,
+  term,
+  nsim = 100L,
+  alpha = 0.05,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+) {
   if (quo_name(term) == "(Intercept)") {
-    return(get_cumu_coef_baseline(data, model))
+    return(
+      get_cumu_coef_baseline(
+        data,
+        model,
+        time_var = time_var,
+        interval_length = interval_length
+      )
+    )
   }
 
   if (is.character(term)) {
@@ -94,50 +164,80 @@ cumu_coef <- function(data, model, term, ...) {
   } else {
     term <- enquo(term)
   }
-  qname_term   <- quo_name(term)
+  qname_term <- quo_name(term)
+
   if (!is.numeric(data[[qname_term]])) {
     x <- levels(as.factor(unique(data[[qname_term]])))
   } else {
     x <- mean(data[[qname_term]], na.rm = TRUE)
     x <- c(x, x + 1)
   }
-  dat_list <- map(.x = x,
-    function(z) {
-      mutate_at(.tbl = data, .vars = qname_term, .funs = ~identity(z)) %>%
-      mutate(variable = paste0(qname_term,
-        ifelse(is.numeric(z), "", paste0(" (", z, ")"))))
-    })
+  dat_list <- map(.x = x, function(z) {
+    mutate_at(.tbl = data, .vars = qname_term, .funs = ~ identity(z)) %>%
+      mutate(
+        variable = paste0(
+          qname_term,
+          ifelse(is.numeric(z), "", paste0(" (", z, ")"))
+        )
+      )
+  })
 
   map2(
     .x = dat_list[1],
     .y = dat_list[-1],
-    .f = ~ get_cumu_diff(.x, .y, model)) %>%
+    .f = ~ get_cumu_diff(
+      .x,
+      .y,
+      model,
+      nsim = nsim,
+      alpha = alpha,
+      time_var = time_var,
+      interval_length = interval_length
+    )
+  ) %>%
     map(
-    ~ select(., one_of(c("variable", "tend")), contains("cumu")) %>%
-      rename("time" = "tend") %>%
-      mutate(method = class(model)[1]) ) %>%
-  bind_rows() %>%
-  select(one_of(c("method", "variable", "time")), everything())
-
+      ~ select(., one_of(c("variable", time_var)), contains("cumu")) %>%
+        rename(time = all_of(time_var)) %>%
+        mutate(method = class(model)[1])
+    ) %>%
+    bind_rows() %>%
+    select(one_of(c("method", "variable", "time")), everything())
 }
 
 #' @keywords internal
-get_cumu_coef_baseline <- function(data, model, ...) {
-
+get_cumu_coef_baseline <- function(
+  data,
+  model,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+) {
   vars_modify <- colnames(data)[map_lgl(data, is.numeric)] %>%
-    setdiff(c("tstart", "tend", "intlen", "intmid"))
+    setdiff(c("tstart", interval_length, "intmid", time_var))
 
   data %>%
     mutate_at(
       .vars = vars(one_of(vars_modify)),
-      .funs = ~c(0)) %>%
-    add_cumu_hazard(model) %>%
+      .funs = ~ c(0)
+    ) %>%
+    add_cumu_hazard(
+      model,
+      time_var = time_var,
+      interval_length = interval_length
+    ) %>%
     mutate(
-      method      = class(model)[1],
-      variable    = "(Intercept)") %>%
-    rename("time" = "tend") %>%
-    select(one_of(c("method", "variable", "time", "cumu_hazard", "cumu_lower",
-      "cumu_upper")))
+      method = class(model)[1],
+      variable = "(Intercept)"
+    ) %>%
+    rename(time = all_of(time_var)) %>%
+    select(one_of(c(
+      "method",
+      "variable",
+      "time",
+      "cumu_hazard",
+      "cumu_lower",
+      "cumu_upper"
+    )))
 }
 
 
@@ -155,27 +255,47 @@ get_cumu_coef_baseline <- function(data, model, ...) {
 #' @importFrom stats coef
 #' @importFrom mvtnorm rmvnorm
 #' @keywords internal
-compute_cumu_diff <-  function(d1, d2, model, alpha = 0.05, nsim = 100L) {
+compute_cumu_diff <- function(
+  d1,
+  d2,
+  model,
+  alpha = 0.05,
+  nsim = 100L,
+  time_var = "tend",
+  interval_length = "intlen"
+) {
+  if (!interval_length %in% colnames(d1)) {
+    d1 <- reconstruct_intlen(
+      d1,
+      time_var = time_var,
+      interval_length = interval_length
+    )
+  }
+  if (!interval_length %in% colnames(d2)) {
+    d2 <- reconstruct_intlen(
+      d2,
+      time_var = time_var,
+      interval_length = interval_length
+    )
+  }
+  intlen1 <- d1[[interval_length]]
+  intlen2 <- d2[[interval_length]]
 
-  if (!"intlen" %in% colnames(d1)) d1 <- reconstruct_intlen(d1)
-  if (!"intlen" %in% colnames(d2)) d2 <- reconstruct_intlen(d2)
-
-  X1    <- predict.gam(model, newdata = d1, type = "lpmatrix")
-  X2    <- predict.gam(model, newdata = d2, type = "lpmatrix")
-  V     <- model$Vp
+  X1 <- predict.gam(model, newdata = d1, type = "lpmatrix")
+  X2 <- predict.gam(model, newdata = d2, type = "lpmatrix")
+  V <- model$Vp
   coefs <- coef(model)
   sim_coef_mat <- rmvnorm(nsim, mean = coefs, sigma = V)
-  sim_fit_mat  <- apply(sim_coef_mat, 1, function(z) {
-    cumsum(d2$intlen * exp(drop(X2 %*% z))) -
-      cumsum(d1$intlen * exp(drop(X1 %*% z)))
-    })
+  sim_fit_mat <- apply(sim_coef_mat, 1, function(z) {
+    cumsum(intlen2 * exp(drop(X2 %*% z))) -
+      cumsum(intlen1 * exp(drop(X1 %*% z)))
+  })
 
   cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
   cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
-  haz1       <- exp(drop(X1 %*% model$coefficients))
-  haz2       <- exp(drop(X2 %*% model$coefficients))
-  cumu_diff  <- cumsum(haz2 * d2$intlen) - cumsum(haz1 * d1$intlen)
+  haz1 <- exp(drop(X1 %*% model$coefficients))
+  haz2 <- exp(drop(X2 %*% model$coefficients))
+  cumu_diff <- cumsum(haz2 * intlen2) - cumsum(haz1 * intlen1)
 
   list(cumu_diff = cumu_diff, cumu_lower = cumu_lower, cumu_upper = cumu_upper)
-
 }

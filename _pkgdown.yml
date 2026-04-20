@@ -62,6 +62,7 @@ reference:
       - patient
       - daily
       - staph
+      - nuclear
       - simdf_elra
   - title: "Utilities"
     desc: "Utility functions"
@@ -92,6 +93,7 @@ articles:
     - recurrent-events
     - multi-state
     - simulations
+    - bayesian
 
 navbar:
   type: default
@@ -132,6 +134,8 @@ navbar:
       href: articles/multi-state.html
     - text: Simulating Time-To-Event Data
       href: articles/simulations.html
+    - text: Bayesian Baseline PAMMs
+      href: articles/bayesian.html  
   - text: News
     href: news/index.html
   right:

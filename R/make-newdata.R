@@ -52,10 +52,13 @@ sample_info.ped <- function(x) {
   grps <- group_vars(x)
   iv <- attr(x, "intvars")
   id_var <- attr(x, "id_var")
+  if (!is.null(id_var) && id_var %in% names(x)) {
+    x <- x %>%
+      group_by(!!sym(id_var)) %>%
+      slice(1) %>%
+      ungroup()
+  }
   x <- x %>%
-    group_by(!!sym(id_var)) %>%
-    slice(1) %>%
-    ungroup() %>%
     grouped_df(grps) %>%
     select(-one_of(iv))
   if (test_data_frame(x, min.rows = 1, min.cols = 1)) {
@@ -354,6 +357,10 @@ adjust_ll <- function(out_df, data) {
   func_list <- attr(data, "func")
   n_func <- length(func_list)
   LL_names <- grep("LL", unlist(attr(data, "func_mat_names")), value = TRUE)
+  time_var <- attr(data, "time_var")
+  if (is.null(time_var) || !time_var %in% colnames(out_df)) {
+    time_var <- "tend"
+  }
 
   for (i in LL_names) {
     ind_ll <- map_lgl(names(attr(data, "ll_funs")), ~ grepl(.x, i))
@@ -374,11 +381,11 @@ adjust_ll <- function(out_df, data) {
       n_func
     )
     if (func$latency_var == "") {
-      out_df[[i]] <- ll_i(out_df[["tend"]], out_df[[tz_var]]) * 1L
+      out_df[[i]] <- ll_i(out_df[[time_var]], out_df[[tz_var]]) * 1L
     } else {
       out_df[[i]] <- ll_i(
-        out_df[["tend"]],
-        out_df[["tend"]] -
+        out_df[[time_var]],
+        out_df[[time_var]] -
           out_df[[tz_var]]
       ) *
         1L
@@ -389,25 +396,58 @@ adjust_ll <- function(out_df, data) {
 }
 
 
-#' Reconstruct intlen from sorted unique time values
+#' Reconstruct intlen from time variable and stored cut points
 #'
-#' Computes interval lengths from the sorted unique values of the time variable.
-#' This is used by add_* functions that need intlen for cumulative calculations.
-#' @param newdata A data frame with a time column.
-#' @param time_var Character string naming the time variable in
-#'   \code{newdata}. Defaults to \code{"tend"}.
+#' Computes interval lengths from the sorted unique values of the time variable
+#' in newdata. This is used by add_* functions that need intlen for cumulative
+#' calculations. If \code{tstart} is not available, the first interval length is
+#' taken as the first sorted time value (implicitly assuming a 0-origin time
+#' scale).
+#' @param newdata A data frame with a time column (default \code{tend}).
+#' @param time_var Character name of the time variable. Defaults to
+#'   \code{"tend"}.
+#' @param interval_length Character name of the interval-length column to create.
 #' @return The input data frame with an \code{intlen} column added.
-#' @importFrom stats setNames
 #' @keywords internal
-reconstruct_intlen <- function(newdata, time_var = "tend") {
-  if ("intlen" %in% colnames(newdata)) return(newdata)
-  times <- sort(unique(newdata[[time_var]]))
-  intlen_map <- setNames(c(times[1], diff(times)), times)
-  newdata[["intlen"]] <- unname(intlen_map[as.character(newdata[[time_var]])])
-  if (anyNA(newdata[["intlen"]])) {
+reconstruct_intlen <- function(
+  newdata,
+  time_var = "tend",
+  interval_length = "intlen"
+) {
+  if (interval_length %in% colnames(newdata)) return(newdata)
+
+  assert_data_frame(newdata, all.missing = FALSE)
+  assert_string(time_var)
+  assert_choice(time_var, colnames(newdata))
+  assert_string(interval_length)
+  assert_numeric(newdata[[time_var]], any.missing = FALSE)
+
+  if ("tstart" %in% colnames(newdata)) {
+    assert_numeric(newdata[["tstart"]], any.missing = FALSE)
+    newdata[[interval_length]] <- newdata[[time_var]] - newdata[["tstart"]]
+  } else {
+    times <- sort(unique(newdata[[time_var]]))
+    intlen_map <- c(times[1], diff(times))
+    time_ind <- match(newdata[[time_var]], times)
+    newdata[[interval_length]] <- unname(intlen_map[time_ind])
+  }
+
+  if (anyNA(newdata[[interval_length]])) {
     stop(
-      "Could not reconstruct all interval lengths. ",
-      "This can happen when groups have different time grids."
+      "Failed to reconstruct '",
+      interval_length,
+      "' from time variable '",
+      time_var,
+      "'."
+    )
+  }
+  if (any(newdata[[interval_length]] < 0)) {
+    stop(
+      "Reconstructed '",
+      interval_length,
+      "' contains negative values for time variable '",
+      time_var,
+      "'."
     )
   }
   newdata
@@ -425,6 +465,13 @@ expand_df <- function(
   ...
 ) {
   orig_vars <- names(x)
+  if (is.null(time_var)) {
+    time_var <- attr(x, "time_var")
+  }
+  if (is.null(time_var)) {
+    time_var <- "tend"
+  }
+
   id_var <- trafo_args[["id"]]
   brks <- trafo_args[["cut"]]
 
@@ -437,21 +484,22 @@ expand_df <- function(
   expressions <- quos(...)
   dot_names <- names(expressions)
 
-  times <- unique(x$tend)
+  times <- unique(x[[time_var]])
 
   ped_times <- sort(unique(union(c(0, brks), times)))
   # extract relevant intervals only, keeps data small
   ped_times <- ped_times[ped_times <= max(times)]
   # obtain interval information
   ped_info <- get_intervals(brks, ped_times[-1])
-  ped_info[["intlen"]] <- c(ped_info[["times"]][1], diff(ped_info[["times"]]))
-  ped_info[["tend"]] <- ped_info[["times"]]
+
+  ped_info[[interval_length]] <- c(
+    ped_info[["times"]][1],
+    diff(ped_info[["times"]])
+  )
+  ped_info[[time_var]] <- ped_info[["times"]]
 
   if (length(cov_names) == 0) {
-    extra_data <- x %>%
-      select(setdiff(orig_vars, names(ped_info))) %>%
-      distinct()
-    newdata <- combine_df(ped_info, extra_data)
+    newdata <- ped_info
   } else {
     newdata <- x %>%
       select(any_of(c(cov_names))) %>%
@@ -461,18 +509,19 @@ expand_df <- function(
   }
 
   map_times <- data.frame(
-    "tend" = sort(ped_times),
-    "tstart_lag" = lag(ped_times, default = 0)
+    time_tmp = sort(ped_times),
+    tstart_lag = lag(ped_times, default = 0)
   )
+  names(map_times)[1] <- time_var
   suppressMessages(
     newdata <- newdata %>%
-      left_join(map_times) %>%
+      left_join(map_times, by = time_var) %>%
       mutate(
-        tstart = pmax(.data$tstart, .data$tstart_lag),
-        intlen = .data$tend - .data$tstart
+        tstart = pmax(.data$tstart, .data$tstart_lag)
       ) %>%
       select(-one_of("tstart_lag")) # correct tstart
   )
+  newdata[[interval_length]] <- newdata[[time_var]] - newdata[["tstart"]]
 
   # if(length(haz_vars_in_data) != 0) {
   #   if(length(setdiff(haz_vars_in_data, vars_exclude)) != 0){
@@ -484,7 +533,7 @@ expand_df <- function(
   #   }
   # }
 
-  newdata %>% select(any_of(c(orig_vars, "intlen")))
+  newdata %>% select(any_of(c(orig_vars, interval_length)))
 }
 
 deduce_df <- function(x, object, ...) {
