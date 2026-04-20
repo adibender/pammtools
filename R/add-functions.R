@@ -917,7 +917,12 @@ add_cif.default <- function(
 
   coefs <- coef(object)
   V <- object$Vp
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- if (ci==FALSE) {
+    matrix(coefs, nrow = 1)  # single row = posterior mean, no simulation
+  } else { # simulate only when you construct CIs
+    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  }
+  # sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   assert_string(cause_var)
   assert_choice(cause_var, colnames(newdata))
   causes_model <- if (is.factor(newdata[[cause_var]])) {
@@ -986,7 +991,7 @@ get_cif.default <- function(
   if (length(cause_data) > 1) {
     stop("Did you forget to group by cause?")
   }
-
+  
   hazards <- map(
     causes_model,
     ~ {
@@ -1000,6 +1005,7 @@ get_cif.default <- function(
       apply(sim_coef_mat, 1, function(z) exp(X %*% z))
     }
   )
+  
   overall_survivals <- apply(
     Reduce("+", hazards),
     2,
@@ -1008,12 +1014,32 @@ get_cif.default <- function(
   names(hazards) <- causes_model
   # calculate cif
   hazard <- hazards[[cause_data]]
+
   survival <- rbind(
     rep(1, ncol(overall_survivals)),
     overall_survivals[-nrow(overall_survivals), , drop = FALSE]
   )
-  hps <- hazard * survival
-  cifs <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
+  
+  # ## ---- old ----
+  # ## change code to recursive cif definition
+  # hps <- hazard * survival
+  # cifs <- apply(hps, 2, function(z) cumsum(z * newdata[["intlen"]]))
+  
+  ## ---- new ----
+  # total hazard h_j
+  total_hazard <- Reduce("+", hazards)
+  
+  # interval lengths
+  dt <- newdata[["intlen"]]
+
+  # CIF increment using exact formula
+  cif_increments <- (hazard / total_hazard) *
+    survival *
+    (1 - exp(-total_hazard * dt))
+  
+  # cumulative CIF
+  cifs <- apply(cif_increments, 2, cumsum)
+  
   newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
     newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2), 0), 1)

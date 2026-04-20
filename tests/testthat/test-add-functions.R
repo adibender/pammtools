@@ -507,62 +507,70 @@ test_that("CIF works with non-default cause_var names", {
 
 })
 
-test_that("CIF uses survival at the start of each interval", {
-
+test_that("CIF uses exact within-interval exponential integral", {
   set.seed(211758)
   df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(cause = as.factor(cause))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  
+  cut_points <- unique(ped_cr$tend)[unique(ped_cr$tend) <= 0.5]
+  
   ndf <- ped_cr %>%
-    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    make_newdata(tend = c(cut_points, 0.5), cause = unique(cause)) %>%
     group_by(cause)
-
-  nsim <- 40L
+  
   target_cause <- levels(ndf$cause)[1]
   ndf_target <- ndf %>%
     filter(cause == target_cause) %>%
     arrange(tend) %>%
     reconstruct_intlen()
-  coefs <- coef(pam)
-  V <- pam$Vp
+  
   causes_model <- levels(ndf$cause)
-
-  set.seed(42)
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
-  hazards <- map(
-    causes_model,
-    ~ {
-      .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
-      X <- predict(pam, .df, type = "lpmatrix")
-      apply(sim_coef_mat, 1, function(z) exp(X %*% z))
-    }
-  )
-  names(hazards) <- causes_model
-  overall_survivals <- apply(
-    Reduce("+", hazards),
-    2,
-    function(z) exp(-cumsum(z * ndf_target$intlen))
-  )
-  lagged_survival <- rbind(
-    rep(1, ncol(overall_survivals)),
-    overall_survivals[-nrow(overall_survivals), , drop = FALSE]
-  )
-  expected_cif <- apply(
-    hazards[[target_cause]] * lagged_survival,
-    2,
-    function(z) cumsum(z * ndf_target$intlen)
-  ) %>%
-    rowMeans()
-
-  set.seed(42)
+  
+  # Predict cause-specific hazards at posterior mean (no simulation)
+  hazards_manual <- map(causes_model, ~ {
+    .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
+    as.numeric(predict(pam, .df, type = "response"))
+  })
+  names(hazards_manual) <- causes_model
+  
+  intlen    <- ndf_target$intlen
+  n         <- length(intlen)
+  hk        <- hazards_manual[[target_cause]]          # cause-specific hazard
+  hj        <- Reduce("+", hazards_manual)             # all-cause hazard (vector)
+  
+  # Recursive exact CIF using the closed-form per-interval integral
+  S   <- numeric(n)   # S(kappa_{j-1}), i.e. survival at START of interval j
+  cif <- numeric(n)   # F_k(kappa_j)
+  
+  S_prev   <- 1
+  cif_prev <- 0
+  
+  for (j in seq_len(n)) {
+    delta_cif  <- (hk[j] / hj[j]) * S_prev * (1 - exp(-hj[j] * intlen[j]))
+    cif[j]     <- cif_prev + delta_cif
+    S_prev     <- S_prev * exp(-hj[j] * intlen[j])
+    cif_prev   <- cif[j]
+  }
+  
   observed <- ndf %>%
-    add_cif(pam, ci = FALSE, nsim = nsim) %>%
+    add_cif(pam, ci = FALSE) %>%
     filter(cause == target_cause) %>%
     arrange(tend)
-
-  expect_equal(observed$cif, expected_cif, tolerance = 1e-8)
-
+  
+  expect_equal(observed$cif, cif, tolerance = 1e-8)
+  
+  observed <- ndf %>%
+    add_cif(pam, ci = TRUE) %>%
+    filter(cause == target_cause) %>%
+    arrange(tend)
+  
+  expect_true(all(
+    cif >= observed$cif_lower &
+    cif <= observed$cif_upper
+  ))
+  
 })
 
 test_that("Transition Probability works", {
