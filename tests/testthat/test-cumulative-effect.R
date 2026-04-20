@@ -190,7 +190,7 @@ test_that("Cumulative effects are calculated correctly", {
     reference = list(z.tz3 = 1)
   )
   expect_is(partial, c("gg", "ggplot"))
-  expect_data_frame(partial$data, nrows = 130L, ncols = 9L)
+  expect_data_frame(partial$data, nrows = 130L, ncols = 10L)
   partial_no_ci <- gg_partial(
     ped,
     pam,

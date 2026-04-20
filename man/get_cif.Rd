@@ -19,7 +19,6 @@ get_cif(newdata, object, ...)
   coefs,
   V,
   sim_coef_mat,
-  causes_model,
   ...
 )
 }

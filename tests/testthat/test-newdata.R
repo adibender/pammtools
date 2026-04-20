@@ -59,7 +59,7 @@ test_that("make_newdata works for PED data", {
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2), x2 = seq_range(x2, 2))
   expect_data_frame(mdf, nrows = 4L, ncols = 4L)
   mdf <- ped %>% make_newdata(tend = unique(tend), x2 = seq_range(x2, 2))
-  expect_data_frame(mdf, nrows = 4L, ncols = 3L)
+  expect_data_frame(mdf, nrows = 4L, ncols = 4L)
 })
 
 
@@ -117,7 +117,7 @@ test_that("make_newdata works for PED with matrix columns", {
       tend = c(1:10),
       tz1_latency = seq(1:5)
     )
-  expect_data_frame(nd5, nrows = 50L, ncols = 10L)
+  expect_data_frame(nd5, nrows = 50L, ncols = 11L)
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))

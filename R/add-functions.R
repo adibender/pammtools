@@ -1195,11 +1195,12 @@ add_trans_prob <- function(
   ci = FALSE,
   alpha = 0.05,
   nsim = 100L,
-  time_var = NULL,
+  time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
   ...
 ) {
+  orig_names <- names(newdata)
   interval_length <- quo_name(enquo(interval_length))
   transition <- quo_name(enquo(transition))
   time_var <- resolve_time_var(time_var, object, newdata)
