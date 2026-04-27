@@ -145,8 +145,14 @@ combine_df <- function(...) {
 #' often be tedious to specify exact \code{tend} values). \code{make_newdata}
 #' therefore finds the correct interval and sets \code{tend} to the respective
 #' interval endpoint. For example, if the intervals of the PED object are
-#' \eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2} and the
-#' remaining time-varying information (e.g. offset) completed accordingly.
+#' \eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2}.
+#'
+#' The returned data frame contains \code{tend}, \code{id}, the user-supplied
+#' covariates (and \code{cause}/\code{transition} for competing risks /
+#' multi-state models). Internal PED columns \code{tstart}, \code{intlen},
+#' \code{interval}, \code{offset}, and \code{ped_status} are dropped.
+#' Downstream \code{add_*} functions reconstruct \code{intlen} on demand via
+#' \code{reconstruct_intlen()} when needed.
 #' See examples below.
 #' @examples
 #' # General functionality
@@ -477,14 +483,9 @@ expand_df <- function(
   brks <- trafo_args[["cut"]]
 
   int_names <- setdiff(intvars, id_var)
-  # cov_names <- setdiff(
-  #   names(object$var.summary),
-  #   intersect(int_names, names(object$var.summary))
-  # )
-
   interval_struct_vars <- c(time_var, "tstart", interval_length, "offset", "ped_status")
   cov_names <- setdiff(names(x), c(id_var, interval_struct_vars))
-  
+
   expressions <- quos(...)
   dot_names <- names(expressions)
 

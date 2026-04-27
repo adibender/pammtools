@@ -3,9 +3,20 @@
 ## Breaking changes
 * `make_newdata()` output no longer contains internal PED columns (`tstart`, `intlen`, `interval`, `offset`, `ped_status`). Output now contains `tend` + `id` + user covariates (plus `cause`/`transition` for competing risks / multi-state models). `ped_info()` output is unchanged.
 * `intlen` is now reconstructed on demand by downstream functions (`add_cumu_hazard`, `add_surv_prob`, `add_cif`, `add_trans_prob`) via the new internal helper `reconstruct_intlen()`, and dropped from user-facing output.
+* `add_cif()` now uses the exact closed-form integral of the cumulative incidence function under piecewise-exponential hazards (`(h_j / Σh) · S(t_{i-1}) · (1 - exp(-Σh · Δt))`) instead of the previous left-Riemann approximation. CIF estimates from existing user code will change numerically; results are now invariant to the time grid passed to `make_newdata()`.
+
+## Enhancements
+* `add_cif()` now supports arbitrary time points in `make_newdata()` (parity with `add_cumu_hazard()`); missing breakpoints are inserted internally so CIF estimates are independent of the chosen prediction grid.
+* `expand_df()` preserves the `cause` column when `make_newdata()` is called with only `tend` and `cause`, fixing a competing-risks edge case.
+* `predictSurvProb.pamm()` now respects non-default `id` column names and works when `trafo_args` are not attached to the fitted object.
+
+## Deprecations
+* The `trafo_args` argument of `pamm()` is deprecated; convert data with `as_ped()` before calling `pamm()`.
 
 ## Documentation
-* Updated convenience vignette to use `tend` instead of `interval` in `select()` calls
+* Updated convenience vignette to use `tend` instead of `interval` in `select()` calls.
+  <!-- TODO: this entry is currently inaccurate — vignettes/convenience.Rmd has no diff vs master in this PR. Either revert or actually make the change before merging. -->
+* Added derivation of the piecewise-exponential CIF integral to the competing-risks vignette.
 
 # pammtools 0.7.4
 

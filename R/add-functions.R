@@ -861,25 +861,17 @@ add_cif.default <- function(
   interval_length = "intlen",
   ...
 ) {
-  
+
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
-  
-  if (!interval_length %in% colnames(newdata)) {
-    newdata <- reconstruct_intlen(
-      newdata,
-      time_var = time_var,
-      interval_length = interval_length
-    )
-  }
 
   coefs <- coef(object)
   V <- object$Vp
-  sim_coef_mat <- if (ci==FALSE) {
-    matrix(coefs, nrow = 1)  # single row = posterior mean, no simulation
-  } else { # simulate only when you construct CIs
+  sim_coef_mat <- if (!ci) {
+    matrix(coefs, nrow = 1)
+  } else {
     mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   }
 

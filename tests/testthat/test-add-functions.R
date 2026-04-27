@@ -574,6 +574,53 @@ test_that("CIF works with arbitrary time points", {
   expect_equal(ndf1$cif, ndf2$cif, tolerance = 0.1)
 })
 
+# Documents a known divergence: add_cumu_hazard returns rows matching the
+# requested newdata (final left_join), whereas add_cif returns the *expanded*
+# grid (all breakpoints up to max requested time). Until that is harmonised
+# (see PR #271 review), this test pins the current contract so a future change
+# is intentional and visible.
+test_that("add_cif returns expanded grid; add_cumu_hazard does not (current contract)", {
+  set.seed(211758)
+  df <- data.frame(
+    time   = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam_cr <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+
+  # all cut points <= tmax used during fitting
+  cuts_le_tmax <- function(ped, tmax) {
+    cuts <- attr(ped, "trafo_args")[["cut"]]
+    setdiff(cuts[cuts <= tmax], 0)
+  }
+  tmax       <- max(ped_cr$tend)
+  full_grid  <- cuts_le_tmax(ped_cr, tmax)
+  sparse_tend <- c(2, tmax) # deliberately misses interior breakpoints
+
+  # ---- add_cif: returns the expanded grid (more rows than requested) ----
+  nd_cif_in <- ped_cr %>%
+    make_newdata(tend = sparse_tend, cause = unique(cause)) %>%
+    group_by(cause)
+  nd_cif_out <- add_cif(nd_cif_in, pam_cr, ci = FALSE)
+
+  expect_gt(nrow(nd_cif_out), nrow(nd_cif_in))
+  # all cut-grid breakpoints up to max requested time must be present
+  expect_true(all(full_grid %in% unique(nd_cif_out$tend)))
+
+  # ---- add_cumu_hazard: returns rows matching the requested newdata ----
+  df_single <- data.frame(time = rexp(20),
+                          status = sample(c(0, 1), 20, replace = TRUE))
+  ped       <- as_ped(df_single, Surv(time, status) ~ ., id = "id")
+  pam       <- pamm(ped_status ~ s(tend), data = ped)
+
+  nd_cuh_in  <- ped %>% make_newdata(tend = c(2, max(ped$tend)))
+  nd_cuh_out <- add_cumu_hazard(nd_cuh_in, pam)
+
+  expect_equal(nrow(nd_cuh_out), nrow(nd_cuh_in))
+  expect_setequal(unique(nd_cuh_out$tend), c(2, max(ped$tend)))
+})
+
 test_that("CIF works with mgcv::gam", {
   set.seed(211758)
   df <- data.frame(

@@ -50,8 +50,14 @@ of \code{tend} used at the stage of estimation (and in general, it will
 often be tedious to specify exact \code{tend} values). \code{make_newdata}
 therefore finds the correct interval and sets \code{tend} to the respective
 interval endpoint. For example, if the intervals of the PED object are
-\eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2} and the
-remaining time-varying information (e.g. offset) completed accordingly.
+\eqn{(0,1], (1,2]} then \code{tend = 1.5} will be set to \code{2}.
+
+The returned data frame contains \code{tend}, \code{id}, the user-supplied
+covariates (and \code{cause}/\code{transition} for competing risks /
+multi-state models). Internal PED columns \code{tstart}, \code{intlen},
+\code{interval}, \code{offset}, and \code{ped_status} are dropped.
+Downstream \code{add_*} functions reconstruct \code{intlen} on demand via
+\code{reconstruct_intlen()} when needed.
 See examples below.
 }
 \examples{

@@ -105,8 +105,22 @@ The results indicate that cause specific terms (interactions) are necessary in t
 
 
 ## Cumulative Incidence Function (CIF)
-Finally, in many cases we will want to calculate and visualize the cumulative incidence functions for different covariate combinations.
-In **`pammtools`** this can be again achieved using `make_newdata` and using the appropriate `add_*` function, here `add_cif`:
+
+For competing risks with $K$ causes, let $h_k(t)$ denote the cause-specific hazard for cause $k$ and $S(t) = \exp\left(-\int_0^t \sum_{k=1}^K h_k(u)\, du\right)$ the all-cause survival. The cumulative incidence for cause $j$ is
+
+$$
+F_j(t) = \int_0^t h_j(u)\, S(u)\, du.
+$$
+
+Under the PAMM piecewise-exponential assumption hazards are constant on each interval $(\kappa_{i-1}, \kappa_i]$. Writing $h_{j,i}$ for the value of $h_j$ on interval $i$, $h_{\cdot,i} = \sum_{k=1}^K h_{k,i}$ for the all-cause hazard on the same interval, $\Delta_i = \kappa_i - \kappa_{i-1}$, and $S_{i-1} = S(\kappa_{i-1})$, the integral has the closed form
+
+$$
+F_j(\kappa_n) \;=\; \sum_{i=1}^{n} \frac{h_{j,i}}{h_{\cdot,i}}\; S_{i-1}\; \bigl(1 - \exp(-h_{\cdot,i}\, \Delta_i)\bigr),
+$$
+
+with $S_i = S_{i-1}\,\exp(-h_{\cdot,i}\,\Delta_i)$ and $S_0 = 1$. This is the formula `add_cif()` evaluates internally — exact under the piecewise-constant hazard assumption (no Riemann/finite-difference error), and consequently invariant to the time grid passed to `make_newdata()`.
+
+In **`pammtools`** the CIF is computed using `make_newdata` and `add_cif`:
 
 ```{r, fig.width = 6, fig.height = 5, out.width = "500px"}
 ndf <- ped_stacked %>%
