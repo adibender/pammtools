@@ -875,7 +875,7 @@ add_cif.default <- function(
     mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   }
 
-  map_dfr(
+  joindata <- map_dfr(
     split(joindata, group_indices(joindata)),
     ~ get_cif(
       newdata = .x,
@@ -891,6 +891,10 @@ add_cif.default <- function(
       interval_length = interval_length,
       ...
     )
+  )
+  
+  suppressMessages(
+    newdata %>% left_join(joindata)
   )
 }
 

@@ -565,13 +565,13 @@ test_that("CIF works with arbitrary time points", {
   ndf2 <- ped_cr %>%
     make_newdata(tend = c(2, tmax), cause = unique(cause)) %>%
     group_by(cause) |>
-    add_cif(pam, ci=FALSE) |>
-    dplyr::filter(tend == tmax)
+    add_cif(pam, ci=FALSE)
 
   expect_message(
     ped_cr %>% make_newdata(tend = c(2, tmax), cause = unique(cause))
   )
-  expect_equal(ndf1$cif, ndf2$cif, tolerance = 0.1)
+  expect_equal(ndf1$cif, ndf2 |> dplyr::filter(tend == tmax) |> pull(cif), tolerance = 0.1)
+  expect_data_frame(ndf2, nrows = 4L, ncols = 5L)
 })
 
 # Documents a known divergence: add_cumu_hazard returns rows matching the
