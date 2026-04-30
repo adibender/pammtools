@@ -574,12 +574,7 @@ test_that("CIF works with arbitrary time points", {
   expect_data_frame(ndf2, nrows = 4L, ncols = 5L)
 })
 
-# Documents a known divergence: add_cumu_hazard returns rows matching the
-# requested newdata (final left_join), whereas add_cif returns the *expanded*
-# grid (all breakpoints up to max requested time). Until that is harmonised
-# (see PR #271 review), this test pins the current contract so a future change
-# is intentional and visible.
-test_that("add_cif returns expanded grid; add_cumu_hazard does not (current contract)", {
+test_that("add_cif returns same grid as add_cumu_hazard", {
   set.seed(211758)
   df <- data.frame(
     time   = rexp(20),
@@ -604,9 +599,9 @@ test_that("add_cif returns expanded grid; add_cumu_hazard does not (current cont
     group_by(cause)
   nd_cif_out <- add_cif(nd_cif_in, pam_cr, ci = FALSE)
 
-  expect_gt(nrow(nd_cif_out), nrow(nd_cif_in))
+  expect_equal(nrow(nd_cif_out), nrow(nd_cif_in))
   # all cut-grid breakpoints up to max requested time must be present
-  expect_true(all(full_grid %in% unique(nd_cif_out$tend)))
+  expect_false(all(full_grid %in% unique(nd_cif_out$tend)))
 
   # ---- add_cumu_hazard: returns rows matching the requested newdata ----
   df_single <- data.frame(time = rexp(20),
