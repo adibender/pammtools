@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@
                         <h4 data-toc-skip class="author">Andreas
 Bender</h4>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/competing-risks.Rmd" class="external-link"><code>vignettes/competing-risks.Rmd</code></a></small>
       <div class="hidden name"><code>competing-risks.Rmd</code></div>
@@ -398,11 +398,63 @@ the age effect for the two causes are very similar for both models:</p>
 <div class="section level3">
 <h3 id="cumulative-incidence-function-cif">Cumulative Incidence Function (CIF)<a class="anchor" aria-label="anchor" href="#cumulative-incidence-function-cif"></a>
 </h3>
-<p>Finally, in many cases we will want to calculate and visualize the
-cumulative incidence functions for different covariate combinations. In
-<strong><code>pammtools</code></strong> this can be again achieved using
-<code>make_newdata</code> and using the appropriate <code>add_*</code>
-function, here <code>add_cif</code>:</p>
+<p>For competing risks with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
+causes
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>Q</mi></mrow><annotation encoding="application/x-tex">q = 1,\ldots,Q</annotation></semantics></math>),
+let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>h</mi><mi>q</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h_q(t)</annotation></semantics></math>
+denote the cause-specific hazard for cause
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>−</mi><msubsup><mo>∫</mo><mn>0</mn><mi>t</mi></msubsup><msubsup><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mi>Q</mi></msubsup><msub><mi>h</mi><mi>q</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi>d</mi><mi>u</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S(t) = \exp\left(-\int_0^t \sum_{q=1}^Q h_q(u)\, du\right)</annotation></semantics></math>
+the all-cause survival. The cumulative incidence for cause
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>q</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mi>t</mi></msubsup><msub><mi>h</mi><mi>q</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi>S</mi><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi>d</mi><mi>u</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+F_q(t) = \int_0^t h_q(u)\, S(u)\, du.
+</annotation></semantics></math></p>
+<p>In PAMMs hazards are constant on each interval
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>κ</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">(\kappa_{j-1}, \kappa_j]</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>J</mi></mrow><annotation encoding="application/x-tex">j = 1,\ldots,J</annotation></semantics></math>.
+Writing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>h</mi><mrow><mi>q</mi><mo>,</mo><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">h_{q,j}</annotation></semantics></math>
+for the value of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>h</mi><mi>q</mi></msub><annotation encoding="application/x-tex">h_q</annotation></semantics></math>
+on interval
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>h</mi><mrow><mi>⋅</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mi>Q</mi></msubsup><msub><mi>h</mi><mrow><mi>q</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">h_{\cdot,j} = \sum_{q=1}^Q h_{q,j}</annotation></semantics></math>
+for the all-cause hazard on the same interval, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>S</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">S_{j-1} = S(\kappa_{j-1})</annotation></semantics></math>,
+the cumulative incidence at an arbitrary time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+is obtained by accumulating full-interval contributions up to the
+interval that contains
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+and adding a partial contribution from that last interval. Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">j(t)</annotation></semantics></math>
+denote the index of the interval containing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
+i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">t \in (\kappa_{j(t)-1}, \kappa_{j(t)}]</annotation></semantics></math>,
+and define the (possibly truncated) interval width</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mi>j</mi></msub><mspace width="0.278em"></mspace><mo>=</mo><mspace width="0.278em"></mspace><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>κ</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\Delta_j \;=\; \min(\kappa_j, t) - \kappa_{j-1}, \qquad j = 1,\ldots,j(t),
+</annotation></semantics></math></p>
+<p>so that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mi>j</mi></msub><mo>=</mo><msub><mi>κ</mi><mi>j</mi></msub><mo>−</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\Delta_j = \kappa_j - \kappa_{j-1}</annotation></semantics></math>
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>&lt;</mo><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">j &lt; j(t)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>=</mo><mi>t</mi><mo>−</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\Delta_{j(t)}= t - \kappa_{j(t)-1}</annotation></semantics></math>.
+The integral then has the closed form</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>q</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.278em"></mspace><mo>=</mo><mspace width="0.278em"></mspace><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></munderover><mfrac><msub><mi>h</mi><mrow><mi>q</mi><mo>,</mo><mi>j</mi></mrow></msub><msub><mi>h</mi><mrow><mi>⋅</mi><mo>,</mo><mi>j</mi></mrow></msub></mfrac><mspace width="0.278em"></mspace><msub><mi>S</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub><mspace width="0.278em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>h</mi><mrow><mi>⋅</mi><mo>,</mo><mi>j</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mi mathvariant="normal">Δ</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+F_q(t) \;=\; \sum_{j=1}^{j(t)} \frac{h_{q,j}}{h_{\cdot,j}}\; S_{j-1}\; \bigl(1 - \exp(-h_{\cdot,j}\, \Delta_j)\bigr), \tag{1}
+</annotation></semantics></math></p>
+<p>with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mn>0</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">S_0 = 1</annotation></semantics></math>.</p>
+<p>This is the formula <code><a href="../reference/add_cif.html">add_cif()</a></code> evaluates internally.</p>
+<p>In <strong><code>pammtools</code></strong> the CIF is computed using
+<code>make_newdata</code> and <code>add_cif</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ndf</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -417,11 +469,11 @@ function, here <code>add_cif</code>:</p>
 <span><span class="co">##      tend cause      cif cif_lower cif_upper</span></span>
 <span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.008<span style="text-decoration: underline;">21</span> 1     0.000<span style="text-decoration: underline;">882</span>  0.000<span style="text-decoration: underline;">688</span>  0.001<span style="text-decoration: underline;">11</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.030<span style="text-decoration: underline;">1</span>  1     0.003<span style="text-decoration: underline;">23</span>   0.002<span style="text-decoration: underline;">52</span>   0.004<span style="text-decoration: underline;">07</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.060<span style="text-decoration: underline;">2</span>  1     0.006<span style="text-decoration: underline;">46</span>   0.005<span style="text-decoration: underline;">05</span>   0.008<span style="text-decoration: underline;">11</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0.008<span style="text-decoration: underline;">21</span> 2     0.000<span style="text-decoration: underline;">428</span>  0.000<span style="text-decoration: underline;">294</span>  0.000<span style="text-decoration: underline;">601</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.030<span style="text-decoration: underline;">1</span>  2     0.001<span style="text-decoration: underline;">57</span>   0.001<span style="text-decoration: underline;">08</span>   0.002<span style="text-decoration: underline;">20</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.060<span style="text-decoration: underline;">2</span>  2     0.003<span style="text-decoration: underline;">14</span>   0.002<span style="text-decoration: underline;">17</span>   0.004<span style="text-decoration: underline;">41</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.030<span style="text-decoration: underline;">1</span>  1     0.003<span style="text-decoration: underline;">24</span>   0.002<span style="text-decoration: underline;">53</span>   0.004<span style="text-decoration: underline;">07</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.060<span style="text-decoration: underline;">2</span>  1     0.006<span style="text-decoration: underline;">47</span>   0.005<span style="text-decoration: underline;">06</span>   0.008<span style="text-decoration: underline;">13</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0.008<span style="text-decoration: underline;">21</span> 2     0.000<span style="text-decoration: underline;">428</span>  0.000<span style="text-decoration: underline;">294</span>  0.000<span style="text-decoration: underline;">602</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.030<span style="text-decoration: underline;">1</span>  2     0.001<span style="text-decoration: underline;">57</span>   0.001<span style="text-decoration: underline;">08</span>   0.002<span style="text-decoration: underline;">21</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.060<span style="text-decoration: underline;">2</span>  2     0.003<span style="text-decoration: underline;">15</span>   0.002<span style="text-decoration: underline;">18</span>   0.004<span style="text-decoration: underline;">42</span></span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -456,6 +508,41 @@ for each category of <code>sex</code>:</p>
 <span>    alpha <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cause</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span></span></code></pre></div>
 <p><img src="competing-risks_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700px" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="custom-time-points">Custom time points<a class="anchor" aria-label="anchor" href="#custom-time-points"></a>
+</h3>
+<p>In the examples above, we used all unique interval grid points as
+time points at which the CIF was calculated. However, it is also
+possible to evaluate the CIF at custom time points; the calculations
+remain exact via the closed-form formula (1) with the truncated last
+interval
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>=</mo><mi>t</mi><mo>−</mo><msub><mi>κ</mi><mrow><mi>j</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\Delta_{j(t)} = t - \kappa_{j(t)-1}</annotation></semantics></math>
+(the time grid used for calculation is the same as before and expanded
+internally if necessary).</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">custom_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2.5</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ndf_custom</span> <span class="op">&lt;-</span> <span class="va">ped_stacked</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span>tend <span class="op">=</span> <span class="va">custom_times</span>, cause <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">cause</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/add_cif.html">add_cif</a></span><span class="op">(</span><span class="va">pam_csh_shared</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ndf_custom</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span>, <span class="va">cif</span>, <span class="va">cif_lower</span>, <span class="va">cif_upper</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">arrange</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Groups:   cause [2]</span></span></span>
+<span><span class="co">##    tend cause    cif cif_lower cif_upper</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>   1   1     0.106     0.085<span style="text-decoration: underline;">2</span>    0.129 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>   1   2     0.052<span style="text-decoration: underline;">8</span>    0.038<span style="text-decoration: underline;">8</span>    0.070<span style="text-decoration: underline;">2</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>   2.5 1     0.253     0.215     0.295 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>   2.5 2     0.133     0.105     0.171 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>   4   1     0.380     0.327     0.434 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>   4   2     0.209     0.170     0.259</span></span></code></pre>
+<p>Note that the confidence intervals are stochastic, as they are
+obtained from a Monte Carlo simulation of the model coefficients.</p>
 <!-- Zaehlmarke VGWort -->
 <p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
 </div>

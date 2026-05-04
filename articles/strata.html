@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Stratified baseline</h1>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/strata.Rmd" class="external-link"><code>vignettes/strata.Rmd</code></a></small>
       <div class="hidden name"><code>strata.Rmd</code></div>
@@ -169,7 +169,7 @@ model, where each level
 of factor variable
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
 will have its own baseline-hazard:</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>z</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mi>′</mi><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)</annotation></semantics></math>.</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>z</mi><mo>,</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>x</mi><mo>′</mo></msup><mi>β</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\lambda(t|z, x)=\lambda_{0k}(t, z)\exp(x'\beta)</annotation></semantics></math>.</p>
 <p>For illustration we again use the <code>veteran</code> data (censored
 at day 400) from the <code>survival</code> package, where the cell type
 of the lung cancer had four levels:</p>
@@ -242,11 +242,11 @@ extension constitutes a so called stratified proportional hazards model.
 For example, including effects for treatment (<code>trt</code>), age
 (<code>age</code>) and the Karnofsky-Score (<code>karno</code>), we get
 the model</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>z</mi><mo>,</mo><mi>𝐱</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mi>r</mi><mi>t</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><mo>⋅</mo><msub><mi>x</mi><mrow><mi>k</mi><mi>a</mi><mi>r</mi><mi>n</mi><mi>o</mi></mrow></msub><mo>+</mo><msub><mi>β</mi><mn>3</mn></msub><mo>⋅</mo><msub><mi>x</mi><mrow><mi>a</mi><mi>g</mi><mi>e</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>z</mi><mo>,</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mi>I</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mi>r</mi><mi>t</mi><mo>=</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><mo>⋅</mo><msub><mi>x</mi><mrow><mi>k</mi><mi>a</mi><mi>r</mi><mi>n</mi><mi>o</mi></mrow></msub><mo>+</mo><msub><mi>β</mi><mn>3</mn></msub><mo>⋅</mo><msub><mi>x</mi><mrow><mi>a</mi><mi>g</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
 \lambda(t|z, \mathbf{x}) =
   \lambda_{0k}(t)\exp(\beta_1 I(trt=1) + \beta_2\cdot x_{karno} + \beta_3\cdot x_{age})
 </annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_{0k}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\lambda_{0k}(t)</annotation></semantics></math>
 is the baseline for observation with cell type
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mi>s</mi><mi>q</mi><mi>u</mi><mi>a</mi><mi>m</mi><mi>o</mi><mi>s</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>c</mi><mi>e</mi><mi>l</mi><mi>l</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>a</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>o</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">k\in \{squamos,\ smallcell,\ adeno,\ large\}</annotation></semantics></math>:</p>

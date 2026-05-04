@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@
                         <h4 data-toc-skip class="author">Andreas Bender,
 Johannes Piller</h4>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/simulations.Rmd" class="external-link"><code>vignettes/simulations.Rmd</code></a></small>
       <div class="hidden name"><code>simulations.Rmd</code></div>
@@ -166,7 +166,7 @@ lightweight, but versatile function for the simulation of time-to-event
 data, with potentially smooth, smoothly time-varying effects. For the
 simulation of survival times we use the Piece-wise exponential
 distribution
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∼</mo><mtext mathvariant="normal">PEXP</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛌</mi><mo>,</mo><mtext mathvariant="bold">𝐭</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">t \sim \text{PEXP}(\boldsymbol{\lambda}, \textbf{t})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∼</mo><mtext mathvariant="normal">PEXP</mtext><mo stretchy="false" form="prefix">(</mo><mi>𝛌</mi><mo>,</mo><mtext mathvariant="bold">𝐭</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">t \sim \text{PEXP}(\boldsymbol{\lambda}, \textbf{t})</annotation></semantics></math>,
 which is implemented in the <code>msm</code> package <span class="citation">(Jackson 2011)</span>. Here
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛌</mi><annotation encoding="application/x-tex">\boldsymbol{\lambda}</annotation></semantics></math>
 is a vector of hazards at time points
@@ -207,20 +207,20 @@ are assumed to be piece-wise constant between two time-points in
 <span>    survival <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Weibull.html" class="external-link">pweibull</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">alpha</span>, <span class="va">lambda</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The figure below depicts the hazard rate and survivor function of a
 Weibull distribution with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>∼</mo><mi>W</mi><mi>B</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>α</mi><mo>=</mo><mn>1.5</mn><mo>,</mo><mi>λ</mi><mo>=</mo><mn>10</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T \sim WB(\alpha = 1.5, \lambda = 10)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>∼</mo><mi>W</mi><mi>B</mi><mo stretchy="false" form="prefix">(</mo><mi>α</mi><mo>=</mo><mn>1.5</mn><mo>,</mo><mi>λ</mi><mo>=</mo><mn>10</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T \sim WB(\alpha = 1.5, \lambda = 10)</annotation></semantics></math>.</p>
 <div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/viz_wb-1.png" class="r-plt" alt="Hazard rate (left) and survivor function (right) of the $WB(1.5, 10)$ distribution." width="345.6"><p class="caption">
 Hazard rate (left) and survivor function (right) of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mo stretchy="false" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>
 distribution.
 </p>
 </div>
 <div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/gg-pem-hazard-1.png" class="r-plt" alt="PEM estimates of the baseline hazard $\lambda(t)$ (left panel) and survival probability $S(t)$ (right panel). Red lines indicate the true Weibull hazard and survival probability, respectively." width="384"><p class="caption">
 PEM estimates of the baseline hazard
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\lambda(t)</annotation></semantics></math>
 (left panel) and survival probability
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">S(t)</annotation></semantics></math>
 (right panel). Red lines indicate the true Weibull hazard and survival
 probability, respectively.
 </p>
@@ -229,7 +229,7 @@ probability, respectively.
 a PEM with 10 intervals based on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>1000</mn></mrow><annotation encoding="application/x-tex">n=1000</annotation></semantics></math>
 survival times simulated from
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mo stretchy="false" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>.
 Although the approximation of the underlying smooth hazard is relatively
 crude, the survival function calculated from this step hazard is very
 close to the true survivor function (cf. right panel).</p>
@@ -244,12 +244,12 @@ distribution (based on the crude hazard) on the other hand.</p>
 <img src="simulations_files/figure-html/gg-pem-wb-surv-1.png" class="r-plt" alt="Comparison of Kaplan-Meier survival probability estimates based on survival times simulated directly from the Weibull distribution $WB(1.5, 10)$ and based on survival times simulated from the $PEXP$ distribution based on the hazards depicted above. The black line indicates the true Weibull survival probability on $t\in [0, 10]$." width="345.6"><p class="caption">
 Comparison of Kaplan-Meier survival probability estimates based on
 survival times simulated directly from the Weibull distribution
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mi>B</mi><mo stretchy="false" form="prefix">(</mo><mn>1.5</mn><mo>,</mo><mn>10</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">WB(1.5, 10)</annotation></semantics></math>
 and based on survival times simulated from the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>E</mi><mi>X</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">PEXP</annotation></semantics></math>
 distribution based on the hazards depicted above. The black line
 indicates the true Weibull survival probability on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>10</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">t\in [0, 10]</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>10</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">t\in [0, 10]</annotation></semantics></math>.
 </p>
 </div>
 </div>
@@ -261,10 +261,10 @@ indicates the true Weibull survival probability on
 Similar to the <code>as_ped</code> function, it uses a formula
 interface, which allows to specify complex hazards relatively easily. To
 start, we simulate data from
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>,</mo></mrow><annotation encoding="application/x-tex">
   \log(\lambda(t|x_1, x_2)) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2},
 </annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_0(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f_0(t)</annotation></semantics></math>
 is based on the Gamma(8,2) density function. Any existing or previously
 defined function can be used in the <code>formula</code> argument to
 <code>sim_pexp</code>. The argument <code>cut</code> defines the
@@ -272,7 +272,7 @@ time-points at which the piece-wise constant hazard will change its
 value, for example, the hazard will change its value at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>t</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi></mrow><annotation encoding="application/x-tex">t=1, t=2, \ldots</annotation></semantics></math>
 with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_0(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f_0(t)</annotation></semantics></math>
 (and other time-varying effects) evaluated at the respective interval
 end-points. <code>sim_pexp</code> returns the original data augmented by
 the simulated survival times (<code>time</code>) as well as a
@@ -322,7 +322,7 @@ time-varying effects, e.g. by defining a function</p>
 </h3>
 <p>In this section we demonstrate how to simulate data with hazard
 rates</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2} +
   \int_{\mathcal{T}(t)} h(t-t_z)z(t_z) \text{d}t_z.
 </annotation></semantics></math></p>
@@ -336,7 +336,7 @@ time points
 at which the TDC was observed) and use the function <code>add_tdc</code>
 (mnemonic: <em>add time-dependent covariate</em>) to add the information
 on the exposure times and the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
 to the data.</p>
 <pre><code><span><span class="co">## [[1]]</span></span>
 <span><span class="co">##  [1] -5.00 -4.75 -4.50 -4.25 -4.00 -3.75 -3.50 -3.25 -3.00 -2.75 -2.50 -2.25</span></span>
@@ -344,30 +344,30 @@ to the data.</p>
 <span><span class="co">## [25]  1.00  1.25  1.50  1.75  2.00  2.25  2.50  2.75  3.00  3.25  3.50  3.75</span></span>
 <span><span class="co">## [37]  4.00  4.25  4.50  4.75  5.00</span></span></code></pre>
 <p>The partial effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
 (see function <code>f_wce</code>) and the lag-lead window
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
 (see function <code>ll_fun</code>) are defined and depicted below.</p>
 <p>The left panel of the figure shows the latency-dependent weight
 function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
 for the exposures
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>.
 The middle panel shows the lag-lead window with partial effects. Note
 that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
 only depends on the latency, not the specific combination of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>z</mi></msub><annotation encoding="application/x-tex">t_z</annotation></semantics></math>.
 The right panel shows that the cumulative effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\textbf{z}, t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\textbf{z}, t)</annotation></semantics></math>
 varies over
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 even for constant exposure
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">z(t_z) = z</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">z(t_z) = z</annotation></semantics></math>
 since it is integrated over different windows of effectiveness
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># define lag-lead function: integrate over the preceding 12 time units</span></span>
 <span><span class="va">ll_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">tz</span><span class="op">)</span> <span class="op">(</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">tz</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="op">(</span><span class="va">t</span> <span class="op">-</span> <span class="va">tz</span><span class="op">)</span> <span class="op">&lt;=</span>  <span class="fl">12</span><span class="op">)</span></span>
@@ -408,11 +408,11 @@ since it is integrated over different windows of effectiveness
 </details><div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/gg_partial_wce-1.png" class="r-plt" alt="Left: Partial effect $h(t-t_z)$ for different latencies  $t-t_z$. Middle: The lag-lead window $\mathcal{T}(t)$ and respective partial effects for each combination of $t$ and $t_z$. Combinations of $t$ and $t_z$ outside the specified lag-lead window in dark gray. Partial effects of exposures at different time-points $t$, $t_z$ are the same if the latency $t-t_z$ is the same, i.e. $h(5-1) = h(6-2) = h(4)$. Right: Cumulative effect $g(   extbf{z},t)$ for constant $z(t_z)=1, orall t_z$." width="768"><p class="caption">
 Left: Partial effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)</annotation></semantics></math>
 for different latencies
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">t-t_z</annotation></semantics></math>.
 Middle: The lag-lead window
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
 and respective partial effects for each combination of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 and
@@ -428,15 +428,15 @@ exposures at different time-points
 are the same if the latency
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">t-t_z</annotation></semantics></math>
 is the same,
-i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>5</mn><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>6</mn><mo>−</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>4</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(5-1) = h(6-2) = h(4)</annotation></semantics></math>.
+i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mn>5</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mn>6</mn><mo>−</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(5-1) = h(6-2) = h(4)</annotation></semantics></math>.
 Right: Cumulative effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>e</mi><mi>x</mi><mi>t</mi><mi>b</mi><mi>f</mi><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g( extbf{z},t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mi>x</mi><mi>t</mi><mi>b</mi><mi>f</mi><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g( extbf{z},t)</annotation></semantics></math>
 for constant
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>,</mo><mi>o</mi><mi>r</mi><mi>a</mi><mi>l</mi><mi>l</mi><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, orall t_z</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>,</mo><mi>o</mi><mi>r</mi><mi>a</mi><mi>l</mi><mi>l</mi><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, orall t_z</annotation></semantics></math>.
 </p>
 </div>
 <p>Given the above setup with cumulative effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)=\int_{\mathcal{T}(t)}h(t-t_z)z(t_z) \text{d}t_z</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)=\int_{\mathcal{T}(t)}h(t-t_z)z(t_z) \text{d}t_z</annotation></semantics></math>,
 we can now simulate the data using the <code>sim_pexp</code>
 function.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -451,9 +451,9 @@ function.</p>
 </h3>
 <p>In this section, we illustrate an extension of the previous
 simulation, where the exposure
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
 affects the hazard non-linearly
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><mrow><mi>x</mi><mn>2</mn></mrow></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><mrow><mi>x</mi><mn>2</mn></mrow></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">
 \log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x2} +
   \int_{\mathcal{T}(t)} h(t-t_z,z(t_z)) \text{d}t_z
 </annotation></semantics></math></p>
@@ -461,11 +461,11 @@ affects the hazard non-linearly
 simulation by changing the partial effect function (function
 <code>f_dlnm</code>). The figure below depicts the bivariate, smooth
 partial effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
 and the resulting cumulative effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)</annotation></semantics></math>
 for a simplified exposure history with constant
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">z(t_z)=1</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">z(t_z)=1</annotation></semantics></math>
 for all
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>z</mi></msub><annotation encoding="application/x-tex">t_z</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -509,12 +509,12 @@ for all
 </details><div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/gg-partial-dlnm-1.png" class="r-plt" alt="**Left**: Partial effect $h(t-t_z, z(t_z))$ used for the simulation of survival times. **Right**: The cumulative effects $g(  extbf{z},t)$ resulting from constant exposure histories $z(t_z)=1, \forall t_z$." width="576"><p class="caption">
 <strong>Left</strong>: Partial effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
 used for the simulation of survival times. <strong>Right</strong>: The
 cumulative effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>e</mi><mi>x</mi><mi>t</mi><mi>b</mi><mi>f</mi><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g( extbf{z},t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mi>x</mi><mi>t</mi><mi>b</mi><mi>f</mi><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g( extbf{z},t)</annotation></semantics></math>
 resulting from constant exposure histories
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>,</mo><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, \forall t_z</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>,</mo><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, \forall t_z</annotation></semantics></math>.
 </p>
 </div>
 </div>
@@ -522,7 +522,7 @@ resulting from constant exposure histories
 <h3 id="bivariate-smooth-of-time-and-exposure-time">Bivariate smooth of time and exposure time<a class="anchor" aria-label="anchor" href="#bivariate-smooth-of-time-and-exposure-time"></a>
 </h3>
 <p>In this subsection, we simulate the data with hazard
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><mtext mathvariant="bold">𝐳</mtext><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>3.5</mn><mo>+</mo><msub><mi>f</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>0.5</mn><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msqrt><msub><mi>x</mi><mn>2</mn></msub></msqrt><mo>+</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mtext mathvariant="normal">d</mtext><msub><mi>t</mi><mi>z</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
   \log(\lambda(t|x_1, x_2, \textbf{z})) = -3.5 + f_0(t) -0.5 x_1 + \sqrt{x_2} +
     \int_{\mathcal{T}(t)} h(t,t_z)z(t_z)\text{d} t_z.
 </annotation></semantics></math> Using the <code>sim_pexp</code>
@@ -559,26 +559,26 @@ partial effect function <code>f_elra</code>.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu">g</span><span class="op">(</span><span class="fu">bold</span><span class="op">(</span><span class="va">z</span><span class="op">)</span>, <span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details><p>The figure below depicts the bivariate, smooth partial effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t, t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t, t_z)</annotation></semantics></math>
 (left panel) and the resulting cumulative effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="bold">𝐳</mtext><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\textbf{z},t)</annotation></semantics></math>
 for a simplified exposure history with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1 \forall t_z</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1 \forall t_z</annotation></semantics></math>
 (right panel).</p>
 <div class="figure" style="text-align: center">
 <img src="simulations_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="**Left**: Bivariate partial effect surface $h(t, t_z)$, combinations of $t$ and $t_z$ that lie outside the lag-lead window $\mathcal{T}(t)$ are omitted. **Right**: The cumulative effect resulting from the partial effect depicted in the left panel for a simplified exposure profile with $z(t_z)=1, \forall t_z$." width="576"><p class="caption">
 <strong>Left</strong>: Bivariate partial effect surface
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t, t_z)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t, t_z)</annotation></semantics></math>,
 combinations of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>z</mi></msub><annotation encoding="application/x-tex">t_z</annotation></semantics></math>
 that lie outside the lag-lead window
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
 are omitted. <strong>Right</strong>: The cumulative effect resulting
 from the partial effect depicted in the left panel for a simplified
 exposure profile with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>,</mo><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, \forall t_z</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>,</mo><mo>∀</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">z(t_z)=1, \forall t_z</annotation></semantics></math>.
 </p>
 </div>
 </div>
@@ -588,7 +588,7 @@ exposure profile with
 </h2>
 <!-- Zaehlmarke VGWort -->
 <p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Jackson2011" class="csl-entry">
 Jackson, Christopher. 2011. <span>“Multi-State Models for Panel Data:
 The Msm Package for r.”</span> <em>Journal of Statistical Software</em>

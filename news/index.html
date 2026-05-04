@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -116,6 +116,57 @@
       <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.7.5" id="pammtools-075">pammtools 0.7.5<a class="anchor" aria-label="anchor" href="#pammtools-075"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-7-5">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-7-5"></a></h3>
+<ul><li>
+<code><a href="../reference/newdata.html">make_newdata()</a></code> output no longer contains internal PED columns (<code>tstart</code>, <code>intlen</code>, <code>interval</code>, <code>offset</code>, <code>ped_status</code>). Output now contains <code>tend</code> + <code>id</code> + user covariates (plus <code>cause</code>/<code>transition</code> for competing risks / multi-state models). <code><a href="../reference/ped_info.html">ped_info()</a></code> output is unchanged.</li>
+<li>
+<code>intlen</code> is now reconstructed on demand by downstream functions (<code>add_cumu_hazard</code>, <code>add_surv_prob</code>, <code>add_cif</code>, <code>add_trans_prob</code>) via the new internal helper <code><a href="../reference/reconstruct_intlen.html">reconstruct_intlen()</a></code>, and dropped from user-facing output.</li>
+<li>
+<code><a href="../reference/add_cif.html">add_cif()</a></code> now uses the exact closed-form integral of the cumulative incidence function under piecewise-exponential hazards (<code>(h_j / Σh) · S(t_{i-1}) · (1 - exp(-Σh · Δt))</code>) instead of the previous left-Riemann approximation. CIF estimates from existing user code will change numerically; results are now invariant to the time grid passed to <code><a href="../reference/newdata.html">make_newdata()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-0-7-5">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-5"></a></h3>
+<ul><li>
+<code><a href="../reference/add_cif.html">add_cif()</a></code> now supports arbitrary time points in <code><a href="../reference/newdata.html">make_newdata()</a></code> (parity with <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>); missing breakpoints are inserted internally so CIF estimates are independent of the chosen prediction grid.</li>
+<li>
+<code>expand_df()</code> preserves the <code>cause</code> column when <code><a href="../reference/newdata.html">make_newdata()</a></code> is called with only <code>tend</code> and <code>cause</code>, fixing a competing-risks edge case.</li>
+<li>
+<code><a href="../reference/predictSurvProb.pamm.html">predictSurvProb.pamm()</a></code> now respects non-default <code>id</code> column names and works when <code>trafo_args</code> are not attached to the fitted object.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecations-0-7-5">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-0-7-5"></a></h3>
+<ul><li>The <code>trafo_args</code> argument of <code><a href="../reference/pamm.html">pamm()</a></code> is deprecated; convert data with <code><a href="../reference/as_ped.html">as_ped()</a></code> before calling <code><a href="../reference/pamm.html">pamm()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-7-5">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-7-5"></a></h3>
+<ul><li>Added derivation of the piecewise-exponential CIF integral to the competing-risks vignette.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.7.4" id="pammtools-074">pammtools 0.7.4<small>2026-02-16</small><a class="anchor" aria-label="anchor" href="#pammtools-074"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-7-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-7-4"></a></h3>
+<ul><li>Fixed competing risks data transformation when status variable is a factor (<a href="https://github.com/adibender/pammtools/issues/220" class="external-link">#220</a>, <a href="https://github.com/adibender/pammtools/issues/216" class="external-link">#216</a>, <a href="https://github.com/adibender/pammtools/issues/233" class="external-link">#233</a>)</li>
+<li>Fixed CIF calculation to use factor levels from newdata instead of model attribute (<a href="https://github.com/adibender/pammtools/issues/245" class="external-link">#245</a>)</li>
+<li>Fixed cut point extraction for factor/character status variables</li>
+<li>Fixed transition probability matrix initialization for states starting at 0 or 1</li>
+<li>Fixed CRAN NOTE: added <code>id</code> to global variables for dplyr compatibility (<a href="https://github.com/adibender/pammtools/issues/260" class="external-link">#260</a>)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-0-7-4">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-4"></a></h3>
+<ul><li>Improved <code>add_trans_prob</code>: better documentation, proper examples, attribute attachment, and base R speedup</li>
+<li>Added warning in <code><a href="../reference/pamm.html">pamm()</a></code> when data does not contain an offset column</li>
+<li>Added <code>broom</code> to Suggests</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-7-4">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-7-4"></a></h3>
+<ul><li>Updated <code>add_trans_prob</code> help page with proper parameter descriptions and working example</li>
+<li>Added simulations vignette</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.92" id="pammtools-0592">pammtools 0.5.92<small>2023-07-12</small><a class="anchor" aria-label="anchor" href="#pammtools-0592"></a></h2>
 <ul><li>Fixed competing risks data trafo in case of more than 2 causes</li>

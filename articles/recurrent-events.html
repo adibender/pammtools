@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -143,7 +143,7 @@
                         <h4 data-toc-skip class="author">Jordache
 Ramjith, Andreas Bender, Kit C.B. Roes &amp; Marianne A. Jonker</h4>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/recurrent-events.Rmd" class="external-link"><code>vignettes/recurrent-events.Rmd</code></a></small>
       <div class="hidden name"><code>recurrent-events.Rmd</code></div>
@@ -324,11 +324,11 @@ the baseline hazard.</p>
 <code class="sourceCode R"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">ped</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span>enum_strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">enum</span> <span class="op">&gt;</span> <span class="fl">1</span>,<span class="st">"recurrent"</span>,<span class="st">"first"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Using this data, we fit the following model</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>k</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>k</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>k</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>β</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \lambda(t,k|z_i) = \exp(\beta_{0k} + f_{0,k}(t) + z_i),
 </annotation></semantics></math></p>
 <p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>σ</mi><mi>z</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">z_i\sim N(0, \sigma_z^2)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msubsup><mi>σ</mi><mi>z</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z_i\sim N(0, \sigma_z^2)</annotation></semantics></math>
 are Gaussian, child specific random effects that account for
 child-specific frailty and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mrow><mn>0</mn><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\beta_{0k}</annotation></semantics></math>
@@ -382,7 +382,7 @@ p-values test whether overall these are different from a flat line <span class="
 estimated variances (<code>gam.vcomp</code>) and p-values (summary
 output). From the output, we see that the random effects are
 statistically insignificant
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.249</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(p=0.249)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.249</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(p=0.249)</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pamm0</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -567,7 +567,7 @@ proportional over time.</p>
 <span><span class="co">## fREML = 1341.6  Scale est. = 1         n = 18889</span></span></code></pre>
 <p>We can see that estimated effect of HIV exposure in terms of the
 hazard ratio is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.2681</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1.31</mn><mspace width="0.278em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.062</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">HR=\exp(0.2681)=1.31\;(p=0.062)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0.2681</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.31</mn><mspace width="0.278em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.062</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">HR=\exp(0.2681)=1.31\;(p=0.062)</annotation></semantics></math>.</p>
 </div>
 <div class="section level4">
 <h4 id="model-2">Model 2<a class="anchor" aria-label="anchor" href="#model-2"></a>
@@ -608,9 +608,9 @@ hazard ratio is
 <span><span class="co">## fREML = 1340.9  Scale est. = 1         n = 18889</span></span></code></pre>
 <p>We can see that estimated effect of HIV exposure in terms of the
 hazard ratio is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>0.0201</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.98</mn><mspace width="0.278em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.925</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">HR=\exp(-0.0201)=0.98\;(p=0.925)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>0.0201</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.98</mn><mspace width="0.278em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.925</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">HR=\exp(-0.0201)=0.98\;(p=0.925)</annotation></semantics></math>
 for the first infection and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.5427</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1.72</mn><mspace width="0.278em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.006</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">HR=\exp(0.5427)=1.72\;(p=0.006)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi>R</mi><mo>=</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0.5427</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.72</mn><mspace width="0.278em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>=</mo><mn>0.006</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">HR=\exp(0.5427)=1.72\;(p=0.006)</annotation></semantics></math>
 for recurrent infections.</p>
 </div>
 </div>
@@ -619,7 +619,7 @@ for recurrent infections.</p>
 </h3>
 <!-- Zaehlmarke VGWort -->
 <p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-wood_p-values_2013" class="csl-entry">
 Wood, Simon N. 2013. <span>“On p-Values for Smooth Components of an
 Extended Generalized Additive Model.”</span> <em>Biometrika</em> 100

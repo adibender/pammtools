@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.5</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Transformation</h1>
             
-            <h4 data-toc-skip class="date">2026-03-12</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/data-transformation.Rmd" class="external-link"><code>vignettes/data-transformation.Rmd</code></a></small>
       <div class="hidden name"><code>data-transformation.Rmd</code></div>
@@ -216,7 +216,7 @@ relevant like whether or not complications occurred
 <li><p>define
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>J</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">J+1</annotation></semantics></math>
 interval break points
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mo>min</mo></msub><mo>=</mo><msub><mi>κ</mi><mn>0</mn></msub><mo>&lt;</mo><msub><mi>κ</mi><mn>1</mn></msub><mo>&lt;</mo><mi>⋯</mi><mo>&lt;</mo><msub><mi>κ</mi><mi>J</mi></msub><mo>=</mo><msub><mi>t</mi><mo>max</mo></msub></mrow><annotation encoding="application/x-tex">t_{\min} = \kappa_0 &lt; \kappa_1 &lt; \cdots &lt; \kappa_J = t_{\max}</annotation></semantics></math></p></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi mathvariant="normal">min</mi></msub><mo>=</mo><msub><mi>κ</mi><mn>0</mn></msub><mo>&lt;</mo><msub><mi>κ</mi><mn>1</mn></msub><mo>&lt;</mo><mi>⋯</mi><mo>&lt;</mo><msub><mi>κ</mi><mi>J</mi></msub><mo>=</mo><msub><mi>t</mi><mi mathvariant="normal">max</mi></msub></mrow><annotation encoding="application/x-tex">t_{\min} = \kappa_0 &lt; \kappa_1 &lt; \cdots &lt; \kappa_J = t_{\max}</annotation></semantics></math></p></li>
 <li><p>create <em>pseudo</em>-observations for each interval
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>J</mi></mrow><annotation encoding="application/x-tex">j = 1,\ldots, J</annotation></semantics></math>
 in which subject
@@ -328,7 +328,7 @@ interval for this subject starts at
 and the subject experienced and event at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">t=8</annotation></semantics></math>,
 thus
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>8</mn><mo>−</mo><mn>7</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\log(8-7) = 0</annotation></semantics></math></p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>8</mn><mo>−</mo><mn>7</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\log(8-7) = 0</annotation></semantics></math></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tumor</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">85</span>, <span class="fl">112</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 10</span></span></span>
@@ -445,17 +445,17 @@ until the next update is available.</p>
 <h2 id="data-with-time-dependent-covariates-with-cumulative-effects">Data with time-dependent covariates (with cumulative effects)<a class="anchor" aria-label="anchor" href="#data-with-time-dependent-covariates-with-cumulative-effects"></a>
 </h2>
 <p>Here we demonstrate data transformation of data with TDCs
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐳</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>q</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>Q</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathbf{z}=\{z(t_{z,q}),q=1,\ldots,Q\}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐳</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>q</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>Q</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathbf{z}=\{z(t_{z,q}),q=1,\ldots,Q\}</annotation></semantics></math>,
 that subsequently will be modeled as cumulative effects defined as</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐳</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi mathvariant="normal">d</mi><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐳</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∫</mo><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mi mathvariant="normal">d</mi><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">
 g(\mathbf{z}, t) = \int_{\mathcal{T}(t)} h(t, t_z, z(t_z))\mathrm{d}t_z
 </annotation></semantics></math> Here</p>
 <ul>
 <li>
 <p>the three-variate function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t,t_z,z(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t,t_z,z(t_z))</annotation></semantics></math>
 defines the so-called <em>partial effects</em> of the TDC
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z(t_z)</annotation></semantics></math>
 observed at exposure time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>z</mi></msub><annotation encoding="application/x-tex">t_z</annotation></semantics></math>
 on the hazard at time
@@ -464,31 +464,31 @@ effect definition given above is only one possibility, other common
 choices are<br> </p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
 (This is the WCE model by <span class="citation">Sylvestre and
 Abrahamowicz (2009)</span>) <br> </li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
 (This is the DLNM model by <span class="citation">Gasparrini et al.
 (2017)</span>)<br> </li>
 </ul>
 </li>
 <li><p>the cumulative effect
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐳</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\mathbf{z}, t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐳</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\mathbf{z}, t)</annotation></semantics></math>
 at follow-up time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 is the integral (or sum) of the partial effects over exposure times
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>z</mi></msub><annotation encoding="application/x-tex">t_z</annotation></semantics></math>
 contained within
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math><br> </p></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math><br> </p></li>
 <li><p>the so called lag-lead window (or window of effectiveness) is
 denoted by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>.
 This represents the set of exposure times at which exposures can affect
 the hazard rate at time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.
 The most common definition is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>,</mo><mi>q</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>Q</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t) = \{t_{z,q}: t \geq t_{z,q}, q=1,\ldots, Q\}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>,</mo><mi>q</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>Q</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t) = \{t_{z,q}: t \geq t_{z,q}, q=1,\ldots, Q\}</annotation></semantics></math>,
 which means that all exposures that were observed prior to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 or at
@@ -510,9 +510,9 @@ the partial effect structure on the right-hand side of the formula.</p>
 (<code>tz1</code>) and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mi>z</mi></msub><annotation encoding="application/x-tex">s_z</annotation></semantics></math>
 (<code>tz2</code>) with lag-lead windows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t) = \{t_{z,q}: t \geq t_{z,q}\}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mrow><mi>z</mi><mo>,</mo><mi>q</mi></mrow></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t) = \{t_{z,q}: t \geq t_{z,q}\}</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>s</mi><mrow><mi>z</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>s</mi><mrow><mi>z</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t) = \{s_{z,k}: t \geq s_{z,k} + 2\}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>s</mi><mrow><mi>z</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>s</mi><mrow><mi>z</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t) = \{s_{z,k}: t \geq s_{z,k} + 2\}</annotation></semantics></math>
 (defined by
 <code>ll2 &lt;- function(t, tz) { t &gt;= tz + 2}</code>).</p>
 <p>The table below gives a selection of possible partial effects and the
@@ -533,19 +533,19 @@ and
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t-t_z, z_1(t_z))</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t-t_z, z_1(t_z))</annotation></semantics></math></td>
 <td><code>cumulative(latency(tz1), z1, tz_var= "tz1")</code></td>
 </tr>
 <tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t-t_z, z_1(t_z))</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t-t_z, z_1(t_z))</annotation></semantics></math></td>
 <td><code>cumulative(time, latency(tz1), z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z))</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z))</annotation></semantics></math></td>
 <td><code>cumulative(time, tz1, z1, tz_var="tz1")</code></td>
 </tr>
 <tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>2</mn></msub></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>s</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z)) + \int_{\mathcal{T}_2}h(t-s_z, z_2(s_z))</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>1</mn></msub></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mo>∫</mo><msub><mi>𝒯</mi><mn>2</mn></msub></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>s</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\int_{\mathcal{T}_1}h(t, t_z, z_1(t_z)) + \int_{\mathcal{T}_2}h(t-s_z, z_2(s_z))</annotation></semantics></math></td>
 <td><code>cumulative(time, tz1, z1, tz_var="tz1") + cumulative(latency(tz2), z2, tz_var="tz2", ll_fun=ll2)</code></td>
 </tr>
 <tr class="odd">
@@ -567,7 +567,7 @@ variable specified on the left-hand side of the
 <code>latency()</code> to tell <code>as_ped</code> to calculate
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub></mrow><annotation encoding="application/x-tex">t-t_z</annotation></semantics></math></p></li>
 <li><p>by default,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒯</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}(t)</annotation></semantics></math>
 is defined as <code>function(t, tz) {t &gt;= tz}</code>, thus for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝒯</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\mathcal{T}_1</annotation></semantics></math>
 it is not necessary to explicitly specify the lag-lead window. In case
@@ -576,9 +576,9 @@ function to the <code>ll_fun</code> argument in <code>cumulative</code>
 (see <code>ll2</code> in the examples above)</p></li>
 <li><p><code>cumulative</code> makes no difference between partial
 effects such as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z, z(t_z))</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>z</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>z</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z)z(t_z)</annotation></semantics></math>
 as the necessary data transformation is the same in both cases. Later,
 however, when fitting the model, a distinction must be made</p></li>
 <li><p>more than one
@@ -701,9 +701,9 @@ grid<a class="anchor" aria-label="anchor" href="#two-time-dependent-covariates-o
 </h3>
 <p>Using the same data, we show a slightly more complex example with two
 functional covariate terms with partial effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t, t-t_z, z_1(t_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t, t-t_z, z_1(t_z))</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h(t-t_z, z_2(t_z))</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h(t-t_z, z_2(t_z))</annotation></semantics></math>.
 As in the case of ICU patient data, both TDCs were observed on the same
 exposure time grid, we want to use the same lag-lead window and the
 latency term
@@ -767,9 +767,9 @@ were observed on different exposure time grids
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mi>z</mi></msub><annotation encoding="application/x-tex">s_z</annotation></semantics></math>)
 and are assumed to have different lag_lead windows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t)</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t)</annotation></semantics></math>,
 we use simulated data <code>simdf_elra</code> contained in
 <strong><code>pammtools</code></strong> (see example in
 <code>sim_pexp</code> for data generation).</p>
@@ -831,14 +831,14 @@ partially observed before the beginning of the follow up.</p>
 <p>If we wanted to estimate the following cumulative effects</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐳</mi><mn>1</mn></msub><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mo>∫</mo><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\mathbf{z}_1, t) = \int_{\mathcal{T}_1(t)} h(t, t-t_z, z_1(s_z))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐳</mi><mn>1</mn></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∫</mo><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\mathbf{z}_1, t) = \int_{\mathcal{T}_1(t)} h(t, t-t_z, z_1(s_z))</annotation></semantics></math>
 and</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐳</mi><mn>2</mn></msub><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mo>∫</mo><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐳</mi><mn>2</mn></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∫</mo><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>−</mo><msub><mi>t</mi><mi>z</mi></msub><mo>,</mo><msub><mi>z</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\mathbf{z}_2, t) = \int_{\mathcal{T}_2(t)} h(t-t_z, z_2(s_z))</annotation></semantics></math></li>
 </ul>
 <p>with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mi>z</mi></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mi>z</mi></msub><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t)  = \{t_z: t \geq t_z + 2\}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>t</mi><mi>z</mi></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>t</mi><mi>z</mi></msub><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_1(t)  = \{t_z: t \geq t_z + 2\}</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>s</mi><mi>z</mi></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t)  = \{s_z: t \geq s_z\}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝒯</mi><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>s</mi><mi>z</mi></msub><mo>:</mo><mi>t</mi><mo>≥</mo><msub><mi>s</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{T}_2(t)  = \{s_z: t \geq s_z\}</annotation></semantics></math>
 the data transformation function must reflect the different exposure
 times as well as different lag-lead window specifications as illustrated
 below:</p>
@@ -894,12 +894,12 @@ below:</p>
 </h2>
 <!-- Zaehlmarke VGWort -->
 <p><img src="https://vg09.met.vgwort.de/na/f993b9c06b5249adb509a4df30d807a6" width="1" height="1" alt=""></p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Bender2018" class="csl-entry">
 Bender, Andreas, Fabian Scheipl, Wolfgang Hartl, Andrew G. Day, and
 Helmut Küchenhoff. 2018. <span>“Penalized Estimation of Complex,
 Non-Linear Exposure-Lag-Response Associations.”</span>
-<em>Biostatistics</em>. <a href="https://doi.org/10.1093/biostatistics/kxy003" class="external-link">https://doi.org/10.1093/biostatistics/kxy003</a>.
+<em>Biostatistics</em>, ahead of print. <a href="https://doi.org/10.1093/biostatistics/kxy003" class="external-link">https://doi.org/10.1093/biostatistics/kxy003</a>.
 </div>
 <div id="ref-Gasparrini2017" class="csl-entry">
 Gasparrini, Antonio, Fabian Scheipl, Ben Armstrong, and Michael G.
