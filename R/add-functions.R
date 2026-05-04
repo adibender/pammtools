@@ -1166,10 +1166,10 @@ add_trans_prob <- function(
 ) {
   orig_names <- names(newdata)
   interval_length <- quo_name(enquo(interval_length))
-  transition <- quo_name(enquo(transition))
+  transition_var <- quo_name(enquo(transition))
   time_var <- resolve_time_var(time_var, object, newdata)
-  assert_string(transition)
-  assert_choice(transition, colnames(newdata))
+  assert_string(transition_var)
+  assert_choice(transition_var, colnames(newdata))
 
   if (!interval_length %in% colnames(newdata)) {
     newdata <- reconstruct_intlen(

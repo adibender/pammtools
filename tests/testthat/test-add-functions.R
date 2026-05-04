@@ -63,15 +63,6 @@ pam_msm <- gam(
   offset = offset
 )
 
-pam_msm_treat <- mgcv::bam(
-  ped_status ~ s(tend, by=interaction(treat, transition)) + treat*transition,
-  data = ped_msm,
-  offset = offset,
-  family = poisson(),
-  method = "fREML",
-  discrete = TRUE
-)
-
 test_that("hazard functions work for PAM", {
   expect_data_frame(
     haz <- add_hazard(ped_info(ped), bam),
@@ -806,7 +797,6 @@ test_that("Transition Probability works", {
   ndf <- ped_msm %>%
     make_newdata(tend = unique(tend), transition = unique(transition)) %>%
     group_by(transition) %>%
-    arrange(transition, tend) |>
     add_trans_prob(pam_msm, ci = T)
   expect_data_frame(ndf, nrows = 380L, ncols = 6L)
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
