@@ -121,7 +121,7 @@ $$
 so that $\Delta_j = \kappa_j - \kappa_{j-1}$ for $j < j(t)$ and $\Delta_{j(t)}= t - \kappa_{j(t)-1}$. The integral then has the closed form
 
 $$
-F_q(t) \;=\; \sum_{j=1}^{j(t)} \frac{h_{q,j}}{h_{\cdot,j}}\; S_{j-1}\; \bigl(1 - \exp(-h_{\cdot,j}\, \Delta_j)\bigr),
+F_q(t) \;=\; \sum_{j=1}^{j(t)} \frac{h_{q,j}}{h_{\cdot,j}}\; S_{j-1}\; \bigl(1 - \exp(-h_{\cdot,j}\, \Delta_j)\bigr), \tag{1}
 $$
 
 with $S_0 = 1$. 
@@ -178,6 +178,26 @@ ggplot(ndf, aes(x = tend, y = cif)) +
     alpha = .3) +
   facet_wrap(~cause, labeller = label_both)
 ```
+
+
+## Custom time points
+
+In the examples above, we used all unique interval grid points as time points at which the CIF was calculated. However, it is also possible to evaluate the CIF at custom time points; the calculations remain exact via the closed-form formula (1) with the truncated last interval $\Delta_{j(t)} = t - \kappa_{j(t)-1}$ (the time grid used for calculation is the same as before and expanded internally if necessary).
+
+```{r}
+custom_times <- c(1, 2.5, 4)
+
+ndf_custom <- ped_stacked %>%
+  make_newdata(tend = custom_times, cause = unique(cause)) %>%
+  group_by(cause) %>%
+  add_cif(pam_csh_shared)
+
+ndf_custom %>%
+  select(tend, cause, cif, cif_lower, cif_upper) %>%
+  arrange(tend, cause)
+```
+
+Note that the confidence intervals are stochastic, as they are obtained from a Monte Carlo simulation of the model coefficients.
 
 
 <!-- Zaehlmarke VGWort -->
