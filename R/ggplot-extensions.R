@@ -108,3 +108,122 @@ ggplot2_stairstep <- function(data, direction =  c("hv", "vh", "mid")) {
   }
   cbind(data.frame(x = x, ymin = ymin, ymax = ymax), data_attr)
 }
+
+#' Plot State Occupation Probabilities
+#'
+#' Creates a stacked area plot of state occupation probabilities over time,
+#' computed from transition probability matrices stored as an attribute of
+#' the input data. Optionally facets by a grouping variable.
+#'
+#' @param newdata A data frame with an attribute \code{matrix} containing
+#'   a data frame with a column \code{trans_prob_matrix}. Each element of
+#'   \code{trans_prob_matrix} should be a 3-dimensional array of dimensions
+#'   \code{n_states x n_states x n_timepoints}.
+#' @param init_state A numeric vector specifying the initial state distribution.
+#'   Should sum to 1 and have length equal to the number of states. For example,
+#'   \code{c(0, 1, 0, 0)} places all subjects in state 2 at baseline.
+#' @param group_var A character string giving the name of the column in
+#'   \code{newdata} to facet by (e.g., \code{"treat"}). If \code{NULL}
+#'   (default), no faceting is applied.
+#' @param group_labels An optional named vector of labels for the grouping
+#'   variable. Currently unused; labels are instead taken from the
+#'   \code{"labels"} attribute of \code{newdata[[group_var]]}.
+#' @param time_var A character string giving the name of the time variable in
+#'   \code{newdata}. Defaults to \code{"tend"}.
+#' @param ncol An integer specifying the number of columns in the facet wrap.
+#'   If \code{NULL} (default), defaults to the number of unique groups.
+#' @param nrow An integer specifying the number of rows in the facet wrap.
+#'   If \code{NULL} (default), determined automatically.
+gg_state_occupation <- function(
+    newdata, 
+    init_state, 
+    group_var = NULL, 
+    group_labels = NULL,
+    time_var = "tend",
+    ncol = NULL,
+    nrow = NULL
+) {
+  # Extract attribute matrix
+  mat_df <- attributes(newdata)$matrix
+  time_var <- sym(time_var)
+  
+  # error handler: init state number must align with states in trans prob
+  n_states <- dim(mat_df$trans_prob_matrix[[1]])[1]
+  if (length(init_state) != n_states) {
+    stop("`init_state` must have length equal to the number of states (", n_states, ").")
+  }
+  
+  if (!is.null(group_var)) {
+    
+    labels <- attr(newdata[[group_var]], "labels")  # moved here
+    ncol <- length(unique(newdata[[group_var]]))
+    
+    if (!is.null(labels)) {
+      newdata[[group_var]] <- factor(
+        newdata[[group_var]],
+        levels = names(labels),
+        labels = labels
+      )
+    }
+    
+    # Iterate over groups
+    df_all <- mat_df %>%
+      mutate(
+        df_long = map(trans_prob_matrix, function(x) {
+          # x is a 4 × 4 × T array for ONE group
+          
+          res <- apply(x, 3, function(mat) init_state %*% mat)
+          
+          df <- as.data.frame(t(res))
+          colnames(df) <- paste0("state_", seq_len(ncol(df)))
+          df$time <- unique(sort(newdata |> dplyr::pull(time_var)))
+          
+          df |>
+            pivot_longer(
+              cols = starts_with("state_"),
+              names_to = "state",
+              values_to = "prob"
+            )
+        })
+      ) %>%
+      select(-trans_prob_matrix) %>%
+      unnest(df_long)
+    
+    # plot
+    p <- ggplot(df_all, aes(x = time, y = prob, fill = state)) +
+      geom_area(color = "black", alpha = 0.8) +
+      facet_wrap(vars(.data[[group_var]]), ncol = ncol) +
+      labs(
+        x = "Time",
+        y = "State occupation probability",
+        fill = "State"
+      ) +
+      theme_minimal()
+  } else {
+    # process without grouping
+    x <- mat_df$trans_prob_matrix[[1]]  # assume single matrix
+    res <- apply(x, 3, function(mat) init_state %*% mat)
+    df_all <- as.data.frame(t(res))
+    colnames(df_all) <- paste0("state_", seq_len(ncol(df_all)))
+    df_all$time <- unique(sort(newdata |> dplyr::pull(time_var)))
+    
+    df_all <- df_all |> pivot_longer(
+      cols = starts_with("state_"),
+      names_to = "state",
+      values_to = "prob"
+    )
+    
+    p <- ggplot(df_all, aes(x = time, y = prob, fill = state)) +
+      geom_area(color = "black", alpha = 0.8) +
+      labs(
+        x = "Time",
+        y = "State occupation probability",
+        fill = "State"
+      ) +
+      theme_minimal()
+  }
+  
+  return(p)
+  
+}
+
