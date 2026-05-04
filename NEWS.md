@@ -14,8 +14,6 @@
 * The `trafo_args` argument of `pamm()` is deprecated; convert data with `as_ped()` before calling `pamm()`.
 
 ## Documentation
-* Updated convenience vignette to use `tend` instead of `interval` in `select()` calls.
-  <!-- TODO: this entry is currently inaccurate — vignettes/convenience.Rmd has no diff vs master in this PR. Either revert or actually make the change before merging. -->
 * Added derivation of the piecewise-exponential CIF integral to the competing-risks vignette.
 
 # pammtools 0.7.4
