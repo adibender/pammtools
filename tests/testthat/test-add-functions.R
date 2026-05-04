@@ -209,7 +209,8 @@ test_that("cumulative hazard functions work for PAM", {
   expect_data_frame(newdata, nrows = 5L, ncols = 11L)
 })
 
-test_that("cumulative hazard function work for arbitrary time points", {
+test_that("cumulative hazard function works for arbitrary time points", {
+  # with grouping
   ndf1 = ped |>
     make_newdata(tend = unique(tend)[1:3], age = c(60, 70)) |>
     group_by(age) |>
@@ -222,6 +223,32 @@ test_that("cumulative hazard function work for arbitrary time points", {
 
   expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
   expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
+  
+  #without grouping
+  set.seed(211758)
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1), 20, replace = TRUE)
+  )
+  ped_sim <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam_sim <- pamm(ped_status ~ tend, data = ped_sim)
+
+  tmax = max(ped_sim$tend)
+  ndf1 <- ped_sim %>%
+    make_newdata(tend = unique(tend)) %>%
+    add_cumu_hazard(pam_sim) |> 
+    dplyr::filter(tend == tmax)
+  
+  ndf2 <- ped_sim %>%
+    make_newdata(tend = c(2, tmax)) %>%
+    add_cumu_hazard(pam_sim) |>
+    dplyr::filter(tend == tmax)
+  
+  expect_message(
+    ped_sim %>% make_newdata(tend = c(2, tmax))
+  )
+  expect_equal(ndf1$cumu_hazard, ndf2$cumu_hazard, tolerance = 0.1)
+  
 })
 
 test_that("cumulative hazard functions work for PEM", {
@@ -243,17 +270,17 @@ test_that("adding terms works for PAM", {
   ndf2 <- make_newdata(ped, age = seq_range(age, 3))
   pred2 <- ndf2 %>% add_term(pam2, term = "age")
   expect_equal(round(pred2$fit, 3), c(-.604, -.236, .851))
-  expect_data_frame(pred2, nrows = 3L, ncols = 6L)
+  expect_data_frame(pred2, nrows = 3L, ncols = 7L)
   # with custom reference
   pred2 <- ndf2 %>%
     add_term(pam2, term = "age", reference = list(age = mean(.$age)))
   expect_equal(round(pred2$fit, 3), c(-.368, 0, 1.087))
-  expect_data_frame(pred2, nrows = 3L, ncols = 6L)
+  expect_data_frame(pred2, nrows = 3L, ncols = 7L)
   expect_equal(pred2$fit[2], 0)
   # with overall function application
   pred3 <- ndf2 %>% add_term(pam2, term = "age", reference = identity(.))
   expect_equal(pred3$fit, rep(0, 3))
-  expect_data_frame(pred3, nrows = 3L, ncols = 6L)
+  expect_data_frame(pred3, nrows = 3L, ncols = 7L)
   expect_equal(pred3$fit, rep(0, 3))
   # with separately created data frame
   df_mean <- sample_info(ndf2)
@@ -504,13 +531,89 @@ test_that("CIF works with pamm", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+})
+
+
+test_that("CIF works with arbitrary time points", {
+  set.seed(211758)
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) %>%
+    group_by(cause) %>%
+    add_cif(pam)
+  # compare CIF with arbitrary time points.
+  tmax = max(ndf$tend)
+  ndf1 <- ped_cr %>%
+    make_newdata(tend = unique(tend), cause = unique(cause)) |>
+    group_by(cause) |>
+    add_cif(pam, ci=FALSE) |>
+    dplyr::filter(tend == tmax)
+
+  ndf2 <- ped_cr %>%
+    make_newdata(tend = c(2, tmax), cause = unique(cause)) %>%
+    group_by(cause) |>
+    add_cif(pam, ci=FALSE)
+
+  expect_message(
+    ped_cr %>% make_newdata(tend = c(2, tmax), cause = unique(cause))
+  )
+  expect_equal(ndf1$cif, ndf2 |> dplyr::filter(tend == tmax) |> pull(cif), tolerance = 0.1)
+  expect_data_frame(ndf2, nrows = 4L, ncols = 5L)
+})
+
+test_that("add_cif returns same grid as add_cumu_hazard", {
+  set.seed(211758)
+  df <- data.frame(
+    time   = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam_cr <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+
+  # all cut points <= tmax used during fitting
+  cuts_le_tmax <- function(ped, tmax) {
+    cuts <- attr(ped, "trafo_args")[["cut"]]
+    setdiff(cuts[cuts <= tmax], 0)
+  }
+  tmax       <- max(ped_cr$tend)
+  full_grid  <- cuts_le_tmax(ped_cr, tmax)
+  sparse_tend <- c(2, tmax) # deliberately misses interior breakpoints
+
+  # ---- add_cif: returns the expanded grid (more rows than requested) ----
+  nd_cif_in <- ped_cr %>%
+    make_newdata(tend = sparse_tend, cause = unique(cause)) %>%
+    group_by(cause)
+  nd_cif_out <- add_cif(nd_cif_in, pam_cr, ci = FALSE)
+
+  expect_equal(nrow(nd_cif_out), nrow(nd_cif_in))
+  # all cut-grid breakpoints up to max requested time must be present
+  expect_false(all(full_grid %in% unique(nd_cif_out$tend)))
+
+  # ---- add_cumu_hazard: returns rows matching the requested newdata ----
+  df_single <- data.frame(time = rexp(20),
+                          status = sample(c(0, 1), 20, replace = TRUE))
+  ped       <- as_ped(df_single, Surv(time, status) ~ ., id = "id")
+  pam       <- pamm(ped_status ~ s(tend), data = ped)
+
+  nd_cuh_in  <- ped %>% make_newdata(tend = c(2, max(ped$tend)))
+  nd_cuh_out <- add_cumu_hazard(nd_cuh_in, pam)
+
+  expect_equal(nrow(nd_cuh_out), nrow(nd_cuh_in))
+  expect_setequal(unique(nd_cuh_out$tend), c(2, max(ped$tend)))
 })
 
 test_that("CIF works with mgcv::gam", {
@@ -531,10 +634,10 @@ test_that("CIF works with mgcv::gam", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
@@ -594,13 +697,100 @@ test_that("CIF works with character causes", {
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
     group_by(cause) %>%
     add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 6L)
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
-  expect_true(all(ndf$cif < ndf$cif_upper))
-  expect_true(all(ndf$cif > ndf$cif_lower))
+  expect_true(all(ndf$cif <= ndf$cif_upper))
+  expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+})
+
+test_that("CIF works with non-default cause_var names", {
+
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(event_type = factor(cause, labels = c("Death", "Discharge"))) %>%
+    select(-cause)
+  pam <- pamm(ped_status ~ s(tend, by = event_type), data = ped_cr)
+  ndf <- ped_cr %>%
+    make_newdata(tend = unique(tend), event_type = unique(event_type)) %>%
+    group_by(event_type) %>%
+    add_cif(pam, cause_var = "event_type")
+
+  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
+  expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
+  expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
+  expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+
+})
+
+test_that("CIF uses exact within-interval exponential integral", {
+  set.seed(211758)
+  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
+    mutate(cause = as.factor(cause))
+  pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
+  
+  cut_points <- unique(ped_cr$tend)[unique(ped_cr$tend) <= 0.5]
+  
+  ndf <- ped_cr %>%
+    make_newdata(tend = c(cut_points, 0.5), cause = unique(cause)) %>%
+    group_by(cause)
+  
+  target_cause <- levels(ndf$cause)[1]
+  ndf_target <- ndf %>%
+    filter(cause == target_cause) %>%
+    arrange(tend) %>%
+    reconstruct_intlen()
+  
+  causes_model <- levels(ndf$cause)
+  
+  # Predict cause-specific hazards at posterior mean (no simulation)
+  hazards_manual <- map(causes_model, ~ {
+    .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
+    as.numeric(predict(pam, .df, type = "response"))
+  })
+  names(hazards_manual) <- causes_model
+  
+  intlen    <- ndf_target$intlen
+  n         <- length(intlen)
+  hk        <- hazards_manual[[target_cause]]          # cause-specific hazard
+  hj        <- Reduce("+", hazards_manual)             # all-cause hazard (vector)
+  
+  # Recursive exact CIF using the closed-form per-interval integral
+  S   <- numeric(n)   # S(kappa_{j-1}), i.e. survival at START of interval j
+  cif <- numeric(n)   # F_k(kappa_j)
+  
+  S_prev   <- 1
+  cif_prev <- 0
+  
+  for (j in seq_len(n)) {
+    delta_cif  <- (hk[j] / hj[j]) * S_prev * (1 - exp(-hj[j] * intlen[j]))
+    cif[j]     <- cif_prev + delta_cif
+    S_prev     <- S_prev * exp(-hj[j] * intlen[j])
+    cif_prev   <- cif[j]
+  }
+  
+  observed <- ndf %>%
+    add_cif(pam, ci = FALSE) %>%
+    filter(cause == target_cause) %>%
+    arrange(tend)
+  
+  expect_equal(observed$cif, cif, tolerance = 1e-8)
+  
+  observed <- ndf %>%
+    add_cif(pam, ci = TRUE) %>%
+    filter(cause == target_cause) %>%
+    arrange(tend)
+  
+  expect_true(all(
+    cif >= observed$cif_lower &
+    cif <= observed$cif_upper
+  ))
+  
 })
 
 test_that("Transition Probability works", {

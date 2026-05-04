@@ -105,8 +105,30 @@ The results indicate that cause specific terms (interactions) are necessary in t
 
 
 ## Cumulative Incidence Function (CIF)
-Finally, in many cases we will want to calculate and visualize the cumulative incidence functions for different covariate combinations.
-In **`pammtools`** this can be again achieved using `make_newdata` and using the appropriate `add_*` function, here `add_cif`:
+
+For competing risks with $Q$ causes ($q = 1,\ldots,Q$), let $h_q(t)$ denote the cause-specific hazard for cause $q$ and $S(t) = \exp\left(-\int_0^t \sum_{q=1}^Q h_q(u)\, du\right)$ the all-cause survival. The cumulative incidence for cause $q$ is
+
+$$
+F_q(t) = \int_0^t h_q(u)\, S(u)\, du.
+$$
+
+In PAMMs hazards are constant on each interval $(\kappa_{j-1}, \kappa_j]$, $j = 1,\ldots,J$. Writing $h_{q,j}$ for the value of $h_q$ on interval $j$, $h_{\cdot,j} = \sum_{q=1}^Q h_{q,j}$ for the all-cause hazard on the same interval, and $S_{j-1} = S(\kappa_{j-1})$, the cumulative incidence at an arbitrary time $t$ is obtained by accumulating full-interval contributions up to the interval that contains $t$ and adding a partial contribution from that last interval. Let $j(t)$ denote the index of the interval containing $t$, i.e. $t \in (\kappa_{j(t)-1}, \kappa_{j(t)}]$, and define the (possibly truncated) interval width
+
+$$
+\Delta_j \;=\; \min(\kappa_j, t) - \kappa_{j-1}, \qquad j = 1,\ldots,j(t),
+$$
+
+so that $\Delta_j = \kappa_j - \kappa_{j-1}$ for $j < j(t)$ and $\Delta_{j(t)}= t - \kappa_{j(t)-1}$. The integral then has the closed form
+
+$$
+F_q(t) \;=\; \sum_{j=1}^{j(t)} \frac{h_{q,j}}{h_{\cdot,j}}\; S_{j-1}\; \bigl(1 - \exp(-h_{\cdot,j}\, \Delta_j)\bigr), \tag{1}
+$$
+
+with $S_0 = 1$. 
+
+This is the formula `add_cif()` evaluates internally.
+
+In **`pammtools`** the CIF is computed using `make_newdata` and `add_cif`:
 
 ```{r, fig.width = 6, fig.height = 5, out.width = "500px"}
 ndf <- ped_stacked %>%
@@ -156,6 +178,26 @@ ggplot(ndf, aes(x = tend, y = cif)) +
     alpha = .3) +
   facet_wrap(~cause, labeller = label_both)
 ```
+
+
+## Custom time points
+
+In the examples above, we used all unique interval grid points as time points at which the CIF was calculated. However, it is also possible to evaluate the CIF at custom time points; the calculations remain exact via the closed-form formula (1) with the truncated last interval $\Delta_{j(t)} = t - \kappa_{j(t)-1}$ (the time grid used for calculation is the same as before and expanded internally if necessary).
+
+```{r}
+custom_times <- c(1, 2.5, 4)
+
+ndf_custom <- ped_stacked %>%
+  make_newdata(tend = custom_times, cause = unique(cause)) %>%
+  group_by(cause) %>%
+  add_cif(pam_csh_shared)
+
+ndf_custom %>%
+  select(tend, cause, cif, cif_lower, cif_upper) %>%
+  arrange(tend, cause)
+```
+
+Note that the confidence intervals are stochastic, as they are obtained from a Monte Carlo simulation of the model coefficients.
 
 
 <!-- Zaehlmarke VGWort -->

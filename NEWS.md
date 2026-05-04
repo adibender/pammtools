@@ -1,3 +1,39 @@
+# pammtools 0.7.5
+
+## Breaking changes
+* `make_newdata()` output no longer contains internal PED columns (`tstart`, `intlen`, `interval`, `offset`, `ped_status`). Output now contains `tend` + `id` + user covariates (plus `cause`/`transition` for competing risks / multi-state models). `ped_info()` output is unchanged.
+* `intlen` is now reconstructed on demand by downstream functions (`add_cumu_hazard`, `add_surv_prob`, `add_cif`, `add_trans_prob`) via the new internal helper `reconstruct_intlen()`, and dropped from user-facing output.
+* `add_cif()` now uses the exact closed-form integral of the cumulative incidence function under piecewise-exponential hazards (`(h_j / Σh) · S(t_{i-1}) · (1 - exp(-Σh · Δt))`) instead of the previous left-Riemann approximation. CIF estimates from existing user code will change numerically; results are now invariant to the time grid passed to `make_newdata()`.
+
+## Enhancements
+* `add_cif()` now supports arbitrary time points in `make_newdata()` (parity with `add_cumu_hazard()`); missing breakpoints are inserted internally so CIF estimates are independent of the chosen prediction grid.
+* `expand_df()` preserves the `cause` column when `make_newdata()` is called with only `tend` and `cause`, fixing a competing-risks edge case.
+* `predictSurvProb.pamm()` now respects non-default `id` column names and works when `trafo_args` are not attached to the fitted object.
+
+## Deprecations
+* The `trafo_args` argument of `pamm()` is deprecated; convert data with `as_ped()` before calling `pamm()`.
+
+## Documentation
+* Added derivation of the piecewise-exponential CIF integral to the competing-risks vignette.
+
+# pammtools 0.7.4
+
+## Bug fixes
+* Fixed competing risks data transformation when status variable is a factor (#220, #216, #233)
+* Fixed CIF calculation to use factor levels from newdata instead of model attribute (#245)
+* Fixed cut point extraction for factor/character status variables
+* Fixed transition probability matrix initialization for states starting at 0 or 1
+* Fixed CRAN NOTE: added `id` to global variables for dplyr compatibility (#260)
+
+## Enhancements
+* Improved `add_trans_prob`: better documentation, proper examples, attribute attachment, and base R speedup
+* Added warning in `pamm()` when data does not contain an offset column
+* Added `broom` to Suggests
+
+## Documentation
+* Updated `add_trans_prob` help page with proper parameter descriptions and working example
+* Added simulations vignette
+
 # pamtools 0.5.93
 + Maintnance (some tidyverse deprecations, link fixes, etc., smaller bugs)
 

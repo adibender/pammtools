@@ -50,16 +50,16 @@ test_that("make_newdata works for PED data", {
     slice(1:6) %>%
     as_ped(Surv(time, status) ~ x1 + x2, cut = seq(0, 10, by = 5))
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2))
-  expect_data_frame(mdf, nrows = 2L, ncols = 3L)
+  expect_data_frame(mdf, nrows = 2L, ncols = 4L)
   expect_equal(mdf$tend, c(5, 5))
   expect_equal(mdf$x1, c(-2.43, 2.54), tolerance = 1e-2)
   expect_message(make_newdata(ped, tend = c(2.5)))
   mdf <- ped %>% make_newdata(tend = c(10), x1 = seq_range(x1, 2))
-  expect_data_frame(mdf, nrows = 2L, ncols = 3L)
+  expect_data_frame(mdf, nrows = 2L, ncols = 4L)
   mdf <- ped %>% make_newdata(x1 = seq_range(x1, 2), x2 = seq_range(x2, 2))
-  expect_data_frame(mdf, nrows = 4L, ncols = 3L)
+  expect_data_frame(mdf, nrows = 4L, ncols = 4L)
   mdf <- ped %>% make_newdata(tend = unique(tend), x2 = seq_range(x2, 2))
-  expect_data_frame(mdf, nrows = 4L, ncols = 3L)
+  expect_data_frame(mdf, nrows = 4L, ncols = 4L)
 })
 
 
@@ -93,23 +93,23 @@ test_that("make_newdata works for PED with matrix columns", {
 
   # make newdata
   nd1 <- ped_simdf %>% make_newdata(x1 = c(0.05))
-  expect_data_frame(nd1, nrows = 1L, ncols = 10L)
+  expect_data_frame(nd1, nrows = 1L, ncols = 11L)
   expect_equal(nd1$tend, 1)
   expect_equal(nd1$x1, 0.05)
   expect_equal(nd1$x2, 2.65, tolerance = 1e-3)
   expect_equal(nd1$z.tz1_tz1, -0.370, 1e-3)
 
   nd2 <- ped_simdf %>% make_newdata(x1 = seq_range(x1, 2))
-  expect_data_frame(nd2, nrows = 2L, ncols = 10L)
+  expect_data_frame(nd2, nrows = 2L, ncols = 11L)
   expect_equal(nd2$x1[1], min(unlist(simdf_elra$x1)))
   expect_equal(nd2$x1[2], max(unlist(simdf_elra$x1)))
 
   nd3 <- ped_simdf %>% make_newdata(tend = unique(tend))
-  expect_data_frame(nd3, nrows = 10L, ncols = 10L)
+  expect_data_frame(nd3, nrows = 10L, ncols = 11L)
   expect_equal(nd3$tend, 1:10)
 
   nd4 <- ped_simdf %>% make_newdata(tz1_latency = c(0:5))
-  expect_data_frame(nd4, nrows = 6L, ncols = 10L)
+  expect_data_frame(nd4, nrows = 6L, ncols = 11L)
   expect_equal(nd4$tz1_latency, 0:5)
 
   nd5 <- ped_simdf %>%
@@ -117,7 +117,7 @@ test_that("make_newdata works for PED with matrix columns", {
       tend = c(1:10),
       tz1_latency = seq(1:5)
     )
-  expect_data_frame(nd5, nrows = 50L, ncols = 10L)
+  expect_data_frame(nd5, nrows = 50L, ncols = 11L)
   expect_equal(nd5$tend, rep(1:10, 5L))
   expect_equal(nd5$tz1_latency, rep(1:5, each = 10L))
   expect_equal(nd5$LL_tz1, c(rep(0, 10), rep(1, nrow(nd5) - 10)))
@@ -136,7 +136,7 @@ test_that("Errors are thrown", {
 test_that("Newdata correct for new time points", {
   ped <- tumor[1:5, 1:3] |> as_ped(Surv(days, status) ~ .)
   nd6 <- ped |> make_newdata(tend = c(2, 33, 100))
-  expect_data_frame(nd6, nrows = 3L, ncols = 2L)
+  expect_data_frame(nd6, nrows = 3L, ncols = 3L)
   expect_equal(nd6$tend, c(2, 33, 100))
 
   ## TODO: add test for same but more complex ped data (cumulative effects)
@@ -151,4 +151,103 @@ test_that("reconstruct_intlen validates inputs and uses tstart when available", 
     time_var = "stop"
   )
   expect_equal(out$intlen, c(1, 3))
+})
+
+test_that("reconstruct_cutpoints expands missing breakpoints and adds intlen", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam <- pamm(ped_status ~ s(tend), data = ped)
+  
+  # subset to every other time point -- deliberately incomplete
+  all_times  <- sort(unique(ped$tend))
+  some_times <- all_times[seq(1, length(all_times), by = 2)]
+  
+  newdata <- ped %>%
+    filter(tend %in% some_times) %>%
+    make_newdata(tend = some_times)
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # all breakpoints up to max observed time must now be present
+  trafo_args <- attr(newdata, "trafo_args")
+  max_time   <- max(some_times)
+  expected_brks <- setdiff(
+    trafo_args[["cut"]][trafo_args[["cut"]] <= max_time],
+    0
+  )
+  expect_true(all(expected_brks %in% result$tend))
+  
+  # intlen column must exist
+  expect_true("intlen" %in% colnames(result))
+  
+  # intlen must be positive everywhere
+  expect_true(all(result$intlen > 0))
+})
+
+test_that("reconstruct_cutpoints is a no-op when all breakpoints present", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ ., id = "id")
+  pam <- pamm(ped_status ~ s(tend), data = ped)
+  
+  # use all time points -- already complete
+  newdata <- ped %>%
+    make_newdata(tend = sort(unique(ped$tend)))
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # row count must be unchanged
+  expect_equal(nrow(result), nrow(newdata))
+  
+  # intlen must exist and be positive
+  expect_true("intlen" %in% colnames(result))
+  expect_true(all(result$intlen > 0))
+})
+
+test_that("reconstruct_cutpoints preserves grouping after expansion", {
+  set.seed(42)
+  df <- data.frame(
+    time   = rexp(30),
+    status = sample(0:1, 30, replace = TRUE),
+    x1      = rnorm(30)
+  )
+  ped <- as_ped(df, Surv(time, status) ~ x1, id = "id")
+  pam <- pamm(ped_status ~ s(tend) + x1, data = ped)
+  
+  all_times  <- sort(unique(ped$tend))
+  some_times <- all_times[seq(1, length(all_times), by = 2)]
+  
+  newdata <- ped %>%
+    make_newdata(tend = some_times, x1 = c(-1, 1)) %>%
+    group_by(x1)
+  
+  result <- reconstruct_cutpoints(
+    newdata         = newdata,
+    object          = pam,
+    time_var        = "tend",
+    interval_length = "intlen"
+  )
+  
+  # grouping must be preserved
+  expect_equal(dplyr::group_vars(result), "x1")
+  
+  # both covariate strata must be present
+  expect_setequal(unique(result$x1), c(-1, 1))
 })

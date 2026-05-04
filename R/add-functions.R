@@ -195,10 +195,8 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' @param overwrite Should hazard columns be overwritten if already present in
 #' the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 #' \code{c("hazard", "se", "lower", "upper")} will be overwritten.
-#' @param time_var Name of the variable used for the baseline hazard. If
-#'   not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-#'   \code{"interval"}. The latter is assumed to be a factor, the former
-#'   numeric.
+#' @param time_var Name of the variable used for the baseline hazard. Defaults
+#'   to \code{"tend"}.
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @examples
@@ -340,67 +338,9 @@ add_cumu_hazard <- function(
 
   time_var <- resolve_time_var(time_var, object, newdata)
 
-  trafo_args <- attr(newdata, "trafo_args")
-  intvars <- attr(newdata, "intvars")
-
-  times <- setdiff(sort(unique(newdata[[time_var]])), c(0))
-  brks <- setdiff(trafo_args[["cut"]][trafo_args[["cut"]] <= max(times)], c(0))
-
-  # if selected time points contain all times already, do not extend newdata
-  if (all(brks %in% times)) {
-    joindata <- if (interval_length %in% colnames(newdata)) {
-      newdata
-    } else {
-      reconstruct_intlen(
-        newdata,
-        time_var = time_var,
-        interval_length = interval_length
-      )
-    }
-  } else {
-    if (length(groups(newdata)) != 0) {
-      old_groups <- dplyr::groups(newdata)
-      joindata <- group_split(newdata) |>
-        map(\(.x) {
-          expand_df(
-            .x,
-            object = object,
-            trafo_args = trafo_args,
-            intvars = intvars,
-            time_var = time_var,
-            interval_length = interval_length
-          )
-        }) |> # expand uses distinct, hence need to regroup
-        map(\(.x) group_by(.x, !!!old_groups)) |>
-        bind_rows()
-    } else {
-      joindata <- newdata %>%
-        expand_df(
-          object = object,
-          trafo_args = trafo_args,
-          intvars = intvars,
-          time_var = time_var,
-          interval_length = interval_length
-        )
-    }
-  }
-  if (!interval_length %in% colnames(joindata)) {
-    joindata <- reconstruct_intlen(
-      joindata,
-      time_var = time_var,
-      interval_length = interval_length
-    )
-  }
-
-  joindata <- get_cumu_hazard(
-    joindata,
-    object,
-    ci = ci,
-    se_mult = se_mult,
-    time_var = time_var,
-    interval_length = interval_length,
-    ...
-  )
+  joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
+  joindata <- get_cumu_hazard(joindata, object, ci = ci, se_mult = se_mult,
+                              time_var = time_var, interval_length = interval_length, ...)
 
   suppressMessages(
     newdata %>% left_join(joindata)
@@ -921,23 +861,22 @@ add_cif.default <- function(
   interval_length = "intlen",
   ...
 ) {
+
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
 
-  if (!interval_length %in% colnames(newdata)) {
-    newdata <- reconstruct_intlen(
-      newdata,
-      time_var = time_var,
-      interval_length = interval_length
-    )
-  }
+  joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
 
   coefs <- coef(object)
   V <- object$Vp
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- if (!ci) {
+    matrix(coefs, nrow = 1)
+  } else {
+    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  }
 
-  map_dfr(
-    split(newdata, group_indices(newdata)),
+  joindata <- map_dfr(
+    split(joindata, group_indices(joindata)),
     ~ get_cif(
       newdata = .x,
       object = object,
@@ -953,9 +892,16 @@ add_cif.default <- function(
       ...
     )
   )
+  
+  suppressMessages(
+    newdata %>% left_join(joindata)
+  )
 }
 
 #' Calculate CIF for one cause
+#'
+#' @param causes_model Character vector of all cause labels represented in the
+#'   model. Used to construct cause-specific hazards for CIF integration.
 #'
 #' @keywords internal
 get_cif <- function(newdata, object, ...) {
@@ -978,6 +924,7 @@ get_cif.default <- function(
   sim_coef_mat,
   ...
 ) {
+
   time_var <- resolve_time_var(time_var, object, newdata)
   assert_string(interval_length)
   assert_choice(interval_length, colnames(newdata))
@@ -1007,14 +954,27 @@ get_cif.default <- function(
   names(hazards) <- causes_model
   # calculate cif
   hazard <- hazards[[cause_data]]
-  # Value of survival just prior to time-point
-  survival <- overall_survivals - 1e-20
-  hps <- hazard * survival
-  cifs <- apply(hps, 2, function(z) cumsum(z * newdata[[interval_length]]))
-  newdata[["cif"]] <- rowMeans(cifs)
+
+  survival <- rbind(1, head(overall_survivals, -1))
+
+  # total hazard h_j
+  total_hazard <- Reduce("+", hazards)
+
+  # interval lengths
+  dt <- newdata[[interval_length]]
+
+  # CIF increment using exact formula
+  cif_increments <- (hazard / total_hazard) *
+    survival *
+    (1 - exp(-total_hazard * dt))
+  
+  # cumulative CIF
+  cifs <- apply(cif_increments, 2, cumsum)
+  
+  newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
-    newdata[["cif_lower"]] <- apply(cifs, 1, quantile, alpha / 2)
-    newdata[["cif_upper"]] <- apply(cifs, 1, quantile, 1 - alpha / 2)
+    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0), 1)
+    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0), 1)
   }
 
   newdata
@@ -1199,10 +1159,8 @@ get_trans_prob <- function(
 #' @param alpha Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}
 #' @param nsim Sets the number of iterations for simulated confidence intervals.
 #' Defaults to \code{100L}
-#' @param time_var Name of the variable used for the baseline hazard. If
-#'   not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-#'   \code{"interval"}. The latter is assumed to be a factor, the former
-#'   numeric.
+#' @param time_var Name of the variable used for the baseline hazard. Defaults
+#'   to \code{"tend"}.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
 #' @param transition \code{Character}, defaults to \code{"transition"}.
@@ -1233,11 +1191,12 @@ add_trans_prob <- function(
   ci = FALSE,
   alpha = 0.05,
   nsim = 100L,
-  time_var = NULL,
+  time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
   ...
 ) {
+  orig_names <- names(newdata)
   interval_length <- quo_name(enquo(interval_length))
   transition <- quo_name(enquo(transition))
   time_var <- resolve_time_var(time_var, object, newdata)
@@ -1312,6 +1271,7 @@ add_trans_prob <- function(
   if (!has_cumu) {
     out_df[["cumu_hazard"]] <- NULL
   }
+  if (!"intlen" %in% orig_names) out_df[["intlen"]] <- NULL
 
   out_df
 }

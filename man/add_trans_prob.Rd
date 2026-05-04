@@ -11,7 +11,7 @@ add_trans_prob(
   ci = FALSE,
   alpha = 0.05,
   nsim = 100L,
-  time_var = NULL,
+  time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
   ...
@@ -40,10 +40,8 @@ intervals for transition probabilities are calculated.}
 \item{nsim}{Sets the number of iterations for simulated confidence intervals.
 Defaults to \code{100L}}
 
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
+\item{time_var}{Name of the variable used for the baseline hazard. Defaults
+to \code{"tend"}.}
 
 \item{interval_length}{\code{Character}, defaults to \code{"intlen"}.
 contains the interval length in \code{newdata}.}
@@ -61,17 +59,17 @@ The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam
 \examples{
 \dontshow{if (require("mstate")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
   data("prothr", package = "mstate")
-  prothr <- prothr |> 
+  prothr <- prothr |>
     mutate(transition = as.factor(paste0(from, "->", to))
     , treat = as.factor(treat)) |>
     filter(Tstart != Tstop, id <= 100) |> select(-trans)
   ped <- as_ped(data= prothr, formula= Surv(Tstart, Tstop, status)~ .,
     transition = "transition", id= "id", timescale  = "calendar")
-  pam <- mgcv::bam(ped_status ~ s(tend, by=transition) + transition * treat, 
-    data = ped, family = poisson(), offset = offset, 
+  pam <- mgcv::bam(ped_status ~ s(tend, by=transition) + transition * treat,
+    data = ped, family = poisson(), offset = offset,
     method = "fREML", discrete = TRUE)
-  ndf <- make_newdata(ped, tend  = unique(tend), 
-    treat  = unique(treat), 
+  ndf <- make_newdata(ped, tend  = unique(tend),
+    treat  = unique(treat),
     transition = unique(transition)) |>
     group_by(treat, transition) |>  # important!
     arrange(treat, transition, tend) |>
