@@ -9,7 +9,14 @@
 \usage{
 get_cumu_coef(model, data = NULL, terms, ...)
 
-\method{get_cumu_coef}{gam}(model, data, terms, ...)
+\method{get_cumu_coef}{gam}(
+  model,
+  data,
+  terms,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+)
 
 \method{get_cumu_coef}{aalen}(model, data = NULL, terms, ci = TRUE, ...)
 
@@ -24,6 +31,12 @@ get_cumu_coef(model, data = NULL, terms, ...)
 coefficient should be calculated.}
 
 \item{...}{Further arguments passed to methods.}
+
+\item{time_var}{Name of the evaluation time variable in \code{data}. Defaults to
+\code{"tend"}.}
+
+\item{interval_length}{Name of the interval-length variable in \code{data}.
+Defaults to \code{"intlen"}.}
 
 \item{ci}{Logical. Indicates if confidence intervals should be returned as
 well.}

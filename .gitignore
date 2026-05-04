@@ -36,3 +36,4 @@ revdep
 /data-raw/staph.xlsx
 sim/
 tmp/
+.claude/

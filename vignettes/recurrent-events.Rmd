@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   message    = FALSE,
   fig.align  = "center",
   crop       = TRUE,
-  cache      = TRUE,
+  cache      = FALSE,
   fig.width  = 7,
   fig.height = 3.5)
 ```
@@ -169,7 +169,7 @@ newdata <- ped %>%
   make_newdata(
     tend = unique(tend),
     enum_strata = unique(enum_strata)) %>%
-  add_hazard(pamm0, type = "response")
+  add_hazard(pam0, type = "response")
 
 ggplot(newdata, aes(x = tend/(365.25/12), y = hazard*365.25)) +
   geom_line() +
@@ -188,7 +188,7 @@ that we use `geom_surv` in order to force the function to start at a survival pr
 ```{r}
 newdata <-newdata %>%
   group_by(enum_strata) %>%
-  add_surv_prob(pamm0)
+  add_surv_prob(pam0)
 
 ggplot(newdata, aes(x = tend/(365.25/12), y = surv_prob)) +
   geom_surv() +

@@ -34,3 +34,4 @@ context("Test pamm wrapper function")
   expect_warning(pamm(ped_status ~ s(tend, k=3) + age, data = ped_nooffset))
 
  })
+

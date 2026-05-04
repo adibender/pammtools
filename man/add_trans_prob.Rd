@@ -11,62 +11,68 @@ add_trans_prob(
   ci = FALSE,
   alpha = 0.05,
   nsim = 100L,
-  time_var = NULL,
+  time_var = "tend",
   interval_length = "intlen",
+  transition = "transition",
   ...
 )
 }
 \arguments{
-\item{newdata}{ A data frame or list containing the values of the model covariates at which predictions
-  are required. If this is not provided then predictions corresponding to the
-                original data are returned. If \code{newdata} is provided then
-                it should contain all the variables needed for prediction: a
-                warning is generated if not. See details for use with \code{link{linear.functional.terms}}. }
+\item{newdata}{A data frame or list containing the values of the model
+covariates at which predictions are required. If this is not provided then
+predictions corresponding to the original data are returned. If newdata is
+provided then it should contain all the variables needed for prediction:
+a warning is generated if not. See details for use with
+\link[mgcv]{linear.functional.terms}.}
 
-\item{object}{ a fitted \code{gam} object as produced by \code{gam()}.
-                }
+\item{object}{A fitted \code{gam} object as produced by \code{mgcv::gam}}
 
-\item{overwrite}{Should hazard columns be overwritten if already present in
-the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
-\code{c("hazard", "se", "lower", "upper")} will be overwritten.}
+\item{overwrite}{Should transition probability columns be overwritten if
+already present in the data set? Defaults to \code{FALSE}.
+If \code{TRUE}, columns with names \code{c("trans_prob", "trans_upper", "trans_lower")}
+will be overwritten.}
 
-\item{ci}{\code{logical}. Indicates if confidence intervals should be
-calculated. Defaults to \code{TRUE}.}
+\item{ci}{\code{Logical}, defaults to \code{TRUE}. Decides if confidence
+intervals for transition probabilities are calculated.}
 
-\item{alpha}{The alpha level for confidence/credible intervals.}
+\item{alpha}{Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}}
 
-\item{nsim}{Number of simulations (draws from posterior of estimated coefficients)
-on which estimation of CIFs and their confidence/credible intervals will be
-based on.}
+\item{nsim}{Sets the number of iterations for simulated confidence intervals.
+Defaults to \code{100L}}
 
-\item{time_var}{Name of the variable used for the baseline hazard. If
-not given, defaults to \code{"tend"} for \code{\link[mgcv]{gam}} fits, else
-\code{"interval"}. The latter is assumed to be a factor, the former
-numeric.}
+\item{time_var}{Name of the variable used for the baseline hazard. Defaults
+to \code{"tend"}.}
 
-\item{interval_length}{The variable in newdata containing the interval lengths.
-Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
+\item{interval_length}{\code{Character}, defaults to \code{"intlen"}.
+contains the interval length in \code{newdata}.}
 
-\item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
-\code{\link{get_hazard}}}
+\item{transition}{\code{Character}, defaults to \code{"transition"}.
+contains the transition labels in \code{newdata}.}
+
+\item{...}{Further arguments passed to underlying methods.}
 }
 \description{
-Add (cumulative) hazard based on the provided data set and model.
-If \code{ci=TRUE} confidence intervals (CI) are also added. Their width can
-be controlled via the \code{se_mult} argument. The method by which the
-CI are calculated can be specified by \code{ci_type}.
-This is a wrapper around
-\code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
-(log-)hazard ratio is calculated.
+\code{add_trans_prob} adds transition probabilities on the provided data set and model.
+Optionally, confidence intervals (CI) are added if \code{ci=TRUE}.
+The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam} models.
 }
 \examples{
-ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
-pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)
-ped_info(ped) \%>\% add_hazard(pam, type="link")
-ped_info(ped) \%>\% add_hazard(pam, type = "response")
-ped_info(ped) \%>\% add_cumu_hazard(pam)
-}
-\seealso{
-\code{\link[mgcv]{predict.gam}},
-\code{\link[pammtools]{add_surv_prob}}
+\dontshow{if (require("mstate")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+  data("prothr", package = "mstate")
+  prothr <- prothr |>
+    mutate(transition = as.factor(paste0(from, "->", to))
+    , treat = as.factor(treat)) |>
+    filter(Tstart != Tstop, id <= 100) |> select(-trans)
+  ped <- as_ped(data= prothr, formula= Surv(Tstart, Tstop, status)~ .,
+    transition = "transition", id= "id", timescale  = "calendar")
+  pam <- mgcv::bam(ped_status ~ s(tend, by=transition) + transition * treat,
+    data = ped, family = poisson(), offset = offset,
+    method = "fREML", discrete = TRUE)
+  ndf <- make_newdata(ped, tend  = unique(tend),
+    treat  = unique(treat),
+    transition = unique(transition)) |>
+    group_by(treat, transition) |>  # important!
+    arrange(treat, transition, tend) |>
+    add_trans_prob(pam)
+\dontshow{\}) # examplesIf}
 }

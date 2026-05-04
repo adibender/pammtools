@@ -22,6 +22,8 @@ opts_chunk$set(
 library(dplyr)
 library(tidyr)
 library(pammtools)
+
+has_eha <- requireNamespace("eha", quietly = TRUE)
 ```
 
 
@@ -133,7 +135,17 @@ stop time the time-to-event, which can be right-censored.
 For an illustration, we use a data set on infant mortality and maternal death
 available in the **`eha`** package (see `?eha::infants`) for details.
 
-```{r}
+```{r, echo = FALSE, results = "asis"}
+if (!has_eha) {
+  cat(
+    "The left-truncation example below requires the optional package `eha` ",
+    "and is skipped when that package is not installed.\n\n",
+    sep = ""
+  )
+}
+```
+
+```{r, eval = has_eha}
 data(infants, package = "eha")
 head(infants)
 ```
@@ -142,7 +154,7 @@ As children were included in the study after death of their mother, their surviv
 time is left-truncated at the entry time (variable `enter`). When transforming such data to the PED format, we need to create a interval cut-point at each entry time.
 In general, each interval has to be constructed such that only subjects already at risk have an entry in the PED data. The previously introduced function `as_ped` can be also used for this setting, however, the LHS of the formula must be in start-stop format:
 
-```{r}
+```{r, eval = has_eha}
 infants_ped <- as_ped(Surv(enter, exit, event) ~ mother + age, data = infants)
 infants_ped %>% filter(id == 4)
 ```

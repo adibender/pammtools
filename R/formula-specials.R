@@ -395,7 +395,8 @@ make_lag_lead_mat <- function(
 
   LL    <- outer(attr(data, "breaks"), tz, FUN = ll_fun) * 1L
   delta <- abs(diff(tz))
-  IW    <- matrix(c(mean(delta), delta), ncol = length(tz), nrow = nrow(LL),
+  iw <- if (length(delta) == 0) 1 else c(mean(delta), delta)
+  IW    <- matrix(iw, ncol = length(tz), nrow = nrow(LL),
     byrow = TRUE)
   LL    <- LL * IW
   LL[attr(data, "id_tseq"), , drop = FALSE]

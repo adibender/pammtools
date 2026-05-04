@@ -12,6 +12,7 @@ get_cif(newdata, object, ...)
   object,
   ci,
   time_var,
+  interval_length = "intlen",
   alpha,
   nsim,
   cause_var,
@@ -20,6 +21,10 @@ get_cif(newdata, object, ...)
   sim_coef_mat,
   ...
 )
+}
+\arguments{
+\item{causes_model}{Character vector of all cause labels represented in the
+model. Used to construct cause-specific hazards for CIF integration.}
 }
 \description{
 Calculate CIF for one cause
