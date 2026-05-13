@@ -125,39 +125,36 @@ ggplot2_stairstep <- function(data, direction =  c("hv", "vh", "mid")) {
 #' @param group_var A character string giving the name of the column in
 #'   \code{newdata} to facet by (e.g., \code{"treat"}). If \code{NULL}
 #'   (default), no faceting is applied.
-#' @param group_labels An optional named vector of labels for the grouping
-#'   variable. Currently unused; labels are instead taken from the
-#'   \code{"labels"} attribute of \code{newdata[[group_var]]}.
 #' @param time_var A character string giving the name of the time variable in
 #'   \code{newdata}. Defaults to \code{"tend"}.
 #' @param ncol An integer specifying the number of columns in the facet wrap.
 #'   If \code{NULL} (default), defaults to the number of unique groups.
-#' @param nrow An integer specifying the number of rows in the facet wrap.
-#'   If \code{NULL} (default), determined automatically.
+#'
+#' @return A \code{ggplot} object showing stacked-area state occupation
+#'   probabilities over time, optionally faceted by \code{group_var}.
+#' @export
 gg_state_occupation <- function(
-    newdata, 
-    init_state, 
-    group_var = NULL, 
-    group_labels = NULL,
-    time_var = "tend",
-    ncol = NULL,
-    nrow = NULL
+    newdata,
+    init_state,
+    group_var = NULL,
+    time_var  = "tend",
+    ncol      = NULL
 ) {
   # Extract attribute matrix
   mat_df <- attributes(newdata)$matrix
   time_var <- sym(time_var)
-  
+
   # error handler: init state number must align with states in trans prob
   n_states <- dim(mat_df$trans_prob_matrix[[1]])[1]
   if (length(init_state) != n_states) {
     stop("`init_state` must have length equal to the number of states (", n_states, ").")
   }
-  
+
   if (!is.null(group_var)) {
-    
-    labels <- attr(newdata[[group_var]], "labels")  # moved here
-    ncol <- length(unique(newdata[[group_var]]))
-    
+
+    labels <- attr(newdata[[group_var]], "labels")
+    if (is.null(ncol)) ncol <- length(unique(newdata[[group_var]]))
+
     if (!is.null(labels)) {
       newdata[[group_var]] <- factor(
         newdata[[group_var]],

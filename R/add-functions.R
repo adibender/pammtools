@@ -987,10 +987,9 @@ get_trans_prob <- function(
     time_var        = "tend",
     interval_length = "intlen",
     transition      = "transition",
-    from            = "from",
-    to              = "to",
     tend            = "tend",
     cumu_hazard     = "cumu_hazard",
+    sep             = "->",
     ...
 ) {
 
@@ -1009,36 +1008,24 @@ get_trans_prob <- function(
   assert_data_frame(newdata, all.missing = FALSE)
 
   transition_var <- transition
-  is_arrow <- grepl("^\\d+->\\d+$", as.character(newdata[[transition_var]]))
-  if (!all(is_arrow)) {
-    stop("`transition` must be in arrow notation (l->o).")
-  }
-
-  from_vals <- as.integer(sub("->.*", "", as.character(newdata[[transition_var]])))
-  to_vals <- as.integer(sub(".*->", "", as.character(newdata[[transition_var]])))
-
-  state_min <- min(c(from_vals, to_vals), na.rm = TRUE)
-  shift <- if (state_min == 0L) 1L else 0L
-  newdata[[from]] <- from_vals + shift
-  newdata[[to]] <- to_vals + shift
-
-  unique_transition <- unique(newdata[, c(transition_var, from, to), drop = FALSE])
+  unique_transition <- transition_state_table(newdata[[transition_var]], sep = sep)
+  names(unique_transition)[1] <- transition_var
   unique_tend <- sort(unique(newdata[[time_var]]))
 
   n_trans <- nrow(unique_transition)
   n_t     <- length(unique_tend)
 
-  m <- max(unique_transition[[to]])
+  m <- max(unique_transition$to_int)
   M <- array(0, dim = c(m, m, n_trans))
 
   idx <- cbind(
-    unique_transition[[from]],
-    unique_transition[[to]],
+    unique_transition$from_int,
+    unique_transition$to_int,
     seq_len(n_trans)
   )
   M[idx] <- 1
-  M[cbind(unique_transition[[from]],
-          unique_transition[[from]],
+  M[cbind(unique_transition$from_int,
+          unique_transition$from_int,
           seq_len(n_trans))] <- -1
 
   newdata$delta_cumu_hazard <- 0
@@ -1082,8 +1069,8 @@ get_trans_prob <- function(
   prob_mat <- matrix(0, nrow = n_t, ncol = n_trans)
   for (k in seq_len(n_trans)) {
     prob_mat[, k] <- cum_A[
-      unique_transition[[from]][k],
-      unique_transition[[to]][k],
+      unique_transition$from_int[k],
+      unique_transition$to_int[k],
       ]
   }
   colnames(prob_mat) <- as.character(unique_transition[[transition_var]])
@@ -1096,12 +1083,76 @@ get_trans_prob <- function(
   newdata$trans_prob <- pmin(pmax(prob_mat[cbind(t_idx, tr_idx)], 0), 1)
 
   newdata$delta_cumu_hazard <- NULL
-  newdata[[from]] <- NULL
-  newdata[[to]] <- NULL
+  # `make_newdata()` averages numeric covariates, so any `from` / `to` columns
+  # in `newdata` carry meaningless mean values. The integer codes used
+  # internally come from `transition_state_table()`, so drop the noisy columns
+  # from the user-facing output.
+  newdata[["from"]] <- NULL
+  newdata[["to"]] <- NULL
 
   list(
     data = newdata,
     matrix = cum_A
+  )
+}
+
+## Build a per-transition state table from a vector of transition labels.
+##
+## Splits each unique transition label on `sep` into ("from", "to") halves and
+## assigns integer codes for downstream matrix indexing. Two encoding modes:
+##
+##   - Numeric: if both halves of every label parse as integers, the integers
+##     are used directly (with a +1 shift applied if the minimum is 0, so that
+##     state codes start at 1 as required by the M / cum_A indexing).
+##   - Categorical: otherwise, the union of unique "from"/"to" strings is
+##     collected in sorted order and mapped to consecutive integers 1..K.
+##
+## Returns a data.frame with columns: transition (chr), from_int, to_int.
+#' @keywords internal
+transition_state_table <- function(transitions, sep = "->") {
+  labs <- as.character(unique(transitions))
+  if (any(is.na(labs)) || !length(labs)) {
+    stop("`transition` contains no usable levels.")
+  }
+  pattern <- paste0("^([^", sep, "]+)", sep, "([^", sep, "]+)$")
+  parts <- regmatches(labs, regexec(pattern, labs, perl = FALSE))
+  bad <- vapply(parts, length, integer(1)) != 3L
+  if (any(bad)) {
+    stop(
+      "Could not split transition label(s) ",
+      paste(shQuote(labs[bad]), collapse = ", "),
+      " on separator '", sep, "'. ",
+      "Each transition must look like 'from", sep, "to'."
+    )
+  }
+  from_str <- vapply(parts, `[[`, character(1), 2L)
+  to_str   <- vapply(parts, `[[`, character(1), 3L)
+
+  from_int_try <- suppressWarnings(as.integer(from_str))
+  to_int_try   <- suppressWarnings(as.integer(to_str))
+  numeric_mode <- !anyNA(from_int_try) && !anyNA(to_int_try) &&
+    all(from_str == as.character(from_int_try)) &&
+    all(to_str == as.character(to_int_try))
+
+  if (numeric_mode) {
+    state_min <- min(c(from_int_try, to_int_try))
+    shift <- if (state_min == 0L) 1L else 0L
+    from_int <- from_int_try + shift
+    to_int   <- to_int_try + shift
+    if (min(c(from_int, to_int)) < 1L) {
+      stop("Negative state indices are not supported in numeric transition labels.")
+    }
+  } else {
+    states <- sort(unique(c(from_str, to_str)))
+    from_int <- match(from_str, states)
+    to_int   <- match(to_str, states)
+  }
+
+  data.frame(
+    transition = labs,
+    from_int   = from_int,
+    to_int     = to_int,
+    stringsAsFactors = FALSE
   )
 }
 

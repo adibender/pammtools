@@ -132,8 +132,8 @@ ggplot(ndf, aes(x=tend)) +
                                 , "steelblue")
                      )+
   facet_wrap(~transition) +
-  xlim(c(0, 4000)) +
-  ylim(c(0,1))+
+  scale_x_continuous(limits = c(0, 4000), oob = scales::oob_keep) +
+  scale_y_continuous(limits = c(0, 1),    oob = scales::oob_keep) +
   labs(y = "Transition Probability", x = "time", color = "Treatment", fill= "Treatment")
 
 ```
@@ -310,7 +310,7 @@ comparison_nelaal <- ggplot(long_haz_df, aes(x=tend, y=cumu_hazard, col=treat, l
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
   ylab("Cumulative Hazards") +
   xlab("time in days") +
-  ylim(c(0,6)) +
+  scale_y_continuous(limits = c(0, 6), oob = scales::oob_keep) +
   scale_linetype_manual(values=c("dotted", "solid")) +
   theme_bw()
 
@@ -328,8 +328,8 @@ comparison_aaljoh <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=treat, linetype
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
   ylab("Transition Probabilities") +
   xlab("time in days") +
-  ylim(c(0,1)) +
-  xlim(c(0, 4000)) +
+  scale_y_continuous(limits = c(0, 1),    oob = scales::oob_keep) +
+  scale_x_continuous(limits = c(0, 4000), oob = scales::oob_keep) +
   scale_linetype_manual(values=c("dotted", "solid")) +
   theme_bw()
 
@@ -356,8 +356,8 @@ comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(
   # scale_linetype_manual(values = c("solid", "dashed", "solid", "dashed")) +18:
   ylab("Transition Probabilities") +
   xlab("time in days") +
-  ylim(c(0,1)) +
-  xlim(c(0, 4000)) +
+  scale_y_continuous(limits = c(0, 1),    oob = scales::oob_keep) +
+  scale_x_continuous(limits = c(0, 4000), oob = scales::oob_keep) +
   scale_linetype_manual(values=c("dotted", "solid")) +
   theme_bw()+
   guides(color = "none", fill = "none", alpha = "none", linetype = "none")
@@ -374,8 +374,8 @@ comparison_aaljoh_ci <- ggplot(pt_df, aes(x=tend, y=trans_prob, col=interaction(
   facet_wrap(~treat+transition, ncol = 4, labeller = label_both) +
   ylab("Transition Probabilities") +
   xlab("time in days") +
-  ylim(c(0,1)) +
-  xlim(c(0, 4000)) +
+  scale_y_continuous(limits = c(0, 1),    oob = scales::oob_keep) +
+  scale_x_continuous(limits = c(0, 4000), oob = scales::oob_keep) +
   scale_color_manual(values = c("mstate.Placebo" = "grey"
                               ,"mstate.Prednisone" = "grey"
                               , "pammtools.Placebo" = "firebrick2"
