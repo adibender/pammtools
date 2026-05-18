@@ -55,6 +55,7 @@ reference:
       - geom_hazard
       - geom_stepribbon
       - get_plotinfo
+      - gg_state_occupation
   - title: "Data sets"
     desc: "Data sets contained in **`pammtools`**"
     contents:
