@@ -117,6 +117,27 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.7.6" id="pammtools-076">pammtools 0.7.6<a class="anchor" aria-label="anchor" href="#pammtools-076"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-7-6">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-7-6"></a></h3>
+<ul><li>
+<code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code> and <code><a href="../reference/add_trans_ci.html">add_trans_ci()</a></code> no longer require the input data to be pre-sorted; the internal <code>arrange</code> call is now handled automatically, fixing the user-facing sorting dependency reported in <a href="https://github.com/adibender/pammtools/issues/255" class="external-link">#255</a> and related to <a href="https://github.com/adibender/pammtools/issues/227" class="external-link">#227</a>.</li>
+<li>Fixed transition probability matrix dimensions when transitions start from state 0 (off-by-one in state indexing).</li>
+<li>
+<code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code> / <code><a href="../reference/add_trans_ci.html">add_trans_ci()</a></code> / <code>get_trans_prob()</code> now consistently thread <code>time_var</code> and <code>interval_length</code>, removing hardcoded <code>tend</code> paths and fixing argument forwarding when <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code> calls <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code> with nonstandard column names.</li>
+<li>
+<code><a href="../reference/add_counterfactual_transitions.html">add_counterfactual_transitions()</a></code> now fully honors <code>from_col</code>, <code>to_col</code>, and <code>transition_col</code>.</li>
+<li>
+<code>get_trans_prob()</code> now supports non-integer (categorical) state labels (e.g. <code>"healthy-&gt;ill"</code>) in addition to integer-coded transitions.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-0-7-6">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-6"></a></h3>
+<ul><li>Transition probability calculation is faster due to a base R refactor (previously used dplyr internally).</li>
+<li>
+<code><a href="../reference/gg_state_occupation.html">gg_state_occupation()</a></code> is now exported. Dead parameters <code>group_labels</code> and <code>nrow</code> have been removed; user-supplied <code>ncol</code> is now respected.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.7.5" id="pammtools-075">pammtools 0.7.5<a class="anchor" aria-label="anchor" href="#pammtools-075"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-7-5">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-7-5"></a></h3>
