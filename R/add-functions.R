@@ -900,8 +900,15 @@ add_cif.default <- function(
 
 #' Calculate CIF for one cause
 #'
-#' @param causes_model Character vector of all cause labels represented in the
-#'   model. Used to construct cause-specific hazards for CIF integration.
+#' Internal generic dispatching CIF calculation based on the model class.
+#'
+#' @param newdata A data frame of new observations, typically created via
+#'   [make_newdata()].
+#' @param object A fitted model object. The method is dispatched on this
+#'   argument.
+#' @param ... Additional arguments passed to the respective method.
+#'
+#' @return A data frame with CIF estimates appended.
 #'
 #' @keywords internal
 get_cif <- function(newdata, object, ...) {
