@@ -1,3 +1,27 @@
+# pammtools 0.7.6
+
+## Bug fixes
+* `add_trans_prob()` and `add_trans_ci()` no longer require the input data to
+  be pre-sorted; the internal `arrange` call is now handled automatically,
+  fixing the user-facing sorting dependency reported in #255 and related to
+  #227.
+* Fixed transition probability matrix dimensions when transitions start from
+  state 0 (off-by-one in state indexing).
+* `add_trans_prob()` / `add_trans_ci()` / `get_trans_prob()` now consistently
+  thread `time_var` and `interval_length`, removing hardcoded `tend` paths and
+  fixing argument forwarding when `add_trans_prob()` calls `add_cumu_hazard()`
+  with nonstandard column names.
+* `add_counterfactual_transitions()` now fully honors `from_col`, `to_col`,
+  and `transition_col`.
+* `get_trans_prob()` now supports non-integer (categorical) state labels
+  (e.g. `"healthy->ill"`) in addition to integer-coded transitions.
+
+## Enhancements
+* Transition probability calculation is faster due to a base R refactor
+  (previously used dplyr internally).
+* `gg_state_occupation()` is now exported. Dead parameters `group_labels` and
+  `nrow` have been removed; user-supplied `ncol` is now respected.
+
 # pammtools 0.7.5
 
 ## Breaking changes
