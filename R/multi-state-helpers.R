@@ -73,10 +73,11 @@ add_counterfactual_transitions <- function(
   l_from <- split(data, data[[from_col]])
 
   orig_status <- data %>%
-    select(one_of(c("id", "from", "to", "tstart", "status"))) %>%
-    rename(
-      "orig_to" = "to",
-      "orig_status" = "status")
+    mutate(
+      orig_to = .data[[to_col]],
+      orig_status = .data$status
+    ) %>%
+    select(one_of(c("id", from_col, "tstart", "orig_to", "orig_status")))
 
   res <- map2_dfr(
     from_to_pairs,
@@ -87,26 +88,33 @@ add_counterfactual_transitions <- function(
         mutate(initial_id = seq_len(n())) %>%
         ungroup() %>%
         slice(rep(row_number(), n_to)) %>%
-        arrange(id, from, to) %>%
+        arrange(.data$id, .data[[from_col]], .data[[to_col]]) %>%
         group_by(id, initial_id) -> temp
         temp %>%
         mutate(
-          to = .x,
-          transition = paste0(from, "->", to)
+          !!to_col := .x,
+          !!transition_col := paste0(.data[[from_col]], "->", .data[[to_col]])
         ) %>%
         ungroup() %>%
         mutate(
           initial_id = NULL,
-          transition = as.factor(transition))
+          !!transition_col := as.factor(.data[[transition_col]]))
     }
   )
 
   res %>%
     ungroup() %>%
     left_join(orig_status) %>%
-    mutate(status = .data$status * (.data$to == .data$orig_to)) %>%
+    mutate(status = .data$status * (.data[[to_col]] == .data$orig_to)) %>%
     select(-one_of("orig_status", "orig_to")) %>%
-    arrange(.data$id, .data$tstart, .data$tstop, .data$from, .data$to, .data$status)
+    arrange(
+      .data$id,
+      .data$tstart,
+      .data$tstop,
+      .data[[from_col]],
+      .data[[to_col]],
+      .data$status
+    )
 
 
 }

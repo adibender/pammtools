@@ -1,5 +1,46 @@
 context("ggplot functions")
 
+data("prothr", package = "mstate")
+prothr <- prothr[1:200, ] |>
+  filter(Tstart != Tstop) |>
+  mutate(transition = as.factor(paste0(from, "->", to))) |>
+  select(-trans)
+
+ped_msm <- as_ped(
+  data = prothr,
+  formula = Surv(Tstart, Tstop, status) ~ .,
+  transition = "transition",
+  id = "id",
+  timescale = "calendar"
+)
+
+pam_msm <- gam(
+  ped_status ~ s(tend, by = transition, bs = "cr") + transition,
+  data = ped_msm,
+  family = poisson(),
+  offset = offset
+)
+
+pam_msm_treat <- gam(
+  ped_status ~ s(tend, by = transition, bs = "cr") + treat*transition,
+  data = ped_msm,
+  family = poisson(),
+  offset = offset
+)
+
+ndf_msm <- make_newdata(ped_msm, 
+  tend = unique(tend), 
+  transition = unique(transition)) %>% 
+  group_by(treat, transition) %>%
+  add_trans_prob(pam_msm)
+
+ndf_msm_treat <- make_newdata(ped_msm, 
+  tend = unique(tend), 
+  transition = unique(transition),
+  treat = unique(treat)) %>% 
+  group_by(treat, transition) %>%
+  add_trans_prob(pam_msm_treat)
+
 test_that("ggplot2 stairstep helper handles all directions", {
   stair_df <- data.frame(
     x = c(1, 3, 5),
@@ -79,3 +120,46 @@ test_that("tidy smooth confidence intervals use standard normal scaling", {
     tolerance = 1e-10
   )
 })
+
+p_state_occupation = 
+  gg_state_occupation(
+    ndf_msm_treat, 
+    group_var = "treat", 
+    init_state = c(1,0,0)
+  )
+
+test_that("state occupation handles input correctly and returns ggplot object", {
+  # 3-state model but init_state of length 4
+  expect_error(
+    gg_state_occupation(ndf_msm, init_state = c(1, 0, 0, 0))
+  )
+  p <- gg_state_occupation(ndf_msm, init_state = c(1, 0, 0))
+  expect_s3_class(p, "ggplot")
+  p_grouped <- gg_state_occupation(ndf_msm_treat, init_state = c(1, 0, 0), group_var = "treat")
+  expect_s3_class(p_grouped, "ggplot")
+})
+
+test_that("state occupation plot has correct axis labels", {
+  p <- gg_state_occupation(ndf_msm, init_state = c(1, 0, 0))
+  expect_equal(p$labels$x, "Time")
+  expect_equal(p$labels$y, "State occupation probability")
+  expect_equal(p$labels$fill, "State")
+})
+
+test_that("state occupation applies facet wrap only when group_var is provided", {
+  p <- gg_state_occupation(ndf_msm_treat, init_state = c(1, 0, 0), group_var = "treat")
+  # Check that faceting is present
+  expect_true(!is.null(p$facet))
+  expect_false(inherits(p$facet, "FacetNull"))
+  
+  p <- gg_state_occupation(ndf_msm, init_state = c(1, 0, 0))
+  expect_true(inherits(p$facet, "FacetNull"))
+})
+
+test_that("state occupation group labels from attributes are applied correctly", {
+  p <- gg_state_occupation(ndf_msm_treat, init_state = c(1, 0, 0), group_var = "treat")
+  # Factor levels should reflect the labels
+  expect_true(is.factor(p$data[["treat"]]))
+  expect_setequal(levels(p$data[["treat"]]), c("Placebo", "Prednisone"))
+})
+

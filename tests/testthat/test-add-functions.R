@@ -797,7 +797,6 @@ test_that("Transition Probability works", {
   ndf <- ped_msm %>%
     make_newdata(tend = unique(tend), transition = unique(transition)) %>%
     group_by(transition) %>%
-    arrange(transition, tend) |>
     add_trans_prob(pam_msm, ci = T)
   expect_data_frame(ndf, nrows = 380L, ncols = 6L)
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
@@ -930,4 +929,88 @@ test_that("Transition Probability is invariant to input row order", {
     arrange(transition, tend)
 
   expect_equal(tp_unsorted$trans_prob, tp_sorted$trans_prob)
+})
+
+# --- transition_state_table helper unit tests ------------------------------
+test_that("transition_state_table parses arrow-notation integer states", {
+  out <- pammtools:::transition_state_table(c("1->2", "1->3", "2->3"))
+  expect_equal(out$from_int, c(1L, 1L, 2L))
+  expect_equal(out$to_int,   c(2L, 3L, 3L))
+})
+
+test_that("transition_state_table shifts state indices when minimum is 0", {
+  shifted <- pammtools:::transition_state_table(c("0->1", "0->2", "1->2"))
+  unshifted <- pammtools:::transition_state_table(c("1->2", "1->3", "2->3"))
+  expect_equal(shifted[, c("from_int", "to_int")],
+               unshifted[, c("from_int", "to_int")])
+})
+
+test_that("transition_state_table encodes character states by sorted unique name", {
+  out <- pammtools:::transition_state_table(
+    c("healthy->ill", "healthy->death", "ill->death")
+  )
+  # alphabetical: death=1, healthy=2, ill=3
+  expect_equal(out$from_int, c(2L, 2L, 3L))
+  expect_equal(out$to_int,   c(3L, 1L, 1L))
+})
+
+test_that("transition_state_table errors on malformed labels", {
+  expect_error(pammtools:::transition_state_table(c("1->2", "broken")),
+               "Each transition must look like")
+  expect_error(pammtools:::transition_state_table(c("1->2->3")),
+               "Each transition must look like")
+})
+
+test_that("transition_state_table deduplicates and handles factor input", {
+  fac <- factor(c("1->2", "1->2", "2->3"))
+  out <- pammtools:::transition_state_table(fac)
+  expect_equal(nrow(out), 2L)
+  expect_setequal(out$transition, c("1->2", "2->3"))
+})
+
+# --- end-to-end add_trans_prob across state encodings ---------------------
+test_that("add_trans_prob works for state encodings: int>=1, int>=0, named", {
+  prep_msm <- function(map_states) {
+    df <- prothr[, ] |>
+      mutate(from = map_states(from), to = map_states(to),
+             transition = as.factor(paste0(from, "->", to)))
+    ped <- as_ped(df, formula = Surv(Tstart, Tstop, status) ~ .,
+      transition = "transition", id = "id", timescale = "calendar")
+    pam <- gam(ped_status ~ s(tend, by = transition, bs = "cr") + transition,
+      data = ped, family = poisson(), offset = offset)
+    ndf <- ped %>%
+      make_newdata(tend = unique(tend), transition = unique(transition)) %>%
+      group_by(transition) %>% add_trans_prob(pam, ci = FALSE)
+    list(ndf = ndf, ped = ped)
+  }
+
+  res_1 <- prep_msm(identity)                                  # states 1,2,3
+  res_0 <- prep_msm(function(s) s - 1L)                        # states 0,1,2
+  res_n <- prep_msm(function(s) c("a", "b", "c")[s])           # named states
+
+  # all runs complete, no NAs, all in [0,1]
+  for (r in list(res_1, res_0, res_n)) {
+    expect_false(anyNA(r$ndf$trans_prob))
+    expect_true(all(r$ndf$trans_prob >= 0 & r$ndf$trans_prob <= 1))
+  }
+
+  # integer state encodings starting at 0 vs 1 produce identical numerics
+  # (matched per matching transition label after relabeling)
+  rename_trans <- function(lbl) sub("^0", "1", sub("->0", "->1",
+                                  sub("1", "2", sub("->1", "->2",
+                                  sub("2", "3", sub("->2", "->3", lbl))))))
+  v_1 <- with(res_1$ndf, setNames(trans_prob, paste(tend, transition)))
+  v_0 <- with(res_0$ndf,
+    setNames(trans_prob, paste(tend, rename_trans(as.character(transition)))))
+  expect_equal(sort(v_1), sort(v_0))
+
+  # named encoding gives the same set of trans_prob values up to relabeling
+  expect_equal(sort(res_n$ndf$trans_prob), sort(res_1$ndf$trans_prob),
+               tolerance = 1e-10)
+
+  # from/to garbage columns are stripped from output
+  for (r in list(res_1, res_0, res_n)) {
+    expect_false("from" %in% names(r$ndf))
+    expect_false("to" %in% names(r$ndf))
+  }
 })
