@@ -65,19 +65,21 @@ silently incorrect results, as the cumulative incidence will be accumulated
 over the entire dataset rather than within each group.
 }
 \examples{
-\dontshow{if (require("etm")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-data("fourD", package = "etm")
-ped_stacked <- fourD |>
-  dplyr::select(-medication, -treated) |>
-  as_ped(Surv(time, status) ~., id = "id") |>
-  dplyr::mutate(cause = as.factor(cause))
-pam <- pamm(
-  ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
-  data = ped_stacked)
-ped_stacked |>
-  make_newdata(tend = unique(tend), cause = unique(cause)) |>
-  group_by(cause) |>
-  add_cif(pam)
-  
-\dontshow{\}) # examplesIf}
+\donttest{
+if (require("etm")) {
+  data("fourD", package = "etm")
+  ped_stacked <- fourD |>
+    dplyr::select(-medication, -treated) |>
+    as_ped(Surv(time, status) ~., id = "id") |>
+    dplyr::mutate(cause = as.factor(cause))
+  pam <- pamm(
+    ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
+    data = ped_stacked)
+  ped_stacked |>
+    make_newdata(tend = unique(tend), cause = unique(cause)) |>
+    group_by(cause) |>
+    add_cif(pam)
+}
+}
+   
 }

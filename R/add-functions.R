@@ -855,20 +855,24 @@ get_sim_ci_surv <- function(
 #' silently incorrect results, as the cumulative incidence will be accumulated
 #' over the entire dataset rather than within each group.
 #' 
-#' @examplesIf require("etm")
-#' data("fourD", package = "etm")
-#' ped_stacked <- fourD |>
-#'   dplyr::select(-medication, -treated) |>
-#'   as_ped(Surv(time, status) ~., id = "id") |>
-#'   dplyr::mutate(cause = as.factor(cause))
-#' pam <- pamm(
-#'   ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
-#'   data = ped_stacked)
-#' ped_stacked |>
-#'   make_newdata(tend = unique(tend), cause = unique(cause)) |>
-#'   group_by(cause) |>
-#'   add_cif(pam)
-#'   
+#' @examples
+#' \donttest{
+#' if (require("etm")) {
+#'   data("fourD", package = "etm")
+#'   ped_stacked <- fourD |>
+#'     dplyr::select(-medication, -treated) |>
+#'     as_ped(Surv(time, status) ~., id = "id") |>
+#'     dplyr::mutate(cause = as.factor(cause))
+#'   pam <- pamm(
+#'     ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
+#'     data = ped_stacked)
+#'   ped_stacked |>
+#'     make_newdata(tend = unique(tend), cause = unique(cause)) |>
+#'     group_by(cause) |>
+#'     add_cif(pam)
+#' }
+#' }
+#'    
 #' @export
 add_cif <- function(
   newdata,
