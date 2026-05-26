@@ -203,6 +203,16 @@ ggplot(ndf, aes(x=tend)) +
 
 ```
 
+Instead of transition probabilities, one can plot state occupation probabilities using the convenience function `gg_state_occupation`. State occupation probabilities $\boldsymbol{\pi}(t) = \boldsymbol{\pi}(s) \mathbf{P}(s, t)$ are derived from transition probabilities by assuming an initial state distribution (`init_state`) $\boldsymbol{\pi}(s)$. 
+
+```{r prothr-viz-state-occupation, echo = TRUE, fig.width = 8, fig.height = 4, out.width = "600px"}
+gg_state_occupation(
+  ndf, 
+  group_var = "treat", 
+  init_state = c(1,0,0)
+  )
+```
+
 ## Model Comparisons: Comparison of ``pammtools`` results with the ``mstate`` Aalen-Johannsen estimator
 To validate that the PAMM baseline hazards are correctly specified, we compare
 cumulative hazards and transition probabilities estimated by `pammtools` against
