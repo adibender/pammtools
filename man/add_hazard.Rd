@@ -84,6 +84,16 @@ This is a wrapper around
 \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
 (log-)hazard ratio is calculated.
 }
+\details{
+When computing cumulative hazards or survival probabilities across groups,
+the input data must be grouped via \code{group_by()} prior to calling
+\code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
+\code{group_by()} will not produce an error or warning but will return
+silently incorrect results, as the cumulative hazard will be accumulated
+over the entire dataset rather than within each group.
+See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
+for a worked example.
+}
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
 pam <- mgcv::gam(ped_status ~ s(tend)+age, data = ped, family=poisson(), offset=offset)

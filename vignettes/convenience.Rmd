@@ -116,15 +116,16 @@ This might seem a little convoluted, but can be easily generalized in case of ti
 
 ### Cumulative hazard
 Analogously, we can obtain the cumulative hazard (piece-wise linear function).
-Note that for the cumulative hazard and survival probability it is **important to
-group the data** accordingly, such that the cumulative hazard is cumulated
-for each value of the grouping variable. Otherwise it would be cumulated over the
-whole data set (which is usually not intended, except if the specified variable
-is a time-dependent covariate).
+Note that for the cumulative hazard and survival probability (or any other cumulative
+quantity, e.g. CIF, transition probability) it is **important to group the data** 
+accordingly, such that the cumulative hazard is cumulated for each value of the grouping variable. 
+Otherwise it would be cumulated over the whole data set (which is usually not intended, 
+except if the specified variable is a time-dependent covariate). 
+Note that omitting `group_by` will not produce an error or warning — results will simply be incorrect.
 
 ```{r, fig.width=4, fig.height=3}
 ped_df %>%
-  group_by(age) %>%
+  group_by(age) %>% # (!) grouping required
   add_cumu_hazard(pam) %>%
 	ggplot(aes(x = tend, y = cumu_hazard, ymin = cumu_lower, ymax = cumu_upper, group = age)) +
     geom_hazard(aes(col = age)) + geom_ribbon(aes(fill = age), alpha = 0.2) +
@@ -134,7 +135,9 @@ ped_df %>%
 ### Survival probability
 
 ```{r, fig.width=4, fig.height=3}
-ped_df %>% group_by(age) %>% add_surv_prob(pam) %>%
+ped_df %>% 
+  group_by(age) %>% # (!) grouping required
+  add_surv_prob(pam) %>%
   ggplot(aes(x = tend, y = surv_prob, ymax = surv_lower, ymin = surv_upper, group = age)) +
   geom_line(aes(col = age)) + geom_ribbon(aes(fill = age), alpha = 0.2) +
   ylab(expression(hat(S)(t))) + xlab(expression(t))

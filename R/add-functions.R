@@ -197,6 +197,17 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' \code{c("hazard", "se", "lower", "upper")} will be overwritten.
 #' @param time_var Name of the variable used for the baseline hazard. Defaults
 #'   to \code{"tend"}.
+#'   
+#' @details
+#' When computing cumulative hazards or survival probabilities across groups,
+#' the input data must be grouped via \code{group_by()} prior to calling
+#' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
+#' \code{group_by()} will not produce an error or warning but will return
+#' silently incorrect results, as the cumulative hazard will be accumulated
+#' over the entire dataset rather than within each group. 
+#' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
+#' for a worked example.
+#' 
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @examples
@@ -836,7 +847,28 @@ get_sim_ci_surv <- function(
 #' @param cause_var Character. Column name of the 'cause' variable.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
-#'
+#'   
+#' @details
+#' When computing cumulative incidence for multiple groups, the input data must
+#' be grouped via \code{group_by()} before calling this function. Omitting
+#' \code{group_by()} will not produce an error or warning but will return
+#' silently incorrect results, as the cumulative incidence will be accumulated
+#' over the entire dataset rather than within each group.
+#' 
+#' @examplesIf require("etm")
+#' data("fourD", package = "etm")
+#' ped_stacked <- fourD |>
+#'   dplyr::select(-medication, -treated) |>
+#'   as_ped(Surv(time, status) ~., id = "id") |>
+#'   dplyr::mutate(cause = as.factor(cause))
+#' pam <- pamm(
+#'   ped_status ~ s(tend, by = cause) + sex + sex:cause + age + age:cause,
+#'   data = ped_stacked)
+#' ped_stacked |>
+#'   make_newdata(tend = unique(tend), cause = unique(cause)) |>
+#'   group_by(cause) |>
+#'   add_cif(pam)
+#'   
 #' @export
 add_cif <- function(
   newdata,
@@ -1192,6 +1224,14 @@ transition_state_table <- function(transitions, sep = "->") {
 #' @param transition \code{Character}, defaults to \code{"transition"}.
 #'   contains the transition labels in `newdata`.
 #' @param ... Further arguments passed to underlying methods.
+#' 
+#' @details
+#' When computing transition probabilities for multiple groups, the input data must
+#' be grouped via \code{group_by()} before calling this function. Omitting
+#' \code{group_by()} will not produce an error or warning but will return
+#' silently incorrect results, as the transition probability will be accumulated
+#' over the entire dataset rather than within each group.
+#' 
 #' @examplesIf require("mstate")
 #'   data("prothr", package = "mstate")
 #'   prothr <- prothr |>
@@ -1207,7 +1247,6 @@ transition_state_table <- function(transitions, sep = "->") {
 #'     treat  = unique(treat),
 #'     transition = unique(transition)) |>
 #'     group_by(treat, transition) |>  # important!
-#'     arrange(treat, transition, tend) |>
 #'     add_trans_prob(pam)
 #' @export
 add_trans_prob <- function(
