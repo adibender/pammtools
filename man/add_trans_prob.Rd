@@ -56,6 +56,13 @@ contains the transition labels in \code{newdata}.}
 Optionally, confidence intervals (CI) are added if \code{ci=TRUE}.
 The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam} models.
 }
+\details{
+When computing transition probabilities for multiple groups, the input data must
+be grouped via \code{group_by()} before calling this function. Omitting
+\code{group_by()} will not produce an error or warning but will return
+silently incorrect results, as the transition probability will be accumulated
+over the entire dataset rather than within each group.
+}
 \examples{
 \dontshow{if (require("mstate")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
   data("prothr", package = "mstate")
@@ -72,7 +79,6 @@ The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam
     treat  = unique(treat),
     transition = unique(transition)) |>
     group_by(treat, transition) |>  # important!
-    arrange(treat, transition, tend) |>
     add_trans_prob(pam)
 \dontshow{\}) # examplesIf}
 }

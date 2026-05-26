@@ -23,10 +23,18 @@ get_cif(newdata, object, ...)
 )
 }
 \arguments{
-\item{causes_model}{Character vector of all cause labels represented in the
-model. Used to construct cause-specific hazards for CIF integration.}
+\item{newdata}{A data frame of new observations, typically created via
+\code{\link[=make_newdata]{make_newdata()}}.}
+
+\item{object}{A fitted model object. The method is dispatched on this
+argument.}
+
+\item{...}{Additional arguments passed to the respective method.}
+}
+\value{
+A data frame with CIF estimates appended.
 }
 \description{
-Calculate CIF for one cause
+Internal generic dispatching CIF calculation based on the model class.
 }
 \keyword{internal}

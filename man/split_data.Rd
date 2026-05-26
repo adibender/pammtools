@@ -17,30 +17,32 @@ split_data(
 \arguments{
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
-The RHS can be an extended formula, which specifies how TDCs should be transformed
-using specials \code{concurrent} and \code{cumulative}. The left hand-side can
-be in start-stop-notation. This, however, is only used to create left-truncated
-data and does not support the full functionality.}
+The RHS can be an extended formula, which specifies how TDCs should be
+transformed using specials \code{concurrent} and \code{cumulative}. The
+left-hand-side can be in start-stop notation. This, however, is only used
+to create left-truncated data and does not support the full functionality.}
 
 \item{data}{Either an object inheriting from data frame or in case of
-time-dependent covariates a list of data frames (of length 2), where the first data frame
-contains the time-to-event information and static covariates while the second
-(and potentially further data frames) contain information on time-dependent
-covariates and the times at which they have been observed.}
+time-dependent covariates a list of data frames (of length 2), where the
+first data frame contains the time-to-event information and static covariates
+while the second (and potentially further data frames) contain information on
+time-dependent covariates and the times at which they have been observed.}
 
-\item{cut}{Split points, used to partition the follow up into intervals.
-If unspecified, all unique event times will be used.}
+\item{cut}{Split points, used to partition the follow-up into intervals.
+If unspecified, all unique event times will be used. For competing risks,
+when \code{combine = TRUE} split points are derived from all event types
+combined.}
 
 \item{max_time}{If \code{cut} is unspecified, this will be the last
-possible event time. All event times after \code{max_time}
-will be administratively censored at \code{max_time}.}
+possible event time. All event times after \code{max_time} will be
+administratively censored at \code{max_time}.}
 
 \item{multiple_id}{Are occurences of same id allowed (per transition).
 Defaults to \code{FALSE}, but is sometimes set to \code{TRUE}, e.g., in case of
 multi-state models with back transitions.}
 
 \item{...}{Further arguments passed to the \code{data.frame} method and
-eventually to \code{\link[survival]{survSplit}}}
+eventually to \code{\link[survival]{survSplit}}.}
 }
 \description{
 Function to transform data without time-dependent covariates into piece-wise

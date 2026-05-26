@@ -1,51 +1,147 @@
 #' Transform data to Piece-wise Exponential Data (PED)
 #'
 #' This is the general data transformation function provided by the
-#' \code{pammtools} package. Two main applications must be distinguished:
+#' \code{pammtools} package. The following main applications must be distinguished:
 #' \enumerate{
 #'  \item Transformation of standard time-to-event data.
 #'  \item Transformation of left-truncated time-to-event data.
 #'  \item Transformation of time-to-event data with time-dependent covariates (TDC).
+#'  \item Transformation of competing risks data (single or stacked data sets).
+#'  \item Transformation of recurrent events and multi-state data.
 #' }
-#' For the latter, the type of effect one wants to estimate is also
-#' important for the data transformation step.
-#' In any case, the data transformation is specified by a two sided formula.
-#' In case of TDCs, the right-hand-side of the formula can contain formula specials
+#' For TDC data, the type of effect one wants to estimate is also
+#' important for the data transformation step. In case of TDCs, the
+#' right-hand-side of the formula can contain formula specials
 #' \code{concurrent} and \code{cumulative}.
-#' See the \href{https://adibender.github.io/pammtools//articles/data-transformation.html}{data-transformation}
-#' vignette for details.
 #'
+#' For competing risks data, \code{as_ped} can return either:
+#' \itemize{
+#'  \item A list of cause-specific data sets (\code{combine = FALSE}), where
+#'  each element corresponds to one event type and uses cause-specific
+#'  interval split points. This is suitable for cause-specific hazards
+#'  models without shared effects.
+#'  \item A single stacked data set (\code{combine = TRUE}, the default),
+#'  where all cause-specific data sets are combined with a \code{cause}
+#'  column as covariate. Common split points are derived from all event
+#'  times. This is required for models with shared covariate effects across
+#'  causes, estimated via interaction terms (e.g.,
+#'  \code{s(tend, by = cause)}).
+#' }
+#' 
+#' For multi-state data, \code{as_ped} extends the standard PED transformation
+#' to each transition type. The follow-up of each subject is split at all
+#' observed transition times across the entire dataset, and a row is added for
+#' every interval-transition combination the subject is at risk for. Two key
+#' differences arise compared to the single-event case:
+#' \itemize{
+#'  \item Delayed entry into the risk set is handled automatically, since
+#'  subjects are only at risk for transitions out of a state after they have
+#'  entered it.
+#'  \item Competing events are treated as censoring for all other transitions
+#'  within the same interval.
+#' }
+#'
+#' In any case, the data transformation is specified by a two-sided formula.
+#' See the
+#' \href{https://adibender.github.io/pammtools/articles/data-transformation.html}{data-transformation},
+#' \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks},
+#' and
+#' \href{https://adibender.github.io/pammtools/articles/recurrent-events.html}{recurrent-events}
+#' vignettes for details.
 #'
 #' @rdname as_ped
 #' @param data Either an object inheriting from data frame or in case of
-#' time-dependent covariates a list of data frames (of length 2), where the first data frame
-#' contains the time-to-event information and static covariates while the second
-#' (and potentially further data frames) contain information on time-dependent
-#' covariates and the times at which they have been observed.
+#' time-dependent covariates a list of data frames (of length 2), where the
+#' first data frame contains the time-to-event information and static covariates
+#' while the second (and potentially further data frames) contain information on
+#' time-dependent covariates and the times at which they have been observed.
 #' @param formula A two sided formula with a \code{\link[survival]{Surv}} object
 #' on the left-hand-side and covariate specification on the right-hand-side (RHS).
-#' The RHS can be an extended formula, which specifies how TDCs should be transformed
-#' using specials \code{concurrent} and \code{cumulative}. The left hand-side can
-#' be in start-stop-notation. This, however, is only used to create left-truncated
-#' data and does not support the full functionality.
-#' @param cut Split points, used to partition the follow up into intervals.
-#' If unspecified, all unique event times will be used.
+#' The RHS can be an extended formula, which specifies how TDCs should be
+#' transformed using specials \code{concurrent} and \code{cumulative}. The
+#' left-hand-side can be in start-stop notation. This, however, is only used
+#' to create left-truncated data and does not support the full functionality.
+#' @param cut Split points, used to partition the follow-up into intervals.
+#' If unspecified, all unique event times will be used. For competing risks,
+#' when \code{combine = TRUE} split points are derived from all event types
+#' combined.
 #' @param max_time If \code{cut} is unspecified, this will be the last
-#' possible event time. All event times after \code{max_time}
-#' will be administratively censored at \code{max_time}.
-#' @param tdc_specials A character vector. Names of potential specials in
-#' \code{formula} for concurrent and or cumulative effects.
-#' @param censor_code Specifies the value of the status variable that indicates censoring.
-#' Often this will be \code{0}, which is the default.
+#' possible event time. All event times after \code{max_time} will be
+#' administratively censored at \code{max_time}.
+#' @param tdc_specials A character vector of names of potential specials in
+#' \code{formula} for concurrent and/or cumulative effects.
+#' @param censor_code Specifies the value of the status variable that indicates
+#' censoring. Often this will be \code{0}, which is the default.
+#' @param combine Logical. Only relevant for competing risks data. If
+#' \code{TRUE} (the default), cause-specific data sets are stacked into a
+#' single data frame with an additional \code{cause} column, using split points
+#' common to all event types. If \code{FALSE}, a list of cause-specific data
+#' sets is returned. See the
+#' \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
+#' vignette for details.
+#' @param id Character string. Name of the subject identifier variable in
+#' \code{data}.
+#' @param transition Character string. Name of the column in \code{data} that
+#' identifies the transition type in multi-state models. When supplied,
+#' \code{as_ped} performs the multi-state PED transformation, stacking
+#' interval-transition rows for each subject.
+#' @param timescale Character string, either \code{"gap"} (time since
+#' last transition) or \code{"calendar"} (time since study entry, not reset
+#' after each transition).
 #' @param ... Further arguments passed to the \code{data.frame} method and
-#' eventually to \code{\link[survival]{survSplit}}
+#' eventually to \code{\link[survival]{survSplit}}.
 #' @importFrom Formula Formula
 #' @examples
+#' # Standard single-event transformation
 #' tumor[1:3, ]
-#' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex, cut = c(0, 500, 1000))
-#' tumor[1:3, ] %>% as_ped(Surv(days, status)~ age + sex)
-#' @return A data frame class \code{ped} in piece-wise exponential data format.
+#' tumor[1:3, ] %>% as_ped(Surv(days, status) ~ age + sex, cut = c(0, 500, 1000))
+#' tumor[1:3, ] %>% as_ped(Surv(days, status) ~ age + sex)
+#'
+#' # Competing risks: stacked data set (combine = TRUE, default)
+#' # Suitable for cause-specific hazards models with shared effects,
+#' # estimated via interaction terms e.g. s(tend, by = cause)
+#' \dontrun{
+#' data("fourD", package = "etm")
+#' ped_stacked <- fourD %>%
+#'   as_ped(Surv(time, status) ~ ., id = "id")
+#' head(ped_stacked)
+#'
+#' # Competing risks: list output (combine = FALSE)
+#' # Suitable for cause-specific hazards models without shared effects
+#' ped_list <- fourD %>%
+#'   as_ped(Surv(time, status) ~ ., id = "id", combine = FALSE)
+#' # ped_list[[1]]: data for cause 1 (cardiovascular death)
+#' # ped_list[[2]]: data for cause 2 (death from other causes)
+#' head(ped_list[[1]])
+#' head(ped_list[[2]])
+#' 
+#' # Multi-state: illness-death model on calendar timescale
+#' # Uses the prothr data (liver cirrhosis patients, n = 488) from mstate.
+#' # Patients can transition between normal (1) and abnormal (2) prothrombin
+#' # levels and death (3): transitions 1->2, 1->3, 2->1, 2->3.
+#' # Calendar timescale is used because hazards depend on overall disease
+#' # duration, not time since last transition.
+#' data("prothr", package = "mstate")
+#' ped_msm <- prothr %>%
+#'   filter(Tstart != Tstop) %>%
+#'   as_ped(
+#'     formula    = Surv(Tstart, Tstop, status) ~ .,
+#'     transition = "trans",
+#'     id         = "id",
+#'     timescale  = "calendar",
+#' )
+#' head(ped_msm)
+#' }
+#' @return For standard and left-truncated data, a data frame of class
+#' \code{ped} in piece-wise exponential data format. For competing risks data,
+#' either a stacked data frame of class \code{ped_cr} (when
+#' \code{combine = TRUE}) or a list of cause-specific \code{ped} data frames
+#' of class \code{ped_cr_list} (when \code{combine = FALSE}). For multistate data,
+#' the result is a stacked long-format dataset with one row per subject,
+#' interval, and transition, which can be passed directly to a Poisson
+#' regression model.
 #' @export
+
 as_ped <- function(data, ...) {
   UseMethod("as_ped", data)
 }

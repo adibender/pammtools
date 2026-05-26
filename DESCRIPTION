@@ -42,7 +42,8 @@ Imports:
 Suggests:
     testthat,
     mstate,
-    broom
+    broom,
+    etm
 Config/Needs/website:
   coxme,
   eha,

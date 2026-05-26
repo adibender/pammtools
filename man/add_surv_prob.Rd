@@ -50,6 +50,16 @@ this functions adds a column \code{surv_prob} containing survival probabilities
 for the specified covariate and follow-up information (and CIs
 \code{surv_lower}, \code{surv_upper} if \code{ci=TRUE}).
 }
+\details{
+When computing cumulative hazards or survival probabilities across groups,
+the input data must be grouped via \code{group_by()} prior to calling
+\code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
+\code{group_by()} will not produce an error or warning but will return
+silently incorrect results, as the cumulative hazard will be accumulated
+over the entire dataset rather than within each group.
+See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
+for a worked example.
+}
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)
 pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
