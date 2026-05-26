@@ -197,6 +197,14 @@ contains the transition labels in <code>newdata</code>.</p></dd>
 <dd><p>Further arguments passed to underlying methods.</p></dd>
 
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>When computing transition probabilities for multiple groups, the input data must
+be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> before calling this function. Omitting
+<code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
+silently incorrect results, as the transition probability will be accumulated
+over the entire dataset rather than within each group.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -214,7 +222,6 @@ contains the transition labels in <code>newdata</code>.</p></dd>
 <span class="r-in"><span>    treat  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">transition</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="dplyr_verbs.html">group_by</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">transition</span><span class="op">)</span> <span class="op">|&gt;</span>  <span class="co"># important!</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="dplyr_verbs.html">arrange</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">transition</span>, <span class="va">tend</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">add_trans_prob</span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

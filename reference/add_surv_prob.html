@@ -187,6 +187,17 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 <code><a href="get_hazard.html">get_hazard</a></code></p></dd>
 
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>When computing cumulative hazards or survival probabilities across groups,
+the input data must be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> prior to calling
+<code><a href="add_hazard.html">add_cumu_hazard()</a></code> or <code>add_surv_prob()</code>. Omitting
+<code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
+silently incorrect results, as the cumulative hazard will be accumulated
+over the entire dataset rather than within each group.
+See the <a href="https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard">workflow vignette</a>
+for a worked example.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code>,

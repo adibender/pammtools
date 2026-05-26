@@ -144,18 +144,18 @@ contain a colum that indicates the spell (event number).</p>
 <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
 <dd><p>A two sided formula with a <code><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></code> object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
-The RHS can be an extended formula, which specifies how TDCs should be transformed
-using specials <code>concurrent</code> and <code>cumulative</code>. The left hand-side can
-be in start-stop-notation. This, however, is only used to create left-truncated
-data and does not support the full functionality.</p></dd>
+The RHS can be an extended formula, which specifies how TDCs should be
+transformed using specials <code>concurrent</code> and <code>cumulative</code>. The
+left-hand-side can be in start-stop notation. This, however, is only used
+to create left-truncated data and does not support the full functionality.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Either an object inheriting from data frame or in case of
-time-dependent covariates a list of data frames (of length 2), where the first data frame
-contains the time-to-event information and static covariates while the second
-(and potentially further data frames) contain information on time-dependent
-covariates and the times at which they have been observed.</p></dd>
+time-dependent covariates a list of data frames (of length 2), where the
+first data frame contains the time-to-event information and static covariates
+while the second (and potentially further data frames) contain information on
+time-dependent covariates and the times at which they have been observed.</p></dd>
 
 
 <dt id="arg-transition">transition<a class="anchor" aria-label="anchor" href="#arg-transition"></a></dt>
@@ -164,14 +164,16 @@ event/episode number for recurrent events.</p></dd>
 
 
 <dt id="arg-cut">cut<a class="anchor" aria-label="anchor" href="#arg-cut"></a></dt>
-<dd><p>Split points, used to partition the follow up into intervals.
-If unspecified, all unique event times will be used.</p></dd>
+<dd><p>Split points, used to partition the follow-up into intervals.
+If unspecified, all unique event times will be used. For competing risks,
+when <code>combine = TRUE</code> split points are derived from all event types
+combined.</p></dd>
 
 
 <dt id="arg-max-time">max_time<a class="anchor" aria-label="anchor" href="#arg-max-time"></a></dt>
 <dd><p>If <code>cut</code> is unspecified, this will be the last
-possible event time. All event times after <code>max_time</code>
-will be administratively censored at <code>max_time</code>.</p></dd>
+possible event time. All event times after <code>max_time</code> will be
+administratively censored at <code>max_time</code>.</p></dd>
 
 
 <dt id="arg-event">event<a class="anchor" aria-label="anchor" href="#arg-event"></a></dt>
@@ -189,7 +191,7 @@ Defaults to <code>"gaptime"</code>.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to the <code>data.frame</code> method and
-eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code></p></dd>
+eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code>.</p></dd>
 
 </dl></div>
     <div id="see-also">
