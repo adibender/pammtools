@@ -51,6 +51,8 @@ Config/Needs/website:
   scam,
   msm,
   mvna,
+  rjags,
+  brms,
   TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true
