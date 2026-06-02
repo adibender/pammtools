@@ -2,29 +2,47 @@
 % Please edit documentation in R/get-terms.R
 \name{get_terms}
 \alias{get_terms}
-\title{Extract the partial effects of non-linear model terms}
+\title{Extract the partial effects of univariate smooth model terms}
 \usage{
-get_terms(data, fit, terms, ...)
+get_terms(data, fit, terms = NULL, ...)
 }
 \arguments{
-\item{data}{A data frame containing variables used to fit the model. Only
-first row will be used.}
+\item{data}{A data frame containing variables used to fit the model. The first
+row is used as the basis for all covariates other than the one being varied
+(their values are irrelevant for the term-wise contribution).}
 
 \item{fit}{A fitted object of class \code{\link[mgcv]{gam}}.}
 
-\item{terms}{A character vector (can be length one). Specifies the terms
-for which partial effects will be returned}
+\item{terms}{A character vector (can be length one) specifying the terms for
+which partial effects will be returned. If \code{NULL} (the default) all
+univariate smooth terms in the model are used.}
 
-\item{...}{Further arguments passed to \code{\link{seq_range}}.}
+\item{...}{Further arguments (currently unused).}
 }
 \value{
-A tibble with 5 columns.
+A tibble with columns \code{term}, \code{x}, \code{level}, \code{eff},
+\code{se}, \code{ci_lower} and \code{ci_upper}.
 }
 \description{
-This function basically creates a new \code{df} from \code{data} for
-each term in \code{terms}, creating a range from minimum and maximum of the
-\code{predict(fit, newdata=df, type="terms")}. Terms are then
-stacked to a tidy data frame.
+Creates, for each requested univariate smooth, a sequence over the range of the
+smooth's numeric covariate, evaluates the term-wise contribution via
+\code{predict(fit, newdata = ., type = "terms")} and stacks the results into a
+tidy data frame.
+}
+\details{
+For \code{\link[mgcv]{gam}} fits the requested \code{terms} are matched against
+the model's smooths (see \code{\link{get_smooth_terms}}): a bare variable name
+(e.g. \code{"tend"}) selects \emph{every} univariate smooth over that variable
+-- the main effect \code{s(tend)} as well as any \code{s(tend, by = ...)} or
+factor-smooth interaction -- while an exact smooth label (e.g. \code{"s(tend)"})
+selects a single smooth. Names that do not match any smooth (for example
+parametric factor main effects) are skipped with a warning; use
+\code{\link{gg_fixed}} for those. For factor-indexed smooths one curve per
+factor level is returned, identified by the \code{level} column.
+
+For models without mgcv smooth metadata (e.g. \code{\link[survival]{coxph}})
+\code{terms} must be supplied and is matched against the columns of
+\code{predict(type = "terms")}.
 }
 \examples{
 library(survival)

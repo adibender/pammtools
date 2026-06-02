@@ -93,8 +93,9 @@ test_that("get_terms returns tidy partial effects for requested terms", {
   expect_true(is.data.frame(terms_df))
   expect_identical(
     names(terms_df),
-    c("term", "x", "eff", "se", "ci_lower", "ci_upper")
+    c("term", "x", "level", "eff", "se", "ci_lower", "ci_upper")
   )
+  expect_true(all(is.na(terms_df$level)))
   expect_equal(sort(unique(terms_df$term)), c("age", "karno"))
   expect_equal(as.integer(table(terms_df$term)[["age"]]), 100L)
   expect_equal(as.integer(table(terms_df$term)[["karno"]]), 100L)
