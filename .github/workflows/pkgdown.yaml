@@ -37,7 +37,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, any::rjags, any::brms, local::.
+          # brms compiles its Stan model with the rstan backend at render time,
+          # which needs the Boost (BH) and Eigen (RcppEigen) headers. These are
+          # LinkingTo-only deps of rstan, so pak does not install them when
+          # installing the rstan *binary*; request them explicitly here.
+          extra-packages: any::pkgdown, any::rjags, any::brms, any::rstan, any::BH, any::RcppEigen, local::.
           needs: website
 
       - name: Build site
