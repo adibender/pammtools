@@ -15,6 +15,9 @@ row is used as the basis for all covariates other than the one being varied
 
 \item{term}{A character string naming the model term/variable.}
 
+\item{n}{Number of points at which to evaluate the smooth over the range of
+its covariate.}
+
 \item{conf_level}{The confidence level for the pointwise confidence interval.}
 
 \item{...}{Further arguments (currently unused).}

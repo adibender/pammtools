@@ -108,6 +108,16 @@ test_that("gg_smooth/get_terms handle TVE PAMMs, by-/fs-/sz-smooths and factors"
   expect_equal(unique(one$term), "s(tend)")
   expect_equal(nrow(one), 100L)
 
+  # (7b) an mgcv fit whose smooths are all excluded yields an empty selection
+  #      (with a warning), not the non-mgcv "terms must be supplied" fallback.
+  pam_te <- pamm(ped_status ~ te(age, tend), data = ped)
+  expect_warning(empty_terms <- get_terms(ped, pam_te), "No matching")
+  expect_equal(nrow(empty_terms), 0L)
+  expect_identical(
+    names(empty_terms),
+    c("term", "x", "level", "eff", "se", "ci_lower", "ci_upper")
+  )
+
   # (8) gg_smooth returns ggplot objects
   expect_s3_class(gg_smooth(ped, pam, terms = "tend"), "ggplot")
   expect_s3_class(gg_smooth(ped, pam), "ggplot")

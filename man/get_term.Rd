@@ -16,6 +16,9 @@ row is used as the basis for all covariates other than the one being varied
 \item{spec}{A single-row tibble (one row of \code{\link{get_smooth_terms}})
 describing the curve to extract.}
 
+\item{n}{Number of points at which to evaluate the smooth over the range of
+its covariate.}
+
 \item{conf_level}{The confidence level for the pointwise confidence interval.}
 
 \item{...}{Further arguments (currently unused).}

@@ -27,15 +27,30 @@
 #' @keywords internal
 get_smooth_terms <- function(data, fit) {
   smooths <- fit[["smooth"]]
-  if (is.null(smooths) || length(smooths) == 0) {
+  # NULL only for fits without mgcv smooth metadata (-> non-gam fallback). An
+  # mgcv fit whose smooths are all excluded (e.g. only te()/random effects) still
+  # has a `$smooth` component and should yield an *empty* selection here, not the
+  # non-gam fallback.
+  if (is.null(smooths)) {
     return(NULL)
   }
 
   rows <- purrr::compact(purrr::map(smooths, smooth_term_rows, data = data))
   if (length(rows) == 0) {
-    return(NULL)
+    return(empty_smooth_terms())
   }
   dplyr::bind_rows(rows)
+}
+
+#' @keywords internal
+empty_smooth_terms <- function() {
+  tibble::tibble(
+    facet    = character(),
+    level    = character(),
+    var      = character(),
+    col      = character(),
+    settings = list()
+  )
 }
 
 #' Turn a single mgcv smooth into zero or more curve specifications
@@ -131,7 +146,7 @@ is_categorical <- function(x) is.factor(x) || is.character(x) || is.logical(x)
 #' @keywords internal
 parse_by_level <- function(label, by, lvls) {
   suffix <- sub("^.*:", "", label)
-  lvl <- sub(paste0("^\\Q", by, "\\E"), "", suffix)
+  lvl <- if (startsWith(suffix, by)) substring(suffix, nchar(by) + 1L) else suffix
   if (!lvl %in% lvls) {
     hit <- lvls[vapply(lvls, function(l) endsWith(label, l), logical(1))]
     if (length(hit) >= 1) lvl <- hit[which.max(nchar(hit))]
@@ -188,8 +203,9 @@ resolve_terms <- function(smooth_tbl, terms) {
 #' @param fit A fitted object of class \code{\link[mgcv]{gam}}.
 #' @param spec A single-row tibble (one row of \code{\link{get_smooth_terms}})
 #' describing the curve to extract.
+#' @param n Number of points at which to evaluate the smooth over the range of
+#' its covariate.
 #' @param conf_level The confidence level for the pointwise confidence interval.
-#' @inheritParams seq_range
 #' @param ... Further arguments (currently unused).
 #' @import dplyr
 #' @importFrom stats predict
@@ -264,9 +280,12 @@ get_term_legacy <- function(data, fit, term, n = 100, conf_level = 0.95, ...) {
 
   idx <- which(cn == term)
   if (length(idx) == 0) {
+    # match `term` as a whole "word" (e.g. as the argument of pspline(karno)),
+    # not as an arbitrary substring. `\Q...\E` literal quoting requires PCRE.
     idx <- grep(
       paste0("(^|[^[:alnum:]._])\\Q", term, "\\E($|[^[:alnum:]._])"),
-      cn
+      cn,
+      perl = TRUE
     )
   }
   if (length(idx) == 0) {
@@ -328,6 +347,8 @@ empty_term_tibble <- function() {
 #' @param terms A character vector (can be length one) specifying the terms for
 #' which partial effects will be returned. If \code{NULL} (the default) all
 #' univariate smooth terms in the model are used.
+#' @param ... Further arguments controlling extraction, passed on per term, e.g.
+#' \code{n} (number of evaluation points) and \code{conf_level}.
 #' @import checkmate
 #' @importFrom purrr map_dfr map compact
 #' @return A tibble with columns \code{term}, \code{x}, \code{level}, \code{eff},

@@ -17,7 +17,8 @@ row is used as the basis for all covariates other than the one being varied
 which partial effects will be returned. If \code{NULL} (the default) all
 univariate smooth terms in the model are used.}
 
-\item{...}{Further arguments (currently unused).}
+\item{...}{Further arguments controlling extraction, passed on per term, e.g.
+\code{n} (number of evaluation points) and \code{conf_level}.}
 }
 \value{
 A tibble with columns \code{term}, \code{x}, \code{level}, \code{eff},
