@@ -1,16 +1,26 @@
 #' Plot smooth 1d terms of gam objects
 #'
-#' Given a gam model this convenience function returns a plot of all
-#' smooth terms contained in the model. If more than one smooth is present, the
-#' different smooth are faceted.
+#' Given a gam model this convenience function returns a plot of its univariate
+#' smooth terms. If \code{terms} is not specified, all univariate smooths are
+#' plotted; otherwise only the requested ones (see \code{\link{get_terms}} for how
+#' terms are matched). Different smooths are faceted. Smooths that are indexed by a
+#' factor -- a factor \code{by}-variable or a factor-smooth interaction
+#' (\code{bs = "fs"}/\code{"sz"}) -- are drawn in a single facet with one
+#' coloured/filled curve per factor level.
 #'
 #' @param x A data frame or object of class \code{ped}.
-#' @param ... Further arguments passed to \code{\link{get_terms}}
+#' @param ... Further arguments passed to \code{\link{get_terms}} (e.g.
+#' \code{terms}).
 #' @import ggplot2
 #' @return A \code{\link[ggplot2]{ggplot}} object.
 #' @examples
 #' g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 #' gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
+#' # all univariate smooths (terms omitted)
+#' gg_smooth(iris, g1)
+#' # factor-by smooth: one coloured curve per Species
+#' g2 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width, by = Species), data = iris)
+#' gg_smooth(iris, g2, terms = "Sepal.Width")
 #' @export
 #' @seealso get_terms
 gg_smooth <- function(x, ...) {
@@ -23,21 +33,61 @@ gg_smooth <- function(x, ...) {
 gg_smooth.default <- function(x, fit, ...) {
   sobj <- get_terms(data = x, fit = fit, ...)
 
-  ggsmooth <- ggplot(
-    sobj,
-    aes(x = .data[["x"]], y = .data[["eff"]], group = .data[["term"]])
-  ) +
-    geom_hline(yintercept = 0, lty = 3) +
-    geom_line() +
-    geom_ribbon(
-      aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
-      alpha = 0.2
-    ) +
+  if (nrow(sobj) == 0) {
+    stop("No univariate smooth terms to plot.", call. = FALSE)
+  }
+
+  # smooths without a factor index (level == NA) are drawn as plain (black) curves,
+  # factor-indexed smooths (factor `by`-variable, bs = "fs"/"sz") get one
+  # coloured/filled curve per level. These are split into separate layers so that
+  # the colour/fill scale and legend only contain the actual factor levels.
+  plain_df <- sobj[is.na(sobj[["level"]]), , drop = FALSE]
+  level_df <- sobj[!is.na(sobj[["level"]]), , drop = FALSE]
+
+  ggsmooth <- ggplot(mapping = aes(x = .data[["x"]], y = .data[["eff"]])) +
+    geom_hline(yintercept = 0, lty = 3)
+
+  if (nrow(plain_df) > 0) {
+    ggsmooth <- ggsmooth +
+      geom_ribbon(
+        data = plain_df,
+        aes(
+          ymin  = .data[["ci_lower"]],
+          ymax  = .data[["ci_upper"]],
+          group = .data[["term"]]
+        ),
+        alpha = 0.2
+      ) +
+      geom_line(data = plain_df, aes(group = .data[["term"]]))
+  }
+
+  if (nrow(level_df) > 0) {
+    ggsmooth <- ggsmooth +
+      geom_ribbon(
+        data = level_df,
+        aes(
+          ymin  = .data[["ci_lower"]],
+          ymax  = .data[["ci_upper"]],
+          fill  = .data[["level"]],
+          group = interaction(.data[["term"]], .data[["level"]])
+        ),
+        alpha = 0.2
+      ) +
+      geom_line(
+        data = level_df,
+        aes(
+          colour = .data[["level"]],
+          group  = interaction(.data[["term"]], .data[["level"]])
+        )
+      ) +
+      scale_colour_discrete(name = "level") +
+      scale_fill_discrete(name = "level")
+  }
+
+  ggsmooth +
     facet_wrap(~term, scales = "free_x") +
     ylab(expression(f[p](x[p]))) +
     xlab(expression(x[p]))
-
-  return(ggsmooth)
 }
 
 #' Plot tensor product effects

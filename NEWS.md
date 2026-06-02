@@ -15,8 +15,24 @@
   and `transition_col`.
 * `get_trans_prob()` now supports non-integer (categorical) state labels
   (e.g. `"healthy->ill"`) in addition to integer-coded transitions.
+* `gg_smooth()` / `get_terms()` now select smooth terms via the model's `mgcv`
+  smooth metadata instead of unanchored `grep()`, fixing two errors reported in
+  #283: passing a variable name matched by several smooths (e.g. `terms = "tend"`
+  in a time-varying-effects model) no longer fails with
+  `` `eff` must be size 100 or 1 ``, and factor terms no longer trigger
+  `'range' not meaningful for factors`. Names that match no smooth (e.g.
+  parametric factor effects) are now skipped with a warning rather than erroring.
 
 ## Enhancements
+* `gg_smooth()` is now fully general across univariate smooth terms: a bare
+  variable name selects every 1d smooth over that variable (main effect plus any
+  `by`-variable or factor-smooth interaction term), `terms` is optional
+  (defaulting to all univariate smooths), and 1d `ti()` as well as factor-smooth
+  interactions (`bs = "fs"`, `bs = "sz"`) are supported. Factor-indexed smooths
+  are drawn in a single facet with one coloured/filled curve per factor level,
+  identified by a new `level` column in the `get_terms()` output. Random-effect
+  smooths (`bs = "re"`, `bs = "mrf"`) and multivariate/tensor smooths are
+  excluded (use `gg_re()` / `gg_tensor()`).
 * Transition probability calculation is faster due to a base R refactor
   (previously used dplyr internally).
 * `gg_state_occupation()` is now exported. Dead parameters `group_labels` and

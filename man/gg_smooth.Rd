@@ -12,7 +12,8 @@ gg_smooth(x, ...)
 \arguments{
 \item{x}{A data frame or object of class \code{ped}.}
 
-\item{...}{Further arguments passed to \code{\link{get_terms}}}
+\item{...}{Further arguments passed to \code{\link{get_terms}} (e.g.
+\code{terms}).}
 
 \item{fit}{A model object.}
 }
@@ -20,13 +21,22 @@ gg_smooth(x, ...)
 A \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Given a gam model this convenience function returns a plot of all
-smooth terms contained in the model. If more than one smooth is present, the
-different smooth are faceted.
+Given a gam model this convenience function returns a plot of its univariate
+smooth terms. If \code{terms} is not specified, all univariate smooths are
+plotted; otherwise only the requested ones (see \code{\link{get_terms}} for how
+terms are matched). Different smooths are faceted. Smooths that are indexed by a
+factor -- a factor \code{by}-variable or a factor-smooth interaction
+(\code{bs = "fs"}/\code{"sz"}) -- are drawn in a single facet with one
+coloured/filled curve per factor level.
 }
 \examples{
 g1 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width) + s(Petal.Length), data=iris)
 gg_smooth(iris, g1, terms=c("Sepal.Width", "Petal.Length"))
+# all univariate smooths (terms omitted)
+gg_smooth(iris, g1)
+# factor-by smooth: one coloured curve per Species
+g2 <- mgcv::gam(Sepal.Length ~ s(Sepal.Width, by = Species), data = iris)
+gg_smooth(iris, g2, terms = "Sepal.Width")
 }
 \seealso{
 get_terms
