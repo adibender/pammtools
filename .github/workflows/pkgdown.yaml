@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install JAGS (system dependency for rjags)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jags
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -32,7 +37,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          # brms compiles its Stan model with the rstan backend at render time,
+          # which needs the Boost (BH) and Eigen (RcppEigen) headers. These are
+          # LinkingTo-only deps of rstan, so pak does not install them when
+          # installing the rstan *binary*; request them explicitly here.
+          extra-packages: any::pkgdown, any::rjags, any::brms, any::rstan, any::BH, any::RcppEigen, local::.
           needs: website
 
       - name: Build site
