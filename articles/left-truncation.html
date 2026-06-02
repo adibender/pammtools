@@ -141,7 +141,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Left Truncation</h1>
             
-            <h4 data-toc-skip class="date">2026-05-26</h4>
+            <h4 data-toc-skip class="date">2026-06-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/left-truncation.Rmd" class="external-link"><code>vignettes/left-truncation.Rmd</code></a></small>
       <div class="hidden name"><code>left-truncation.Rmd</code></div>
@@ -181,10 +181,10 @@ study who’s mother was still alive at inclusion age. The maximum follow
 up was 365 days.</p>
 <p>As a proof of concept we show that we can recreate the effects found
 by the Cox model for left truncated data as implemented in
-<code><a href="https://ehar.se/r/eha/reference/coxreg.html" class="external-link">eha::coxreg</a></code>:</p>
+<code><a href="https://rdrr.io/pkg/eha/man/coxreg.html" class="external-link">eha::coxreg</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># fit cox model for left-truncated data</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ehar.se/r/eha/reference/coxreg.html" class="external-link">coxreg</a></span><span class="op">(</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/eha/man/coxreg.html" class="external-link">coxreg</a></span><span class="op">(</span></span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">enter</span>, <span class="va">exit</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span>  <span class="va">mother</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">infants</span><span class="op">)</span></span>
 <span><span class="co"># fit pam to left-truncated data</span></span>
