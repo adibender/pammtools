@@ -876,7 +876,7 @@ test_that("Transition Probability works", {
   ndf_in <- ped_msm %>%
     make_newdata(tend = unique(tend), transition = unique(transition)) %>%
     group_by(transition)
-  ndf <- add_trans_prob(ndf_in, pam_msm, ci = T)
+  ndf <- add_trans_prob(ndf_in, pam_msm, ci = TRUE)
   n_groups <- dplyr::n_distinct(ndf_in$transition)
   expect_data_frame(ndf, nrows = nrow(ndf_in) + n_groups, ncols = 6L)
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
