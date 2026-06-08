@@ -197,17 +197,17 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' \code{c("hazard", "se", "lower", "upper")} will be overwritten.
 #' @param time_var Name of the variable used for the baseline hazard. Defaults
 #'   to \code{"tend"}.
-#'   
+#'
 #' @details
 #' When computing cumulative hazards or survival probabilities across groups,
 #' the input data must be grouped via \code{group_by()} prior to calling
 #' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the cumulative hazard will be accumulated
-#' over the entire dataset rather than within each group. 
+#' over the entire dataset rather than within each group.
 #' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 #' for a worked example.
-#' 
+#'
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @examples
@@ -350,8 +350,15 @@ add_cumu_hazard <- function(
   time_var <- resolve_time_var(time_var, object, newdata)
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
-  joindata <- get_cumu_hazard(joindata, object, ci = ci, se_mult = se_mult,
-                              time_var = time_var, interval_length = interval_length, ...)
+  joindata <- get_cumu_hazard(
+    joindata,
+    object,
+    ci = ci,
+    se_mult = se_mult,
+    time_var = time_var,
+    interval_length = interval_length,
+    ...
+  )
 
   suppressMessages(
     newdata %>% left_join(joindata)
@@ -481,6 +488,22 @@ get_cumu_hazard <- function(
 #' for the specified covariate and follow-up information (and CIs
 #' \code{surv_lower}, \code{surv_upper} if \code{ci=TRUE}).
 #'
+#' @details
+#' When computing cumulative hazards or survival probabilities across groups,
+#' the input data must be grouped via \code{group_by()} prior to calling
+#' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
+#' \code{group_by()} will not produce an error or warning but will return
+#' silently incorrect results, as the cumulative hazard will be accumulated
+#' over the entire dataset rather than within each group.
+#' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
+#' for a worked example.
+#'
+#' The returned data contains one boundary row per group at \code{time_var = 0}
+#' for plotting cumulative quantities from the time origin. On this row,
+#' \code{surv_prob = 1}; if confidence intervals are requested,
+#' \code{surv_lower = surv_upper = 1}. If an interval-length column is present,
+#' it is set to \code{0} on the boundary row.
+#'
 #' @inherit add_cumu_hazard
 #' @examples
 #' ped <- tumor[1:50,] %>% as_ped(Surv(days, status)~ age)
@@ -515,6 +538,8 @@ add_surv_prob <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
+  newdata <- drop_cumulative_boundary(newdata, time_var)
+
   if (!interval_length %in% colnames(newdata)) {
     newdata <- reconstruct_intlen(
       newdata,
@@ -523,7 +548,7 @@ add_surv_prob <- function(
     )
   }
 
-  get_surv_prob(
+  out <- get_surv_prob(
     newdata,
     object,
     ci = ci,
@@ -531,6 +556,14 @@ add_surv_prob <- function(
     time_var = time_var,
     interval_length = interval_length,
     ...
+  )
+  out <- restore_prediction_attrs(out, newdata)
+
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
+    interval_length = interval_length
   )
 }
 
@@ -647,6 +680,91 @@ get_surv_prob <- function(
   vars_exclude <- setdiff(vars_exclude, haz_vars_in_data)
   if (length(vars_exclude) != 0) {
     newdata <- newdata %>% select(-one_of(vars_exclude))
+  }
+
+  newdata
+}
+
+drop_cumulative_boundary <- function(newdata, time_var) {
+  boundary_rows <- !is.na(newdata[[time_var]]) & newdata[[time_var]] == 0
+  if (!any(boundary_rows)) {
+    return(newdata)
+  }
+
+  out <- newdata %>%
+    filter(is.na(.data[[time_var]]) | .data[[time_var]] != 0)
+
+  restore_prediction_attrs(out, newdata)
+}
+
+add_cumulative_boundary <- function(
+  newdata,
+  time_var,
+  values,
+  interval_length = NULL
+) {
+  if (!nrow(newdata)) {
+    return(newdata)
+  }
+
+  old_groups <- group_vars(newdata)
+  out <- newdata %>%
+    slice(1, .preserve = TRUE) %>%
+    set_cumulative_boundary_values(
+      time_var = time_var,
+      values = values,
+      interval_length = interval_length
+    ) %>%
+    bind_rows(newdata)
+
+  if (length(old_groups)) {
+    out <- out %>% group_by(across(all_of(old_groups)))
+  }
+  out <- out %>% arrange(.data[[time_var]], .by_group = TRUE)
+
+  restore_prediction_attrs(out, newdata)
+}
+
+set_cumulative_boundary_values <- function(
+  newdata,
+  time_var,
+  values,
+  interval_length = NULL
+) {
+  newdata[[time_var]] <- 0
+
+  if (!is.null(interval_length) && interval_length %in% colnames(newdata)) {
+    newdata[[interval_length]] <- 0
+  }
+  if ("tstart" %in% colnames(newdata)) {
+    newdata[["tstart"]] <- 0
+  }
+  if ("intmid" %in% colnames(newdata)) {
+    newdata[["intmid"]] <- 0
+  }
+  if ("interval" %in% colnames(newdata)) {
+    is.na(newdata[["interval"]]) <- TRUE
+  }
+  if ("offset" %in% colnames(newdata)) {
+    newdata[["offset"]][] <- NA_real_
+  }
+
+  value_names <- intersect(names(values), colnames(newdata))
+  for (value_name in value_names) {
+    newdata[[value_name]] <- values[[value_name]]
+  }
+
+  newdata
+}
+
+restore_prediction_attrs <- function(newdata, template) {
+  structural_attrs <- c("names", "row.names", "class", "groups")
+  custom_attrs <- setdiff(names(attributes(template)), structural_attrs)
+  for (attr_name in custom_attrs) {
+    attr(newdata, attr_name) <- attr(template, attr_name)
+  }
+  if (inherits(template, "ped") && !inherits(newdata, "ped")) {
+    class(newdata) <- c("ped", class(newdata))
   }
 
   newdata
@@ -847,14 +965,21 @@ get_sim_ci_surv <- function(
 #' @param cause_var Character. Column name of the 'cause' variable.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
-#'   
+#'
 #' @details
 #' When computing cumulative incidence for multiple groups, the input data must
 #' be grouped via \code{group_by()} before calling this function. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the cumulative incidence will be accumulated
 #' over the entire dataset rather than within each group.
-#' 
+#'
+#' The returned data contains one boundary row per group at \code{time_var = 0}
+#' for plotting cumulative incidence from the time origin. On this row,
+#' \code{cif = 0}; if confidence intervals are requested,
+#' \code{cif_lower = cif_upper = 0}. If an interval-length column is present,
+#' it is set to \code{0} on the boundary row. \code{add_cumu_hazard()} keeps the
+#' original prediction grid and does not add this plotting boundary row.
+#'
 #' @examples
 #' \donttest{
 #' if (require("etm")) {
@@ -872,7 +997,7 @@ get_sim_ci_surv <- function(
 #'     add_cif(pam)
 #' }
 #' }
-#'    
+#'
 #' @export
 add_cif <- function(
   newdata,
@@ -897,9 +1022,25 @@ add_cif.default <- function(
   interval_length = "intlen",
   ...
 ) {
-
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
+
+  if (!overwrite) {
+    if ("cif" %in% names(newdata)) {
+      stop(
+        "Data set already contains 'cif' column.
+        Set `overwrite=TRUE` to overwrite"
+      )
+    }
+  } else {
+    rm.vars <- intersect(
+      c("cif", "cif_lower", "cif_upper"),
+      names(newdata)
+    )
+    newdata <- newdata %>% select(-one_of(rm.vars))
+  }
+
+  newdata <- drop_cumulative_boundary(newdata, time_var)
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
 
@@ -928,9 +1069,17 @@ add_cif.default <- function(
       ...
     )
   )
-  
-  suppressMessages(
+
+  out <- suppressMessages(
     newdata %>% left_join(joindata)
+  )
+  out <- restore_prediction_attrs(out, newdata)
+
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cif = 0, cif_lower = 0, cif_upper = 0),
+    interval_length = interval_length
   )
 }
 
@@ -967,7 +1116,6 @@ get_cif.default <- function(
   sim_coef_mat,
   ...
 ) {
-
   time_var <- resolve_time_var(time_var, object, newdata)
   assert_string(interval_length)
   assert_choice(interval_length, colnames(newdata))
@@ -1010,14 +1158,20 @@ get_cif.default <- function(
   cif_increments <- (hazard / total_hazard) *
     survival *
     (1 - exp(-total_hazard * dt))
-  
+
   # cumulative CIF
   cifs <- apply(cif_increments, 2, cumsum)
-  
+
   newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
-    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0), 1)
-    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0), 1)
+    newdata[["cif_lower"]] <- pmin(
+      pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0),
+      1
+    )
+    newdata[["cif_upper"]] <- pmin(
+      pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0),
+      1
+    )
   }
 
   newdata
@@ -1026,16 +1180,15 @@ get_cif.default <- function(
 ## Transition Probability Matrix for multi-state data
 #' @keywords internal
 get_trans_prob <- function(
-    newdata,
-    time_var        = "tend",
-    interval_length = "intlen",
-    transition      = "transition",
-    tend            = "tend",
-    cumu_hazard     = "cumu_hazard",
-    sep             = "->",
-    ...
+  newdata,
+  time_var = "tend",
+  interval_length = "intlen",
+  transition = "transition",
+  tend = "tend",
+  cumu_hazard = "cumu_hazard",
+  sep = "->",
+  ...
 ) {
-
   if (is.null(time_var)) {
     time_var <- tend
   }
@@ -1051,12 +1204,15 @@ get_trans_prob <- function(
   assert_data_frame(newdata, all.missing = FALSE)
 
   transition_var <- transition
-  unique_transition <- transition_state_table(newdata[[transition_var]], sep = sep)
+  unique_transition <- transition_state_table(
+    newdata[[transition_var]],
+    sep = sep
+  )
   names(unique_transition)[1] <- transition_var
   unique_tend <- sort(unique(newdata[[time_var]]))
 
   n_trans <- nrow(unique_transition)
-  n_t     <- length(unique_tend)
+  n_t <- length(unique_tend)
 
   m <- max(unique_transition$to_int)
   M <- array(0, dim = c(m, m, n_trans))
@@ -1067,12 +1223,17 @@ get_trans_prob <- function(
     seq_len(n_trans)
   )
   M[idx] <- 1
-  M[cbind(unique_transition$from_int,
-          unique_transition$from_int,
-          seq_len(n_trans))] <- -1
+  M[cbind(
+    unique_transition$from_int,
+    unique_transition$from_int,
+    seq_len(n_trans)
+  )] <- -1
 
   newdata$delta_cumu_hazard <- 0
-  split_idx <- split(seq_len(nrow(newdata)), as.character(newdata[[transition_var]]))
+  split_idx <- split(
+    seq_len(nrow(newdata)),
+    as.character(newdata[[transition_var]])
+  )
   for (idx_group in split_idx) {
     idx_group <- idx_group[order(newdata[[time_var]][idx_group])]
     ch <- newdata[[cumu_hazard]][idx_group]
@@ -1106,7 +1267,7 @@ get_trans_prob <- function(
 
   cum_A <- array(NA_real_, dim = c(m, m, n_t))
   for (t in seq_len(n_t)) {
-    cum_A[,,t] <- matrix(cum_A_list[[t]], m, m)
+    cum_A[,, t] <- matrix(cum_A_list[[t]], m, m)
   }
 
   prob_mat <- matrix(0, nrow = n_t, ncol = n_trans)
@@ -1114,7 +1275,7 @@ get_trans_prob <- function(
     prob_mat[, k] <- cum_A[
       unique_transition$from_int[k],
       unique_transition$to_int[k],
-      ]
+    ]
   }
   colnames(prob_mat) <- as.character(unique_transition[[transition_var]])
 
@@ -1164,16 +1325,21 @@ transition_state_table <- function(transitions, sep = "->") {
     stop(
       "Could not split transition label(s) ",
       paste(shQuote(labs[bad]), collapse = ", "),
-      " on separator '", sep, "'. ",
-      "Each transition must look like 'from", sep, "to'."
+      " on separator '",
+      sep,
+      "'. ",
+      "Each transition must look like 'from",
+      sep,
+      "to'."
     )
   }
   from_str <- vapply(parts, `[[`, character(1), 2L)
-  to_str   <- vapply(parts, `[[`, character(1), 3L)
+  to_str <- vapply(parts, `[[`, character(1), 3L)
 
   from_int_try <- suppressWarnings(as.integer(from_str))
-  to_int_try   <- suppressWarnings(as.integer(to_str))
-  numeric_mode <- !anyNA(from_int_try) && !anyNA(to_int_try) &&
+  to_int_try <- suppressWarnings(as.integer(to_str))
+  numeric_mode <- !anyNA(from_int_try) &&
+    !anyNA(to_int_try) &&
     all(from_str == as.character(from_int_try)) &&
     all(to_str == as.character(to_int_try))
 
@@ -1181,20 +1347,22 @@ transition_state_table <- function(transitions, sep = "->") {
     state_min <- min(c(from_int_try, to_int_try))
     shift <- if (state_min == 0L) 1L else 0L
     from_int <- from_int_try + shift
-    to_int   <- to_int_try + shift
+    to_int <- to_int_try + shift
     if (min(c(from_int, to_int)) < 1L) {
-      stop("Negative state indices are not supported in numeric transition labels.")
+      stop(
+        "Negative state indices are not supported in numeric transition labels."
+      )
     }
   } else {
     states <- sort(unique(c(from_str, to_str)))
     from_int <- match(from_str, states)
-    to_int   <- match(to_str, states)
+    to_int <- match(to_str, states)
   }
 
   data.frame(
     transition = labs,
-    from_int   = from_int,
-    to_int     = to_int,
+    from_int = from_int,
+    to_int = to_int,
     stringsAsFactors = FALSE
   )
 }
@@ -1228,14 +1396,20 @@ transition_state_table <- function(transitions, sep = "->") {
 #' @param transition \code{Character}, defaults to \code{"transition"}.
 #'   contains the transition labels in `newdata`.
 #' @param ... Further arguments passed to underlying methods.
-#' 
+#'
 #' @details
 #' When computing transition probabilities for multiple groups, the input data must
 #' be grouped via \code{group_by()} before calling this function. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the transition probability will be accumulated
 #' over the entire dataset rather than within each group.
-#' 
+#'
+#' The returned data contains one boundary row per group and transition at
+#' \code{time_var = 0} for plotting transition probabilities from the time
+#' origin. On this row, \code{trans_prob = 0}; if confidence intervals are
+#' requested, \code{trans_lower = trans_upper = 0}. If an interval-length
+#' column is present, it is set to \code{0} on the boundary row.
+#'
 #' @examplesIf require("mstate")
 #'   data("prothr", package = "mstate")
 #'   prothr <- prothr |>
@@ -1293,6 +1467,7 @@ add_trans_prob <- function(
     )
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
+  newdata <- drop_cumulative_boundary(newdata, time_var)
 
   assert_subset(transition_var, names(newdata))
   assert_subset(time_var, names(newdata))
@@ -1310,7 +1485,11 @@ add_trans_prob <- function(
 
   split_groups <- setdiff(old_groups, transition_var)
   ordering_vars <- c(split_groups, transition_var, time_var)
-  newdata <- newdata[do.call(order, newdata[, ordering_vars, drop = FALSE]), , drop = FALSE]
+  newdata <- newdata[
+    do.call(order, newdata[, ordering_vars, drop = FALSE]),
+    ,
+    drop = FALSE
+  ]
 
   if (!has_cumu) {
     newdata <- do.call(
@@ -1335,11 +1514,26 @@ add_trans_prob <- function(
         transition = transition_var
       )
   }
+  newdata <- add_cumulative_boundary(
+    newdata,
+    time_var = time_var,
+    values = c(
+      cumu_hazard = 0,
+      trans_prob = 0,
+      trans_lower = 0,
+      trans_upper = 0
+    ),
+    interval_length = interval_length
+  )
 
   if (length(split_groups) == 0L) {
     grp_index <- list(seq_len(nrow(newdata)))
   } else {
-    grp <- interaction(newdata[, split_groups, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    grp <- interaction(
+      newdata[, split_groups, drop = FALSE],
+      drop = TRUE,
+      lex.order = TRUE
+    )
     grp_index <- split(seq_len(nrow(newdata)), grp)
   }
 
@@ -1397,7 +1591,7 @@ get_sim_cumu <- function(newdata, interval_length = "intlen", ...) {
 
 #' Add transition probabilities confidence intervals
 #' @keywords internal
-add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
+add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
   dots <- list(...)
   time_var <- dots[["time_var"]]
   interval_length <- dots[["interval_length"]]
@@ -1428,11 +1622,19 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
   coefs <- coef(object)
   V <- object$Vp
 
-  groups_array <- interaction(df[, group_vars_ordered, drop = FALSE], drop = TRUE, lex.order = TRUE)
+  groups_array <- interaction(
+    df[, group_vars_ordered, drop = FALSE],
+    drop = TRUE,
+    lex.order = TRUE
+  )
   array_idx_list <- split(seq_len(nrow(df)), groups_array)
 
   if (length(group_vars_trans) > 0) {
-    groups_trans <- interaction(df[, group_vars_trans, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    groups_trans <- interaction(
+      df[, group_vars_trans, drop = FALSE],
+      drop = TRUE,
+      lex.order = TRUE
+    )
     trans_idx_list <- split(seq_len(nrow(df)), groups_trans)
   } else {
     trans_idx_list <- list(seq_len(nrow(df)))
@@ -1474,8 +1676,20 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
     sim_trans_probs[, i] <- trans_prob
   }
 
-  df$trans_lower <- apply(sim_trans_probs, 1, quantile, probs = alpha / 2, na.rm = TRUE)
-  df$trans_upper <- apply(sim_trans_probs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
+  df$trans_lower <- apply(
+    sim_trans_probs,
+    1,
+    quantile,
+    probs = alpha / 2,
+    na.rm = TRUE
+  )
+  df$trans_upper <- apply(
+    sim_trans_probs,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    na.rm = TRUE
+  )
 
   df <- df[order(df$.orig_row), , drop = FALSE]
   df$.orig_row <- NULL

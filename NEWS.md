@@ -21,6 +21,11 @@
   (previously used dplyr internally).
 * `gg_state_occupation()` is now exported. Dead parameters `group_labels` and
   `nrow` have been removed; user-supplied `ncol` is now respected.
+* `add_surv_prob()`, `add_cif()`, and `add_trans_prob()` now include plotting
+  boundary rows at `tend = 0` (or the selected `time_var`). Boundary values are
+  set to their known limits, `S(0) = 1`, `CIF(0) = 0`, and off-diagonal
+  transition probabilities `P_rs(0) = 0`, with collapsed confidence interval
+  bounds when requested. `add_cumu_hazard()` keeps the original prediction grid.
 
 # pammtools 0.7.5
 
