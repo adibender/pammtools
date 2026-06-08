@@ -731,10 +731,10 @@ set_cumulative_boundary_values <- function(
   values,
   interval_length = NULL
 ) {
-  newdata[[time_var]] <- 0
+  newdata[[time_var]][] <- 0
 
   if (!is.null(interval_length) && interval_length %in% colnames(newdata)) {
-    newdata[[interval_length]] <- 0
+    newdata[[interval_length]][] <- 0
   }
   if ("tstart" %in% colnames(newdata)) {
     newdata[["tstart"]] <- 0
