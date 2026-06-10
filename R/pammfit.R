@@ -31,8 +31,9 @@ append_ped_attr <- function(pamm, ped) {
 #' for inline data transformation. Convert your data with \code{as_ped()} before
 #' calling \code{pamm()} instead.
 #' @param engine Character name of the function that will be called to fit the
-#' model. The intended entries are either \code{"gam"} or \code{"bam"}
-#' (both from package \code{mgcv}).
+#' model. The intended entries are \code{"gam"} or \code{"bam"}
+#' (both from package \code{mgcv}) or \code{"scam"} (from package \code{scam},
+#' for shape-constrained PAMMs, e.g. monotone baseline hazards).
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
@@ -77,7 +78,13 @@ pamm <- function(
     warning(paste0(deparse(substitute(data)), " does not contain an offset. PAMM assumes a risk time of 1 for all subjects"))
   }
 
-  pamm_fit        <- do.call(engine, dots)
+  engine_fun <- switch(engine,
+    gam  = mgcv::gam,
+    bam  = mgcv::bam,
+    scam = scam::scam,
+    match.fun(engine)
+  )
+  pamm_fit        <- do.call(engine_fun, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))
   # pamm_fit        <- append_ped_attr(pamm_fit, data)
   pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")

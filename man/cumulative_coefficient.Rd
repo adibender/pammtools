@@ -3,6 +3,7 @@
 \name{get_cumu_coef}
 \alias{get_cumu_coef}
 \alias{get_cumu_coef.gam}
+\alias{get_cumu_coef.scam}
 \alias{get_cumu_coef.aalen}
 \alias{get_cumu_coef.cox.aalen}
 \title{Extract cumulative coefficients (cumulative hazard differences)}
@@ -10,6 +11,15 @@
 get_cumu_coef(model, data = NULL, terms, ...)
 
 \method{get_cumu_coef}{gam}(
+  model,
+  data,
+  terms,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+)
+
+\method{get_cumu_coef}{scam}(
   model,
   data,
   terms,

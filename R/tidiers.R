@@ -53,6 +53,12 @@ tidy_fixed.gam <- function(x, intercept = FALSE, ...) {
 }
 
 #' @rdname tidy_fixed
+#' @export
+tidy_fixed.scam <- function(x, intercept = FALSE, ...) {
+  tidy_fixed.gam(x, intercept = intercept, ...)
+}
+
+#' @rdname tidy_fixed
 #' @importFrom tibble as_tibble
 #' @keywords internal
 #' @examples
@@ -205,18 +211,20 @@ tidy_re <- function(x, keep = c("fit", "main", "xlab", "ylab"), ...) {
 
 #' Extract plot information for all special model terms
 #'
-#' Given a \code{mgcv} \code{\link[mgcv]{gamObject}}, returns the information
-#' used for the default plots produced by \code{\link[mgcv]{plot.gam}}.
+#' Given a \code{mgcv} \code{\link[mgcv]{gamObject}} (or a
+#' \code{\link[scam]{scam}} object), returns the information
+#' used for the default plots produced by \code{\link[mgcv]{plot.gam}}
+#' (\code{\link[scam]{plot.scam}}, respectively).
 #'
 #' @inheritParams mgcv::plot.gam
 #' @param ... Further arguments passed to \code{\link[mgcv]{plot.gam}}
 #' @import mgcv
-#' @importFrom checkmate assert_class
+#' @importFrom checkmate assert_multi_class
 #' @importFrom grDevices png dev.off
 #' @importFrom graphics plot
 #' @export
 get_plotinfo <- function(x, ...) {
-  assert_class(x, c("gam", "glm", "lm"))
+  assert_multi_class(x, c("gam", "scam"))
 
   tmp <- paste0(tempfile(), ".png")
   png(tmp)
