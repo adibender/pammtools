@@ -36,7 +36,7 @@ grid <- scenario_grid() %>%
                       levels = c("constant", "increasing", "nonmonotone")),
     cens_lab = sprintf("%.0f%% cens", 100 * cens),
     grid_lab = sprintf("%s J=%d", grid_type, J),
-    arm      = ifelse(k == 10L, "main", "sensitivity (k=20)")
+    arm      = ifelse(k == 20L, "sensitivity (k=20)", "main")
   )
 res <- left_join(res, grid, by = "scenario_id")
 
@@ -149,7 +149,7 @@ for (x_prof in unique(main_cov$x1)) {
 }
 
 p_ratio <- ratio_tbl %>%
-  filter(k == 10L) %>%
+  filter(arm == "main") %>%
   ggplot(aes(x = t_label, y = med_ratio, color = method, group = method)) +
   geom_hline(yintercept = 1, linetype = 2, color = "grey40") +
   geom_line() +
