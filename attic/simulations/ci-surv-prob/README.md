@@ -49,15 +49,37 @@ the J = 40 quantile grids. k must stay safely below the number of *populated*
 intervals: under heavy censoring the trailing equidistant intervals are often
 empty and mgcv errors when `s(tend, k)` has fewer unique `tend` values than k
 (with k = J = 10, up to 84% of fits failed in the constant-baseline/60%-
-censoring/n=100 cell). Residual fit failures (~1–2% worst case) are recorded
-and reported; note they coincide with datasets lacking late events, so
-late-time coverage is conditional on estimability. Within each fit, CIs are evaluated at 2 covariate profiles
+censoring/n=100 cell). Residual fit failures (13.2% and 8.6% in the two
+sparsest cells — constant/nonmonotone baseline, n = 100, 60% censoring,
+equidistant grid — and < 1% everywhere else in the 500-rep run) are recorded
+and reported; they coincide with datasets lacking late events, so late-time
+coverage is conditional on estimability. Within each fit, CIs are evaluated at 2 covariate profiles
 (x1 = 0 and x1 = 1.5, HR ≈ 2.9) × 5 time points: the fitting-grid endpoints
 closest to where true S(t|x) crosses 0.9, 0.75, 0.5, 0.25, 0.1 (labels
 S90...S10). This probes boundary proximity (S near 1 or 0) without extra
 scenarios. Evaluation times are interval endpoints by construction
 (`make_newdata()` snaps to endpoints; `add_surv_prob()` integrates over all
 supplied intervals — the code passes *all* endpoints and filters afterwards).
+
+Two consequences of the endpoint-snapping design are handled explicitly in
+`eval-sim.R`:
+
+- **Endpoint availability.** Even a successful fit yields no CI at an eval
+  endpoint when no subject is at risk that late (the endpoint is then absent
+  from the fitted ped). Coverage therefore conditions on availability;
+  `avail_frac` in `coverage*.csv` records how selective this is (worst cells:
+  51% and 79% of successful fits contribute, constant baseline / 60%
+  censoring / equidistant at S10/x1 = 0 for n = 100 and 250; ≥ 95%
+  everywhere else). This
+  conditioning is informative — only datasets with late at-risk subjects
+  contribute — and inflates late-time coverage in exactly the
+  heavy-censoring cells where it bites.
+- **Collapsed labels.** On the coarse J = 10 grid, several S-labels can snap
+  to the *same* endpoint (24 of 74 scenario × profile blocks, mostly at
+  x1 = 1.5, where e.g. nominal S90 sits at a realized true S of ~0.47).
+  Duplicated endpoints are deduplicated before aggregation (keeping the label
+  closest to the realized true S), and marginal-by-time summaries bin by
+  *realized* true S (`S_bin`), not by nominal label.
 
 Metrics per (scenario, method, profile, time label), aggregated over
 replications: coverage (with Wilson CI), miss direction (above/below),
@@ -111,4 +133,57 @@ coauthors are right, `default` coverage should sit near (or below) 0.95 in most
 cells. Delta is expected to undercover near the boundaries (S90/S10) at small
 n; sim100 vs sim500 shows whether the shipped `nsim` default is adequate. With
 25 pilot reps the Monte-Carlo SE of a coverage estimate is ~4–5pp — pilot
-results indicate ordering, not precise levels; the 500-rep run has MC SE ~1pp.
+results indicate ordering, not precise levels; the 500-rep run has MC SE ~1pp
+per cell (marginal averages share replications across cells, so their
+uncertainty is *not* 1pp/sqrt(#cells)).
+
+## Findings (full run, 500 reps; see `output/*-full*`)
+
+Headline (share of deduplicated cells with coverage < 0.93 / 0.93–0.97 /
+> 0.97; nominal 0.95):
+
+| method | < 0.93 | 0.93–0.97 | > 0.97 | min | paired width ratio vs delta, median (q10–q90) |
+|---|---|---|---|---|---|
+| `default` | 2% | 62% | 36% | 0.918 | 1.07 (1.00–1.35) |
+| `delta` | 36% | 64% | 0.3% | 0.723 | 1 |
+| `sim100` | 57% | 43% | 0% | 0.836 | 0.95 (0.93–0.97) |
+| `sim500` | 19% | 81% | 0% | 0.850 | 0.99 (0.96–1.00) |
+
+1. **`default` over-covers, mostly mildly.** Mean coverage 0.965, rising
+   toward the boundary (0.976 in the realized-S10 bin vs 0.948 at S90) and
+   with baseline wiggliness (0.973 nonmonotone vs 0.961 constant). The median
+   width cost vs delta is only ~7%, but right-skewed (q90 = 1.35, largest
+   late + wiggly + heavy censoring). No support for a grid-resolution effect
+   (0.965 both grid types — but J and k are confounded with grid type by
+   design, so grid effects are not separately identified). `default` is the
+   only method that never violates [0,1], has worst-case coverage 0.918, and
+   holds up in the cells where all other methods fail.
+2. **`delta` is anti-conservative in the tails**: 0.909 mean in the S10 bin,
+   worst cell 0.723 (n = 100, 60% censoring); up to ~90% of its intervals
+   leave [0,1] there, and clipping does not repair coverage (misses are
+   upper bounds *below* the truth, not bounds outside [0,1]).
+3. **Tail undercoverage is only partly a delta problem.** At n = 1000 with
+   heavy censoring, where [0,1] violations are rare, delta still covers 0.834
+   and even sim500 only 0.858 at S10: the fitted late hazard is biased
+   (downward-biased S, ~0.5 SE) under heavy censoring, which caps *any*
+   correctly-sized symmetric/equal-tailed interval near ~92%. `default`
+   escapes via much wider, asymmetric intervals.
+4. **`sim` with the shipped `nsim = 100` undercovers everywhere** (mean
+   0.924; 57% of cells below 0.93). Much of this is the type-7
+   `stats::quantile()` estimator, whose 2.5%/97.5% sample quantiles at
+   B = 100 have expected central mass ≈ 0.93, i.e. intervals are
+   systematically too narrow (sim100 is 5% narrower than delta paired);
+   `nsim = 500` shrinks the deficit (0.99 ratio) but remains below nominal
+   in the tails for the bias reason above.
+5. **Package implications (suggested, not implemented here):** document
+   `default`'s conservatism (it is the safest worst-case choice) rather than
+   silently relying on it; warn when delta bounds leave [0,1]; fix the
+   sim-CI quantile estimator (e.g. `type = 6`) and/or raise the default
+   `nsim` — raising `nsim` alone is brute force and does not reach nominal.
+   Any change of the *default* `ci_type` should wait for an unconfounded
+   J/k arm and interval-censored scenarios.
+
+Caveats: pointwise (not simultaneous) coverage; right censoring only;
+correctly specified model; `Vp`-based (conditional-on-smoothing-parameters)
+uncertainty throughout; late-time coverage conditional on endpoint
+availability (see above).

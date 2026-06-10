@@ -40,14 +40,19 @@ compute_cis <- function(fit, eval_tbl, se_mult = qnorm(0.975),
   stopifnot(all(res$surv_lower <= res$surv_upper + 1e-12, na.rm = TRUE))
 
   # evaluation times are fitting-grid endpoints, i.e. exactly the tend values
-  # in nd; rounding guards against floating-point noise in the join
+  # in nd; rounding guards against floating-point noise in the join.
+  # all.x = TRUE: an eval endpoint can be absent from the fitted ped (no
+  # subject at risk that late) -- such rows are kept with NA surv_prob so that
+  # endpoint unavailability is recorded per replication, not silently dropped
   res$.tkey <- round(res$tend, 8)
   et <- eval_tbl[!is.na(eval_tbl$tend), ]
   et$.tkey <- round(et$tend, 8)
+  et <- merge(et, data.frame(method = unique(res$method)))
   out <- merge(
-    et[, c("x1", "t_label", ".tkey", "true_surv")],
+    et[, c("x1", "t_label", "method", ".tkey", "true_surv")],
     res[, setdiff(names(res), "tend")],
-    by = c("x1", ".tkey")
+    by = c("x1", "method", ".tkey"),
+    all.x = TRUE
   )
   out$tend <- out$.tkey
   out$.tkey <- NULL

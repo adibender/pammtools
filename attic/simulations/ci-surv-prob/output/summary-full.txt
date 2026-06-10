@@ -1,78 +1,117 @@
-== Overall (averaged over scenarios, profiles, time points) ==
-   method mean_coverage min_coverage max_coverage mean_width viol_01
-1 default         0.964        0.918        1.000      0.156  0.0000
-2   delta         0.929        0.723        0.972      0.140  0.0479
-3  sim100         0.924        0.836        0.956      0.132  0.0000
-4  sim500         0.939        0.850        0.968      0.136  0.0000
+Cells = (scenario, method, profile, eval endpoint); duplicated endpoints 
+(several S-labels snapping to the same grid point) were deduplicated: 
+24 of 74 (scenario, profile) blocks had collapses; labels kept 
+are those closest to the realized true S. Coverage is conditional on 
+fit success AND availability of the eval endpoint (see avail_frac).
+
+== Cell-level coverage distribution (main arm) ==
+   method n_cells pct_below_093 pct_093_097 pct_above_097 min_coverage
+1 default     324        0.0154       0.623       0.36111        0.918
+2   delta     324        0.3580       0.639       0.00309        0.723
+3  sim100     324        0.5710       0.429       0.00000        0.836
+4  sim500     324        0.1914       0.809       0.00000        0.850
+  max_coverage
+1        1.000
+2        0.972
+3        0.956
+4        0.968
+
+== Overall cell means (secondary; equal cell weights) ==
+   method mean_coverage mean_width viol_01
+1 default         0.965      0.155  0.0000
+2   delta         0.928      0.137  0.0513
+3  sim100         0.924      0.129  0.0000
+4  sim500         0.938      0.134  0.0000
+
+== Paired width ratio vs delta (median over reps, then cells) ==
+   method ratio_q10 ratio_med ratio_q90
+1 default     1.003     1.068     1.345
+2  sim100     0.925     0.952     0.969
+3  sim500     0.959     0.988     1.002
+
+== Worst endpoint availability (delta rows; identical across methods) ==
+  scenario_id    baseline   n cens   grid_type x1 t_label n_reps avail_frac
+1          10    constant 100  0.6 equidistant  0     S10    223      0.514
+2          13    constant 250  0.6 equidistant  0     S10    391      0.787
+3          29  increasing 100  0.6    quantile  0     S10    476      0.952
+4          11  increasing 100  0.6 equidistant  0     S10    479      0.958
+5          28    constant 100  0.6    quantile  0     S10    493      0.986
+6          30 nonmonotone 100  0.6    quantile  0     S10    495      0.990
+7           1    constant 100  0.2 equidistant  0     S75    500      1.000
+8           1    constant 100  0.2 equidistant  0     S50    500      1.000
 
 == Marginal coverage by design factor ==
+(NB: grid_type is confounded with J and k by design: equidistant J=10 
+uses k=7, quantile J=40 uses k=10. S_bin bins cells by *realized* 
+true S at the eval endpoint.)
+
       baseline  method coverage mean_width
-1     constant default    0.958      0.151
-2     constant   delta    0.932      0.143
-3     constant  sim100    0.929      0.135
-4     constant  sim500    0.943      0.139
-5   increasing default    0.961      0.140
-6   increasing   delta    0.934      0.129
-7   increasing  sim100    0.928      0.122
-8   increasing  sim500    0.942      0.126
-9  nonmonotone default    0.972      0.178
-10 nonmonotone   delta    0.921      0.147
-11 nonmonotone  sim100    0.916      0.139
-12 nonmonotone  sim500    0.931      0.143
+1     constant default    0.961      0.148
+2     constant   delta    0.931      0.139
+3     constant  sim100    0.929      0.130
+4     constant  sim500    0.943      0.135
+5   increasing default    0.962      0.141
+6   increasing   delta    0.934      0.130
+7   increasing  sim100    0.928      0.123
+8   increasing  sim500    0.942      0.127
+9  nonmonotone default    0.973      0.177
+10 nonmonotone   delta    0.920      0.143
+11 nonmonotone  sim100    0.915      0.136
+12 nonmonotone  sim500    0.930      0.140
 
       n  method coverage mean_width
-1   100 default    0.960     0.2351
-2   100   delta    0.914     0.2135
-3   100  sim100    0.922     0.2006
-4   100  sim500    0.936     0.2074
-5   250 default    0.965     0.1538
-6   250   delta    0.931     0.1362
-7   250  sim100    0.925     0.1294
-8   250  sim500    0.939     0.1336
-9  1000 default    0.966     0.0804
-10 1000   delta    0.942     0.0689
-11 1000  sim100    0.926     0.0657
-12 1000  sim500    0.940     0.0681
+1   100 default    0.961     0.2332
+2   100   delta    0.913     0.2096
+3   100  sim100    0.922     0.1968
+4   100  sim500    0.935     0.2035
+5   250 default    0.966     0.1528
+6   250   delta    0.930     0.1336
+7   250  sim100    0.924     0.1269
+8   250  sim500    0.938     0.1311
+9  1000 default    0.968     0.0801
+10 1000   delta    0.942     0.0677
+11 1000  sim100    0.927     0.0646
+12 1000  sim500    0.941     0.0668
 
   cens  method coverage mean_width
-1  0.2 default    0.964      0.134
-2  0.2   delta    0.935      0.119
-3  0.2  sim100    0.927      0.113
-4  0.2  sim500    0.940      0.117
-5  0.6 default    0.963      0.179
-6  0.6   delta    0.923      0.160
-7  0.6  sim100    0.922      0.151
-8  0.6  sim500    0.937      0.156
+1  0.2 default    0.966      0.133
+2  0.2   delta    0.935      0.116
+3  0.2  sim100    0.927      0.110
+4  0.2  sim500    0.940      0.114
+5  0.6 default    0.964      0.178
+6  0.6   delta    0.921      0.158
+7  0.6  sim100    0.921      0.149
+8  0.6  sim500    0.936      0.154
 
     grid_type  method coverage mean_width
-1 equidistant default    0.962      0.162
-2 equidistant   delta    0.931      0.147
-3 equidistant  sim100    0.924      0.139
-4 equidistant  sim500    0.939      0.143
+1 equidistant default    0.965      0.160
+2 equidistant   delta    0.930      0.143
+3 equidistant  sim100    0.924      0.135
+4 equidistant  sim500    0.939      0.139
 5    quantile default    0.965      0.151
 6    quantile   delta    0.927      0.132
 7    quantile  sim100    0.924      0.125
 8    quantile  sim500    0.938      0.130
 
-   t_label  method coverage mean_width
-1      S90 default    0.947     0.0923
-2      S90   delta    0.929     0.0906
-3      S90  sim100    0.927     0.0878
-4      S90  sim500    0.941     0.0909
-5      S75 default    0.954     0.1393
-6      S75   delta    0.935     0.1315
-7      S75  sim100    0.923     0.1266
-8      S75  sim500    0.937     0.1309
-9      S50 default    0.968     0.1968
-10     S50   delta    0.939     0.1756
-11     S50  sim100    0.927     0.1664
-12     S50  sim500    0.940     0.1720
-13     S25 default    0.975     0.1960
-14     S25   delta    0.933     0.1680
-15     S25  sim100    0.923     0.1573
-16     S25  sim500    0.937     0.1626
-17     S10 default    0.976     0.1577
-18     S10   delta    0.909     0.1319
-19     S10  sim100    0.923     0.1216
-20     S10  sim500    0.937     0.1256
+   S_bin  method coverage mean_width
+1    S10 default    0.976     0.1577
+2    S10   delta    0.909     0.1319
+3    S10  sim100    0.923     0.1216
+4    S10  sim500    0.937     0.1256
+5    S25 default    0.974     0.1960
+6    S25   delta    0.932     0.1677
+7    S25  sim100    0.923     0.1570
+8    S25  sim500    0.937     0.1623
+9    S50 default    0.968     0.1968
+10   S50   delta    0.939     0.1756
+11   S50  sim100    0.927     0.1664
+12   S50  sim500    0.940     0.1720
+13   S75 default    0.955     0.1335
+14   S75   delta    0.935     0.1247
+15   S75  sim100    0.922     0.1204
+16   S75  sim500    0.937     0.1245
+17   S90 default    0.948     0.0639
+18   S90   delta    0.928     0.0613
+19   S90  sim100    0.927     0.0603
+20   S90  sim500    0.941     0.0624
 
