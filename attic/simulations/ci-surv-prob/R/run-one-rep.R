@@ -26,6 +26,7 @@ run_one_rep <- function(scen, prep, rep_id, rng_stream) {
 
   cis <- tryCatch(compute_cis(fit, prep$eval_tbl), error = identity)
   if (inherits(cis, "condition")) return(failed_row("ci"))
+  rownames(cis) <- NULL
 
   cbind(
     data.frame(scenario_id = scen$scenario_id, rep_id = rep_id),
