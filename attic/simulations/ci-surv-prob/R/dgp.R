@@ -83,7 +83,10 @@ scenario_grid <- function() {
     stringsAsFactors = FALSE
   )
   grid$J <- ifelse(grid$grid_type == "equidistant", 10L, 40L)
-  grid$k <- 10L
+  # k must stay safely below the number of *populated* intervals: under heavy
+  # censoring the trailing equidistant intervals are often empty, and mgcv
+  # errors when s(tend, k) has fewer unique tend values than k
+  grid$k <- ifelse(grid$grid_type == "equidistant", 7L, 10L)
   # sensitivity arm: one mid scenario refit with larger basis dimension
   sens <- grid[grid$baseline == "nonmonotone" & grid$n == 250 &
                  grid$cens == 0.2 & grid$grid_type == "quantile", ]

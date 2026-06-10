@@ -44,7 +44,14 @@ Sensitivity arm (scenario 37): non-monotone baseline, n = 250, 20% censoring,
 quantile grid, refit with `s(tend, k = 20)` instead of k = 10.
 
 Fitted model (correctly specified): `pamm(ped_status ~ s(tend, k = k) + x1,
-method = "REML")`. Within each fit, CIs are evaluated at 2 covariate profiles
+method = "REML")`, with k = 7 for the J = 10 equidistant grids and k = 10 for
+the J = 40 quantile grids. k must stay safely below the number of *populated*
+intervals: under heavy censoring the trailing equidistant intervals are often
+empty and mgcv errors when `s(tend, k)` has fewer unique `tend` values than k
+(with k = J = 10, up to 84% of fits failed in the constant-baseline/60%-
+censoring/n=100 cell). Residual fit failures (~1–2% worst case) are recorded
+and reported; note they coincide with datasets lacking late events, so
+late-time coverage is conditional on estimability. Within each fit, CIs are evaluated at 2 covariate profiles
 (x1 = 0 and x1 = 1.5, HR ≈ 2.9) × 5 time points: the fitting-grid endpoints
 closest to where true S(t|x) crosses 0.9, 0.75, 0.5, 0.25, 0.1 (labels
 S90...S10). This probes boundary proximity (S near 1 or 0) without extra
