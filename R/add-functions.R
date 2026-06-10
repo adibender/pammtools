@@ -106,14 +106,18 @@ make_X.default <- function(object, newdata, ...) {
 #' @rdname make_X
 #' @keywords internal
 make_X.gam <- function(object, newdata, ...) {
-  predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  dots <- list(...)
+  dots$type <- "lpmatrix"
+  do.call(predict.gam, c(list(object = object, newdata = newdata), dots))
 }
 
 #' @inherit make_X
 #' @importFrom scam predict.scam
 #' @keywords internal
 make_X.scam <- function(object, newdata, ...) {
-  X <- predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
+  dots <- list(...)
+  dots$type <- "lpmatrix"
+  do.call(predict.scam, c(list(object = object, newdata = newdata), dots))
 }
 
 prep_X <- function(object, newdata, reference = NULL, ...) {
@@ -703,7 +707,7 @@ add_ci <- function(
 }
 
 add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
@@ -722,7 +726,7 @@ add_delta_ci_cumu <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
   intlen <- newdata[[interval_length]]
 
@@ -744,7 +748,7 @@ add_delta_ci_surv <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
   intlen <- newdata[[interval_length]]
 
@@ -768,7 +772,7 @@ add_delta_ci_surv <- function(
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
 get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
   coefs <- coef(object)
 
@@ -790,7 +794,7 @@ get_sim_ci_cumu <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
   coefs <- coef(object)
   intlen <- newdata[[interval_length]]
@@ -816,7 +820,7 @@ get_sim_ci_surv <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
+  X <- make_X(object, newdata, type = "lpmatrix", ...)
   V <- object$Vp
   coefs <- coef(object)
   intlen <- newdata[[interval_length]]

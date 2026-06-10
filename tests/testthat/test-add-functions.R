@@ -133,6 +133,30 @@ test_that("hazard functions work for PAM", {
   ))
 })
 
+test_that("simulation-based CIs work with scam objects", {
+  skip_if_not_installed("scam")
+
+  data("tumor")
+  ped <- tumor[1:80, ] %>%
+    as_ped(Surv(days, status) ~ age, cut = c(0, 100, 200, 500))
+
+  pam_scam <- scam::scam(
+    ped_status ~ age,
+    data = ped,
+    family = poisson(),
+    offset = offset
+  )
+
+  haz <- ped_info(ped) %>%
+    add_hazard(pam_scam, ci_type = "sim", nsim = 10L)
+
+  expect_data_frame(haz, ncols = 10L)
+  expect_true(all(is.finite(haz$ci_lower)))
+  expect_true(all(is.finite(haz$ci_upper)))
+  expect_true(all(haz$ci_lower <= haz$hazard))
+  expect_true(all(haz$ci_upper >= haz$hazard))
+})
+
 test_that("hazard functions work for PEM", {
   expect_data_frame(
     haz <- add_hazard(ped_info(ped), pem),

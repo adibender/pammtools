@@ -31,8 +31,8 @@ append_ped_attr <- function(pamm, ped) {
 #' for inline data transformation. Convert your data with \code{as_ped()} before
 #' calling \code{pamm()} instead.
 #' @param engine Character name of the function that will be called to fit the
-#' model. The intended entries are either \code{"gam"} or \code{"bam"}
-#' (both from package \code{mgcv}).
+#' model. The intended entries are \code{"gam"}, \code{"bam"}, or
+#' \code{"scam"} (from package \code{mgcv} / \code{scam}).
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
@@ -75,6 +75,18 @@ pamm <- function(
   
   if (is.null(data$offset)) {
     warning(paste0(deparse(substitute(data)), " does not contain an offset. PAMM assumes a risk time of 1 for all subjects"))
+  }
+
+  if (is.character(engine)) {
+    if (engine %in% c("gam", "bam")) {
+      requireNamespace("mgcv", quietly = TRUE)
+      engine <- getFromNamespace(engine, ns = "mgcv")
+    } else if (engine == "scam") {
+      requireNamespace("scam", quietly = TRUE)
+      engine <- getFromNamespace("scam", ns = "scam")
+    } else {
+      engine <- match.fun(engine)
+    }
   }
 
   pamm_fit        <- do.call(engine, dots)
