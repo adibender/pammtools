@@ -105,8 +105,8 @@ surv_df <- ped %>%
   add_surv_prob(mpam)
 
 ggplot(surv_df, aes(x = tend, y = surv_prob)) +
-  geom_surv(aes(col = complications)) +
-  geom_stepribbon(
+  geom_line(aes(col = complications)) +
+  geom_ribbon(
     aes(ymin = surv_lower, ymax = surv_upper, fill = complications),
     alpha = .3) +
   scale_color_manual(values = Set1) +
