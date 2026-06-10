@@ -1,6 +1,17 @@
 # pammtools 0.7.6
 
 ## Bug fixes
+* Simulation-based confidence intervals (`ci_type = "sim"` in `add_hazard()`,
+  `add_cumu_hazard()`, `add_surv_prob()`, as well as `add_cif()`,
+  `add_trans_prob()`/`add_trans_ci()` and the cumulative hazard differences
+  in `get_cumu_coef()`) now use type-6 empirical quantiles instead of the
+  `stats::quantile()` default (type 7). Type-7 quantiles made these intervals
+  systematically too narrow for small `nsim`: at the default `nsim = 100`,
+  the expected central mass of the draws enclosed by the bounds is ~93%
+  instead of the nominal 95%. Type-6 quantiles remove this systematic
+  inward bias (#288). As a consequence, all simulation-based CI bounds
+  change slightly (intervals widen at both ends) relative to versions
+  <= 0.7.5.
 * `add_trans_prob()` and `add_trans_ci()` no longer require the input data to
   be pre-sorted; the internal `arrange` call is now handled automatically,
   fixing the user-facing sorting dependency reported in #255 and related to

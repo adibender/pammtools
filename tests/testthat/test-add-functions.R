@@ -133,6 +133,69 @@ test_that("hazard functions work for PAM", {
   ))
 })
 
+test_that("simulation based CIs use type-6 quantiles (#288)", {
+  # nsim = 100 exercises the interpolation branch of the type-6 quantile;
+  # for nsim < 39 the 2.5% bound would degenerate to min/max of the draws
+  nd <- ped_info(ped)
+  set.seed(288)
+  haz_sim <- add_hazard(nd, pam, ci_type = "sim", nsim = 100L)
+  # reproduce the posterior draws (no other RNG is consumed before rmvnorm)
+  # and compare against type-6 quantiles
+  set.seed(288)
+  X <- predict(pam, newdata = nd, type = "lpmatrix")
+  sim_coef_mat <- mvtnorm::rmvnorm(100L, mean = coef(pam), sigma = pam$Vp)
+  sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+  expect_equal(
+    haz_sim$ci_lower,
+    apply(sim_fit_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    haz_sim$ci_upper,
+    apply(sim_fit_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+  # type-6 intervals always contain the type-7 intervals for the same draws
+  expect_true(all(
+    haz_sim$ci_lower <= apply(sim_fit_mat, 1, quantile, probs = 0.025, type = 7)
+  ))
+  expect_true(all(
+    haz_sim$ci_upper >= apply(sim_fit_mat, 1, quantile, probs = 0.975, type = 7)
+  ))
+
+  # same check for the cumulative hazard and survival probability paths
+  set.seed(288)
+  cumu_sim <- add_cumu_hazard(nd, pam, ci_type = "sim", nsim = 100L)
+  set.seed(288)
+  surv_sim <- add_surv_prob(nd, pam, ci_type = "sim", nsim = 100L)
+  sim_cumu_mat <- apply(
+    sim_coef_mat,
+    1,
+    function(z) cumsum(nd$intlen * exp(X %*% z))
+  )
+  sim_surv_mat <- exp(-sim_cumu_mat)
+  expect_equal(
+    cumu_sim$cumu_lower,
+    apply(sim_cumu_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    cumu_sim$cumu_upper,
+    apply(sim_cumu_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    surv_sim$surv_lower,
+    apply(sim_surv_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    surv_sim$surv_upper,
+    apply(sim_surv_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+})
+
 test_that("hazard functions work for PEM", {
   expect_data_frame(
     haz <- add_hazard(ped_info(ped), pem),
@@ -197,8 +260,8 @@ test_that("cumulative hazard functions work for PAM", {
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
-  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .25, .34))
-  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .13, .17))
+  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .26, .35))
+  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .12, .16))
 
   ## check that hazard columns are not deleted
   newdata <- ped_info(ped) %>% add_hazard(pam) %>% add_cumu_hazard(pam)
@@ -514,8 +577,8 @@ test_that("survival probabilities functions work for PAM", {
   # sim CI
   set.seed(123)
   surv3 <- add_surv_prob(ped_info(ped), pam, ci_type = "sim")
-  expect_equal(round(surv3$surv_lower, 2), c(.94, .90, .83, .78, .71))
-  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .88, .84))
+  expect_equal(round(surv3$surv_lower, 2), c(.94, .89, .82, .77, .70))
+  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .89, .85))
 })
 
 test_that("CIF works with pamm", {

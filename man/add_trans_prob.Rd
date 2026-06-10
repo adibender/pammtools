@@ -38,7 +38,9 @@ intervals for transition probabilities are calculated.}
 \item{alpha}{Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}}
 
 \item{nsim}{Sets the number of iterations for simulated confidence intervals.
-Defaults to \code{100L}}
+Defaults to \code{100L}. Interval bounds are empirical type-6 quantiles of
+the \code{nsim} draws; larger values of \code{nsim} yield more stable
+interval bounds.}
 
 \item{time_var}{Name of the variable used for the baseline hazard. Defaults
 to \code{"tend"}.}

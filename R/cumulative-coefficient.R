@@ -245,7 +245,7 @@ get_cumu_coef_baseline <- function(
 #'
 #' CIs are calculated by sampling coefficients from their posterior and
 #' calculating the cumulative hazard difference \code{nsim} times. The CI
-#' are obtained by the 2.5\% and 97.5\% quantiles.
+#' are obtained by the 2.5\% and 97.5\% empirical (type-6) quantiles.
 #'
 #' @param d1 A data set used as \code{newdata} in \code{predict.gam}
 #' @param d2 See \code{d1}
@@ -291,8 +291,8 @@ compute_cumu_diff <- function(
       cumsum(intlen1 * exp(drop(X1 %*% z)))
   })
 
-  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
+  cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
   haz1 <- exp(drop(X1 %*% model$coefficients))
   haz2 <- exp(drop(X2 %*% model$coefficients))
   cumu_diff <- cumsum(haz2 * intlen2) - cumsum(haz1 * intlen1)
