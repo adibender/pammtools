@@ -27,3 +27,4 @@
 ^\sim
 ^\tmp
 ^\.claude$
+^attic$
