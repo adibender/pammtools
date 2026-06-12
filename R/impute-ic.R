@@ -108,7 +108,7 @@ impute_ic_times <- function(object, ic, cut, beta = NULL, cache = NULL) {
     beta <- coef(object)
   }
 
-  h <- as.numeric(exp(X %*% beta))
+  h <- pmax(as.numeric(exp(X %*% beta)), .Machine$double.xmin)
   hm <- matrix(h, nrow = n_int, ncol = n_sub)
   Hend <- matrix(apply(hm * ii[["intlen"]], 2, cumsum), nrow = n_int)
   Hcut <- rbind(0, Hend) # H at c_0, ..., c_J
@@ -195,7 +195,8 @@ impute_ic_cr <- function(
 
   # cause-specific hazard matrices [interval x subject]
   hk <- lapply(cache[["X_list"]], function(Xc) {
-    matrix(as.numeric(exp(Xc %*% beta)), nrow = n_int, ncol = n_sub)
+    h <- pmax(as.numeric(exp(Xc %*% beta)), .Machine$double.xmin)
+    matrix(h, nrow = n_int, ncol = n_sub)
   })
   htot <- Reduce(`+`, hk)
   Hend <- matrix(apply(htot * ii[["intlen"]], 2, cumsum), nrow = n_int)

@@ -126,8 +126,9 @@ parse_ic_surv <- function(formula, data, id = "id") {
 #'   for the IC transformation. When \code{cut} is supplied it is sorted and
 #'   de-duplicated; otherwise the unique finite interval endpoints (the
 #'   inspection times) are used, capped at \code{max_time}. The resolved
-#'   \code{cut} \emph{must} be shared across all imputations so that all refits
-#'   use the same piecewise time grid and can be pooled.
+#'   \code{cut} \emph{must} be shared across all imputations so that the PED
+#'   interval structure is consistent across refits. Note that \code{mgcv}'s
+#'   centering constraints can still make the \code{lpmatrix} differ by fit.
 #' @param cut Optional numeric vector of interval cut-points. If \code{NULL}
 #'   (default) the finite interval endpoints are used.
 #' @param max_time Optional numeric scalar; cut-points are capped at this value.
