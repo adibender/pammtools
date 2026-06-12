@@ -5,7 +5,10 @@
 #' or time-varying effects, use \code{t} within your formula as
 #' if it was a covariate in the data, although it is not and should not
 #' be included in the \code{data} provided to \code{sim_pexp}. See examples
-#' below.
+#' below. Covariates enter the (numeric) linear predictor directly, so
+#' \code{factor}/\code{character} covariates must be encoded explicitly, e.g.\
+#' as an indicator \code{(trt == "1")}; using a factor in arithmetic (\code{b *
+#' trt}) is an error rather than a silent coercion.
 #'
 #' @param data A data set with variables specified in \code{formula}.
 #' @param cut A sequence of time-points starting with 0.
@@ -90,39 +93,46 @@
 #'}
 #' @export
 sim_pexp <- function(formula, data, cut) {
-
   data <- data %>%
     mutate(
-      id     = row_number(),
-      time   = max(cut),
-      status = 1)
+      id = row_number(),
+      time = max(cut),
+      status = 1
+    )
 
   # extract formulas for different components
   Form <- Formula(formula)
-  f1   <- formula(Form, rhs = 1)
+  f1 <- formula(Form, rhs = 1)
   # later more sophisticated checks + could be used to map over all rhs
   # formulae, check what type of evaluation is needed and return ETAs for
   # each part of the formula separated by |, such that model estimation may
   # be checked for individuals terms/parts
   if (length(Form)[2] > 1) {
-    f2  <- formula(Form, rhs = 2)
+    f2 <- formula(Form, rhs = 2)
   } else {
     f2 <- NULL
   }
 
   # construct eta for time-constant part
-  ped  <- split_data(
-      formula = Surv(time, status)~.,
-      data    = select_if(data, is_atomic),
-      cut     = cut,
-      id      = "id") %>%
-    rename("t" = "tstart") %>%
-    mutate(rate = exp(f_eval(f1, .)))
+  ped <- split_data(
+    formula = Surv(time, status) ~ .,
+    data = select_if(data, is_atomic),
+    cut = cut,
+    id = "id"
+  ) %>%
+    rename("t" = "tstart")
+  # Covariates enter the (numeric) linear predictor: a factor used directly in
+  # arithmetic (e.g. `b * trt`) is silently turned into `NA` by `Ops.factor`
+  # (and any warning is easily lost, e.g. under knitr `warning = FALSE`). Catch
+  # that here and tell the user to encode the factor explicitly instead.
+  eta <- f_eval(f1, ped)
+  assert_numeric_eta(eta, f1, data)
+  ped[["rate"]] <- exp(eta)
 
   # construct eta for time-dependent part
   if (!is.null(f2)) {
-    terms_f2  <- terms(f2, specials = "fcumu")
-    f2_ev     <- list()
+    terms_f2 <- terms(f2, specials = "fcumu")
+    f2_ev <- list()
     f2_env <- environment(f2)
     if (is.null(f2_env)) {
       f2_env <- parent.frame()
@@ -131,12 +141,14 @@ sim_pexp <- function(formula, data, cut) {
     for (i in seq_along(f2_tl)) {
       f2_ev[[i]] <- eval(expr = parse(text = f2_tl[[i]]), envir = f2_env)
     }
-    ll_funs   <- map(f2_ev, ~.x[["ll_fun"]])
-    tz_vars   <- map_chr(f2_ev, ~.x[["vars"]][1])
-    cumu_funs <- map(f2_ev, ~.x[["f_xyz"]])
+    ll_funs <- map(f2_ev, ~ .x[["ll_fun"]])
+    tz_vars <- map_chr(f2_ev, ~ .x[["vars"]][1])
+    cumu_funs <- map(f2_ev, ~ .x[["f_xyz"]])
     names(tz_vars) <- names(ll_funs) <- names(cumu_funs) <- tz_vars
-    z_form <- list("eta_", map_chr(f2_ev, ~.x[["vars"]][2])) %>%
-      reduce(paste0, collapse = "+") %>% paste0("~", .) %>% as.formula()
+    z_form <- list("eta_", map_chr(f2_ev, ~ .x[["vars"]][2])) %>%
+      reduce(paste0, collapse = "+") %>%
+      paste0("~", .) %>%
+      as.formula()
 
     df2 <- map(f2_ev, function(fc) eta_cumu(data = data, fc, cut = cut))
     suppressMessages(
@@ -157,30 +169,40 @@ sim_pexp <- function(formula, data, cut) {
     summarize(time = rpexp(rate = .data$rate, t = .data$t)) %>%
     mutate(
       status = 1L * (.data$time <= max(cut)),
-      time   = pmin(.data$time, max(cut)))
+      time = pmin(.data$time, max(cut))
+    )
 
   suppressMessages(
     sim_df <- sim_df %>%
       left_join(select(data, -all_of(c("time", "status"))))
   )
 
-  attr(sim_df, "id_var")     <- "id"
-  attr(sim_df, "time_var")   <- "time"
+  attr(sim_df, "id_var") <- "id"
+  attr(sim_df, "time_var") <- "time"
   attr(sim_df, "status_var") <- "status"
-  attr(sim_df, "tz_var")     <- tz_vars
+  attr(sim_df, "tz_var") <- tz_vars
   attr(sim_df, "cens_value") <- 0
-  attr(sim_df, "breaks")     <- cut
-  attr(sim_df, "tz")         <- imap(tz_vars, ~select(sim_df, all_of(.x)) %>%
-    pull(.x) %>% unique()) %>% flatten()
+  attr(sim_df, "breaks") <- cut
+  attr(sim_df, "tz") <- imap(
+    tz_vars,
+    ~ select(sim_df, all_of(.x)) %>%
+      pull(.x) %>%
+      unique()
+  ) %>%
+    flatten()
   if (exists("ll_funs")) attr(sim_df, "ll_funs") <- ll_funs
   if (exists("cumu_funs")) attr(sim_df, "cumu_funs") <- cumu_funs
-  attr(sim_df, "id_n") <- sim_df %>% pull("time") %>%
+  attr(sim_df, "id_n") <- sim_df %>%
+    pull("time") %>%
     pmin(max(cut)) %>%
     map_int(findInterval, vec = cut, left.open = TRUE, rightmost.closed = TRUE)
   attr(sim_df, "id_tseq") <- attr(sim_df, "id_n") %>%
-    map(seq_len) %>% unlist()
-  attr(sim_df, "id_tz_seq") <- rep(seq_along(pull(sim_df, id)),
-    times = attr(sim_df, "id_n"))
+    map(seq_len) %>%
+    unlist()
+  attr(sim_df, "id_tz_seq") <- rep(
+    seq_along(pull(sim_df, id)),
+    times = attr(sim_df, "id_n")
+  )
   attr(sim_df, "sim_formula") <- formula
 
   class(sim_df) <- c("sim_df", class(unped(sim_df)))
@@ -190,7 +212,43 @@ sim_pexp <- function(formula, data, cut) {
   }
 
   sim_df
+}
 
+# Guard against factor/character covariates being silently coerced when the
+# simulation formula evaluates the (numeric) linear predictor. Explicit numeric
+# encodings such as `(trt == "1")` evaluate fine and are left untouched; only a
+# genuinely non-finite linear predictor triggers the (informative) error.
+assert_numeric_eta <- function(eta, formula, data) {
+  if (all(is.finite(eta))) {
+    return(invisible(eta))
+  }
+  fvars <- all.vars(formula)
+  is_fac <- function(v) {
+    v %in% names(data) && (is.factor(data[[v]]) || is.character(data[[v]]))
+  }
+  fac <- fvars[vapply(fvars, is_fac, logical(1))]
+  msg <- paste0(
+    "sim_pexp(): the formula produced a non-finite linear predictor, so no ",
+    "hazard rate could be computed."
+  )
+  if (length(fac)) {
+    lev <- levels(as.factor(data[[fac[1]]]))
+    hint <- if (length(lev) >= 2) {
+      paste0("`(", fac[1], " == \"", lev[2], "\")`")
+    } else {
+      paste0("`(", fac[1], " == \"<level>\")`")
+    }
+    msg <- paste0(
+      msg,
+      "\nThe formula uses the factor/character covariate(s) ",
+      paste0("`", fac, "`", collapse = ", "),
+      " in arithmetic. Factors are not coerced to numeric automatically; encode",
+      " them explicitly in the linear predictor, e.g. ",
+      hint,
+      " for a 0/1 indicator."
+    )
+  }
+  stop(msg, call. = FALSE)
 }
 
 
@@ -216,20 +274,18 @@ sim_pexp <- function(formula, data, cut) {
 #' @importFrom purrr map
 #' @export
 add_tdc <- function(data, tz, rng_fun, ...) {
-
-  tz      <- enquo(tz)
-  nz      <- length(eval_tidy(tz))
+  tz <- enquo(tz)
+  nz <- length(eval_tidy(tz))
   name_tz <- quo_name(tz)
-  z_var   <- paste0("z.", name_tz)
+  z_var <- paste0("z.", name_tz)
 
   data %>%
     mutate(
       !!name_tz := map(seq_len(n()), ~ !!tz),
-      !!z_var   := map(seq_len(n()), ~ rng_fun(nz = nz))) %>%
+      !!z_var := map(seq_len(n()), ~ rng_fun(nz = nz))
+    ) %>%
     as_tibble()
-
 }
-
 
 
 #' A formula special used to handle cumulative effect specifications
@@ -242,17 +298,16 @@ add_tdc <- function(data, tz, rng_fun, ...) {
 #' @export
 #' @keywords internal
 fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
-
-  vars   <- as.list(substitute(list(...)))[-1] %>%
-    map(~as.character(.x)) %>%
+  vars <- as.list(substitute(list(...)))[-1] %>%
+    map(~ as.character(.x)) %>%
     unlist()
   vars <- vars[vars != "t"]
 
   list(
-    vars   = vars,
-    f_xyz  = f_xyz,
-    ll_fun = ll_fun)
-
+    vars = vars,
+    f_xyz = f_xyz,
+    ll_fun = ll_fun
+  )
 }
 
 #' @import dplyr
@@ -260,14 +315,14 @@ fcumu <- function(..., by = NULL, f_xyz, ll_fun) {
 #' @importFrom rlang sym :=
 #' @keywords internal
 eta_cumu <- function(data, fcumu, cut, ...) {
-
-  vars   <- fcumu$vars
-  f_xyz  <- fcumu$f_xyz
+  vars <- fcumu$vars
+  f_xyz <- fcumu$f_xyz
   ll_fun <- fcumu$ll_fun
   eta_name <- paste0("eta_", vars[2])
   comb_df <- combine_df(
     data.frame(t = cut),
-    select(data, one_of("id", vars)))
+    select(data, one_of("id", vars))
+  )
   comb_df <- comb_df %>% unnest(cols = -one_of("id"))
   comb_df %>%
     group_by(.data$id, .data$t) %>%
@@ -276,13 +331,16 @@ eta_cumu <- function(data, fcumu, cut, ...) {
       delta = {
         delta <- abs(diff(!!sym(vars[1])))
         if (length(delta) == 0) rep(1, dplyr::n()) else c(mean(delta), delta)
-      }) %>%
+      }
+    ) %>%
     ungroup() %>%
     filter(.data$LL != 0) %>%
     group_by(.data$id, .data$t) %>%
-    summarize(!!eta_name :=
-      sum(.data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])))
-
+    summarize(
+      !!eta_name := sum(
+        .data$delta * f_xyz(.data$t, .data[[vars[1]]], .data[[vars[2]]])
+      )
+    )
 }
 
 #' Simulate data for competing risks scenario
@@ -290,12 +348,11 @@ eta_cumu <- function(data, fcumu, cut, ...) {
 #'
 #' @keywords internal
 sim_pexp_cr <- function(formula, data, cut) {
-
   # Formula extends the base class formula by allowing for multiple responses and multiple parts of regressors
-  Form    <- Formula(formula)
+  Form <- Formula(formula)
   # Extract the right handside of the Formula
-  F_rhs   <- attr(Form, "rhs")
-  l_rhs   <- length(F_rhs)
+  F_rhs <- attr(Form, "rhs")
+  l_rhs <- length(F_rhs)
   seq_rhs <- seq_len(l_rhs)
 
   if (!("id" %in% names(data))) {
@@ -308,18 +365,19 @@ sim_pexp_cr <- function(formula, data, cut) {
 
   data <- data %>%
     mutate(
-      time   = max(cut),
+      time = max(cut),
       status = 1
     )
 
   # construct eta for time-constant part
   # offset (the log of the duration during which the subject was under risk in that interval)
 
-  ped  <- split_data(
-    formula = Surv(time, status)~.,
-    data    = select_if(data, is_atomic),
-    cut     = cut,
-    id      = "id") %>%
+  ped <- split_data(
+    formula = Surv(time, status) ~ .,
+    data = select_if(data, is_atomic),
+    cut = cut,
+    id = "id"
+  ) %>%
     mutate(
       t = t + .data$tstart
     )
@@ -327,7 +385,7 @@ sim_pexp_cr <- function(formula, data, cut) {
   # calculate cause specific hazards
 
   for (i in seq_rhs) {
-    ped[[paste0("hazard", i)]] <-  exp(eval(F_rhs[[i]], ped))
+    ped[[paste0("hazard", i)]] <- exp(eval(F_rhs[[i]], ped))
   }
   ped[["rate"]] <- reduce(ped[paste0("hazard", seq_rhs)], `+`)
 
@@ -336,22 +394,23 @@ sim_pexp_cr <- function(formula, data, cut) {
   sim_df <- ped %>%
     group_by(id) %>%
     mutate(
-      time   = rpexp(rate = .data$rate, t = .data$tstart),
+      time = rpexp(rate = .data$rate, t = .data$tstart),
       status = 1L * (.data$time <= max(cut)),
-      time   = pmin(.data$time, max(cut)),
+      time = pmin(.data$time, max(cut)),
       # t wieder ins "Original" zurückrechnen, muss später auf die Waitingtime drauf gerechnet werden
       t = .data$t - .data$tstart
     ) %>%
     filter(.data$tstart < .data$time & .data$time <= .data$tend)
 
-
-
   # Ziehe aus den möglichen hazards eins mit den entsprechenden Wahrscheinlichkeiten
-  sim_df$type <- apply(sim_df[paste0("hazard", seq_rhs)], 1,
-    function(probs)
-      sample(seq_rhs, 1, prob = probs))
+  sim_df$type <- apply(
+    sim_df[paste0("hazard", seq_rhs)],
+    1,
+    function(probs) sample(seq_rhs, 1, prob = probs)
+  )
 
   sim_df %>%
-    select(-one_of(c("tstart", "tend", "interval", "offset", "ped_status", "rate")))
-
+    select(
+      -one_of(c("tstart", "tend", "interval", "offset", "ped_status", "rate"))
+    )
 }

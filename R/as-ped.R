@@ -160,6 +160,16 @@ as_ped.data.frame <- function(
   min_events   = 1L,
   ...) {
 
+  # interval-censored data are detected before status_error(), which assumes a
+  # 0/1 (or competing) status column and would choke on survival's interval
+  # status codes. Right-censored and left-truncated (counting-process) responses
+  # both return "none" here and fall through to the standard pipeline unchanged.
+  if (detect_ic(formula, data) != "none") {
+    ped <- as_ped_ic(data = data, formula = formula, cut = cut,
+      max_time = max_time, ...)
+    return(ped)
+  }
+
   status_error(data, formula, censor_code)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
