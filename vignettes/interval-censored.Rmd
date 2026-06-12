@@ -80,7 +80,7 @@ naive midpoint intervals stays appreciable.
 ```{r}
 set.seed(3)
 df  <- data.frame(trt = rbinom(1000, 1, 0.5) |> as.factor())
-sdf <- sim_pexp(~ -2.2 + 0.15 * t * (trt == 1), df,
+sdf <- sim_pexp(~ -2.2 + 0.15 * t * (trt == "1"), df,
                 cut = seq(0, 10, by = 0.1))
 icd <- add_inspections(sdf, rate = 1.5, max_time = 10)
 icd %>% select(id, trt, true_time, L, R) %>% head()
