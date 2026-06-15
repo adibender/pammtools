@@ -12,7 +12,10 @@ If you want to include a smooth baseline
 or time-varying effects, use \code{t} within your formula as
 if it was a covariate in the data, although it is not and should not
 be included in the \code{data} provided to \code{sim_pexp}. See examples
-below.}
+below. Covariates enter the (numeric) linear predictor directly, so
+\code{factor}/\code{character} covariates must be encoded explicitly, e.g.\
+as an indicator \code{(trt == "1")}; using a factor in arithmetic (\code{b *
+trt}) is an error rather than a silent coercion.}
 
 \item{data}{A data set with variables specified in \code{formula}.}
 

@@ -326,6 +326,12 @@ get_hazard.default <- function(
 
 
 #' @rdname add_hazard
+#' @export
+add_cumu_hazard <- function(newdata, object, ...) {
+  UseMethod("add_cumu_hazard", object)
+}
+
+#' @rdname add_hazard
 #' @inheritParams add_hazard
 #' @param interval_length The variable in newdata containing the interval lengths.
 #' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
@@ -333,7 +339,7 @@ get_hazard.default <- function(
 #' @seealso \code{\link[mgcv]{predict.gam}},
 #' \code{\link[pammtools]{add_surv_prob}}
 #' @export
-add_cumu_hazard <- function(
+add_cumu_hazard.default <- function(
   newdata,
   object,
   ci = TRUE,
@@ -523,7 +529,13 @@ get_cumu_hazard <- function(
 #' pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
 #' ped_info(ped) %>% add_surv_prob(pam, ci=TRUE)
 #' @export
-add_surv_prob <- function(
+add_surv_prob <- function(newdata, object, ...) {
+  UseMethod("add_surv_prob", object)
+}
+
+#' @rdname add_surv_prob
+#' @export
+add_surv_prob.default <- function(
   newdata,
   object,
   ci = TRUE,
@@ -893,10 +905,19 @@ add_delta_ci_surv <- function(
 #' @keywords internal
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
-get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
+get_sim_ci <- function(
+  newdata,
+  object,
+  alpha = 0.05,
+  nsim = 100L,
+  sim_coef_mat = NULL,
+  ...
+) {
   X <- make_X(object, newdata, ...)
 
-  sim_coef_mat <- sample_coefs(object, nsim)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
   newdata$ci_lower <- apply(
@@ -924,12 +945,15 @@ get_sim_ci_cumu <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
+  sim_coef_mat = NULL,
   ...
 ) {
   X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- sample_coefs(object, nsim)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
@@ -960,12 +984,15 @@ get_sim_ci_surv <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
+  sim_coef_mat = NULL,
   ...
 ) {
   X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- sample_coefs(object, nsim)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,

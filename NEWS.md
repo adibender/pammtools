@@ -14,6 +14,26 @@
   `pamm()` gained `engine = "scam"`. See the new article
   ["Shape-constrained effects (scam)"](https://adibender.github.io/pammtools/articles/shape-constraints.html).
 
+## New features
+* Interval-censored time-to-event data are now supported via a multiple-
+  imputation (MI) workflow. Data specified with `Surv(L, R, type = "interval2")`
+  are detected automatically by `as_ped()`. The new `pamm_ic()` (single event)
+  and `pamm_ic_cr()` (competing risks) fit a PAMM by repeatedly drawing exact
+  event times from the model-based conditional hazard distribution on `(L, R]`
+  and re-fitting the standard right-censored pipeline. Inference pools the
+  imputations: `add_hazard()`, `add_cumu_hazard()`, `add_surv_prob()` and
+  `add_cif()` gain `pamm_ic` methods that combine per-imputation posterior draws
+  (within- plus between-imputation variance). The `iter` argument enables
+  chained (refit-and-reimpute) imputation, recommended for sparsely inspected
+  data; numerically degenerate imputation chains are flagged with a warning.
+  `add_inspections()` turns exact simulated times (e.g. from `sim_pexp()`) into
+  interval-censored panel data for testing and coverage studies.
+  `print()`/`summary()` of a `pamm_ic` report the *pooled* fit (Rubin-combined
+  coefficients and covariances, median-p term tests, fraction-of-missing-
+  information diagnostic); the object exposes a `pooled` entry and stores the
+  per-imputation fits in slimmed form so memory does not scale with the number
+  of imputations. See the new "Interval-Censored Data" vignette.
+
 ## Bug fixes
 * Simulation-based confidence intervals (`ci_type = "sim"` in `add_hazard()`,
   `add_cumu_hazard()`, `add_surv_prob()`, as well as `add_cif()`,
