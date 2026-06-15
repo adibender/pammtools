@@ -154,7 +154,10 @@ preproc_reference <- function(reference, cnames, n_rows) {
 resolve_time_var <- function(time_var, object, newdata) {
   if (is.null(time_var)) {
     is_gam <- inherits(object, "gam") || inherits(object, "scam")
-    time_var <- if (is_gam) "tend" else "interval"
+    # prefer the interval end point "tend" whenever it is available (as in
+    # make_newdata grids); this also covers alternative backends that are
+    # neither gam nor scam. Fall back to the "interval" factor otherwise.
+    time_var <- if (is_gam || "tend" %in% colnames(newdata)) "tend" else "interval"
   } else {
     assert_string(time_var)
   }
@@ -435,7 +438,9 @@ get_cumu_hazard <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_multi_class(object, classes = c("glm", "scam"))
+  # NB: no class restriction here -- any model that provides a `get_hazard`
+  # method (and, for ci_type = "sim", a `sim_hazard` method) works. This is
+  # what makes alternative estimation backends (e.g. xgboost) pluggable.
 
   ci_type <- match.arg(ci_type)
 
@@ -655,7 +660,9 @@ get_surv_prob <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_multi_class(object, classes = c("glm", "scam"))
+  # NB: no class restriction here -- any model that provides a `get_hazard`
+  # method (and, for ci_type = "sim", a `sim_hazard` method) works. This is
+  # what makes alternative estimation backends (e.g. xgboost) pluggable.
 
   ci_type <- match.arg(ci_type)
 
@@ -966,12 +973,7 @@ get_sim_ci <- function(
   sim_coef_mat = NULL,
   ...
 ) {
-  X <- make_X(object, newdata, ...)
-
-  if (is.null(sim_coef_mat)) {
-    sim_coef_mat <- sample_coefs(object, nsim)
-  }
-  sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+  sim_fit_mat <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
 
   newdata$ci_lower <- apply(
     sim_fit_mat,
@@ -1001,17 +1003,10 @@ get_sim_ci_cumu <- function(
   sim_coef_mat = NULL,
   ...
 ) {
-  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  if (is.null(sim_coef_mat)) {
-    sim_coef_mat <- sample_coefs(object, nsim)
-  }
-  sim_fit_mat <- apply(
-    sim_coef_mat,
-    1,
-    function(z) cumsum(intlen * exp(X %*% z))
-  )
+  H <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
+  sim_fit_mat <- apply(H, 2, function(h) cumsum(intlen * h))
 
   newdata$cumu_lower <- apply(
     sim_fit_mat,
@@ -1040,17 +1035,10 @@ get_sim_ci_surv <- function(
   sim_coef_mat = NULL,
   ...
 ) {
-  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  if (is.null(sim_coef_mat)) {
-    sim_coef_mat <- sample_coefs(object, nsim)
-  }
-  sim_fit_mat <- apply(
-    sim_coef_mat,
-    1,
-    function(z) exp(-cumsum(intlen * exp(X %*% z)))
-  )
+  H <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
+  sim_fit_mat <- apply(H, 2, function(h) exp(-cumsum(intlen * h)))
 
   newdata$surv_lower <- apply(
     sim_fit_mat,
