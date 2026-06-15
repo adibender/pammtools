@@ -151,16 +151,16 @@ preproc_reference <- function(reference, cnames, n_rows) {
   reference
 }
 
-# Analytic ("default"/"delta") CIs require the coefficient triplet
-# (make_X/get_coefs/get_Vp). Backends that only provide the get_hazard /
-# sim_hazard primitives must request ci_type = "sim".
+# Analytic ("default"/"delta") CIs are built from the coefficient triplet
+# (make_X/get_coefs/get_Vp). Any model that inherits "lm" (gam, scam, glm, ...)
+# carries coefficients with coef()/model.matrix()/vcov() and so supports them;
+# other backends (e.g. machine-learning ensembles) must use ci_type = "sim".
 assert_ci_supported <- function(object, ci, ci_type) {
-  if (ci && ci_type %in% c("default", "delta") &&
-      !inherits(object, c("glm", "scam"))) {
+  if (ci && ci_type %in% c("default", "delta") && !inherits(object, "lm")) {
     stop(
-      "ci_type = \"", ci_type, "\" requires a coefficient-based model ",
-      "(e.g. gam/scam). Use ci_type = \"sim\" for backends without a ",
-      "coefficient covariance (e.g. machine-learning ensembles).",
+      "ci_type = \"", ci_type, "\" needs analytic (coefficient-based) ",
+      "confidence intervals, which this model does not provide. ",
+      "Use ci_type = \"sim\".",
       call. = FALSE
     )
   }
