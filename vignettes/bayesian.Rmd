@@ -157,7 +157,10 @@ get_cumu_from_pamm <- function(model, method_id, newdata, conf_level = 0.95) {
     newdata = newdata,
     object = add_model,
     ci = TRUE,
-    se_mult = se_mult
+    se_mult = se_mult,
+    # keep the original prediction grid (no tend == 0 boundary row) so the
+    # curves align with the brms predictions and the Nelson-Aalen reference
+    boundary = FALSE
   )
 
   tibble(
