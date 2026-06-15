@@ -103,6 +103,7 @@ ic_ci_draws <- function(
     H <- exp(X %*% t(B)) # nrow x per hazard draws
     coefs <- get_coefs(f)
     h0 <- as.numeric(exp(X %*% coefs))
+    if (kind == "hazard") {
       return(list(draws = H, estimate = h0))
     }
     C <- ic_group_cumsum(H, intlen, grp)
