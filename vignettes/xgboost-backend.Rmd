@@ -116,14 +116,12 @@ xgb_pam <- function(ped, params = list(), nrounds = 200, nboot = 40, ...) {
 }
 ```
 
-**3. Plugging into the `pammtools` interface.** Three small S3 methods are all
+**3. Plugging into the `pammtools` interface.** Two small S3 methods are all
 that is needed.
 
 * `sim_hazard()` is the seam for *simulation-based* intervals: it returns one
   hazard trajectory per draw. For our ensemble a "draw" is a bootstrap member,
   so we predict the feature matrix through every booster.
-* `sample_coefs()` would draw parametric coefficients — a bootstrap ensemble has
-  none, so it is a no-op (its result is ignored by `sim_hazard`).
 * `get_hazard()` returns the point hazard (bagged mean) and, optionally,
   percentile confidence bands across the ensemble.
 
@@ -134,8 +132,6 @@ sim_hazard.pam_xgb <- function(object, newdata, nsim = NULL, ...) {
   dm <- xgb.DMatrix(X)
   vapply(object$models, function(m) predict(m, dm), numeric(nrow(X))) # rows x members
 }
-
-sample_coefs.pam_xgb <- function(object, nsim, ...) NULL
 
 get_hazard.pam_xgb <- function(object, newdata, ci = TRUE, alpha = 0.05, ...) {
   H <- sim_hazard.pam_xgb(object, newdata)
@@ -309,9 +305,9 @@ ggplot(beta_hat, aes(x = tend)) +
 
 ## Wrap-up
 
-A usable `xgboost` backend for PAMMs took five short functions: two helpers
-(`as_xgb_data`, `xgb_pam`) and three S3 methods (`get_hazard.pam_xgb`,
-`sim_hazard.pam_xgb`, `sample_coefs.pam_xgb`) expressed against
+A usable `xgboost` backend for PAMMs took four short functions: two helpers
+(`as_xgb_data`, `xgb_pam`) and two S3 methods (`get_hazard.pam_xgb`,
+`sim_hazard.pam_xgb`) expressed against
 **`pammtools`**' model interface. Everything else — `make_newdata`,
 `add_hazard`, `add_cumu_hazard`, `add_surv_prob`, the `geom_*` layers and the
 bootstrap confidence intervals — came for free.

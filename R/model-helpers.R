@@ -109,10 +109,10 @@ sample_coefs.default <- function(object, nsim, ...) {
 #' @inheritParams get_coefs
 #' @param newdata A data frame for which hazards are predicted.
 #' @param nsim Number of draws.
-#' @param sim_coef_mat Optional pre-drawn coefficient matrix (as returned by
-#' \code{\link{sample_coefs}}); used to share one set of draws across groups.
 #' @return A numeric matrix with \code{nrow(newdata)} rows and \code{nsim}
-#' columns of hazard draws on the response scale.
+#' columns of hazard draws on the response scale. The draws are produced once for
+#' the whole \code{newdata}, so the callers can share one set of draws across
+#' groups by passing the full (grouped) data.
 #' @keywords internal
 sim_hazard <- function(object, newdata, nsim = 100L, ...) {
   UseMethod("sim_hazard", object)
@@ -120,11 +120,9 @@ sim_hazard <- function(object, newdata, nsim = 100L, ...) {
 
 #' @rdname sim_hazard
 #' @keywords internal
-sim_hazard.default <- function(object, newdata, nsim = 100L, sim_coef_mat = NULL, ...) {
+sim_hazard.default <- function(object, newdata, nsim = 100L, ...) {
   X <- make_X(object, newdata, ...)
-  if (is.null(sim_coef_mat)) {
-    sim_coef_mat <- sample_coefs(object, nsim)
-  }
+  sim_coef_mat <- sample_coefs(object, nsim)
   matrix(
     apply(sim_coef_mat, 1, function(z) exp(drop(X %*% z))),
     nrow = nrow(newdata)

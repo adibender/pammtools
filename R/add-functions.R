@@ -500,16 +500,13 @@ get_cumu_hazard <- function(
           time_var = time_var,
           ...
         )
-        sim_coef_mat <- sample_coefs(object, nsim)
-        newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(
-            get_sim_ci_cumu,
-            object = object,
-            nsim = nsim,
-            interval_length = interval_length_name,
-            sim_coef_mat = sim_coef_mat,
-            ...
-          )
+        newdata <- get_sim_ci_cumu(
+          newdata,
+          object,
+          nsim = nsim,
+          interval_length = interval_length_name,
+          ...
+        )
       }
     }
   } else {
@@ -728,16 +725,13 @@ get_surv_prob <- function(
           time_var = time_var,
           ...
         )
-        sim_coef_mat <- sample_coefs(object, nsim)
-        newdata <- split(newdata, group_indices(newdata)) %>%
-          map_dfr(
-            get_sim_ci_surv,
-            object = object,
-            nsim = nsim,
-            interval_length = interval_length_name,
-            sim_coef_mat = sim_coef_mat,
-            ...
-          )
+        newdata <- get_sim_ci_surv(
+          newdata,
+          object,
+          nsim = nsim,
+          interval_length = interval_length_name,
+          ...
+        )
       }
     }
   } else {
@@ -884,15 +878,7 @@ add_ci <- function(
           map_dfr(add_delta_ci, object = object, se_mult = se_mult, ...)
       } else {
         if (ci_type == "sim") {
-          sim_coef_mat <- sample_coefs(object, nsim)
-          newdata <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(
-              get_sim_ci,
-              object = object,
-              nsim = nsim,
-              sim_coef_mat = sim_coef_mat,
-              ...
-            )
+          newdata <- get_sim_ci(newdata, object, nsim = nsim, ...)
         }
       }
     }
@@ -962,33 +948,26 @@ add_delta_ci_surv <- function(
 
 #' Calculate simulation based confidence intervals
 #'
+#' These helpers draw the simulated hazard trajectories once for the whole
+#' (possibly grouped) \code{newdata} via \code{\link{sim_hazard}} -- so one set
+#' of draws is shared across groups -- and then summarise them into pointwise
+#' quantile intervals. Cumulative quantities are accumulated within each group
+#' of \code{newdata}.
+#'
 #' @keywords internal
 #' @importFrom mvtnorm rmvnorm
-#' @importFrom stats coef
+#' @importFrom stats coef ave
 get_sim_ci <- function(
   newdata,
   object,
   alpha = 0.05,
   nsim = 100L,
-  sim_coef_mat = NULL,
   ...
 ) {
-  sim_fit_mat <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
+  sim_fit_mat <- sim_hazard(object, newdata, nsim, ...)
 
-  newdata$ci_lower <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = alpha / 2,
-    type = 6
-  )
-  newdata$ci_upper <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = 1 - alpha / 2,
-    type = 6
-  )
+  newdata$ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
+  newdata$ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
 
   newdata
 }
@@ -1000,28 +979,19 @@ get_sim_ci_cumu <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
-  sim_coef_mat = NULL,
   ...
 ) {
   intlen <- newdata[[interval_length]]
+  grp    <- dplyr::group_indices(newdata)
 
-  H <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
-  sim_fit_mat <- apply(H, 2, function(h) cumsum(intlen * h))
+  H <- sim_hazard(object, newdata, nsim, ...)
+  sim_fit_mat <- matrix(
+    apply(H, 2, function(h) ave(intlen * h, grp, FUN = cumsum)),
+    nrow = nrow(newdata)
+  )
 
-  newdata$cumu_lower <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = alpha / 2,
-    type = 6
-  )
-  newdata$cumu_upper <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = 1 - alpha / 2,
-    type = 6
-  )
+  newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
+  newdata$cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
 
   newdata
 }
@@ -1032,28 +1002,19 @@ get_sim_ci_surv <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
-  sim_coef_mat = NULL,
   ...
 ) {
   intlen <- newdata[[interval_length]]
+  grp    <- dplyr::group_indices(newdata)
 
-  H <- sim_hazard(object, newdata, nsim, sim_coef_mat = sim_coef_mat, ...)
-  sim_fit_mat <- apply(H, 2, function(h) exp(-cumsum(intlen * h)))
+  H <- sim_hazard(object, newdata, nsim, ...)
+  sim_fit_mat <- matrix(
+    apply(H, 2, function(h) exp(-ave(intlen * h, grp, FUN = cumsum))),
+    nrow = nrow(newdata)
+  )
 
-  newdata$surv_lower <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = alpha / 2,
-    type = 6
-  )
-  newdata$surv_upper <- apply(
-    sim_fit_mat,
-    1,
-    quantile,
-    probs = 1 - alpha / 2,
-    type = 6
-  )
+  newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
+  newdata$surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
 
   newdata
 }

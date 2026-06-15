@@ -7,7 +7,7 @@
 \usage{
 sim_hazard(object, newdata, nsim = 100L, ...)
 
-\method{sim_hazard}{default}(object, newdata, nsim = 100L, sim_coef_mat = NULL, ...)
+\method{sim_hazard}{default}(object, newdata, nsim = 100L, ...)
 }
 \arguments{
 \item{object}{A fitted model object.}
@@ -17,13 +17,12 @@ sim_hazard(object, newdata, nsim = 100L, ...)
 \item{nsim}{Number of draws.}
 
 \item{...}{Further arguments passed to methods.}
-
-\item{sim_coef_mat}{Optional pre-drawn coefficient matrix (as returned by
-\code{\link{sample_coefs}}); used to share one set of draws across groups.}
 }
 \value{
 A numeric matrix with \code{nrow(newdata)} rows and \code{nsim}
-columns of hazard draws on the response scale.
+columns of hazard draws on the response scale. The draws are produced once for
+the whole \code{newdata}, so the callers can share one set of draws across
+groups by passing the full (grouped) data.
 }
 \description{
 Internal seam used by the simulation-based confidence interval helpers
