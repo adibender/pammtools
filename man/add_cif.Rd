@@ -82,8 +82,11 @@ The returned data contains one boundary row per group at \code{time_var = 0}
 for plotting cumulative incidence from the time origin. On this row,
 \code{cif = 0}; if confidence intervals are requested,
 \code{cif_lower = cif_upper = 0}. If an interval-length column is present,
-it is set to \code{0} on the boundary row. \code{add_cumu_hazard()} keeps the
-original prediction grid and does not add this plotting boundary row.
+it is set to \code{0} on the boundary row. \code{add_cumu_hazard()} adds an
+analogous boundary row (with \code{cumu_hazard = 0}) for continuous-time
+models (GAM/SCAM/PAMM), controllable via its \code{boundary} argument;
+interval-factor models (e.g. PEM via \code{glm}) keep the original prediction
+grid without a boundary row.
 }
 \examples{
 \donttest{
