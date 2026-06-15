@@ -9,6 +9,7 @@ warn_about_new_time_points <- function(object, newdata, ...) {
 
 #' @inherit warn_about_new_time_points
 #' @keywords internal
+#' @export
 warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
   is_pam <- (inherits(object, "gam" ) | inherits( object, "scam"))
@@ -39,6 +40,7 @@ warn_about_new_time_points.glm <- function(object, newdata, time_var, ...) {
 
 
 #' @rdname warn_about_new_time_points
+#' @export
 warn_about_new_time_points.pamm <- function(object, newdata, ...) {
 
   if (inherits(object, "pamm")) {
