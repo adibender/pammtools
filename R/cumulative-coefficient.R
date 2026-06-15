@@ -243,7 +243,8 @@ get_cumu_coef_baseline <- function(
     add_cumu_hazard(
       model,
       time_var = time_var,
-      interval_length = interval_length
+      interval_length = interval_length,
+      boundary = FALSE
     ) %>%
     mutate(
       method = class(model)[1],

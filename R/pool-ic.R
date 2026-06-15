@@ -190,6 +190,7 @@ add_cumu_hazard.pamm_ic <- function(
     "cumu_hazard",
     time_var = time_var,
     interval_length = interval_length,
+    boundary = FALSE,
     ...
   )
   if (ci) {

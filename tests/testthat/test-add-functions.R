@@ -119,9 +119,17 @@ test_that("hazard functions work for PAM", {
   ndf <- ped %>%
     make_newdata(tend = unique(tend), complications = unique(complications)) %>%
     group_by(complications)
-  ndf1 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "default")
-  ndf2 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "delta")
-  ndf3 <- ndf %>% add_cumu_hazard(pam3, ci = TRUE, ci_type = "sim", nsim = 100L)
+  # add_cumu_hazard prepends a boundary row at tend == 0 (per group) where
+  # cumu_hazard == cumu_lower == cumu_upper == 0; exclude it from strict bounds.
+  ndf1 <- ndf %>%
+    add_cumu_hazard(pam3, ci = TRUE, ci_type = "default") %>%
+    filter(tend != 0)
+  ndf2 <- ndf %>%
+    add_cumu_hazard(pam3, ci = TRUE, ci_type = "delta") %>%
+    filter(tend != 0)
+  ndf3 <- ndf %>%
+    add_cumu_hazard(pam3, ci = TRUE, ci_type = "sim", nsim = 100L) %>%
+    filter(tend != 0)
   expect_true(all(
     ndf1$cumu_hazard > ndf1$cumu_lower & ndf1$cumu_hazard < ndf1$cumu_upper
   ))
@@ -163,11 +171,15 @@ test_that("simulation based CIs use type-6 quantiles (#288)", {
     haz_sim$ci_upper >= apply(sim_fit_mat, 1, quantile, probs = 0.975, type = 7)
   ))
 
-  # same check for the cumulative hazard and survival probability paths
+  # same check for the cumulative hazard and survival probability paths;
+  # both prepend a boundary row at tend == 0 (cumu 0 / surv 1), so compare on
+  # the non-boundary rows that the manual reference matrices cover.
   set.seed(288)
-  cumu_sim <- add_cumu_hazard(nd, pam, ci_type = "sim", nsim = 100L)
+  cumu_sim <- add_cumu_hazard(nd, pam, ci_type = "sim", nsim = 100L) %>%
+    filter(tend != 0)
   set.seed(288)
-  surv_sim <- add_surv_prob(nd, pam, ci_type = "sim", nsim = 100L)
+  surv_sim <- add_surv_prob(nd, pam, ci_type = "sim", nsim = 100L) %>%
+    filter(tend != 0)
   sim_cumu_mat <- apply(
     sim_coef_mat,
     1,
@@ -260,28 +272,30 @@ test_that("hazard functions work for PEM", {
 
 
 test_that("cumulative hazard functions work for PAM", {
+  # add_cumu_hazard prepends a boundary row at tend == 0 with cumu_hazard 0
+  # (and cumu_lower/cumu_upper 0 when ci = TRUE), one row per group.
   expect_data_frame(
     add_cumu_hazard(ped_info(ped), bam, ci = FALSE),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 8L
   )
   expect_data_frame(
     haz <- add_cumu_hazard(ped_info(ped), pam, ci = FALSE),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 8L
   )
   expect_data_frame(
     haz <- add_cumu_hazard(ped_info(ped), pam),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 10L
   )
-  expect_equal(round(haz$cumu_hazard, 2), c(.03, .06, .12, .18, .24))
-  expect_equal(round(haz$cumu_lower, 2), c(.02, .04, .08, .12, .15))
+  expect_equal(round(haz$cumu_hazard, 2), c(0, .03, .06, .12, .18, .24))
+  expect_equal(round(haz$cumu_lower, 2), c(0, .02, .04, .08, .12, .15))
   expect_equal(all(diff(haz$cumu_hazard) >= 0), TRUE)
-  # overwrite works
+  # overwrite works (boundary row is dropped and re-added)
   expect_data_frame(
     add_cumu_hazard(haz, pam, overwrite = TRUE),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 10L
   )
 
@@ -293,44 +307,46 @@ test_that("cumulative hazard functions work for PAM", {
     group_by(complications) %>%
     ped_info() %>%
     add_cumu_hazard(pam)
-  expect_data_frame(grouped_haz, nrows = 10L, ncols = 10L)
+  expect_data_frame(grouped_haz, nrows = 12L, ncols = 10L)
   expect_equal(
     round(grouped_haz$cumu_hazard, 2),
-    c(.03, .06, .12, .18, .24, .06, .13, .25, .37, .49)
+    c(0, .03, .06, .12, .18, .24, 0, .06, .13, .25, .37, .49)
   )
 
   ## delta method
   haz2 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "delta")
-  expect_equal(round(haz2$cumu_upper, 2), c(.05, .09, .18, .25, .33))
-  expect_equal(round(haz2$cumu_lower, 2), c(.01, .03, .07, .11, .15))
+  expect_equal(round(haz2$cumu_upper, 2), c(0, .05, .09, .18, .25, .33))
+  expect_equal(round(haz2$cumu_lower, 2), c(0, .01, .03, .07, .11, .15))
 
   suppressWarnings(RNGversion("3.5.0"))
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
-  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .26, .35))
-  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .12, .16))
+  expect_equal(round(haz3$cumu_upper, 2), c(0, .06, .11, .19, .26, .35))
+  expect_equal(round(haz3$cumu_lower, 2), c(0, .02, .04, .08, .12, .16))
 
   ## check that hazard columns are not deleted
   newdata <- ped_info(ped) %>% add_hazard(pam) %>% add_cumu_hazard(pam)
-  expect_data_frame(newdata, nrows = 5L, ncols = 14L)
+  expect_data_frame(newdata, nrows = 6L, ncols = 14L)
   newdata <- ped_info(ped) %>%
     add_hazard(pam, ci = FALSE) %>%
     add_cumu_hazard(pam)
-  expect_data_frame(newdata, nrows = 5L, ncols = 11L)
+  expect_data_frame(newdata, nrows = 6L, ncols = 11L)
 })
 
 test_that("cumulative hazard function works for arbitrary time points", {
-  # with grouping
+  # with grouping (drop the per-group tend == 0 boundary rows before indexing)
   ndf1 = ped |>
     make_newdata(tend = unique(tend)[1:3], age = c(60, 70)) |>
     group_by(age) |>
-    add_cumu_hazard(pam2)
+    add_cumu_hazard(pam2) |>
+    dplyr::filter(tend != 0)
 
   ndf2 = ped |>
     make_newdata(tend = unique(tend)[3], age = c(60, 70)) |>
     group_by(age) |>
-    add_cumu_hazard(pam2)
+    add_cumu_hazard(pam2) |>
+    dplyr::filter(tend != 0)
 
   expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
   expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
@@ -362,6 +378,7 @@ test_that("cumulative hazard function works for arbitrary time points", {
 })
 
 test_that("cumulative hazard functions work for PEM", {
+  # interval-factor (glm/PEM) models have no time == 0 level, so no boundary row
   expect_data_frame(
     haz <- add_cumu_hazard(ped_info(ped), pem),
     nrows = 5L,
@@ -511,7 +528,7 @@ test_that("works for nonstandard baseline arguments", {
     group_by(complications)
   expect_data_frame(
     add_cumu_hazard(ndf_partial, pam, ci = FALSE),
-    nrows = 4L
+    nrows = 6L
   )
 
   ndf_partial_stop <- ndf_partial %>%
@@ -635,8 +652,8 @@ test_that("survival probabilities functions work for PAM", {
   # sim CI
   set.seed(123)
   surv3 <- add_surv_prob(ped_info(ped), pam, ci_type = "sim")
-  expect_equal(round(surv3$surv_lower, 2), c(.94, .89, .82, .77, .70))
-  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .89, .85))
+  expect_equal(round(surv3$surv_lower, 2), c(1, .94, .89, .82, .77, .70))
+  expect_equal(round(surv3$surv_upper, 2), c(1, .98, .96, .92, .89, .85))
 })
 
 test_that("cumulative boundary helpers preserve non-boundary NA times", {
@@ -761,7 +778,7 @@ test_that("add_cif returns same grid as add_cumu_hazard", {
   # all cut-grid breakpoints up to max requested time must be present
   expect_false(all(full_grid %in% unique(nd_cif_out$tend)))
 
-  # ---- add_cumu_hazard: returns rows matching the requested newdata ----
+  # ---- add_cumu_hazard: requested newdata plus one t=0 boundary row ----
   df_single <- data.frame(
     time = rexp(20),
     status = sample(c(0, 1), 20, replace = TRUE)
@@ -772,8 +789,9 @@ test_that("add_cif returns same grid as add_cumu_hazard", {
   nd_cuh_in <- ped %>% make_newdata(tend = c(2, max(ped$tend)))
   nd_cuh_out <- add_cumu_hazard(nd_cuh_in, pam)
 
-  expect_equal(nrow(nd_cuh_out), nrow(nd_cuh_in))
-  expect_setequal(unique(nd_cuh_out$tend), c(2, max(ped$tend)))
+  expect_equal(nrow(nd_cuh_out), nrow(nd_cuh_in) + 1L)
+  expect_equal(sum(nd_cuh_out$tend == 0), 1L)
+  expect_setequal(unique(nd_cuh_out$tend), c(0, 2, max(ped$tend)))
 })
 
 test_that("CIF works with mgcv::gam", {

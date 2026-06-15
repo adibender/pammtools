@@ -335,6 +335,11 @@ add_cumu_hazard <- function(newdata, object, ...) {
 #' @inheritParams add_hazard
 #' @param interval_length The variable in newdata containing the interval lengths.
 #' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
+#' @param boundary Logical. If \code{TRUE} (default), a boundary row at
+#'   \code{time = 0} with cumulative hazard \code{0} is prepended (per group),
+#'   so that cumulative hazards start at the natural origin (consistent with
+#'   \code{\link{add_surv_prob}}, \code{\link{add_cif}} and
+#'   \code{\link{add_trans_prob}}).
 #' @importFrom dplyr bind_cols
 #' @seealso \code{\link[mgcv]{predict.gam}},
 #' \code{\link[pammtools]{add_surv_prob}}
@@ -347,6 +352,7 @@ add_cumu_hazard.default <- function(
   overwrite = FALSE,
   time_var = NULL,
   interval_length = "intlen",
+  boundary = TRUE,
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
@@ -367,6 +373,18 @@ add_cumu_hazard.default <- function(
   }
 
   time_var <- resolve_time_var(time_var, object, newdata)
+  # The boundary is a continuous-time row at time == 0 on the resolved time axis
+  # (`time_var`, i.e. "tend" or a renamed continuous time variable). It is only
+  # well defined for models predicted on that axis (gam/scam/pamm). Interval-
+  # factor models (glm/PEM) have no time == 0 level, so no boundary is added --
+  # consistent with add_surv_prob/add_cif, whose boundary also targets the
+  # continuous time axis.
+  boundary <- boundary &&
+    (inherits(object, "gam") || inherits(object, "scam"))
+
+  if (boundary) {
+    newdata <- drop_cumulative_boundary(newdata, time_var)
+  }
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
   joindata <- get_cumu_hazard(
@@ -379,9 +397,21 @@ add_cumu_hazard.default <- function(
     ...
   )
 
-  suppressMessages(
+  out <- suppressMessages(
     newdata %>% left_join(joindata)
   )
+  out <- restore_prediction_attrs(out, newdata)
+
+  if (boundary) {
+    out <- add_cumulative_boundary(
+      out,
+      time_var = time_var,
+      values = c(cumu_hazard = 0, cumu_lower = 0, cumu_upper = 0),
+      interval_length = interval_length
+    )
+  }
+
+  out
 }
 
 #' Calculate cumulative hazard
@@ -1584,7 +1614,8 @@ add_trans_prob <- function(
         object = object,
         ci = FALSE,
         time_var = time_var,
-        interval_length = interval_length
+        interval_length = interval_length,
+        boundary = FALSE
       )
     )
   }

@@ -106,7 +106,8 @@ test_that("grouped cumulative hazards work for scam", {
     make_newdata(tend = unique(tend), complications = unique(complications)) %>%
     group_by(complications) %>%
     add_cumu_hazard(mpam)
-  expect_data_frame(cumu, nrows = 10L)
+  # +1 boundary row (tend == 0) per complications group
+  expect_data_frame(cumu, nrows = 12L)
   cumu_split <- split(cumu$cumu_hazard, cumu$complications)
   expect_true(all(vapply(
     cumu_split,
