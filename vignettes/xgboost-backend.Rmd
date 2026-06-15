@@ -116,39 +116,35 @@ xgb_pam <- function(ped, params = list(), nrounds = 200, nboot = 40, ...) {
 }
 ```
 
-**3. Plugging into the `pammtools` interface.** Two small S3 methods are all
-that is needed.
+**3. Plugging into the `pammtools` interface.** `pammtools` builds *every*
+derived quantity and its simulation-based confidence intervals from two
+per-model primitives, so all we implement are these two S3 methods:
 
-* `sim_hazard()` is the seam for *simulation-based* intervals: it returns one
-  hazard trajectory per draw. For our ensemble a "draw" is a bootstrap member,
-  so we predict the feature matrix through every booster.
-* `get_hazard()` returns the point hazard (bagged mean) and, optionally,
-  percentile confidence bands across the ensemble.
+* `get_hazard()` returns the **point hazard** as a plain vector (here the bagged
+  mean over the ensemble);
+* `sim_hazard()` returns a **matrix of hazard draws** (one column per draw). For
+  our ensemble a "draw" is a bootstrap member, so we predict the feature matrix
+  through every booster.
 
 ```{r}
+get_hazard.pam_xgb <- function(object, newdata, ...) {
+  rowMeans(sim_hazard.pam_xgb(object, newdata))      # bagged point hazard
+}
+
 sim_hazard.pam_xgb <- function(object, newdata, nsim = NULL, ...) {
   X  <- model.matrix(~ . - 1,
     data = as.data.frame(newdata)[, object$orig_features, drop = FALSE])
   dm <- xgb.DMatrix(X)
   vapply(object$models, function(m) predict(m, dm), numeric(nrow(X))) # rows x members
 }
-
-get_hazard.pam_xgb <- function(object, newdata, ci = TRUE, alpha = 0.05, ...) {
-  H <- sim_hazard.pam_xgb(object, newdata)
-  newdata[["hazard"]] <- rowMeans(H)
-  if (ci) {
-    newdata[["se"]]       <- apply(H, 1, sd)
-    newdata[["ci_lower"]] <- apply(H, 1, quantile, probs = alpha / 2,     type = 6)
-    newdata[["ci_upper"]] <- apply(H, 1, quantile, probs = 1 - alpha / 2, type = 6)
-  }
-  newdata
-}
 ```
 
 That is the whole backend. `add_hazard()`, `add_cumu_hazard(ci_type = "sim")`
 and `add_surv_prob(ci_type = "sim")` now work for `pam_xgb` objects, returning
-point estimates and bootstrap intervals, and the `geom_*` layers plot them — all
-for free.
+point estimates and bootstrap intervals, and the `geom_*` layers plot them, all
+for free. The very same engine also drives `add_cif()` (competing risks) and
+`add_trans_prob()` (multistate) from these two primitives — a backend that keeps
+the cause/transition indicator among its features gets those for free too.
 
 ## Example 1: recovering a known hazard, with uncertainty
 

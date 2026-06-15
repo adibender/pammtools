@@ -95,6 +95,30 @@ sample_coefs.default <- function(object, nsim, ...) {
   mvtnorm::rmvnorm(nsim, mean = get_coefs(object), sigma = get_Vp(object))
 }
 
+#' Point hazard predictor (backend primitive)
+#'
+#' Returns the predicted hazard (response scale) as a plain numeric vector, one
+#' value per row of \code{newdata}. Together with \code{\link{sim_hazard}} this
+#' is the only primitive a new estimation backend must provide: every derived
+#' quantity (cumulative hazard, survival probability, CIF, transition
+#' probabilities) and its simulation-based confidence intervals are built from
+#' these two. Analytic (\code{"default"}/\code{"delta"}) confidence intervals
+#' additionally use \code{\link{make_X}}/\code{\link{get_coefs}}/\code{\link{get_Vp}}.
+#'
+#' @inheritParams get_coefs
+#' @param newdata A data frame for which the hazard is predicted.
+#' @return A numeric vector of hazards on the response scale.
+#' @keywords internal
+get_hazard <- function(object, newdata, ...) {
+  UseMethod("get_hazard", object)
+}
+
+#' @rdname get_hazard
+#' @keywords internal
+get_hazard.default <- function(object, newdata, ...) {
+  unname(exp(drop(make_X(object, newdata, ...) %*% get_coefs(object))))
+}
+
 #' Draw hazard trajectories from a model's sampling distribution
 #'
 #' Internal seam used by the simulation-based confidence interval helpers

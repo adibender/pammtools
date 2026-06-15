@@ -21,6 +21,8 @@ add_hazard(newdata, object, ...)
   ci_type = c("default", "delta", "sim"),
   overwrite = FALSE,
   time_var = NULL,
+  nsim = 100L,
+  alpha = 0.05,
   ...
 )
 
@@ -108,6 +110,11 @@ the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 \item{time_var}{Name of the variable used for the baseline hazard. Defaults
 to \code{"tend"}.}
 
+\item{nsim}{Total number of pooled posterior draws used for the interval.}
+
+\item{alpha}{Significance level for pooled confidence intervals (a
+\eqn{(1-\alpha)} interval).}
+
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
 
@@ -116,11 +123,6 @@ Can be either bare unquoted variable name or character. Defaults to \code{"intle
 so that cumulative hazards start at the natural origin (consistent with
 \code{\link{add_surv_prob}}, \code{\link{add_cif}} and
 \code{\link{add_trans_prob}}).}
-
-\item{alpha}{Significance level for pooled confidence intervals (a
-\eqn{(1-\alpha)} interval).}
-
-\item{nsim}{Total number of pooled posterior draws used for the interval.}
 }
 \description{
 Add (cumulative) hazard based on the provided data set and model.
