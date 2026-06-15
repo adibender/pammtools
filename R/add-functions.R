@@ -465,12 +465,14 @@ get_cumu_hazard <- function(
           time_var = time_var,
           ...
         )
+        sim_coef_mat <- sample_coefs(object, nsim)
         newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(
             get_sim_ci_cumu,
             object = object,
             nsim = nsim,
             interval_length = interval_length_name,
+            sim_coef_mat = sim_coef_mat,
             ...
           )
       }
@@ -677,12 +679,14 @@ get_surv_prob <- function(
           time_var = time_var,
           ...
         )
+        sim_coef_mat <- sample_coefs(object, nsim)
         newdata <- split(newdata, group_indices(newdata)) %>%
           map_dfr(
             get_sim_ci_surv,
             object = object,
             nsim = nsim,
             interval_length = interval_length_name,
+            sim_coef_mat = sim_coef_mat,
             ...
           )
       }
@@ -831,8 +835,15 @@ add_ci <- function(
           map_dfr(add_delta_ci, object = object, se_mult = se_mult, ...)
       } else {
         if (ci_type == "sim") {
+          sim_coef_mat <- sample_coefs(object, nsim)
           newdata <- split(newdata, group_indices(newdata)) %>%
-            map_dfr(get_sim_ci, object = object, nsim = nsim, ...)
+            map_dfr(
+              get_sim_ci,
+              object = object,
+              nsim = nsim,
+              sim_coef_mat = sim_coef_mat,
+              ...
+            )
         }
       }
     }

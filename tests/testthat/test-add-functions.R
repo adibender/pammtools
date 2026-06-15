@@ -196,6 +196,54 @@ test_that("simulation based CIs use type-6 quantiles (#288)", {
   )
 })
 
+test_that("simulation based CIs share one coefficient draw across groups", {
+  # with more than one group, the posterior coefficient draws must be drawn
+  # once and shared across groups (as in add_cif/add_trans_ci), not redrawn
+  # independently per group.
+  ndf <- ped %>%
+    make_newdata(tend = unique(tend), complications = unique(complications)) %>%
+    group_by(complications)
+
+  set.seed(11)
+  haz <- add_hazard(ndf, pam3, ci_type = "sim", nsim = 100L)
+  haz <- haz %>% ungroup() %>% arrange(complications, tend)
+
+  # reference: a single draw matrix applied to every group (split order)
+  set.seed(11)
+  sim_coef_mat <- mvtnorm::rmvnorm(
+    100L,
+    mean = coef(pam3),
+    sigma = pam3$Vp
+  )
+  ref_shared <- split(ndf, group_indices(ndf)) %>%
+    map_dfr(function(g) {
+      Xg <- predict(pam3, newdata = g, type = "lpmatrix")
+      fm <- apply(sim_coef_mat, 1, function(z) exp(Xg %*% z))
+      g$ci_lower <- apply(fm, 1, quantile, probs = 0.025, type = 6)
+      g$ci_upper <- apply(fm, 1, quantile, probs = 0.975, type = 6)
+      g
+    }) %>%
+    ungroup() %>%
+    arrange(complications, tend)
+
+  expect_equal(haz$ci_lower, ref_shared$ci_lower, ignore_attr = TRUE)
+  expect_equal(haz$ci_upper, ref_shared$ci_upper, ignore_attr = TRUE)
+
+  # and it must differ from the per-group redraw behaviour
+  set.seed(11)
+  ref_per_group <- split(ndf, group_indices(ndf)) %>%
+    map_dfr(function(g) {
+      Xg <- predict(pam3, newdata = g, type = "lpmatrix")
+      Bg <- mvtnorm::rmvnorm(100L, mean = coef(pam3), sigma = pam3$Vp)
+      fm <- apply(Bg, 1, function(z) exp(Xg %*% z))
+      g$ci_lower <- apply(fm, 1, quantile, probs = 0.025, type = 6)
+      g
+    }) %>%
+    ungroup() %>%
+    arrange(complications, tend)
+  expect_false(isTRUE(all.equal(haz$ci_lower, ref_per_group$ci_lower)))
+})
+
 test_that("hazard functions work for PEM", {
   expect_data_frame(
     haz <- add_hazard(ped_info(ped), pem),
