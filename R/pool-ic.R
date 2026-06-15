@@ -98,7 +98,7 @@ ic_ci_draws <- function(
   }
 
   pieces <- lapply(fits, function(f) {
-    X <- predict.gam(f, newdata = nd, type = "lpmatrix")
+    X <- make_X(f, nd)
     B <- rmvnorm(per, mean = coef(f), sigma = f[["Vp"]])
     H <- exp(X %*% t(B)) # nrow x per hazard draws
     h0 <- as.numeric(exp(X %*% coef(f)))
@@ -180,6 +180,8 @@ add_cumu_hazard.pamm_ic <- function(
   interval_length = "intlen",
   ...
 ) {
+  time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
   time_var <- grid[["time_var"]]
@@ -207,7 +209,14 @@ add_cumu_hazard.pamm_ic <- function(
     joindata[["cumu_lower"]] <- d[["lower"]]
     joindata[["cumu_upper"]] <- d[["upper"]]
   }
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cumu_hazard = 0, cumu_lower = 0, cumu_upper = 0),
+    interval_length = interval_length
+  )
 }
 
 #' @rdname add_surv_prob
@@ -224,6 +233,8 @@ add_surv_prob.pamm_ic <- function(
   interval_length = "intlen",
   ...
 ) {
+  time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
   time_var <- grid[["time_var"]]
@@ -251,7 +262,14 @@ add_surv_prob.pamm_ic <- function(
     joindata[["surv_lower"]] <- d[["lower"]]
     joindata[["surv_upper"]] <- d[["upper"]]
   }
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
+    interval_length = interval_length
+  )
 }
 
 # CIF values for one cause-by-covariate group and one fit. `coef_mat` has one
@@ -275,7 +293,7 @@ ic_cif_fit_group <- function(
   hazards <- lapply(cause_levels, function(cl) {
     dfc <- group_df
     dfc[[cause_var]] <- factor(cl, levels = cause_levels)
-    X <- predict(fit, dfc, type = "lpmatrix")
+    X <- make_X(fit, dfc)
     exp(X %*% t(coef_mat))
   })
   names(hazards) <- as.character(cause_levels)
@@ -380,6 +398,7 @@ add_cif.pamm_ic <- function(
   m <- length(object[["fits"]])
   per <- ceiling(nsim / m)
   time_var <- resolve_time_var(time_var, fit1, newdata)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   joindata <- reconstruct_cutpoints(newdata, fit1, time_var, interval_length)
 
   joindata <- map_dfr(
@@ -414,5 +433,12 @@ add_cif.pamm_ic <- function(
     }
   )
 
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cif = 0, cif_lower = 0, cif_upper = 0),
+    interval_length = interval_length
+  )
 }

@@ -39,14 +39,14 @@ ic_pred_cache <- function(
   grid[["interval"]] <- rep(ii[["interval"]], times = n_sub)
 
   if (is.null(cause_levels)) {
-    X <- predict.gam(object, newdata = grid, type = "lpmatrix")
+    X <- make_X(object, grid)
     return(list(ii = ii, n_int = n_int, n_sub = n_sub, X = X, grid = grid))
   }
 
   X_list <- lapply(cause_levels, function(cl) {
     g <- grid
     g[[cause_var]] <- factor(cl, levels = cause_levels)
-    predict.gam(object, newdata = g, type = "lpmatrix")
+    make_X(object, g)
   })
   names(X_list) <- cause_levels
   list(

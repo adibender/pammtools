@@ -151,7 +151,7 @@ smooth_term_qoi <- function(fit, refdata, smooth_names) {
     stop("Smooth terms differ across imputation fits.", call. = FALSE)
   }
 
-  X <- predict.gam(fit, refdata, type = "lpmatrix")
+  X <- make_X(fit, refdata)
   q <- u <- matrix(
     NA_real_,
     nrow = nrow(X),
