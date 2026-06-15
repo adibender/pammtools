@@ -12,6 +12,7 @@ link-citations: yes
 ```{r, echo = FALSE}
 library(knitr)
 has_xgb <- requireNamespace("xgboost", quietly = TRUE)
+has_etm <- requireNamespace("etm", quietly = TRUE)
 opts_chunk$set(
   fig.align  = "center",
   cache      = FALSE,
@@ -79,8 +80,14 @@ internal columns and — the only trick — pass the PED `offset` as `xgboost`'s
 `base_margin`, so it plays the role of the Poisson offset.
 
 ```{r}
+xgb_feature_cols <- function(ped) {
+  internal <- attr(ped, "intvars")
+  keep <- intersect(c("cause", "transition"), names(ped))
+  c("tend", setdiff(names(ped), setdiff(internal, keep)))
+}
+
 as_xgb_data <- function(ped) {
-  features <- c("tend", setdiff(colnames(ped), attr(ped, "intvars")))
+  features <- xgb_feature_cols(ped)
   x <- model.matrix(~ . - 1, data = as.data.frame(ped)[, features, drop = FALSE])
   d <- xgb.DMatrix(x, label = ped[["ped_status"]])
   setinfo(d, "base_margin", ped[["offset"]]) # PEM offset = log(interval length)
@@ -97,11 +104,20 @@ features it expects; the object is a plain list of class `pam_xgb`.
 
 ```{r}
 xgb_pam <- function(ped, params = list(), nrounds = 200, nboot = 40, ...) {
-  features <- c("tend", setdiff(colnames(ped), attr(ped, "intvars")))
+  features <- xgb_feature_cols(ped)
   id_var   <- attr(ped, "id_var")
   X   <- model.matrix(~ . - 1, data = as.data.frame(ped)[, features, drop = FALSE])
   y   <- ped[["ped_status"]]
   off <- ped[["offset"]]
+  feature_levels <- lapply(as.data.frame(ped)[, features, drop = FALSE], function(x) {
+    if (is.factor(x)) {
+      levels(x)
+    } else if (is.character(x)) {
+      sort(unique(x))
+    } else {
+      NULL
+    }
+  })
   rows_by_id <- split(seq_len(nrow(ped)), ped[[id_var]])
   params <- c(params, list(objective = "count:poisson", base_score = 1, nthread = 2))
   fit_rows <- function(rows) {
@@ -115,6 +131,7 @@ xgb_pam <- function(ped, params = list(), nrounds = 200, nboot = 40, ...) {
   })
   structure(
     list(models = models, orig_features = features,
+         feature_levels = feature_levels,
          trafo_args = attr(ped, "trafo_args")),
     class = "pam_xgb")
 }
@@ -136,8 +153,13 @@ get_hazard.pam_xgb <- function(object, newdata, ...) {
 }
 
 sim_hazard.pam_xgb <- function(object, newdata, nsim = NULL, ...) {
-  X  <- model.matrix(~ . - 1,
-    data = as.data.frame(newdata)[, object$orig_features, drop = FALSE])
+  xdf <- as.data.frame(newdata)[, object$orig_features, drop = FALSE]
+  for (nm in names(object$feature_levels)) {
+    if (!is.null(object$feature_levels[[nm]]) && nm %in% names(xdf)) {
+      xdf[[nm]] <- factor(xdf[[nm]], levels = object$feature_levels[[nm]])
+    }
+  }
+  X  <- model.matrix(~ . - 1, data = xdf)
   dm <- xgb.DMatrix(X)
   vapply(object$models, function(m) predict(m, dm), numeric(nrow(X))) # rows x members
 }
@@ -302,6 +324,62 @@ ggplot(beta_hat, aes(x = tend)) +
   labs(y = expression(beta(t)),
        title = expression("Estimated time-varying log-hazard ratio " * beta(t) * " (95% CI) vs. truth"))
 ```
+
+## Example 3: competing risks with the same backend
+
+This last example additionally needs `etm` for the `fourD` data. We reuse the
+same `xgb_pam()` helper, but now fit it to a stacked cause-specific PED.
+Because the cause indicator is just another feature, `add_cif()` can recover
+cause-specific cumulative incidence curves from the same backend interface.
+
+```{r, eval = has_xgb && has_etm}
+data("fourD", package = "etm")
+
+set.seed(2025)
+cut <- sample(fourD$time, 100)
+
+ped_cr <- fourD %>%
+  select(id, time, status, sex, age) %>%
+  as_ped(Surv(time, status) ~ ., id = "id", cut = cut) %>%
+  mutate(cause = as.factor(cause))
+
+xgb_cr <- xgb_pam(
+  ped_cr,
+  params = list(
+    eta = 0.1, max_depth = 3, min_child_weight = 20,
+    subsample = 0.7, colsample_bytree = 0.8
+  ),
+  nrounds = 200, nboot = 40
+)
+```
+
+For the CIF we create a prediction grid over time, cause, and sex and then use
+the same `add_cif()` call as for a standard PAMM:
+
+```{r, eval = has_xgb && has_etm}
+nd_cr <- ped_cr %>%
+  make_newdata(tend = unique(tend), cause = unique(cause), sex = unique(sex)) %>%
+  group_by(cause, sex) %>%
+  add_cif(xgb_cr, nsim = length(xgb_cr$models))
+
+ggplot(nd_cr, aes(x = tend, y = cif)) +
+  geom_line(aes(col = cause)) +
+  geom_ribbon(
+    aes(ymin = cif_lower, ymax = cif_upper, fill = cause),
+    alpha = 0.2
+  ) +
+  facet_wrap(~ sex, labeller = label_both) +
+  labs(
+    y = "cumulative incidence",
+    col = "cause",
+    fill = "cause",
+    title = "Cause-specific CIFs from the xgboost backend"
+  )
+```
+
+The only difference to the standard competing-risks vignette is the fitting
+engine. The prediction pipeline, including the bootstrap uncertainty bands, is
+still driven entirely by `get_hazard()` and `sim_hazard()`.
 
 ## Wrap-up
 
