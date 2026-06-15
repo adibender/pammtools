@@ -43,7 +43,8 @@ Suggests:
     testthat,
     mstate,
     broom,
-    etm
+    etm,
+    xgboost
 Config/Needs/website:
   coxme,
   eha,
@@ -53,6 +54,7 @@ Config/Needs/website:
   mvna,
   rjags,
   brms,
+  xgboost,
   TBFmultinomial
 License: MIT + file LICENSE
 LazyData: true

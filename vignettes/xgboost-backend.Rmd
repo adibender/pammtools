@@ -1,0 +1,263 @@
+---
+title: "Defining a new backend: gradient boosting with xgboost"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Defining a new backend: gradient boosting with xgboost}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: Remote.bib
+link-citations: yes
+---
+
+```{r, echo = FALSE}
+library(knitr)
+has_xgb <- requireNamespace("xgboost", quietly = TRUE)
+opts_chunk$set(
+  fig.align  = "center",
+  cache      = FALSE,
+  message    = FALSE,
+  warning    = FALSE,
+  fig.height = 4,
+  fig.width  = 5,
+  eval       = has_xgb)
+```
+
+```{r, message = FALSE}
+library(dplyr)
+library(ggplot2)
+theme_set(theme_bw())
+library(survival)
+library(mgcv)
+library(xgboost)
+library(pammtools)
+Set1 <- RColorBrewer::brewer.pal(9, "Set1")
+```
+
+## Why a new backend is cheap
+
+The key idea behind PAMMs [@Bender2018a] is a *data transformation*: a
+time-to-event data set is split into the **piece-wise exponential data (PED)**
+format, and the hazard is then estimated by a **Poisson regression with a
+log-interval-length offset**. In **`pammtools`** the standard estimation
+engine is `mgcv::gam`, but the reduction to Poisson regression means that
+*any* learner that can do count/Poisson regression with an offset can serve as
+a PAMM backend.
+
+This vignette shows that wiring up such an alternative backend takes only a
+handful of lines, because all of the heavy lifting — data simulation
+(`sim_pexp`), the survival-to-PED transformation (`as_ped`), prediction-grid
+construction (`make_newdata`), and the post-processing/plotting machinery
+(`add_hazard`, `geom_stephazard`, `geom_surv`, ...) — is reused unchanged. As
+the example backend we use [**`xgboost`**](https://CRAN.R-project.org/package=xgboost)
+with its built-in `objective = "count:poisson"`.
+
+## The glue code
+
+Everything needed to turn `xgboost` into a PAMM backend fits in three small
+functions.
+
+**1. Transform a `ped` object into `xgboost`'s data structure.** A `ped`
+already carries all the bookkeeping we need in its attributes: `intvars` lists
+the internal interval columns (`id`, `tstart`, `tend`, `interval`, `offset`,
+`ped_status`), `ped_status` is the (Poisson) response, and `offset` is the
+log-interval-length. We keep `tend` as the time *feature*, drop the remaining
+internal columns, and — this is the only trick — pass the PED `offset` as
+`xgboost`'s `base_margin` so it plays the role of the Poisson offset.
+
+```{r}
+as_xgb_data <- function(ped) {
+  # features = interval end time + all original covariates
+  features <- c("tend", setdiff(colnames(ped), attr(ped, "intvars")))
+  x <- model.matrix(~ . - 1, data = as.data.frame(ped)[, features, drop = FALSE])
+  d <- xgb.DMatrix(x, label = ped[["ped_status"]])
+  setinfo(d, "base_margin", ped[["offset"]]) # the PEM offset = log(interval length)
+  d
+}
+```
+
+**2. Fit the model.** We simply call `xgb.train()` with the Poisson objective.
+Setting `base_score = 1` together with the offset above means that at *prediction*
+time (where we will *not* supply a `base_margin`) the default margin is
+`log(base_score) = 0`, so predictions are the bare hazard `exp(trees)`. We
+remember which features the model expects and the transformation arguments of
+the training data, then tag the object with the class `pam_xgb`.
+
+```{r}
+xgb_pam <- function(ped, params = list(), nrounds = 500, ...) {
+  features <- c("tend", setdiff(colnames(ped), attr(ped, "intvars")))
+  fit <- xgb.train(
+    params  = c(params, list(objective = "count:poisson", base_score = 1)),
+    data    = as_xgb_data(ped),
+    nrounds = nrounds,
+    ...)
+  attr(fit, "orig_features") <- features
+  attr(fit, "trafo_args")    <- attr(ped, "trafo_args")
+  class(fit) <- c("pam_xgb", class(fit))
+  fit
+}
+```
+
+**3. Hook into the post-processing machinery.** `pammtools` computes hazards
+through the S3 generic `get_hazard()`, and `add_hazard()` dispatches to it.
+Providing a single `get_hazard` method for our new class is therefore enough to
+make `add_hazard()` work for boosted fits — no changes to the package required.
+
+```{r}
+get_hazard.pam_xgb <- function(object, newdata, ...) {
+  X <- model.matrix(~ . - 1,
+    data = newdata[, attr(object, "orig_features"), drop = FALSE])
+  newdata[["hazard"]] <- predict(object, xgb.DMatrix(X))
+  newdata
+}
+```
+
+That's the whole backend. Cumulative hazard and survival probability are not
+estimated by a separate model but follow directly from the hazard via the
+piece-wise-exponential identities
+$\Lambda(t) = \sum_j \lambda_j\,\Delta_j$ and $S(t) = \exp(-\Lambda(t))$,
+i.e. a grouped cumulative sum over the interval lengths — we use that below.
+
+## Example 1: recovering a known hazard
+
+We simulate survival times from a known hazard with `sim_pexp` and transform to
+PED with `as_ped`, exactly as for a standard PAMM.
+
+```{r}
+set.seed(2024)
+n  <- 750
+df <- data.frame(x1 = runif(n, -3, 3), x2 = runif(n, 0, 6))
+f0 <- function(t) dgamma(t, 8, 2) * 6
+# true log-hazard: smooth baseline + linear x1 + sqrt(x2)
+sim_df <- sim_pexp(~ -3.5 + f0(t) - 0.5 * x1 + sqrt(x2), df, cut = seq(0, 10, by = 0.2))
+ped    <- as_ped(sim_df, Surv(time, status) ~ x1 + x2)
+```
+
+We fit the boosted PAMM with our new `xgb_pam()` and, for comparison, a standard
+GAM-based PAMM with `mgcv::gam`.
+
+```{r}
+xgb_fit <- xgb_pam(ped,
+  params  = list(eta = 0.05, max_depth = 2, min_child_weight = 10,
+                 subsample = 0.8, colsample_bytree = 0.8),
+  nrounds = 300, verbose = 0)
+
+pam <- gam(ped_status ~ s(tend) + x1 + s(x2), data = ped,
+  family = poisson(), offset = offset)
+```
+
+For prediction we build a grid with `make_newdata` (a single covariate profile,
+all interval end points) and add the hazard with the *same* `add_hazard()` call
+for both models — the boosted one is served by our `get_hazard.pam_xgb` method.
+
+```{r}
+nd <- ped %>% make_newdata(tend = unique(tend), x1 = c(0), x2 = c(3))
+
+haz <- bind_rows(
+  nd %>% add_hazard(xgb_fit)          %>% transmute(tend, hazard, method = "xgboost"),
+  nd %>% add_hazard(pam, ci = FALSE)  %>% transmute(tend, hazard, method = "gam (PAMM)"),
+  nd %>% transmute(tend, method = "truth",
+                   hazard = exp(-3.5 + f0(tend) - 0.5 * x1 + sqrt(x2)))
+)
+
+ggplot(haz, aes(x = tend, y = hazard, col = method)) +
+  geom_stephazard() +
+  scale_color_manual(values = c("xgboost" = Set1[2], "gam (PAMM)" = Set1[1],
+                                "truth" = "black")) +
+  labs(title = "Estimated vs. true hazard", col = "")
+```
+
+Survival probabilities follow from the hazard by the cumulative-sum identity
+above (`geom_surv` automatically anchors each curve at $S(0) = 1$):
+
+```{r}
+surv <- haz %>%
+  group_by(method) %>%
+  arrange(tend) %>%
+  mutate(
+    intlen    = tend - lag(tend, default = 0),
+    surv_prob = exp(-cumsum(hazard * intlen))) %>%
+  ungroup()
+
+ggplot(surv, aes(x = tend, y = surv_prob, col = method)) +
+  geom_surv() +
+  scale_color_manual(values = c("xgboost" = Set1[2], "gam (PAMM)" = Set1[1],
+                                "truth" = "black")) +
+  labs(title = "Estimated vs. true survival probability", col = "")
+```
+
+Both backends recover the baseline shape and the covariate effects; the GAM is
+smoother by construction, while the tree ensemble produces a piece-wise constant
+hazard.
+
+## Example 2: interactions for free
+
+A practical advantage of a tree-based backend is that it picks up
+interactions automatically, without us having to specify them. Here the true
+log-hazard contains a strong `x1 * x2` interaction. We fit the boosted PAMM
+(features `x1`, `x2`) against a *purely additive* GAM-PAMM `s(x1) + s(x2)` that
+cannot represent it.
+
+```{r}
+set.seed(7)
+n   <- 1000
+df2 <- data.frame(x1 = runif(n, -3, 3), x2 = runif(n, -3, 3))
+lhaz <- function(t, x1, x2) -2.5 + dgamma(t, 8, 2) * 4 + 0.8 * x1 * x2
+sim2 <- sim_pexp(~ -2.5 + dgamma(t, 8, 2) * 4 + 0.8 * x1 * x2, df2,
+                 cut = seq(0, 10, by = 0.25))
+ped2 <- as_ped(sim2, Surv(time, status) ~ x1 + x2)
+
+xgb2 <- xgb_pam(ped2,
+  params  = list(eta = 0.05, max_depth = 3, min_child_weight = 10,
+                 subsample = 0.8, colsample_bytree = 0.8),
+  nrounds = 400, verbose = 0)
+gam_add <- gam(ped_status ~ s(tend) + s(x1) + s(x2), data = ped2,
+  family = poisson(), offset = offset) # additive: no interaction
+```
+
+We compare predicted survival for two covariate profiles that differ only in the
+sign of `x1` (and hence in the sign of the interaction):
+
+```{r, fig.width = 6.5, fig.height = 3.6}
+add_surv <- function(d) {
+  d %>% group_by(x1, x2) %>% arrange(tend) %>%
+    mutate(intlen = tend - lag(tend, default = 0),
+           surv_prob = exp(-cumsum(hazard * intlen))) %>%
+    ungroup()
+}
+nd2 <- ped2 %>% make_newdata(tend = unique(tend), x1 = c(-2, 2), x2 = c(2))
+
+surv2 <- bind_rows(
+  nd2 %>% add_hazard(xgb2)             %>% add_surv() %>% mutate(method = "xgboost"),
+  nd2 %>% add_hazard(gam_add, ci = FALSE) %>% add_surv() %>% mutate(method = "gam (additive)"),
+  nd2 %>% mutate(hazard = exp(lhaz(tend, x1, x2)))      %>% add_surv() %>% mutate(method = "truth"))
+
+ggplot(surv2, aes(x = tend, y = surv_prob, col = method)) +
+  geom_surv() +
+  facet_wrap(~ paste0("x1 = ", x1, ", x2 = ", x2)) +
+  scale_color_manual(values = c("xgboost" = Set1[2], "gam (additive)" = Set1[1],
+                                "truth" = "black")) +
+  labs(title = "Survival under an x1:x2 interaction", col = "")
+```
+
+The boosted PAMM tracks the truth across both profiles, whereas the additive
+GAM-PAMM — lacking the interaction term — predicts essentially the same survival
+regardless of the sign of `x1` and is badly off in both panels.
+
+## Wrap-up
+
+Defining a usable `xgboost` backend for PAMMs took three short functions
+(`as_xgb_data`, `xgb_pam`, `get_hazard.pam_xgb`) on top of the existing
+**`pammtools`** infrastructure. The same recipe — *transform to PED, fit a
+Poisson learner with the interval-length offset, predict the hazard, derive
+$\Lambda(t)$/$S(t)$ by cumulative sums* — extends naturally to:
+
+  - **tuning / cross-validation**, using `xgboost`'s own `xgb.cv` or any resampling
+    on the original (subject-level) data before transformation;
+  - **competing risks**, by stacking cause-specific PEDs (`as_ped(...,
+    Surv(time, status) ~ ., combine = ...)`) and using the same offset trick per
+    cause;
+  - **other learners** (random forests, neural networks, ...) — anything that can
+    fit a Poisson/count model with an offset.
+
+These extensions are left out here to keep the example short, but require no
+changes to **`pammtools`** itself.
