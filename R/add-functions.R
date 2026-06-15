@@ -1197,14 +1197,17 @@ get_cif.default <- function(
   cif_from_hazards <- function(haz_by_cause) {
     total <- Reduce(`+`, haz_by_cause)
     surv  <- c(1, head(exp(-cumsum(total * dt)), -1))
-    incr  <- (haz_by_cause[[cause_data]] / total) * surv * (1 - exp(-total * dt))
+    incr  <- ifelse(
+      total > 0,
+      (haz_by_cause[[cause_data]] / total) * surv * (1 - exp(-total * dt)),
+      0
+    )
     cumsum(incr)
   }
-  split_by_cause <- function(h) {
-    out <- lapply(idx, function(ix) h[ix])
-    names(out) <- causes
-    out
-  }
+  # `idx` is already named by cause (split() sorts its labels); keep those names
+  # so the lookup haz_by_cause[[cause_data]] cannot be mismatched when the cause
+  # factor levels are not in alphabetical order.
+  split_by_cause <- function(h) lapply(idx, function(ix) h[ix])
 
   # point: plug-in at the point hazards
   newdata[["cif"]] <- pmin(pmax(
