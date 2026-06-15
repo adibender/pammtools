@@ -4,6 +4,8 @@
 #' linear predictor to the data specified by \code{newdata}.
 #' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
 #' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
+#' Shape-constrained additive models fit with \code{\link[scam]{scam}} are
+#' supported as well.
 #'
 #' @inheritParams mgcv::predict.gam
 #' @param term A character (vector) or regular expression indicating for
@@ -60,17 +62,12 @@ add_term <- function(
       call. = FALSE
     )
   }
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
 
   X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
 
-  newdata[["fit"]] <- unname(drop(X %*% object$coefficients[col_ind]))
+  newdata[["fit"]] <- unname(drop(X %*% get_coefs(object)[col_ind]))
   if (ci) {
-    cov.coefs <- if (is_gam) {
-      object$Vp[col_ind, col_ind]
-    } else {
-      vcov(object)[col_ind, col_ind]
-    }
+    cov.coefs <- get_Vp(object)[col_ind, col_ind]
     se <- unname(sqrt(rowSums((X %*% cov.coefs) * X)))
     newdata <- newdata %>%
       mutate(
@@ -113,7 +110,7 @@ make_X.gam <- function(object, newdata, ...) {
 #' @importFrom scam predict.scam
 #' @keywords internal
 make_X.scam <- function(object, newdata, ...) {
-  X <- predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
+  predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
 }
 
 prep_X <- function(object, newdata, reference = NULL, ...) {
@@ -174,7 +171,14 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' CI are calculated can be specified by \code{ci_type}.
 #' This is a wrapper around
 #' \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
-#' (log-)hazard ratio is calculated.
+#' (log-)hazard ratio is calculated. In addition to models fit with
+#' \code{\link[mgcv]{gam}}/\code{\link[mgcv]{bam}} or \code{\link[stats]{glm}},
+#' shape-constrained additive models fit with \code{\link[scam]{scam}} are
+#' supported (e.g., for monotone baseline hazards). For \code{scam} models all
+#' calculations (including delta-method and simulation based confidence
+#' intervals) are based on the re-parametrized coefficients and their
+#' covariance matrix, i.e., on the same normal approximation that underlies
+#' the standard errors reported by \code{scam} itself.
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
@@ -189,7 +193,16 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
 #' the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
-#' for details and empirical evaluation.
+#' for details and empirical evaluation. For \code{ci_type = "sim"}, interval
+#' bounds are empirical quantiles (type 6, see \code{\link[stats]{quantile}})
+#' of \code{nsim} posterior draws (default \code{nsim = 100L}, passed via
+#' \code{...}). Type-6 quantiles avoid the systematic inward bias that the
+#' \code{\link[stats]{quantile}} default (type 7) exhibits for small
+#' \code{nsim}, but at the default \code{nsim = 100} the bounds are estimated
+#' from few tail draws and thus noisy; increase \code{nsim} (e.g., to 500 or
+#' more) for more stable interval bounds. Very small \code{nsim}
+#' (\code{nsim < 2 / alpha - 1}, i.e., below 39 for \code{alpha = 0.05})
+#' cannot achieve the nominal level at all.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
 #' the confidence intervals.
 #' @param overwrite Should hazard columns be overwritten if already present in
@@ -197,17 +210,17 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' \code{c("hazard", "se", "lower", "upper")} will be overwritten.
 #' @param time_var Name of the variable used for the baseline hazard. Defaults
 #'   to \code{"tend"}.
-#'   
+#'
 #' @details
 #' When computing cumulative hazards or survival probabilities across groups,
 #' the input data must be grouped via \code{group_by()} prior to calling
 #' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the cumulative hazard will be accumulated
-#' over the entire dataset rather than within each group. 
+#' over the entire dataset rather than within each group.
 #' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 #' for a worked example.
-#' 
+#'
 #' @import checkmate dplyr mgcv
 #' @importFrom stats predict
 #' @examples
@@ -286,7 +299,7 @@ get_hazard.default <- function(
   ...
 ) {
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
   type <- match.arg(type)
   ci_type <- match.arg(ci_type)
 
@@ -298,7 +311,7 @@ get_hazard.default <- function(
   #warn_about_new_time_points(object, newdata, time_var)
 
   X <- prep_X(object, newdata, reference, ...)
-  coefs <- coef(object)
+  coefs <- get_coefs(object)
   newdata$hazard <- unname(drop(X %*% coefs))
   if (ci) {
     newdata <- newdata %>%
@@ -313,6 +326,12 @@ get_hazard.default <- function(
 
 
 #' @rdname add_hazard
+#' @export
+add_cumu_hazard <- function(newdata, object, ...) {
+  UseMethod("add_cumu_hazard", object)
+}
+
+#' @rdname add_hazard
 #' @inheritParams add_hazard
 #' @param interval_length The variable in newdata containing the interval lengths.
 #' Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.
@@ -320,7 +339,7 @@ get_hazard.default <- function(
 #' @seealso \code{\link[mgcv]{predict.gam}},
 #' \code{\link[pammtools]{add_surv_prob}}
 #' @export
-add_cumu_hazard <- function(
+add_cumu_hazard.default <- function(
   newdata,
   object,
   ci = TRUE,
@@ -350,8 +369,15 @@ add_cumu_hazard <- function(
   time_var <- resolve_time_var(time_var, object, newdata)
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
-  joindata <- get_cumu_hazard(joindata, object, ci = ci, se_mult = se_mult,
-                              time_var = time_var, interval_length = interval_length, ...)
+  joindata <- get_cumu_hazard(
+    joindata,
+    object,
+    ci = ci,
+    se_mult = se_mult,
+    time_var = time_var,
+    interval_length = interval_length,
+    ...
+  )
 
   suppressMessages(
     newdata %>% left_join(joindata)
@@ -379,7 +405,7 @@ get_cumu_hazard <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
 
   ci_type <- match.arg(ci_type)
 
@@ -481,13 +507,35 @@ get_cumu_hazard <- function(
 #' for the specified covariate and follow-up information (and CIs
 #' \code{surv_lower}, \code{surv_upper} if \code{ci=TRUE}).
 #'
+#' @details
+#' When computing cumulative hazards or survival probabilities across groups,
+#' the input data must be grouped via \code{group_by()} prior to calling
+#' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
+#' \code{group_by()} will not produce an error or warning but will return
+#' silently incorrect results, as the cumulative hazard will be accumulated
+#' over the entire dataset rather than within each group.
+#' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
+#' for a worked example.
+#'
+#' The returned data contains one boundary row per group at \code{time_var = 0}
+#' for plotting cumulative quantities from the time origin. On this row,
+#' \code{surv_prob = 1}; if confidence intervals are requested,
+#' \code{surv_lower = surv_upper = 1}. If an interval-length column is present,
+#' it is set to \code{0} on the boundary row.
+#'
 #' @inherit add_cumu_hazard
 #' @examples
 #' ped <- tumor[1:50,] %>% as_ped(Surv(days, status)~ age)
 #' pam <- mgcv::gam(ped_status ~ s(tend)+age, data=ped, family=poisson(), offset=offset)
 #' ped_info(ped) %>% add_surv_prob(pam, ci=TRUE)
 #' @export
-add_surv_prob <- function(
+add_surv_prob <- function(newdata, object, ...) {
+  UseMethod("add_surv_prob", object)
+}
+
+#' @rdname add_surv_prob
+#' @export
+add_surv_prob.default <- function(
   newdata,
   object,
   ci = TRUE,
@@ -515,6 +563,8 @@ add_surv_prob <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
+  newdata <- drop_cumulative_boundary(newdata, time_var)
+
   if (!interval_length %in% colnames(newdata)) {
     newdata <- reconstruct_intlen(
       newdata,
@@ -523,7 +573,7 @@ add_surv_prob <- function(
     )
   }
 
-  get_surv_prob(
+  out <- get_surv_prob(
     newdata,
     object,
     ci = ci,
@@ -531,6 +581,14 @@ add_surv_prob <- function(
     time_var = time_var,
     interval_length = interval_length,
     ...
+  )
+  out <- restore_prediction_attrs(out, newdata)
+
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
+    interval_length = interval_length
   )
 }
 
@@ -553,7 +611,7 @@ get_surv_prob <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
 
   ci_type <- match.arg(ci_type)
 
@@ -652,6 +710,91 @@ get_surv_prob <- function(
   newdata
 }
 
+drop_cumulative_boundary <- function(newdata, time_var) {
+  boundary_rows <- !is.na(newdata[[time_var]]) & newdata[[time_var]] == 0
+  if (!any(boundary_rows)) {
+    return(newdata)
+  }
+
+  out <- newdata %>%
+    filter(is.na(.data[[time_var]]) | .data[[time_var]] != 0)
+
+  restore_prediction_attrs(out, newdata)
+}
+
+add_cumulative_boundary <- function(
+  newdata,
+  time_var,
+  values,
+  interval_length = NULL
+) {
+  if (!nrow(newdata)) {
+    return(newdata)
+  }
+
+  old_groups <- group_vars(newdata)
+  out <- newdata %>%
+    slice(1, .preserve = TRUE) %>%
+    set_cumulative_boundary_values(
+      time_var = time_var,
+      values = values,
+      interval_length = interval_length
+    ) %>%
+    bind_rows(newdata)
+
+  if (length(old_groups)) {
+    out <- out %>% group_by(across(all_of(old_groups)))
+  }
+  out <- out %>% arrange(.data[[time_var]], .by_group = TRUE)
+
+  restore_prediction_attrs(out, newdata)
+}
+
+set_cumulative_boundary_values <- function(
+  newdata,
+  time_var,
+  values,
+  interval_length = NULL
+) {
+  newdata[[time_var]][] <- 0
+
+  if (!is.null(interval_length) && interval_length %in% colnames(newdata)) {
+    newdata[[interval_length]][] <- 0
+  }
+  if ("tstart" %in% colnames(newdata)) {
+    newdata[["tstart"]] <- 0
+  }
+  if ("intmid" %in% colnames(newdata)) {
+    newdata[["intmid"]] <- 0
+  }
+  if ("interval" %in% colnames(newdata)) {
+    is.na(newdata[["interval"]]) <- TRUE
+  }
+  if ("offset" %in% colnames(newdata)) {
+    newdata[["offset"]][] <- NA_real_
+  }
+
+  value_names <- intersect(names(values), colnames(newdata))
+  for (value_name in value_names) {
+    newdata[[value_name]] <- values[[value_name]]
+  }
+
+  newdata
+}
+
+restore_prediction_attrs <- function(newdata, template) {
+  structural_attrs <- c("names", "row.names", "class", "groups")
+  custom_attrs <- setdiff(names(attributes(template)), structural_attrs)
+  for (attr_name in custom_attrs) {
+    attr(newdata, attr_name) <- attr(template, attr_name)
+  }
+  if (inherits(template, "ped") && !inherits(newdata, "ped")) {
+    class(newdata) <- c("ped", class(newdata))
+  }
+
+  newdata
+}
+
 add_ci <- function(
   newdata,
   object,
@@ -664,12 +807,7 @@ add_ci <- function(
 ) {
   ci_type <- match.arg(ci_type)
 
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
-  if (is_gam) {
-    V <- object$Vp
-  } else {
-    V <- vcov(object)
-  }
+  V <- get_Vp(object)
   se <- unname(sqrt(rowSums((X %*% V) * X)))
   newdata$se <- se
   if (type == "link") {
@@ -703,8 +841,8 @@ add_ci <- function(
 }
 
 add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
   newdata %>%
@@ -722,8 +860,8 @@ add_delta_ci_cumu <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
   intlen <- newdata[[interval_length]]
 
   Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
@@ -744,8 +882,8 @@ add_delta_ci_surv <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
   intlen <- newdata[[interval_length]]
 
   Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
@@ -767,16 +905,35 @@ add_delta_ci_surv <- function(
 #' @keywords internal
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
-get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+get_sim_ci <- function(
+  newdata,
+  object,
+  alpha = 0.05,
+  nsim = 100L,
+  sim_coef_mat = NULL,
+  ...
+) {
+  X <- make_X(object, newdata, ...)
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
-  newdata$ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$ci_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$ci_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -788,22 +945,35 @@ get_sim_ci_cumu <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
+  sim_coef_mat = NULL,
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
     function(z) cumsum(intlen * exp(X %*% z))
   )
 
-  newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$cumu_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$cumu_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -814,22 +984,35 @@ get_sim_ci_surv <- function(
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
+  sim_coef_mat = NULL,
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  if (is.null(sim_coef_mat)) {
+    sim_coef_mat <- sample_coefs(object, nsim)
+  }
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
     function(z) exp(-cumsum(intlen * exp(X %*% z)))
   )
 
-  newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$surv_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$surv_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -843,18 +1026,26 @@ get_sim_ci_surv <- function(
 #' @param alpha The alpha level for confidence/credible intervals.
 #' @param nsim Number of simulations (draws from posterior of estimated coefficients)
 #' on which estimation of CIFs and their confidence/credible intervals will be
-#' based on.
+#' based on. Interval bounds are empirical type-6 quantiles of the \code{nsim}
+#' draws; larger values of \code{nsim} yield more stable interval bounds.
 #' @param cause_var Character. Column name of the 'cause' variable.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
-#'   
+#'
 #' @details
 #' When computing cumulative incidence for multiple groups, the input data must
 #' be grouped via \code{group_by()} before calling this function. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the cumulative incidence will be accumulated
 #' over the entire dataset rather than within each group.
-#' 
+#'
+#' The returned data contains one boundary row per group at \code{time_var = 0}
+#' for plotting cumulative incidence from the time origin. On this row,
+#' \code{cif = 0}; if confidence intervals are requested,
+#' \code{cif_lower = cif_upper = 0}. If an interval-length column is present,
+#' it is set to \code{0} on the boundary row. \code{add_cumu_hazard()} keeps the
+#' original prediction grid and does not add this plotting boundary row.
+#'
 #' @examples
 #' \donttest{
 #' if (require("etm")) {
@@ -872,7 +1063,7 @@ get_sim_ci_surv <- function(
 #'     add_cif(pam)
 #' }
 #' }
-#'    
+#'
 #' @export
 add_cif <- function(
   newdata,
@@ -897,18 +1088,34 @@ add_cif.default <- function(
   interval_length = "intlen",
   ...
 ) {
-
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
 
+  if (!overwrite) {
+    if ("cif" %in% names(newdata)) {
+      stop(
+        "Data set already contains 'cif' column.
+        Set `overwrite=TRUE` to overwrite"
+      )
+    }
+  } else {
+    rm.vars <- intersect(
+      c("cif", "cif_lower", "cif_upper"),
+      names(newdata)
+    )
+    newdata <- newdata %>% select(-one_of(rm.vars))
+  }
+
+  newdata <- drop_cumulative_boundary(newdata, time_var)
+
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
 
-  coefs <- coef(object)
-  V <- object$Vp
+  coefs <- get_coefs(object)
+  V <- get_Vp(object)
   sim_coef_mat <- if (!ci) {
     matrix(coefs, nrow = 1)
   } else {
-    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+    sample_coefs(object, nsim)
   }
 
   joindata <- map_dfr(
@@ -928,9 +1135,17 @@ add_cif.default <- function(
       ...
     )
   )
-  
-  suppressMessages(
+
+  out <- suppressMessages(
     newdata %>% left_join(joindata)
+  )
+  out <- restore_prediction_attrs(out, newdata)
+
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cif = 0, cif_lower = 0, cif_upper = 0),
+    interval_length = interval_length
   )
 }
 
@@ -967,7 +1182,6 @@ get_cif.default <- function(
   sim_coef_mat,
   ...
 ) {
-
   time_var <- resolve_time_var(time_var, object, newdata)
   assert_string(interval_length)
   assert_choice(interval_length, colnames(newdata))
@@ -985,7 +1199,7 @@ get_cif.default <- function(
     ~ {
       .df <- mutate(newdata, cause = .x) %>%
         arrange(.data[[time_var]], .by_group = TRUE)
-      X <- predict(object, .df, type = "lpmatrix")
+      X <- make_X(object, .df)
       apply(sim_coef_mat, 1, function(z) exp(X %*% z))
     }
   )
@@ -1010,14 +1224,26 @@ get_cif.default <- function(
   cif_increments <- (hazard / total_hazard) *
     survival *
     (1 - exp(-total_hazard * dt))
-  
+
   # cumulative CIF
   cifs <- apply(cif_increments, 2, cumsum)
-  
+
   newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
-    newdata[["cif_lower"]] <- pmin(pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0), 1)
-    newdata[["cif_upper"]] <- pmin(pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0), 1)
+    newdata[["cif_lower"]] <- pmin(
+      pmax(
+        apply(cifs, 1, quantile, probs = alpha / 2, na.rm = TRUE, type = 6),
+        0
+      ),
+      1
+    )
+    newdata[["cif_upper"]] <- pmin(
+      pmax(
+        apply(cifs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE, type = 6),
+        0
+      ),
+      1
+    )
   }
 
   newdata
@@ -1026,16 +1252,15 @@ get_cif.default <- function(
 ## Transition Probability Matrix for multi-state data
 #' @keywords internal
 get_trans_prob <- function(
-    newdata,
-    time_var        = "tend",
-    interval_length = "intlen",
-    transition      = "transition",
-    tend            = "tend",
-    cumu_hazard     = "cumu_hazard",
-    sep             = "->",
-    ...
+  newdata,
+  time_var = "tend",
+  interval_length = "intlen",
+  transition = "transition",
+  tend = "tend",
+  cumu_hazard = "cumu_hazard",
+  sep = "->",
+  ...
 ) {
-
   if (is.null(time_var)) {
     time_var <- tend
   }
@@ -1051,12 +1276,15 @@ get_trans_prob <- function(
   assert_data_frame(newdata, all.missing = FALSE)
 
   transition_var <- transition
-  unique_transition <- transition_state_table(newdata[[transition_var]], sep = sep)
+  unique_transition <- transition_state_table(
+    newdata[[transition_var]],
+    sep = sep
+  )
   names(unique_transition)[1] <- transition_var
   unique_tend <- sort(unique(newdata[[time_var]]))
 
   n_trans <- nrow(unique_transition)
-  n_t     <- length(unique_tend)
+  n_t <- length(unique_tend)
 
   m <- max(unique_transition$to_int)
   M <- array(0, dim = c(m, m, n_trans))
@@ -1067,12 +1295,17 @@ get_trans_prob <- function(
     seq_len(n_trans)
   )
   M[idx] <- 1
-  M[cbind(unique_transition$from_int,
-          unique_transition$from_int,
-          seq_len(n_trans))] <- -1
+  M[cbind(
+    unique_transition$from_int,
+    unique_transition$from_int,
+    seq_len(n_trans)
+  )] <- -1
 
   newdata$delta_cumu_hazard <- 0
-  split_idx <- split(seq_len(nrow(newdata)), as.character(newdata[[transition_var]]))
+  split_idx <- split(
+    seq_len(nrow(newdata)),
+    as.character(newdata[[transition_var]])
+  )
   for (idx_group in split_idx) {
     idx_group <- idx_group[order(newdata[[time_var]][idx_group])]
     ch <- newdata[[cumu_hazard]][idx_group]
@@ -1106,7 +1339,7 @@ get_trans_prob <- function(
 
   cum_A <- array(NA_real_, dim = c(m, m, n_t))
   for (t in seq_len(n_t)) {
-    cum_A[,,t] <- matrix(cum_A_list[[t]], m, m)
+    cum_A[,, t] <- matrix(cum_A_list[[t]], m, m)
   }
 
   prob_mat <- matrix(0, nrow = n_t, ncol = n_trans)
@@ -1114,7 +1347,7 @@ get_trans_prob <- function(
     prob_mat[, k] <- cum_A[
       unique_transition$from_int[k],
       unique_transition$to_int[k],
-      ]
+    ]
   }
   colnames(prob_mat) <- as.character(unique_transition[[transition_var]])
 
@@ -1164,16 +1397,21 @@ transition_state_table <- function(transitions, sep = "->") {
     stop(
       "Could not split transition label(s) ",
       paste(shQuote(labs[bad]), collapse = ", "),
-      " on separator '", sep, "'. ",
-      "Each transition must look like 'from", sep, "to'."
+      " on separator '",
+      sep,
+      "'. ",
+      "Each transition must look like 'from",
+      sep,
+      "to'."
     )
   }
   from_str <- vapply(parts, `[[`, character(1), 2L)
-  to_str   <- vapply(parts, `[[`, character(1), 3L)
+  to_str <- vapply(parts, `[[`, character(1), 3L)
 
   from_int_try <- suppressWarnings(as.integer(from_str))
-  to_int_try   <- suppressWarnings(as.integer(to_str))
-  numeric_mode <- !anyNA(from_int_try) && !anyNA(to_int_try) &&
+  to_int_try <- suppressWarnings(as.integer(to_str))
+  numeric_mode <- !anyNA(from_int_try) &&
+    !anyNA(to_int_try) &&
     all(from_str == as.character(from_int_try)) &&
     all(to_str == as.character(to_int_try))
 
@@ -1181,20 +1419,22 @@ transition_state_table <- function(transitions, sep = "->") {
     state_min <- min(c(from_int_try, to_int_try))
     shift <- if (state_min == 0L) 1L else 0L
     from_int <- from_int_try + shift
-    to_int   <- to_int_try + shift
+    to_int <- to_int_try + shift
     if (min(c(from_int, to_int)) < 1L) {
-      stop("Negative state indices are not supported in numeric transition labels.")
+      stop(
+        "Negative state indices are not supported in numeric transition labels."
+      )
     }
   } else {
     states <- sort(unique(c(from_str, to_str)))
     from_int <- match(from_str, states)
-    to_int   <- match(to_str, states)
+    to_int <- match(to_str, states)
   }
 
   data.frame(
     transition = labs,
-    from_int   = from_int,
-    to_int     = to_int,
+    from_int = from_int,
+    to_int = to_int,
     stringsAsFactors = FALSE
   )
 }
@@ -1220,7 +1460,9 @@ transition_state_table <- function(transitions, sep = "->") {
 #' intervals for transition probabilities are calculated.
 #' @param alpha Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}
 #' @param nsim Sets the number of iterations for simulated confidence intervals.
-#' Defaults to \code{100L}
+#' Defaults to \code{100L}. Interval bounds are empirical type-6 quantiles of
+#' the \code{nsim} draws; larger values of \code{nsim} yield more stable
+#' interval bounds.
 #' @param time_var Name of the variable used for the baseline hazard. Defaults
 #'   to \code{"tend"}.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
@@ -1228,14 +1470,20 @@ transition_state_table <- function(transitions, sep = "->") {
 #' @param transition \code{Character}, defaults to \code{"transition"}.
 #'   contains the transition labels in `newdata`.
 #' @param ... Further arguments passed to underlying methods.
-#' 
+#'
 #' @details
 #' When computing transition probabilities for multiple groups, the input data must
 #' be grouped via \code{group_by()} before calling this function. Omitting
 #' \code{group_by()} will not produce an error or warning but will return
 #' silently incorrect results, as the transition probability will be accumulated
 #' over the entire dataset rather than within each group.
-#' 
+#'
+#' The returned data contains one boundary row per group and transition at
+#' \code{time_var = 0} for plotting transition probabilities from the time
+#' origin. On this row, \code{trans_prob = 0}; if confidence intervals are
+#' requested, \code{trans_lower = trans_upper = 0}. If an interval-length
+#' column is present, it is set to \code{0} on the boundary row.
+#'
 #' @examplesIf require("mstate")
 #'   data("prothr", package = "mstate")
 #'   prothr <- prothr |>
@@ -1293,6 +1541,7 @@ add_trans_prob <- function(
     )
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
+  newdata <- drop_cumulative_boundary(newdata, time_var)
 
   assert_subset(transition_var, names(newdata))
   assert_subset(time_var, names(newdata))
@@ -1310,7 +1559,11 @@ add_trans_prob <- function(
 
   split_groups <- setdiff(old_groups, transition_var)
   ordering_vars <- c(split_groups, transition_var, time_var)
-  newdata <- newdata[do.call(order, newdata[, ordering_vars, drop = FALSE]), , drop = FALSE]
+  newdata <- newdata[
+    do.call(order, newdata[, ordering_vars, drop = FALSE]),
+    ,
+    drop = FALSE
+  ]
 
   if (!has_cumu) {
     newdata <- do.call(
@@ -1335,11 +1588,26 @@ add_trans_prob <- function(
         transition = transition_var
       )
   }
+  newdata <- add_cumulative_boundary(
+    newdata,
+    time_var = time_var,
+    values = c(
+      cumu_hazard = 0,
+      trans_prob = 0,
+      trans_lower = 0,
+      trans_upper = 0
+    ),
+    interval_length = interval_length
+  )
 
   if (length(split_groups) == 0L) {
     grp_index <- list(seq_len(nrow(newdata)))
   } else {
-    grp <- interaction(newdata[, split_groups, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    grp <- interaction(
+      newdata[, split_groups, drop = FALSE],
+      drop = TRUE,
+      lex.order = TRUE
+    )
     grp_index <- split(seq_len(nrow(newdata)), grp)
   }
 
@@ -1397,7 +1665,7 @@ get_sim_cumu <- function(newdata, interval_length = "intlen", ...) {
 
 #' Add transition probabilities confidence intervals
 #' @keywords internal
-add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
+add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
   dots <- list(...)
   time_var <- dots[["time_var"]]
   interval_length <- dots[["interval_length"]]
@@ -1424,21 +1692,27 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
   ordering_vars <- c(group_vars_ordered, time_var)
   df <- df[do.call(order, df[, ordering_vars, drop = FALSE]), , drop = FALSE]
 
-  X <- predict.gam(object, newdata = df, type = "lpmatrix")
-  coefs <- coef(object)
-  V <- object$Vp
+  X <- make_X(object, df)
 
-  groups_array <- interaction(df[, group_vars_ordered, drop = FALSE], drop = TRUE, lex.order = TRUE)
+  groups_array <- interaction(
+    df[, group_vars_ordered, drop = FALSE],
+    drop = TRUE,
+    lex.order = TRUE
+  )
   array_idx_list <- split(seq_len(nrow(df)), groups_array)
 
   if (length(group_vars_trans) > 0) {
-    groups_trans <- interaction(df[, group_vars_trans, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    groups_trans <- interaction(
+      df[, group_vars_trans, drop = FALSE],
+      drop = TRUE,
+      lex.order = TRUE
+    )
     trans_idx_list <- split(seq_len(nrow(df)), groups_trans)
   } else {
     trans_idx_list <- list(seq_len(nrow(df)))
   }
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- sample_coefs(object, nsim)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
   if (is.null(dim(sim_fit_mat))) {
     sim_fit_mat <- matrix(sim_fit_mat, ncol = 1L)
@@ -1474,8 +1748,22 @@ add_trans_ci <- function(newdata, object, nsim=100L, alpha=0.05, ...) {
     sim_trans_probs[, i] <- trans_prob
   }
 
-  df$trans_lower <- apply(sim_trans_probs, 1, quantile, probs = alpha / 2, na.rm = TRUE)
-  df$trans_upper <- apply(sim_trans_probs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
+  df$trans_lower <- apply(
+    sim_trans_probs,
+    1,
+    quantile,
+    probs = alpha / 2,
+    na.rm = TRUE,
+    type = 6
+  )
+  df$trans_upper <- apply(
+    sim_trans_probs,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    na.rm = TRUE,
+    type = 6
+  )
 
   df <- df[order(df$.orig_row), , drop = FALSE]
   df$.orig_row <- NULL

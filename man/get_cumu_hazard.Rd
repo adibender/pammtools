@@ -35,7 +35,16 @@ respective intervals. \code{"delta"} calculates CIs based on the standard
 error calculated by the Delta method. \code{"sim"} draws the
 property of interest from its posterior based on the normal distribution of
 the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
-for details and empirical evaluation.}
+for details and empirical evaluation. For \code{ci_type = "sim"}, interval
+bounds are empirical quantiles (type 6, see \code{\link[stats]{quantile}})
+of \code{nsim} posterior draws (default \code{nsim = 100L}, passed via
+\code{...}). Type-6 quantiles avoid the systematic inward bias that the
+\code{\link[stats]{quantile}} default (type 7) exhibits for small
+\code{nsim}, but at the default \code{nsim = 100} the bounds are estimated
+from few tail draws and thus noisy; increase \code{nsim} (e.g., to 500 or
+more) for more stable interval bounds. Very small \code{nsim}
+(\code{nsim < 2 / alpha - 1}, i.e., below 39 for \code{alpha = 0.05})
+cannot achieve the nominal level at all.}
 
 \item{time_var}{Name of the variable used for the baseline hazard. Defaults
 to \code{"tend"}.}
@@ -45,6 +54,8 @@ the confidence intervals.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
+
+\item{nsim}{Total number of pooled posterior draws used for the interval.}
 
 \item{...}{Further arguments passed to \code{\link[mgcv]{predict.gam}} and
 \code{\link{get_hazard}}}

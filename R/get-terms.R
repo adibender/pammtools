@@ -85,14 +85,24 @@ smooth_term_rows <- function(s, data) {
 
   by <- s[["by"]]
   has_by <- !is.null(by) && !is.na(by) && by != "NA"
-  by_is_factor <- has_by && by %in% names(data) && is_categorical(data[[by]])
+  # `s$by` may be a transformed term name (e.g. "as.ordered(complications)").
+  # Resolve it to the underlying data column so we can detect factor by-variables
+  # and set the right level in `newdata` (see #283).
+  by_var <- by
+  if (has_by && !by_var %in% names(data)) {
+    by_syms <- tryCatch(all.vars(str2lang(by_var)), error = function(e) character())
+    if (length(by_syms) == 1 && by_syms %in% names(data)) {
+      by_var <- by_syms
+    }
+  }
+  by_is_factor <- has_by && by_var %in% names(data) && is_categorical(data[[by_var]])
 
   # Case A: factor by-variable. mgcv creates one smooth (and one term column) per
   # level, each carrying its own `by.level`. Collapse them into a shared facet.
   if (by_is_factor) {
     lvl <- s[["by.level"]]
     if (is.null(lvl)) {
-      lvl <- parse_by_level(label, by, levels(as.factor(data[[by]])))
+      lvl <- parse_by_level(label, by, levels(as.factor(data[[by_var]])))
     }
     lvl <- as.character(lvl)
     facet <- substr(label, 1, nchar(label) - nchar(lvl))
@@ -101,7 +111,7 @@ smooth_term_rows <- function(s, data) {
       level    = lvl,
       var      = var,
       col      = label,
-      settings = list(stats::setNames(list(lvl), by))
+      settings = list(stats::setNames(list(lvl), by_var))
     ))
   }
 
@@ -211,6 +221,10 @@ resolve_terms <- function(smooth_tbl, terms) {
 #' @importFrom stats predict
 #' @keywords internal
 get_term <- function(data, fit, spec, n = 100, conf_level = 0.95, ...) {
+  checkmate::assert_number(conf_level, lower = 0, upper = 1)
+  if (conf_level <= 0 || conf_level >= 1) {
+    stop("`conf_level` must be strictly between 0 and 1.", call. = FALSE)
+  }
   z_value <- normal_ci_multiplier(conf_level)
 
   var      <- spec[["var"]]
@@ -269,6 +283,10 @@ get_term <- function(data, fit, spec, n = 100, conf_level = 0.95, ...) {
 #' @param term A character string naming the model term/variable.
 #' @keywords internal
 get_term_legacy <- function(data, fit, term, n = 100, conf_level = 0.95, ...) {
+  checkmate::assert_number(conf_level, lower = 0, upper = 1)
+  if (conf_level <= 0 || conf_level >= 1) {
+    stop("`conf_level` must be strictly between 0 and 1.", call. = FALSE)
+  }
   z_value <- normal_ci_multiplier(conf_level)
 
   seq_term <- seq_range(pull(data, term), n = n)

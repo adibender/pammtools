@@ -133,6 +133,69 @@ test_that("hazard functions work for PAM", {
   ))
 })
 
+test_that("simulation based CIs use type-6 quantiles (#288)", {
+  # nsim = 100 exercises the interpolation branch of the type-6 quantile;
+  # for nsim < 39 the 2.5% bound would degenerate to min/max of the draws
+  nd <- ped_info(ped)
+  set.seed(288)
+  haz_sim <- add_hazard(nd, pam, ci_type = "sim", nsim = 100L)
+  # reproduce the posterior draws (no other RNG is consumed before rmvnorm)
+  # and compare against type-6 quantiles
+  set.seed(288)
+  X <- predict(pam, newdata = nd, type = "lpmatrix")
+  sim_coef_mat <- mvtnorm::rmvnorm(100L, mean = coef(pam), sigma = pam$Vp)
+  sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
+  expect_equal(
+    haz_sim$ci_lower,
+    apply(sim_fit_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    haz_sim$ci_upper,
+    apply(sim_fit_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+  # type-6 intervals always contain the type-7 intervals for the same draws
+  expect_true(all(
+    haz_sim$ci_lower <= apply(sim_fit_mat, 1, quantile, probs = 0.025, type = 7)
+  ))
+  expect_true(all(
+    haz_sim$ci_upper >= apply(sim_fit_mat, 1, quantile, probs = 0.975, type = 7)
+  ))
+
+  # same check for the cumulative hazard and survival probability paths
+  set.seed(288)
+  cumu_sim <- add_cumu_hazard(nd, pam, ci_type = "sim", nsim = 100L)
+  set.seed(288)
+  surv_sim <- add_surv_prob(nd, pam, ci_type = "sim", nsim = 100L)
+  sim_cumu_mat <- apply(
+    sim_coef_mat,
+    1,
+    function(z) cumsum(nd$intlen * exp(X %*% z))
+  )
+  sim_surv_mat <- exp(-sim_cumu_mat)
+  expect_equal(
+    cumu_sim$cumu_lower,
+    apply(sim_cumu_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    cumu_sim$cumu_upper,
+    apply(sim_cumu_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    surv_sim$surv_lower,
+    apply(sim_surv_mat, 1, quantile, probs = 0.025, type = 6),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    surv_sim$surv_upper,
+    apply(sim_surv_mat, 1, quantile, probs = 0.975, type = 6),
+    ignore_attr = TRUE
+  )
+})
+
 test_that("hazard functions work for PEM", {
   expect_data_frame(
     haz <- add_hazard(ped_info(ped), pem),
@@ -197,8 +260,8 @@ test_that("cumulative hazard functions work for PAM", {
   ## sim CI (0.95)
   set.seed(123)
   haz3 <- ped_info(ped) %>% add_cumu_hazard(pam, ci_type = "sim")
-  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .25, .34))
-  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .13, .17))
+  expect_equal(round(haz3$cumu_upper, 2), c(.06, .11, .19, .26, .35))
+  expect_equal(round(haz3$cumu_lower, 2), c(.02, .04, .08, .12, .16))
 
   ## check that hazard columns are not deleted
   newdata <- ped_info(ped) %>% add_hazard(pam) %>% add_cumu_hazard(pam)
@@ -223,7 +286,7 @@ test_that("cumulative hazard function works for arbitrary time points", {
 
   expect_equal(ndf1$cumu_hazard[3], ndf2$cumu_hazard[1])
   expect_equal(ndf1$cumu_hazard[6], ndf2$cumu_hazard[2])
-  
+
   #without grouping
   set.seed(211758)
   df <- data.frame(
@@ -236,19 +299,18 @@ test_that("cumulative hazard function works for arbitrary time points", {
   tmax = max(ped_sim$tend)
   ndf1 <- ped_sim %>%
     make_newdata(tend = unique(tend)) %>%
-    add_cumu_hazard(pam_sim) |> 
+    add_cumu_hazard(pam_sim) |>
     dplyr::filter(tend == tmax)
-  
+
   ndf2 <- ped_sim %>%
     make_newdata(tend = c(2, tmax)) %>%
     add_cumu_hazard(pam_sim) |>
     dplyr::filter(tend == tmax)
-  
+
   expect_message(
     ped_sim %>% make_newdata(tend = c(2, tmax))
   )
   expect_equal(ndf1$cumu_hazard, ndf2$cumu_hazard, tolerance = 0.1)
-  
 })
 
 test_that("cumulative hazard functions work for PEM", {
@@ -463,17 +525,18 @@ test_that("survival probabilities functions work for PAM", {
 
   expect_data_frame(
     add_surv_prob(ped_info(ped), bam, ci = FALSE),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 8L
   )
   expect_data_frame(
     surv <- add_surv_prob(ped_info(ped), pam, ci = FALSE),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 8L
   )
+  expect_false(any(c("surv_lower", "surv_upper") %in% names(surv)))
   expect_data_frame(
     surv <- add_surv_prob(ped_info(ped), pam),
-    nrows = 5L,
+    nrows = 6L,
     ncols = 10L
   )
   stest <- sapply(
@@ -483,15 +546,25 @@ test_that("survival probabilities functions work for PAM", {
     }
   )
   expect_identical(all(stest), TRUE)
-  expect_identical(round(surv$surv_prob, 2), c(0.97, 0.94, 0.88, 0.83, 0.79))
-  expect_identical(round(surv$surv_lower, 2), c(0.95, 0.90, 0.83, 0.76, 0.68))
-  expect_identical(round(surv$surv_upper, 2), c(0.98, 0.96, 0.92, 0.89, 0.86))
+  expect_identical(surv$tend[1], 0)
+  expect_identical(surv$intlen[1], 0)
+  expect_identical(round(surv$surv_prob, 2), c(1, 0.97, 0.94, 0.88, 0.83, 0.79))
+  expect_identical(
+    round(surv$surv_lower, 2),
+    c(1, 0.95, 0.90, 0.83, 0.76, 0.68)
+  )
+  expect_identical(
+    round(surv$surv_upper, 2),
+    c(1, 0.98, 0.96, 0.92, 0.89, 0.86)
+  )
   # check that overwrite works
+  surv_over <- add_surv_prob(surv, pam, overwrite = TRUE)
   expect_data_frame(
-    add_surv_prob(surv, pam, overwrite = TRUE),
-    nrows = 5L,
+    surv_over,
+    nrows = 6L,
     ncols = 10L
   )
+  expect_equal(sum(surv_over$tend == 0), 1L)
   # error on wrong input
   expect_error(add_surv_prob(surv, pam))
 
@@ -500,22 +573,31 @@ test_that("survival probabilities functions work for PAM", {
     group_by(complications) %>%
     ped_info() %>%
     add_surv_prob(pam)
-  expect_data_frame(grouped_surv, nrows = 10L, ncols = 10L)
+  expect_data_frame(grouped_surv, nrows = 12L, ncols = 10L)
   expect_equal(
     round(grouped_surv$surv_prob, 2),
-    c(0.97, 0.94, 0.88, .83, .79, .94, 0.88, .78, .69, .61)
+    c(1, 0.97, 0.94, 0.88, .83, .79, 1, .94, 0.88, .78, .69, .61)
   )
 
   ## delta CI
   surv2 <- add_surv_prob(ped_info(ped), pam, ci_type = "delta")
-  expect_equal(round(surv2$surv_lower, 2), c(.95, .91, .84, .78, .72))
-  expect_equal(round(surv2$surv_upper, 2), c(.99, .97, .93, .89, .86))
+  expect_equal(round(surv2$surv_lower, 2), c(1, .95, .91, .84, .78, .72))
+  expect_equal(round(surv2$surv_upper, 2), c(1, .99, .97, .93, .89, .86))
 
   # sim CI
   set.seed(123)
   surv3 <- add_surv_prob(ped_info(ped), pam, ci_type = "sim")
-  expect_equal(round(surv3$surv_lower, 2), c(.94, .90, .83, .78, .71))
-  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .88, .84))
+  expect_equal(round(surv3$surv_lower, 2), c(.94, .89, .82, .77, .70))
+  expect_equal(round(surv3$surv_upper, 2), c(.98, .96, .92, .89, .85))
+})
+
+test_that("cumulative boundary helpers preserve non-boundary NA times", {
+  x <- tibble::tibble(tend = c(0, NA_real_, 1), value = 1:3)
+
+  out <- pammtools:::drop_cumulative_boundary(x, "tend")
+
+  expect_equal(out$tend, c(NA_real_, 1))
+  expect_equal(out$value, 2:3)
 })
 
 test_that("CIF works with pamm", {
@@ -527,17 +609,30 @@ test_that("CIF works with pamm", {
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(cause = as.factor(cause))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
-  ndf <- ped_cr %>%
+  ndf_in <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
-    group_by(cause) %>%
-    add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
+    group_by(cause)
+  n_groups <- dplyr::n_distinct(ndf_in$cause)
+  ndf <- add_cif(ndf_in, pam)
+  expect_data_frame(ndf, nrows = nrow(ndf_in) + n_groups, ncols = 7L)
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_equal(sum(ndf$tend == 0), n_groups)
+  expect_true(all(ndf$cif[ndf$tend == 0] == 0))
+  expect_true(all(ndf$cif_lower[ndf$tend == 0] == 0))
+  expect_true(all(ndf$cif_upper[ndf$tend == 0] == 0))
+  expect_equal(attr(ndf, "trafo_args"), attr(ndf_in, "trafo_args"))
+  expect_equal(attr(ndf, "intvars"), attr(ndf_in, "intvars"))
+  expect_equal(dplyr::group_vars(ndf), dplyr::group_vars(ndf_in))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
+
+  expect_error(add_cif(ndf, pam))
+  ndf_over <- add_cif(ndf, pam, overwrite = TRUE)
+  expect_data_frame(ndf_over, nrows = nrow(ndf_in) + n_groups, ncols = 7L)
+  expect_equal(sum(ndf_over$tend == 0), n_groups)
 })
 
 
@@ -559,25 +654,36 @@ test_that("CIF works with arbitrary time points", {
   ndf1 <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) |>
     group_by(cause) |>
-    add_cif(pam, ci=FALSE) |>
+    add_cif(pam, ci = FALSE) |>
     dplyr::filter(tend == tmax)
 
-  ndf2 <- ped_cr %>%
+  ndf2_in <- ped_cr %>%
     make_newdata(tend = c(2, tmax), cause = unique(cause)) %>%
-    group_by(cause) |>
-    add_cif(pam, ci=FALSE)
+    group_by(cause)
+  ndf2 <- add_cif(ndf2_in, pam, ci = FALSE)
 
   expect_message(
     ped_cr %>% make_newdata(tend = c(2, tmax), cause = unique(cause))
   )
-  expect_equal(ndf1$cif, ndf2 |> dplyr::filter(tend == tmax) |> pull(cif), tolerance = 0.1)
-  expect_data_frame(ndf2, nrows = 4L, ncols = 5L)
+  expect_equal(
+    ndf1$cif,
+    ndf2 |> dplyr::filter(tend == tmax) |> pull(cif),
+    tolerance = 0.1
+  )
+  expect_data_frame(
+    ndf2,
+    nrows = nrow(ndf2_in) + dplyr::n_distinct(ndf2_in$cause),
+    ncols = 5L
+  )
+  expect_false(any(c("cif_lower", "cif_upper") %in% names(ndf2)))
+  expect_equal(sum(ndf2$tend == 0), dplyr::n_distinct(ndf2_in$cause))
+  expect_true(all(ndf2$cif[ndf2$tend == 0] == 0))
 })
 
 test_that("add_cif returns same grid as add_cumu_hazard", {
   set.seed(211758)
   df <- data.frame(
-    time   = rexp(20),
+    time = rexp(20),
     status = sample(c(0, 1, 2), 20, replace = TRUE)
   )
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
@@ -589,27 +695,33 @@ test_that("add_cif returns same grid as add_cumu_hazard", {
     cuts <- attr(ped, "trafo_args")[["cut"]]
     setdiff(cuts[cuts <= tmax], 0)
   }
-  tmax       <- max(ped_cr$tend)
-  full_grid  <- cuts_le_tmax(ped_cr, tmax)
+  tmax <- max(ped_cr$tend)
+  full_grid <- cuts_le_tmax(ped_cr, tmax)
   sparse_tend <- c(2, tmax) # deliberately misses interior breakpoints
 
-  # ---- add_cif: returns the expanded grid (more rows than requested) ----
+  # ---- add_cif: returns requested rows plus one boundary row per cause ----
   nd_cif_in <- ped_cr %>%
     make_newdata(tend = sparse_tend, cause = unique(cause)) %>%
     group_by(cause)
   nd_cif_out <- add_cif(nd_cif_in, pam_cr, ci = FALSE)
 
-  expect_equal(nrow(nd_cif_out), nrow(nd_cif_in))
+  expect_equal(
+    nrow(nd_cif_out),
+    nrow(nd_cif_in) + dplyr::n_distinct(nd_cif_in$cause)
+  )
+  expect_equal(sum(nd_cif_out$tend == 0), dplyr::n_distinct(nd_cif_in$cause))
   # all cut-grid breakpoints up to max requested time must be present
   expect_false(all(full_grid %in% unique(nd_cif_out$tend)))
 
   # ---- add_cumu_hazard: returns rows matching the requested newdata ----
-  df_single <- data.frame(time = rexp(20),
-                          status = sample(c(0, 1), 20, replace = TRUE))
-  ped       <- as_ped(df_single, Surv(time, status) ~ ., id = "id")
-  pam       <- pamm(ped_status ~ s(tend), data = ped)
+  df_single <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1), 20, replace = TRUE)
+  )
+  ped <- as_ped(df_single, Surv(time, status) ~ ., id = "id")
+  pam <- pamm(ped_status ~ s(tend), data = ped)
 
-  nd_cuh_in  <- ped %>% make_newdata(tend = c(2, max(ped$tend)))
+  nd_cuh_in <- ped %>% make_newdata(tend = c(2, max(ped$tend)))
   nd_cuh_out <- add_cumu_hazard(nd_cuh_in, pam)
 
   expect_equal(nrow(nd_cuh_out), nrow(nd_cuh_in))
@@ -630,12 +742,18 @@ test_that("CIF works with mgcv::gam", {
     family = poisson(),
     offset = offset
   )
-  ndf <- ped_cr %>%
+  ndf_in <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
-    group_by(cause) %>%
-    add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
+    group_by(cause)
+  ndf <- add_cif(ndf_in, pam)
+  expect_data_frame(
+    ndf,
+    nrows = nrow(ndf_in) + dplyr::n_distinct(ndf_in$cause),
+    ncols = 7L
+  )
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_equal(sum(ndf$tend == 0), dplyr::n_distinct(ndf_in$cause))
+  expect_true(all(ndf$cif[ndf$tend == 0] == 0))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
@@ -664,8 +782,13 @@ test_that("CIF works with nonstandard time variable names", {
   set.seed(211758)
   ndf <- ndf_stop %>%
     add_cif(pam, time_var = "stop", ci = FALSE, nsim = 20L)
-  expect_data_frame(ndf, nrows = 26L)
+  expect_data_frame(
+    ndf,
+    nrows = nrow(ndf_stop) + dplyr::n_distinct(ndf_stop$cause)
+  )
   expect_subset(c("cif"), colnames(ndf))
+  expect_equal(sum(ndf$stop == 0), dplyr::n_distinct(ndf_stop$cause))
+  expect_true(all(ndf$cif[ndf$stop == 0] == 0))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
 
   set.seed(211758)
@@ -693,12 +816,18 @@ test_that("CIF works with character causes", {
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(cause = factor(cause, labels = c("Death", "Discharge")))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
-  ndf <- ped_cr %>%
+  ndf_in <- ped_cr %>%
     make_newdata(tend = unique(tend), cause = unique(cause)) %>%
-    group_by(cause) %>%
-    add_cif(pam)
-  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
+    group_by(cause)
+  ndf <- add_cif(ndf_in, pam)
+  expect_data_frame(
+    ndf,
+    nrows = nrow(ndf_in) + dplyr::n_distinct(ndf_in$cause),
+    ncols = 7L
+  )
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_equal(sum(ndf$tend == 0), dplyr::n_distinct(ndf_in$cause))
+  expect_true(all(ndf$cif[ndf$tend == 0] == 0))
   expect_true(all(ndf$cif <= ndf$cif_upper))
   expect_true(all(ndf$cif >= ndf$cif_lower))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
@@ -707,104 +836,127 @@ test_that("CIF works with character causes", {
 })
 
 test_that("CIF works with non-default cause_var names", {
-
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(event_type = factor(cause, labels = c("Death", "Discharge"))) %>%
     select(-cause)
   pam <- pamm(ped_status ~ s(tend, by = event_type), data = ped_cr)
-  ndf <- ped_cr %>%
+  ndf_in <- ped_cr %>%
     make_newdata(tend = unique(tend), event_type = unique(event_type)) %>%
-    group_by(event_type) %>%
-    add_cif(pam, cause_var = "event_type")
+    group_by(event_type)
+  ndf <- add_cif(ndf_in, pam, cause_var = "event_type")
 
-  expect_data_frame(ndf, nrows = 26L, ncols = 7L)
+  expect_data_frame(
+    ndf,
+    nrows = nrow(ndf_in) + dplyr::n_distinct(ndf_in$event_type),
+    ncols = 7L
+  )
   expect_subset(c("cif", "cif_lower", "cif_upper"), colnames(ndf))
+  expect_equal(sum(ndf$tend == 0), dplyr::n_distinct(ndf_in$event_type))
+  expect_true(all(ndf$cif[ndf$tend == 0] == 0))
   expect_true(all(ndf$cif <= 1 & ndf$cif >= 0))
   expect_true(all(ndf$cif_lower <= 1 & ndf$cif_lower >= 0))
   expect_true(all(ndf$cif_upper <= 1 & ndf$cif_upper >= 0))
-
 })
 
 test_that("CIF uses exact within-interval exponential integral", {
   set.seed(211758)
-  df <- data.frame(time = rexp(20), status = sample(c(0, 1, 2), 20, replace = TRUE))
+  df <- data.frame(
+    time = rexp(20),
+    status = sample(c(0, 1, 2), 20, replace = TRUE)
+  )
   ped_cr <- as_ped(df, Surv(time, status) ~ ., id = "id") %>%
     mutate(cause = as.factor(cause))
   pam <- pamm(ped_status ~ s(tend, by = cause), data = ped_cr)
-  
+
   cut_points <- unique(ped_cr$tend)[unique(ped_cr$tend) <= 0.5]
-  
+
   ndf <- ped_cr %>%
     make_newdata(tend = c(cut_points, 0.5), cause = unique(cause)) %>%
     group_by(cause)
-  
+
   target_cause <- levels(ndf$cause)[1]
   ndf_target <- ndf %>%
     filter(cause == target_cause) %>%
     arrange(tend) %>%
     reconstruct_intlen()
-  
+
   causes_model <- levels(ndf$cause)
-  
+
   # Predict cause-specific hazards at posterior mean (no simulation)
-  hazards_manual <- map(causes_model, ~ {
-    .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
-    as.numeric(predict(pam, .df, type = "response"))
-  })
+  hazards_manual <- map(
+    causes_model,
+    ~ {
+      .df <- mutate(ndf_target, cause = factor(.x, levels = causes_model))
+      as.numeric(predict(pam, .df, type = "response"))
+    }
+  )
   names(hazards_manual) <- causes_model
-  
-  intlen    <- ndf_target$intlen
-  n         <- length(intlen)
-  hk        <- hazards_manual[[target_cause]]          # cause-specific hazard
-  hj        <- Reduce("+", hazards_manual)             # all-cause hazard (vector)
-  
+
+  intlen <- ndf_target$intlen
+  n <- length(intlen)
+  hk <- hazards_manual[[target_cause]] # cause-specific hazard
+  hj <- Reduce("+", hazards_manual) # all-cause hazard (vector)
+
   # Recursive exact CIF using the closed-form per-interval integral
-  S   <- numeric(n)   # S(kappa_{j-1}), i.e. survival at START of interval j
-  cif <- numeric(n)   # F_k(kappa_j)
-  
-  S_prev   <- 1
+  S <- numeric(n) # S(kappa_{j-1}), i.e. survival at START of interval j
+  cif <- numeric(n) # F_k(kappa_j)
+
+  S_prev <- 1
   cif_prev <- 0
-  
+
   for (j in seq_len(n)) {
-    delta_cif  <- (hk[j] / hj[j]) * S_prev * (1 - exp(-hj[j] * intlen[j]))
-    cif[j]     <- cif_prev + delta_cif
-    S_prev     <- S_prev * exp(-hj[j] * intlen[j])
-    cif_prev   <- cif[j]
+    delta_cif <- (hk[j] / hj[j]) * S_prev * (1 - exp(-hj[j] * intlen[j]))
+    cif[j] <- cif_prev + delta_cif
+    S_prev <- S_prev * exp(-hj[j] * intlen[j])
+    cif_prev <- cif[j]
   }
-  
+
   observed <- ndf %>%
     add_cif(pam, ci = FALSE) %>%
     filter(cause == target_cause) %>%
     arrange(tend)
-  
-  expect_equal(observed$cif, cif, tolerance = 1e-8)
-  
+
+  cif_with_boundary <- c(0, cif)
+  expect_equal(observed$cif, cif_with_boundary, tolerance = 1e-8)
+
   observed <- ndf %>%
     add_cif(pam, ci = TRUE) %>%
     filter(cause == target_cause) %>%
     arrange(tend)
-  
+
   expect_true(all(
-    cif >= observed$cif_lower &
-    cif <= observed$cif_upper
+    cif_with_boundary >= observed$cif_lower &
+      cif_with_boundary <= observed$cif_upper
   ))
-  
 })
 
 test_that("Transition Probability works", {
-  ndf <- ped_msm %>%
+  ndf_in <- ped_msm %>%
     make_newdata(tend = unique(tend), transition = unique(transition)) %>%
-    group_by(transition) %>%
-    add_trans_prob(pam_msm, ci = T)
-  expect_data_frame(ndf, nrows = 380L, ncols = 6L)
+    group_by(transition)
+  ndf <- add_trans_prob(ndf_in, pam_msm, ci = TRUE)
+  n_groups <- dplyr::n_distinct(ndf_in$transition)
+  expect_data_frame(ndf, nrows = nrow(ndf_in) + n_groups, ncols = 6L)
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(ndf))
-  expect_true(all(ndf$trans_prob < ndf$trans_upper))
-  expect_true(all(ndf$trans_prob > ndf$trans_lower))
+  expect_equal(sum(ndf$tend == 0), n_groups)
+  expect_true(all(ndf$trans_prob[ndf$tend == 0] == 0))
+  expect_true(all(ndf$trans_lower[ndf$tend == 0] == 0))
+  expect_true(all(ndf$trans_upper[ndf$tend == 0] == 0))
+  expect_true(all(ndf$trans_prob[ndf$tend > 0] < ndf$trans_upper[ndf$tend > 0]))
+  expect_true(all(ndf$trans_prob[ndf$tend > 0] > ndf$trans_lower[ndf$tend > 0]))
   expect_true(all(ndf$trans_prob <= 1 & ndf$trans_prob >= 0))
   expect_true(all(ndf$trans_lower <= 1 & ndf$trans_lower >= 0))
   expect_true(all(ndf$trans_upper <= 1 & ndf$trans_upper >= 0))
+
+  expect_error(add_trans_prob(ndf, pam_msm, ci = TRUE))
+  ndf_over <- add_trans_prob(ndf, pam_msm, ci = TRUE, overwrite = TRUE)
+  expect_data_frame(ndf_over, nrows = nrow(ndf_in) + n_groups, ncols = 6L)
+  expect_equal(sum(ndf_over$tend == 0), n_groups)
 })
 
 test_that("transition probabilities remain bounded and confidence intervals ordered", {
@@ -857,9 +1009,11 @@ test_that("Transition Probability works with nonstandard time and interval colum
 
   expect_data_frame(
     tp <- add_trans_prob(ndf_stop, pam_msm_stop, ci = FALSE, time_var = "stop"),
-    nrows = 380L
+    nrows = nrow(ndf_stop) + dplyr::n_distinct(ndf_stop$transition)
   )
   expect_subset(c("trans_prob"), colnames(tp))
+  expect_equal(sum(tp$stop == 0), dplyr::n_distinct(ndf_stop$transition))
+  expect_true(all(tp$trans_prob[tp$stop == 0] == 0))
   expect_true(all(tp$trans_prob <= 1 & tp$trans_prob >= 0))
 
   ndf_stop_len <- reconstruct_intlen(ndf_stop, time_var = "stop") %>%
@@ -875,9 +1029,11 @@ test_that("Transition Probability works with nonstandard time and interval colum
       time_var = "stop",
       interval_length = "length"
     ),
-    nrows = 380L
+    nrows = nrow(ndf_stop_len) + dplyr::n_distinct(ndf_stop_len$transition)
   )
   expect_subset(c("trans_prob", "trans_lower", "trans_upper"), colnames(tp_ci))
+  expect_equal(sum(tp_ci$stop == 0), dplyr::n_distinct(ndf_stop_len$transition))
+  expect_true(all(tp_ci$trans_prob[tp_ci$stop == 0] == 0))
   expect_true(all(tp_ci$trans_prob <= 1 & tp_ci$trans_prob >= 0))
 
   ped_msm_stop_trans <- rename(ped_msm, stop = tend, trans = transition)
@@ -902,9 +1058,11 @@ test_that("Transition Probability works with nonstandard time and interval colum
       interval_length = "length",
       transition = "trans"
     ),
-    nrows = 380L
+    nrows = nrow(ndf_stop_trans) + dplyr::n_distinct(ndf_stop_trans$trans)
   )
   expect_subset(c("trans_prob"), colnames(tp_trans))
+  expect_equal(sum(tp_trans$stop == 0), dplyr::n_distinct(ndf_stop_trans$trans))
+  expect_true(all(tp_trans$trans_prob[tp_trans$stop == 0] == 0))
   expect_true(all(tp_trans$trans_prob <= 1 & tp_trans$trans_prob >= 0))
 })
 
@@ -935,14 +1093,16 @@ test_that("Transition Probability is invariant to input row order", {
 test_that("transition_state_table parses arrow-notation integer states", {
   out <- pammtools:::transition_state_table(c("1->2", "1->3", "2->3"))
   expect_equal(out$from_int, c(1L, 1L, 2L))
-  expect_equal(out$to_int,   c(2L, 3L, 3L))
+  expect_equal(out$to_int, c(2L, 3L, 3L))
 })
 
 test_that("transition_state_table shifts state indices when minimum is 0", {
   shifted <- pammtools:::transition_state_table(c("0->1", "0->2", "1->2"))
   unshifted <- pammtools:::transition_state_table(c("1->2", "1->3", "2->3"))
-  expect_equal(shifted[, c("from_int", "to_int")],
-               unshifted[, c("from_int", "to_int")])
+  expect_equal(
+    shifted[, c("from_int", "to_int")],
+    unshifted[, c("from_int", "to_int")]
+  )
 })
 
 test_that("transition_state_table encodes character states by sorted unique name", {
@@ -951,14 +1111,18 @@ test_that("transition_state_table encodes character states by sorted unique name
   )
   # alphabetical: death=1, healthy=2, ill=3
   expect_equal(out$from_int, c(2L, 2L, 3L))
-  expect_equal(out$to_int,   c(3L, 1L, 1L))
+  expect_equal(out$to_int, c(3L, 1L, 1L))
 })
 
 test_that("transition_state_table errors on malformed labels", {
-  expect_error(pammtools:::transition_state_table(c("1->2", "broken")),
-               "Each transition must look like")
-  expect_error(pammtools:::transition_state_table(c("1->2->3")),
-               "Each transition must look like")
+  expect_error(
+    pammtools:::transition_state_table(c("1->2", "broken")),
+    "Each transition must look like"
+  )
+  expect_error(
+    pammtools:::transition_state_table(c("1->2->3")),
+    "Each transition must look like"
+  )
 })
 
 test_that("transition_state_table deduplicates and handles factor input", {
@@ -971,22 +1135,35 @@ test_that("transition_state_table deduplicates and handles factor input", {
 # --- end-to-end add_trans_prob across state encodings ---------------------
 test_that("add_trans_prob works for state encodings: int>=1, int>=0, named", {
   prep_msm <- function(map_states) {
-    df <- prothr[, ] |>
-      mutate(from = map_states(from), to = map_states(to),
-             transition = as.factor(paste0(from, "->", to)))
-    ped <- as_ped(df, formula = Surv(Tstart, Tstop, status) ~ .,
-      transition = "transition", id = "id", timescale = "calendar")
-    pam <- gam(ped_status ~ s(tend, by = transition, bs = "cr") + transition,
-      data = ped, family = poisson(), offset = offset)
+    df <- prothr[,] |>
+      mutate(
+        from = map_states(from),
+        to = map_states(to),
+        transition = as.factor(paste0(from, "->", to))
+      )
+    ped <- as_ped(
+      df,
+      formula = Surv(Tstart, Tstop, status) ~ .,
+      transition = "transition",
+      id = "id",
+      timescale = "calendar"
+    )
+    pam <- gam(
+      ped_status ~ s(tend, by = transition, bs = "cr") + transition,
+      data = ped,
+      family = poisson(),
+      offset = offset
+    )
     ndf <- ped %>%
       make_newdata(tend = unique(tend), transition = unique(transition)) %>%
-      group_by(transition) %>% add_trans_prob(pam, ci = FALSE)
+      group_by(transition) %>%
+      add_trans_prob(pam, ci = FALSE)
     list(ndf = ndf, ped = ped)
   }
 
-  res_1 <- prep_msm(identity)                                  # states 1,2,3
-  res_0 <- prep_msm(function(s) s - 1L)                        # states 0,1,2
-  res_n <- prep_msm(function(s) c("a", "b", "c")[s])           # named states
+  res_1 <- prep_msm(identity) # states 1,2,3
+  res_0 <- prep_msm(function(s) s - 1L) # states 0,1,2
+  res_n <- prep_msm(function(s) c("a", "b", "c")[s]) # named states
 
   # all runs complete, no NAs, all in [0,1]
   for (r in list(res_1, res_0, res_n)) {
@@ -996,17 +1173,29 @@ test_that("add_trans_prob works for state encodings: int>=1, int>=0, named", {
 
   # integer state encodings starting at 0 vs 1 produce identical numerics
   # (matched per matching transition label after relabeling)
-  rename_trans <- function(lbl) sub("^0", "1", sub("->0", "->1",
-                                  sub("1", "2", sub("->1", "->2",
-                                  sub("2", "3", sub("->2", "->3", lbl))))))
+  rename_trans <- function(lbl)
+    sub(
+      "^0",
+      "1",
+      sub(
+        "->0",
+        "->1",
+        sub("1", "2", sub("->1", "->2", sub("2", "3", sub("->2", "->3", lbl))))
+      )
+    )
   v_1 <- with(res_1$ndf, setNames(trans_prob, paste(tend, transition)))
-  v_0 <- with(res_0$ndf,
-    setNames(trans_prob, paste(tend, rename_trans(as.character(transition)))))
+  v_0 <- with(
+    res_0$ndf,
+    setNames(trans_prob, paste(tend, rename_trans(as.character(transition))))
+  )
   expect_equal(sort(v_1), sort(v_0))
 
   # named encoding gives the same set of trans_prob values up to relabeling
-  expect_equal(sort(res_n$ndf$trans_prob), sort(res_1$ndf$trans_prob),
-               tolerance = 1e-10)
+  expect_equal(
+    sort(res_n$ndf$trans_prob),
+    sort(res_1$ndf$trans_prob),
+    tolerance = 1e-10
+  )
 
   # from/to garbage columns are stripped from output
   for (r in list(res_1, res_0, res_n)) {

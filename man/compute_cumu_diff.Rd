@@ -15,7 +15,7 @@ compute_cumu_diff(
 )
 }
 \arguments{
-\item{d1}{A data set used as \code{newdata} in \code{predict.gam}}
+\item{d1}{A data set used as \code{newdata} in \code{\link{make_X}}}
 
 \item{d2}{See \code{d1}}
 
@@ -25,6 +25,6 @@ returns the design matrix (e.g., \code{mgcv::gam}).}
 \description{
 CIs are calculated by sampling coefficients from their posterior and
 calculating the cumulative hazard difference \code{nsim} times. The CI
-are obtained by the 2.5\\% and 97.5\\% quantiles.
+are obtained by the 2.5\\% and 97.5\\% empirical (type-6) quantiles.
 }
 \keyword{internal}
