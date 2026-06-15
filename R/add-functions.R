@@ -575,10 +575,16 @@ add_surv_prob.default <- function(
   overwrite = FALSE,
   time_var = NULL,
   interval_length = "intlen",
+  boundary = TRUE,
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
+  # The boundary is a continuous-time row at time == 0 (survival 1); see
+  # add_cumu_hazard(). Only added for models predicted on the continuous time
+  # axis (gam/scam/pamm), not for interval-factor models (glm/PEM).
+  boundary <- boundary &&
+    (inherits(object, "gam") || inherits(object, "scam"))
 
   if (!overwrite) {
     if ("surv_prob" %in% names(newdata)) {
@@ -595,7 +601,9 @@ add_surv_prob.default <- function(
     newdata <- newdata %>% select(-one_of(rm.vars))
   }
 
-  newdata <- drop_cumulative_boundary(newdata, time_var)
+  if (boundary) {
+    newdata <- drop_cumulative_boundary(newdata, time_var)
+  }
 
   if (!interval_length %in% colnames(newdata)) {
     newdata <- reconstruct_intlen(
@@ -616,12 +624,16 @@ add_surv_prob.default <- function(
   )
   out <- restore_prediction_attrs(out, newdata)
 
-  add_cumulative_boundary(
-    out,
-    time_var = time_var,
-    values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
-    interval_length = interval_length
-  )
+  if (boundary) {
+    out <- add_cumulative_boundary(
+      out,
+      time_var = time_var,
+      values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
+      interval_length = interval_length
+    )
+  }
+
+  out
 }
 
 

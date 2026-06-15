@@ -16,6 +16,7 @@ add_surv_prob(newdata, object, ...)
   overwrite = FALSE,
   time_var = NULL,
   interval_length = "intlen",
+  boundary = TRUE,
   ...
 )
 
@@ -58,6 +59,12 @@ to \code{"tend"}.}
 
 \item{interval_length}{The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to \code{"intlen"}.}
+
+\item{boundary}{Logical. If \code{TRUE} (default), a boundary row at
+\code{time = 0} with cumulative hazard \code{0} is prepended (per group),
+so that cumulative hazards start at the natural origin (consistent with
+\code{\link{add_surv_prob}}, \code{\link{add_cif}} and
+\code{\link{add_trans_prob}}).}
 
 \item{alpha}{Significance level for pooled confidence intervals.}
 

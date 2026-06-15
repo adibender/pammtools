@@ -234,6 +234,7 @@ add_surv_prob.pamm_ic <- function(
     "surv_prob",
     time_var = time_var,
     interval_length = interval_length,
+    boundary = FALSE,
     ...
   )
   if (ci) {
