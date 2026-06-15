@@ -44,7 +44,8 @@ the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 
 \item{nsim}{Number of simulations (draws from posterior of estimated coefficients)
 on which estimation of CIFs and their confidence/credible intervals will be
-based on.}
+based on. Interval bounds are empirical type-6 quantiles of the \code{nsim}
+draws; larger values of \code{nsim} yield more stable interval bounds.}
 
 \item{cause_var}{Character. Column name of the 'cause' variable.}
 

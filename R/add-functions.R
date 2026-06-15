@@ -189,7 +189,16 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' error calculated by the Delta method. \code{"sim"} draws the
 #' property of interest from its posterior based on the normal distribution of
 #' the estimated coefficients. See \href{https://adibender.github.io/simpamm/confidence-intervals.html}{here}
-#' for details and empirical evaluation.
+#' for details and empirical evaluation. For \code{ci_type = "sim"}, interval
+#' bounds are empirical quantiles (type 6, see \code{\link[stats]{quantile}})
+#' of \code{nsim} posterior draws (default \code{nsim = 100L}, passed via
+#' \code{...}). Type-6 quantiles avoid the systematic inward bias that the
+#' \code{\link[stats]{quantile}} default (type 7) exhibits for small
+#' \code{nsim}, but at the default \code{nsim = 100} the bounds are estimated
+#' from few tail draws and thus noisy; increase \code{nsim} (e.g., to 500 or
+#' more) for more stable interval bounds. Very small \code{nsim}
+#' (\code{nsim < 2 / alpha - 1}, i.e., below 39 for \code{alpha = 0.05})
+#' cannot achieve the nominal level at all.
 #' @param se_mult Factor by which standard errors are multiplied for calculating
 #' the confidence intervals.
 #' @param overwrite Should hazard columns be overwritten if already present in
@@ -893,8 +902,20 @@ get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
   sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
-  newdata$ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$ci_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$ci_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -920,8 +941,20 @@ get_sim_ci_cumu <- function(
     function(z) cumsum(intlen * exp(X %*% z))
   )
 
-  newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$cumu_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$cumu_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -946,8 +979,20 @@ get_sim_ci_surv <- function(
     function(z) exp(-cumsum(intlen * exp(X %*% z)))
   )
 
-  newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2)
-  newdata$surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2)
+  newdata$surv_lower <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = alpha / 2,
+    type = 6
+  )
+  newdata$surv_upper <- apply(
+    sim_fit_mat,
+    1,
+    quantile,
+    probs = 1 - alpha / 2,
+    type = 6
+  )
 
   newdata
 }
@@ -961,7 +1006,8 @@ get_sim_ci_surv <- function(
 #' @param alpha The alpha level for confidence/credible intervals.
 #' @param nsim Number of simulations (draws from posterior of estimated coefficients)
 #' on which estimation of CIFs and their confidence/credible intervals will be
-#' based on.
+#' based on. Interval bounds are empirical type-6 quantiles of the \code{nsim}
+#' draws; larger values of \code{nsim} yield more stable interval bounds.
 #' @param cause_var Character. Column name of the 'cause' variable.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
@@ -1165,11 +1211,17 @@ get_cif.default <- function(
   newdata[["cif"]] <- pmin(pmax(rowMeans(cifs), 0), 1)
   if (ci) {
     newdata[["cif_lower"]] <- pmin(
-      pmax(apply(cifs, 1, quantile, alpha / 2, na.rm = TRUE), 0),
+      pmax(
+        apply(cifs, 1, quantile, probs = alpha / 2, na.rm = TRUE, type = 6),
+        0
+      ),
       1
     )
     newdata[["cif_upper"]] <- pmin(
-      pmax(apply(cifs, 1, quantile, 1 - alpha / 2, na.rm = TRUE), 0),
+      pmax(
+        apply(cifs, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE, type = 6),
+        0
+      ),
       1
     )
   }
@@ -1388,7 +1440,9 @@ transition_state_table <- function(transitions, sep = "->") {
 #' intervals for transition probabilities are calculated.
 #' @param alpha Sets the confidence intervals' \eqn{\alpha} level, Defaults to \code{0.05}
 #' @param nsim Sets the number of iterations for simulated confidence intervals.
-#' Defaults to \code{100L}
+#' Defaults to \code{100L}. Interval bounds are empirical type-6 quantiles of
+#' the \code{nsim} draws; larger values of \code{nsim} yield more stable
+#' interval bounds.
 #' @param time_var Name of the variable used for the baseline hazard. Defaults
 #'   to \code{"tend"}.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
@@ -1681,14 +1735,16 @@ add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
     1,
     quantile,
     probs = alpha / 2,
-    na.rm = TRUE
+    na.rm = TRUE,
+    type = 6
   )
   df$trans_upper <- apply(
     sim_trans_probs,
     1,
     quantile,
     probs = 1 - alpha / 2,
-    na.rm = TRUE
+    na.rm = TRUE,
+    type = 6
   )
 
   df <- df[order(df$.orig_row), , drop = FALSE]
