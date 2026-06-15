@@ -152,14 +152,19 @@ preproc_reference <- function(reference, cnames, n_rows) {
 }
 
 # Analytic ("default"/"delta") CIs require the coefficient triplet
-# (make_X/get_coefs/get_Vp). For backends that only provide the get_hazard /
-# sim_hazard primitives (e.g. a bootstrap ensemble), fall back to simulation.
-resolve_ci_type <- function(object, ci, ci_type) {
+# (make_X/get_coefs/get_Vp). Backends that only provide the get_hazard /
+# sim_hazard primitives must request ci_type = "sim".
+assert_ci_supported <- function(object, ci, ci_type) {
   if (ci && ci_type %in% c("default", "delta") &&
       !inherits(object, c("glm", "scam"))) {
-    return("sim")
+    stop(
+      "ci_type = \"", ci_type, "\" requires a coefficient-based model ",
+      "(e.g. gam/scam). Use ci_type = \"sim\" for backends without a ",
+      "coefficient covariance (e.g. machine-learning ensembles).",
+      call. = FALSE
+    )
   }
-  ci_type
+  invisible(TRUE)
 }
 
 resolve_time_var <- function(time_var, object, newdata) {
@@ -295,8 +300,8 @@ add_hazard.default <- function(
       time_var = time_var, se_mult = se_mult, ...
     ))
   }
-  ci_type <- resolve_ci_type(object, ci, ci_type)
   if (ci && ci_type %in% c("default", "delta")) {
+    assert_ci_supported(object, ci, ci_type)
     return(hazard_ci(
       object, newdata,
       ci = ci, type = type, ci_type = ci_type,
@@ -476,7 +481,7 @@ get_cumu_hazard <- function(
   # what makes alternative estimation backends (e.g. xgboost) pluggable.
 
   ci_type <- match.arg(ci_type)
-  ci_type <- resolve_ci_type(object, ci, ci_type)
+  assert_ci_supported(object, ci, ci_type)
   time_var <- resolve_time_var(time_var, object, newdata)
   newdata <- arrange(newdata, .data[[time_var]], .by_group = TRUE)
 
@@ -673,7 +678,7 @@ get_surv_prob <- function(
   # what makes alternative estimation backends (e.g. xgboost) pluggable.
 
   ci_type <- match.arg(ci_type)
-  ci_type <- resolve_ci_type(object, ci, ci_type)
+  assert_ci_supported(object, ci, ci_type)
   time_var <- resolve_time_var(time_var, object, newdata)
   newdata <- arrange(newdata, .data[[time_var]], .by_group = TRUE)
 
@@ -935,6 +940,12 @@ add_delta_ci_surv <- function(
     )
 }
 
+# Pointwise type-6 quantile of each row of a draws matrix (rows = grid points,
+# columns = simulation draws); the shared summary step for all sim-based CIs.
+row_quantile <- function(mat, probs, na.rm = FALSE) {
+  apply(mat, 1, quantile, probs = probs, na.rm = na.rm, type = 6)
+}
+
 #' Calculate simulation based confidence intervals
 #'
 #' These helpers draw the simulated hazard trajectories once for the whole
@@ -953,19 +964,23 @@ get_sim_ci <- function(
   nsim = 100L,
   ...
 ) {
-  sim_fit_mat <- sim_hazard(object, newdata, nsim, ...)
+  H <- sim_hazard(object, newdata, nsim, ...)
 
-  newdata$se <- apply(sim_fit_mat, 1, sd)
-  newdata$ci_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
-  newdata$ci_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
+  newdata$se       <- apply(H, 1, sd)
+  newdata$ci_lower <- row_quantile(H, alpha / 2)
+  newdata$ci_upper <- row_quantile(H, 1 - alpha / 2)
 
   newdata
 }
 
-
-get_sim_ci_cumu <- function(
+# Simulation CI for a cumulative quantity: `accumulate` maps the per-interval
+# weighted hazards (intlen * hazard) of one draw, within each group, to the
+# quantity (cumulative hazard, survival, ...).
+sim_cumulative_ci <- function(
   newdata,
   object,
+  accumulate,
+  names,
   alpha = 0.05,
   nsim = 100L,
   interval_length = "intlen",
@@ -975,38 +990,31 @@ get_sim_ci_cumu <- function(
   grp    <- dplyr::group_indices(newdata)
 
   H <- sim_hazard(object, newdata, nsim, ...)
-  sim_fit_mat <- matrix(
-    apply(H, 2, function(h) ave(intlen * h, grp, FUN = cumsum)),
+  draws <- matrix(
+    apply(H, 2, function(h) accumulate(intlen * h, grp)),
     nrow = nrow(newdata)
   )
 
-  newdata$cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
-  newdata$cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
+  newdata[[names[1]]] <- row_quantile(draws, alpha / 2)
+  newdata[[names[2]]] <- row_quantile(draws, 1 - alpha / 2)
 
   newdata
 }
 
-get_sim_ci_surv <- function(
-  newdata,
-  object,
-  alpha = 0.05,
-  nsim = 100L,
-  interval_length = "intlen",
-  ...
-) {
-  intlen <- newdata[[interval_length]]
-  grp    <- dplyr::group_indices(newdata)
-
-  H <- sim_hazard(object, newdata, nsim, ...)
-  sim_fit_mat <- matrix(
-    apply(H, 2, function(h) exp(-ave(intlen * h, grp, FUN = cumsum))),
-    nrow = nrow(newdata)
+get_sim_ci_cumu <- function(newdata, object, ...) {
+  sim_cumulative_ci(
+    newdata, object,
+    accumulate = function(w, g) ave(w, g, FUN = cumsum),
+    names = c("cumu_lower", "cumu_upper"), ...
   )
+}
 
-  newdata$surv_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
-  newdata$surv_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
-
-  newdata
+get_sim_ci_surv <- function(newdata, object, ...) {
+  sim_cumulative_ci(
+    newdata, object,
+    accumulate = function(w, g) exp(-ave(w, g, FUN = cumsum)),
+    names = c("surv_lower", "surv_upper"), ...
+  )
 }
 
 
@@ -1209,9 +1217,7 @@ get_cif.default <- function(
       function(b) cif_from_hazards(split_by_cause(H[, b])),
       numeric(n)
     )
-    clamp_q <- function(p) {
-      pmin(pmax(apply(cifs, 1, quantile, probs = p, na.rm = TRUE, type = 6), 0), 1)
-    }
+    clamp_q <- function(p) pmin(pmax(row_quantile(cifs, p, na.rm = TRUE), 0), 1)
     newdata[["cif_lower"]] <- clamp_q(alpha / 2)
     newdata[["cif_upper"]] <- clamp_q(1 - alpha / 2)
   }
@@ -1709,22 +1715,8 @@ add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
     sim_trans_probs[, i] <- trans_prob
   }
 
-  df$trans_lower <- apply(
-    sim_trans_probs,
-    1,
-    quantile,
-    probs = alpha / 2,
-    na.rm = TRUE,
-    type = 6
-  )
-  df$trans_upper <- apply(
-    sim_trans_probs,
-    1,
-    quantile,
-    probs = 1 - alpha / 2,
-    na.rm = TRUE,
-    type = 6
-  )
+  df$trans_lower <- row_quantile(sim_trans_probs, alpha / 2, na.rm = TRUE)
+  df$trans_upper <- row_quantile(sim_trans_probs, 1 - alpha / 2, na.rm = TRUE)
 
   df <- df[order(df$.orig_row), , drop = FALSE]
   df$.orig_row <- NULL

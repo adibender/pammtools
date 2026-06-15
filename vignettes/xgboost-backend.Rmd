@@ -45,12 +45,16 @@ backend.
 
 To make a backend a first-class citizen, **`pammtools`** abstracts every model
 behind a small internal interface and builds *all* of its post-processing on top
-of it:
+of it. Two primitives are enough for point estimates and simulation-based
+intervals of every derived quantity:
 
-* `make_X()`, `get_coefs()`, `get_Vp()` — design matrix, coefficients and their
-  covariance, such that `make_X %*% get_coefs` is the linear predictor;
-* `sample_coefs()` and `sim_hazard()` — drawing from the model's sampling
-  distribution, used for simulation-based confidence intervals.
+* `get_hazard(object, newdata)` — the **point hazard** (a numeric vector);
+* `sim_hazard(object, newdata, nsim)` — a **matrix of hazard draws** from the
+  model's sampling distribution, used for the simulation-based intervals.
+
+Analytic (`"default"`/`"delta"`) intervals additionally need the
+coefficient triplet `make_X()` / `get_coefs()` / `get_Vp()`; a backend that does
+not provide them simply uses `ci_type = "sim"`.
 
 Everything else — `add_hazard()`, `add_cumu_hazard()`, `add_surv_prob()`
 (point estimates **and** intervals), and the `geom_*` plotting layers — is
@@ -184,8 +188,8 @@ For prediction we build a grid with `make_newdata` and add the hazard with the
 nd <- ped %>% make_newdata(tend = unique(tend), x1 = c(-1, 1), x2 = c(2))
 
 haz <- bind_rows(
-  nd %>% group_by(x1, x2) %>% add_hazard(xgb_fit)         %>% mutate(method = "xgboost"),
-  nd %>% group_by(x1, x2) %>% add_hazard(pam, ci = TRUE)  %>% mutate(method = "gam (PAMM)")
+  nd %>% group_by(x1, x2) %>% add_hazard(xgb_fit, ci_type = "sim") %>% mutate(method = "xgboost"),
+  nd %>% group_by(x1, x2) %>% add_hazard(pam, ci = TRUE)           %>% mutate(method = "gam (PAMM)")
 ) %>%
   mutate(truth = exp(f_true(tend, x1, x2)),
          profile = paste0("x1 = ", x1))
@@ -258,7 +262,7 @@ The estimated hazard for `x1 ∈ {-1, 0, 1}` shows the gap between the curves
 nd2 <- ped2 %>% make_newdata(tend = unique(tend), x1 = c(-1, 0, 1), x2 = c(0))
 haz2 <- nd2 %>%
   group_by(x1, x2) %>%
-  add_hazard(xgb2) %>%
+  add_hazard(xgb2, ci_type = "sim") %>%
   ungroup() %>%
   mutate(truth = exp(f2_true(tend, x1, x2)), x1 = factor(x1))
 
