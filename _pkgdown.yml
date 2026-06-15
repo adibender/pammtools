@@ -83,6 +83,7 @@ articles:
     - basics
     - strata
     - splines
+    - shape-constraints
     - tveffects
     - frailty
     - tdcovar
@@ -111,6 +112,8 @@ navbar:
       href: articles/basics.html
     - text: Non-linear effects (penalized splines)
       href: articles/splines.html
+    - text: Shape-constrained effects (scam)
+      href: articles/shape-constraints.html
     - text: Workflow and convenience functions
       href: articles/convenience.html
     - text: Stratified models

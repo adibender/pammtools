@@ -36,8 +36,9 @@ for inline data transformation. Convert your data with \code{as_ped()} before
 calling \code{pamm()} instead.}
 
 \item{engine}{Character name of the function that will be called to fit the
-model. The intended entries are either \code{"gam"} or \code{"bam"}
-(both from package \code{mgcv}).}
+model. The intended entries are \code{"gam"} or \code{"bam"}
+(both from package \code{mgcv}) or \code{"scam"} (from package \code{scam},
+for shape-constrained PAMMs, e.g. monotone baseline hazards).}
 
 \item{x}{Any R object.}
 

@@ -1,5 +1,19 @@
 # pammtools 0.7.6
 
+## Enhancements
+* Full support for shape-constrained additive models fit with `scam::scam()`
+  (#286): the post-processing workflow (`add_hazard()`, `add_cumu_hazard()`,
+  `add_surv_prob()`, `add_term()`, `add_cif()`, `add_trans_prob()`,
+  `get_cumu_coef()`, `get_cumu_eff()`, `tidy_fixed()`, `tidy_smooth()`,
+  `gg_smooth()`, ...) now works for `scam` fits exactly as for `gam` fits,
+  including delta-method and simulation-based confidence intervals. All
+  calculations correctly use the re-parametrized coefficients
+  (`$coefficients.t`) and their covariance (`$Vp.t`); previously, some
+  functions silently used the unconstrained-scale coefficients/covariance
+  (`coef()`/`$Vp`), which yields incorrect results for `scam` objects.
+  `pamm()` gained `engine = "scam"`. See the new article
+  ["Shape-constrained effects (scam)"](https://adibender.github.io/pammtools/articles/shape-constraints.html).
+
 ## Bug fixes
 * Simulation-based confidence intervals (`ci_type = "sim"` in `add_hazard()`,
   `add_cumu_hazard()`, `add_surv_prob()`, as well as `add_cif()`,

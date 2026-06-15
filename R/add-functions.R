@@ -4,6 +4,8 @@
 #' linear predictor to the data specified by \code{newdata}.
 #' Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
 #' Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
+#' Shape-constrained additive models fit with \code{\link[scam]{scam}} are
+#' supported as well.
 #'
 #' @inheritParams mgcv::predict.gam
 #' @param term A character (vector) or regular expression indicating for
@@ -60,17 +62,12 @@ add_term <- function(
       call. = FALSE
     )
   }
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
 
   X <- prep_X(object, newdata, reference, ...)[, col_ind, drop = FALSE]
 
-  newdata[["fit"]] <- unname(drop(X %*% object$coefficients[col_ind]))
+  newdata[["fit"]] <- unname(drop(X %*% get_coefs(object)[col_ind]))
   if (ci) {
-    cov.coefs <- if (is_gam) {
-      object$Vp[col_ind, col_ind]
-    } else {
-      vcov(object)[col_ind, col_ind]
-    }
+    cov.coefs <- get_Vp(object)[col_ind, col_ind]
     se <- unname(sqrt(rowSums((X %*% cov.coefs) * X)))
     newdata <- newdata %>%
       mutate(
@@ -113,7 +110,7 @@ make_X.gam <- function(object, newdata, ...) {
 #' @importFrom scam predict.scam
 #' @keywords internal
 make_X.scam <- function(object, newdata, ...) {
-  X <- predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
+  predict.scam(object, newdata = newdata, type = "lpmatrix", ...)
 }
 
 prep_X <- function(object, newdata, reference = NULL, ...) {
@@ -174,7 +171,14 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' CI are calculated can be specified by \code{ci_type}.
 #' This is a wrapper around
 #' \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
-#' (log-)hazard ratio is calculated.
+#' (log-)hazard ratio is calculated. In addition to models fit with
+#' \code{\link[mgcv]{gam}}/\code{\link[mgcv]{bam}} or \code{\link[stats]{glm}},
+#' shape-constrained additive models fit with \code{\link[scam]{scam}} are
+#' supported (e.g., for monotone baseline hazards). For \code{scam} models all
+#' calculations (including delta-method and simulation based confidence
+#' intervals) are based on the re-parametrized coefficients and their
+#' covariance matrix, i.e., on the same normal approximation that underlies
+#' the standard errors reported by \code{scam} itself.
 #'
 #' @rdname add_hazard
 #' @inheritParams mgcv::predict.gam
@@ -295,7 +299,7 @@ get_hazard.default <- function(
   ...
 ) {
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
   type <- match.arg(type)
   ci_type <- match.arg(ci_type)
 
@@ -307,7 +311,7 @@ get_hazard.default <- function(
   #warn_about_new_time_points(object, newdata, time_var)
 
   X <- prep_X(object, newdata, reference, ...)
-  coefs <- coef(object)
+  coefs <- get_coefs(object)
   newdata$hazard <- unname(drop(X %*% coefs))
   if (ci) {
     newdata <- newdata %>%
@@ -395,7 +399,7 @@ get_cumu_hazard <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
 
   ci_type <- match.arg(ci_type)
 
@@ -595,7 +599,7 @@ get_surv_prob <- function(
   assert_character(interval_length)
   assert_subset(interval_length, colnames(newdata))
   assert_data_frame(newdata, all.missing = FALSE)
-  assert_class(object, classes = "glm")
+  assert_multi_class(object, classes = c("glm", "scam"))
 
   ci_type <- match.arg(ci_type)
 
@@ -791,12 +795,7 @@ add_ci <- function(
 ) {
   ci_type <- match.arg(ci_type)
 
-  is_gam <- (inherits(object, "gam") | inherits(object, "scam"))
-  if (is_gam) {
-    V <- object$Vp
-  } else {
-    V <- vcov(object)
-  }
+  V <- get_Vp(object)
   se <- unname(sqrt(rowSums((X %*% V) * X)))
   newdata$se <- se
   if (type == "link") {
@@ -830,8 +829,8 @@ add_ci <- function(
 }
 
 add_delta_ci <- function(newdata, object, se_mult = 2, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
 
   Jacobi <- diag(exp(newdata$hazard)) %*% X
   newdata %>%
@@ -849,8 +848,8 @@ add_delta_ci_cumu <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
   intlen <- newdata[[interval_length]]
 
   Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
@@ -871,8 +870,8 @@ add_delta_ci_surv <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
+  X <- make_X(object, newdata, ...)
+  V <- get_Vp(object)
   intlen <- newdata[[interval_length]]
 
   Delta <- lower.tri(diag(nrow(X)), diag = TRUE) %*% diag(intlen)
@@ -895,11 +894,9 @@ add_delta_ci_surv <- function(
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats coef
 get_sim_ci <- function(newdata, object, alpha = 0.05, nsim = 100L, ...) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+  X <- make_X(object, newdata, ...)
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- sample_coefs(object, nsim)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
 
   newdata$ci_lower <- apply(
@@ -929,12 +926,10 @@ get_sim_ci_cumu <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- sample_coefs(object, nsim)
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
@@ -967,12 +962,10 @@ get_sim_ci_surv <- function(
   interval_length = "intlen",
   ...
 ) {
-  X <- predict.gam(object, newdata = newdata, type = "lpmatrix", ...)
-  V <- object$Vp
-  coefs <- coef(object)
+  X <- make_X(object, newdata, ...)
   intlen <- newdata[[interval_length]]
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- sample_coefs(object, nsim)
   sim_fit_mat <- apply(
     sim_coef_mat,
     1,
@@ -1090,12 +1083,12 @@ add_cif.default <- function(
 
   joindata <- reconstruct_cutpoints(newdata, object, time_var, interval_length)
 
-  coefs <- coef(object)
-  V <- object$Vp
+  coefs <- get_coefs(object)
+  V <- get_Vp(object)
   sim_coef_mat <- if (!ci) {
     matrix(coefs, nrow = 1)
   } else {
-    mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+    sample_coefs(object, nsim)
   }
 
   joindata <- map_dfr(
@@ -1179,7 +1172,7 @@ get_cif.default <- function(
     ~ {
       .df <- mutate(newdata, cause = .x) %>%
         arrange(.data[[time_var]], .by_group = TRUE)
-      X <- predict(object, .df, type = "lpmatrix")
+      X <- make_X(object, .df)
       apply(sim_coef_mat, 1, function(z) exp(X %*% z))
     }
   )
@@ -1672,9 +1665,7 @@ add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
   ordering_vars <- c(group_vars_ordered, time_var)
   df <- df[do.call(order, df[, ordering_vars, drop = FALSE]), , drop = FALSE]
 
-  X <- predict.gam(object, newdata = df, type = "lpmatrix")
-  coefs <- coef(object)
-  V <- object$Vp
+  X <- make_X(object, df)
 
   groups_array <- interaction(
     df[, group_vars_ordered, drop = FALSE],
@@ -1694,7 +1685,7 @@ add_trans_ci <- function(newdata, object, nsim = 100L, alpha = 0.05, ...) {
     trans_idx_list <- list(seq_len(nrow(df)))
   }
 
-  sim_coef_mat <- mvtnorm::rmvnorm(nsim, mean = coefs, sigma = V)
+  sim_coef_mat <- sample_coefs(object, nsim)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) exp(X %*% z))
   if (is.null(dim(sim_fit_mat))) {
     sim_fit_mat <- matrix(sim_fit_mat, ncol = 1L)

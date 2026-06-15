@@ -91,7 +91,14 @@ be controlled via the \code{se_mult} argument. The method by which the
 CI are calculated can be specified by \code{ci_type}.
 This is a wrapper around
 \code{\link[mgcv]{predict.gam}}. When \code{reference} is specified, the
-(log-)hazard ratio is calculated.
+(log-)hazard ratio is calculated. In addition to models fit with
+\code{\link[mgcv]{gam}}/\code{\link[mgcv]{bam}} or \code{\link[stats]{glm}},
+shape-constrained additive models fit with \code{\link[scam]{scam}} are
+supported (e.g., for monotone baseline hazards). For \code{scam} models all
+calculations (including delta-method and simulation based confidence
+intervals) are based on the re-parametrized coefficients and their
+covariance matrix, i.e., on the same normal approximation that underlies
+the standard errors reported by \code{scam} itself.
 }
 \details{
 When computing cumulative hazards or survival probabilities across groups,

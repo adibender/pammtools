@@ -70,6 +70,26 @@ get_cumu_coef.gam <- function(
 }
 
 #' @rdname cumulative_coefficient
+#' @export
+get_cumu_coef.scam <- function(
+  model,
+  data,
+  terms,
+  time_var = "tend",
+  interval_length = "intlen",
+  ...
+) {
+  get_cumu_coef.gam(
+    model = model,
+    data = data,
+    terms = terms,
+    time_var = time_var,
+    interval_length = interval_length,
+    ...
+  )
+}
+
+#' @rdname cumulative_coefficient
 #' @param ci Logical. Indicates if confidence intervals should be returned as
 #' well.
 #' @export
@@ -247,11 +267,10 @@ get_cumu_coef_baseline <- function(
 #' calculating the cumulative hazard difference \code{nsim} times. The CI
 #' are obtained by the 2.5\% and 97.5\% empirical (type-6) quantiles.
 #'
-#' @param d1 A data set used as \code{newdata} in \code{predict.gam}
+#' @param d1 A data set used as \code{newdata} in \code{\link{make_X}}
 #' @param d2 See \code{d1}
 #' @param model A model object for which a predict method is implemented which
 #' returns the design matrix (e.g., \code{mgcv::gam}).
-#' @importFrom mgcv predict.gam
 #' @importFrom stats coef
 #' @importFrom mvtnorm rmvnorm
 #' @keywords internal
@@ -281,11 +300,10 @@ compute_cumu_diff <- function(
   intlen1 <- d1[[interval_length]]
   intlen2 <- d2[[interval_length]]
 
-  X1 <- predict.gam(model, newdata = d1, type = "lpmatrix")
-  X2 <- predict.gam(model, newdata = d2, type = "lpmatrix")
-  V <- model$Vp
-  coefs <- coef(model)
-  sim_coef_mat <- rmvnorm(nsim, mean = coefs, sigma = V)
+  X1 <- make_X(model, d1)
+  X2 <- make_X(model, d2)
+  coefs <- get_coefs(model)
+  sim_coef_mat <- sample_coefs(model, nsim)
   sim_fit_mat <- apply(sim_coef_mat, 1, function(z) {
     cumsum(intlen2 * exp(drop(X2 %*% z))) -
       cumsum(intlen1 * exp(drop(X1 %*% z)))
@@ -293,8 +311,8 @@ compute_cumu_diff <- function(
 
   cumu_lower <- apply(sim_fit_mat, 1, quantile, probs = alpha / 2, type = 6)
   cumu_upper <- apply(sim_fit_mat, 1, quantile, probs = 1 - alpha / 2, type = 6)
-  haz1 <- exp(drop(X1 %*% model$coefficients))
-  haz2 <- exp(drop(X2 %*% model$coefficients))
+  haz1 <- exp(drop(X1 %*% coefs))
+  haz2 <- exp(drop(X2 %*% coefs))
   cumu_diff <- cumsum(haz2 * intlen2) - cumsum(haz1 * intlen1)
 
   list(cumu_diff = cumu_diff, cumu_lower = cumu_lower, cumu_upper = cumu_upper)

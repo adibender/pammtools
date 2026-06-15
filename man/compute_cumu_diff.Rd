@@ -15,7 +15,7 @@ compute_cumu_diff(
 )
 }
 \arguments{
-\item{d1}{A data set used as \code{newdata} in \code{predict.gam}}
+\item{d1}{A data set used as \code{newdata} in \code{\link{make_X}}}
 
 \item{d2}{See \code{d1}}
 
