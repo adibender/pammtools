@@ -31,6 +31,29 @@ pooled_point <- function(object, newdata, adder, value_col, ...) {
   rowMeans(do.call(cbind, preds))
 }
 
+# Pooled cumulative quantities (cumulative hazard, survival, CIF) are
+# accumulated *within* each group of `newdata`. If a group still contains
+# repeated time points, distinct covariate (or cause) combinations are being
+# pooled together -- almost always a forgotten group_by() -- which silently
+# produces wrong results. Warn so the problem is visible (the default add_*
+# methods share the same group_by() requirement).
+warn_if_pooled_undergrouped <- function(newdata, time_var) {
+  if (!time_var %in% names(newdata)) {
+    return(invisible(NULL))
+  }
+  by_group <- split(newdata[[time_var]], group_indices(newdata))
+  if (any(vapply(by_group, anyDuplicated, integer(1)) > 0L)) {
+    warning(
+      "`newdata` has repeated '", time_var, "' values within a group, so ",
+      "distinct covariate/cause combinations are pooled together when ",
+      "accumulating cumulative quantities. Separate them with group_by() to ",
+      "avoid incorrect results.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
 ic_prediction_grid <- function(object, newdata, time_var, interval_length) {
   fit1 <- object[["fits"]][[1]]
   tv <- resolve_time_var(time_var, fit1, newdata)
@@ -181,6 +204,7 @@ add_cumu_hazard.pamm_ic <- function(
   ...
 ) {
   time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
   newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
@@ -234,6 +258,7 @@ add_surv_prob.pamm_ic <- function(
   ...
 ) {
   time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
   newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
@@ -398,6 +423,7 @@ add_cif.pamm_ic <- function(
   m <- length(object[["fits"]])
   per <- ceiling(nsim / m)
   time_var <- resolve_time_var(time_var, fit1, newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
   newdata <- drop_cumulative_boundary(newdata, time_var)
   joindata <- reconstruct_cutpoints(newdata, fit1, time_var, interval_length)
 
