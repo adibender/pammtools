@@ -59,6 +59,12 @@ silently incorrect results, as the cumulative hazard will be accumulated
 over the entire dataset rather than within each group.
 See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 for a worked example.
+
+The returned data contains one boundary row per group at \code{time_var = 0}
+for plotting cumulative quantities from the time origin. On this row,
+\code{surv_prob = 1}; if confidence intervals are requested,
+\code{surv_lower = surv_upper = 1}. If an interval-length column is present,
+it is set to \code{0} on the boundary row.
 }
 \examples{
 ped <- tumor[1:50,] \%>\% as_ped(Surv(days, status)~ age)

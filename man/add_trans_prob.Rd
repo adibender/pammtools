@@ -62,6 +62,12 @@ be grouped via \code{group_by()} before calling this function. Omitting
 \code{group_by()} will not produce an error or warning but will return
 silently incorrect results, as the transition probability will be accumulated
 over the entire dataset rather than within each group.
+
+The returned data contains one boundary row per group and transition at
+\code{time_var = 0} for plotting transition probabilities from the time
+origin. On this row, \code{trans_prob = 0}; if confidence intervals are
+requested, \code{trans_lower = trans_upper = 0}. If an interval-length
+column is present, it is set to \code{0} on the boundary row.
 }
 \examples{
 \dontshow{if (require("mstate")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
