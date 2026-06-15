@@ -131,9 +131,7 @@ pamm_ic <- function(
     ped_m <- NULL
     for (k in seq_len(iter)) {
       # proper MI: draw the imputation-model coefficients from their posterior
-      beta_mm <- as.numeric(
-        rmvnorm(1, mean = coef(fit_mm), sigma = fit_mm[["Vp"]])
-      )
+      beta_mm <- as.numeric(sample_coefs(fit_mm, 1L))
       t_imp <- impute_ic_times(
         fit_mm,
         ic,
