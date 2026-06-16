@@ -28,4 +28,12 @@ probabilities) and its simulation-based confidence intervals are built from
 these two. Analytic (\code{"default"}/\code{"delta"}) confidence intervals
 additionally use \code{\link{make_X}}/\code{\link{get_coefs}}/\code{\link{get_Vp}}.
 }
+\seealso{
+The package website (\url{https://adibender.github.io/pammtools/})
+has worked examples of implementing \code{get_hazard} and
+\code{\link{sim_hazard}} for new estimation backends: the articles
+\dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+drawing from the posterior).
+}
 \keyword{internal}

@@ -21,9 +21,22 @@ opts_chunk$set(
   fig.height = 3.6,
   fig.width  = 6,
   eval       = has_xgb)
+# Collapse non-didactic chunks (package setup) behind a <details> toggle via the
+# `fold = "<label>"` chunk option; output is shown normally.
+local({
+  default_source <- knit_hooks$get("source")
+  knit_hooks$set(source = function(x, options) {
+    out <- default_source(x, options)
+    if (is.null(options$fold)) {
+      return(out)
+    }
+    summary <- if (is.character(options$fold)) options$fold else "Show code"
+    paste0("<details>\n<summary>", summary, "</summary>\n\n", out, "\n\n</details>")
+  })
+})
 ```
 
-```{r, message = FALSE}
+```{r, message = FALSE, fold = "Show package setup"}
 library(dplyr)
 library(ggplot2)
 theme_set(theme_bw())
@@ -64,8 +77,8 @@ we only need to express it in these terms; the entire workflow then works
 unchanged.
 
 As the example learner we use
-[**`xgboost`**](https://CRAN.R-project.org/package=xgboost) with its built-in
-`objective = "count:poisson"`. Since a boosted tree ensemble has no coefficient
+[**`xgboost`**](https://CRAN.R-project.org/package=xgboost) [@Chen2016] with its
+built-in `objective = "count:poisson"`. Since a boosted tree ensemble has no coefficient
 covariance, we obtain uncertainty from a **subject-level bootstrap ensemble**
 (bagging): the point estimate is the bagged mean hazard, and confidence bands
 are percentiles across the ensemble members.
@@ -139,7 +152,7 @@ xgb_pam <- function(ped, params = list(), nrounds = 200, nboot = 40, ...) {
 
 **3. Plugging into the `pammtools` interface.** `pammtools` builds *every*
 derived quantity and its simulation-based confidence intervals from two
-per-model primitives, so all we implement are these two S3 methods:
+per-model primitives, so all we implement are these two S3 methods:[^brms-backend]
 
 * `get_hazard()` returns the **point hazard** as a plain vector (here the bagged
   mean over the ensemble);
@@ -398,3 +411,10 @@ data are sparse and the estimated time-varying effect `β(t)` lags behind the
 truth. The same recipe extends to tuning/cross-validation and to competing risks
 (stack cause-specific PEDs and use the same offset trick), with no changes to
 **`pammtools`** itself.
+
+## References
+
+[^brms-backend]: For a second worked example of these two methods — defining
+    `get_hazard()`/`sim_hazard()` for a Bayesian `brms` model, where a "draw" is
+    a posterior sample rather than a bootstrap member — see the
+    [Bayesian baseline PAMMs article](bayesian.html).

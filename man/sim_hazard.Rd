@@ -34,4 +34,12 @@ linear predictor \code{make_X(object, newdata) \%*\% z}; other backends (e.g.
 a bootstrap ensemble that has no coefficient covariance) can provide their own
 method to obtain simulation-based intervals from the same machinery.
 }
+\seealso{
+The package website (\url{https://adibender.github.io/pammtools/})
+has worked examples of implementing \code{\link{get_hazard}} and
+\code{sim_hazard} for new estimation backends: the articles
+\dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+drawing from the posterior).
+}
 \keyword{internal}

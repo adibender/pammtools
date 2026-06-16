@@ -108,6 +108,12 @@ sample_coefs.default <- function(object, nsim, ...) {
 #' @inheritParams get_coefs
 #' @param newdata A data frame for which the hazard is predicted.
 #' @return A numeric vector of hazards on the response scale.
+#' @seealso The package website (\url{https://adibender.github.io/pammtools/})
+#'   has worked examples of implementing \code{get_hazard} and
+#'   \code{\link{sim_hazard}} for new estimation backends: the articles
+#'   \dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+#'   tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+#'   drawing from the posterior).
 #' @keywords internal
 get_hazard <- function(object, newdata, ...) {
   UseMethod("get_hazard", object)
@@ -137,6 +143,12 @@ get_hazard.default <- function(object, newdata, ...) {
 #' columns of hazard draws on the response scale. The draws are produced once for
 #' the whole \code{newdata}, so the callers can share one set of draws across
 #' groups by passing the full (grouped) data.
+#' @seealso The package website (\url{https://adibender.github.io/pammtools/})
+#'   has worked examples of implementing \code{\link{get_hazard}} and
+#'   \code{sim_hazard} for new estimation backends: the articles
+#'   \dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+#'   tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+#'   drawing from the posterior).
 #' @keywords internal
 sim_hazard <- function(object, newdata, nsim = 100L, ...) {
   UseMethod("sim_hazard", object)
