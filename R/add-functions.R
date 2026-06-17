@@ -1199,7 +1199,7 @@ get_cif.default <- function(
   #   dCIF_k = (h_k / h.) * S(t-) * (1 - exp(-h. * dt)),   S via all-cause hazard.
   cif_from_hazards <- function(haz_by_cause) {
     total <- Reduce(`+`, haz_by_cause)
-    surv  <- c(1, head(exp(-cumsum(total * dt)), -1))
+    surv  <- c(1, utils::head(exp(-cumsum(total * dt)), -1))
     incr  <- ifelse(
       total > 0,
       (haz_by_cause[[cause_data]] / total) * surv * (1 - exp(-total * dt)),

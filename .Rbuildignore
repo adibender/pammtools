@@ -24,6 +24,19 @@
 ^revdep$
 ^\.github$
 ^CRAN-SUBMISSION$
-^\sim
-^\tmp
+^sim$
+^tmp$
 ^\.claude$
+^Rplots\.pdf$
+^Rprof\.out$
+## dev / agent / check artifacts (must not leak into the build tarball)
+^.*\.Rcheck$
+^.*\.tar\.gz$
+^.*\.patch$
+^.*\.RData$
+^attic$
+^\.codex$
+^.*\.council.*
+^codex-.*
+^pr-[0-9].*
+^reprex-.*

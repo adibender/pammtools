@@ -44,16 +44,20 @@ administratively censored at \code{max_time}.}
 \item{censor_code}{Specifies the value of the status variable that indicates
 censoring. Often this will be \code{0}, which is the default.}
 
-\item{combine}{Logical. Only relevant for competing risks data. If
-\code{TRUE} (the default), cause-specific data sets are stacked into a
-single data frame with an additional \code{cause} column, using split points
-common to all event types. If \code{FALSE}, a list of cause-specific data
-sets is returned. See the
-\href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
-vignette for details.}
+\item{combine}{Logical. If \code{TRUE} (the default), cause-specific data
+sets are stacked into a single data frame with an additional \code{cause}
+column, using split points common to all event types. If \code{FALSE}, a
+list of cause-specific data sets is returned.}
 
 \item{...}{Further arguments passed to the \code{data.frame} method and
-eventually to \code{\link[survival]{survSplit}}.}
+eventually to \code{\link[survival]{survSplit}}. Notably, \code{id}
+(character string) sets the name of the subject identifier variable in
+\code{data}, and, for competing risks data, \code{combine} (logical, default
+\code{TRUE}) controls whether cause-specific data sets are stacked into a
+single data frame with an additional \code{cause} column (\code{TRUE}) or
+returned as a list of cause-specific data sets (\code{FALSE}); see the
+\href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
+vignette for details.}
 }
 \value{
 For standard and left-truncated data, a data frame of class

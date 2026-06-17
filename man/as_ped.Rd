@@ -63,7 +63,14 @@ while the second (and potentially further data frames) contain information on
 time-dependent covariates and the times at which they have been observed.}
 
 \item{...}{Further arguments passed to the \code{data.frame} method and
-eventually to \code{\link[survival]{survSplit}}.}
+eventually to \code{\link[survival]{survSplit}}. Notably, \code{id}
+(character string) sets the name of the subject identifier variable in
+\code{data}, and, for competing risks data, \code{combine} (logical, default
+\code{TRUE}) controls whether cause-specific data sets are stacked into a
+single data frame with an additional \code{cause} column (\code{TRUE}) or
+returned as a list of cause-specific data sets (\code{FALSE}); see the
+\href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
+vignette for details.}
 
 \item{formula}{A two sided formula with a \code{\link[survival]{Surv}} object
 on the left-hand-side and covariate specification on the right-hand-side (RHS).
@@ -100,17 +107,6 @@ after each transition).}
 
 \item{newdata}{A new data set (\code{data.frame}) that contains the same
 variables that were used to create the PED object (\code{data}).}
-
-\item{combine}{Logical. Only relevant for competing risks data. If
-\code{TRUE} (the default), cause-specific data sets are stacked into a
-single data frame with an additional \code{cause} column, using split points
-common to all event types. If \code{FALSE}, a list of cause-specific data
-sets is returned. See the
-\href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
-vignette for details.}
-
-\item{id}{Character string. Name of the subject identifier variable in
-\code{data}.}
 }
 \value{
 For standard and left-truncated data, a data frame of class

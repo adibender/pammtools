@@ -69,7 +69,7 @@ and the first positive inspection. The exact time is retained (by default in
 column \code{true_time}) so that coverage can be scored against the truth.
 }
 \examples{
-\dontrun{
+\donttest{
 set.seed(1)
 df <- data.frame(x = runif(100, -1, 1))
 sdf <- sim_pexp(~ -2 + 0.4 * x, df, cut = seq(0, 10, by = 0.5))

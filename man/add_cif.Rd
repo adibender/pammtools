@@ -55,10 +55,7 @@ the data set? Defaults to \code{FALSE}. If \code{TRUE}, columns with names
 
 \item{alpha}{Significance level for pooled confidence intervals.}
 
-\item{nsim}{Total number of pooled posterior draws used for the interval.
-For simulation-based intervals, the bounds are empirical type-6 quantiles of
-the \code{nsim} draws; larger values of \code{nsim} yield more stable interval
-bounds.}
+\item{nsim}{Total number of pooled posterior draws used for the interval.}
 
 \item{cause_var}{Character. Column name of the 'cause' variable.}
 

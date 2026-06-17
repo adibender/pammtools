@@ -12,7 +12,11 @@
   }
 
   if (getRversion() >= "2.5.1") {
-    utils::globalVariables(c(".", "id"))
+    utils::globalVariables(c(
+      ".", "id",
+      # NSE column names used in gg_state_occupation()
+      "df_long", "prob", "state", "time", "trans_prob_matrix"
+    ))
   }
   invisible()
 }

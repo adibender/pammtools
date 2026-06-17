@@ -1,20 +1,39 @@
-# pammtools 0.7.6
+# pammtools 0.8.0
 
-## Enhancements
+This release collects all changes since the last CRAN version (0.7.4),
+including the previously GitHub-only 0.7.5 and 0.7.6 development versions.
+
+## Breaking changes
+* `make_newdata()` output no longer contains internal PED columns (`tstart`,
+  `intlen`, `interval`, `offset`, `ped_status`). Output now contains `tend` +
+  `id` + user covariates (plus `cause`/`transition` for competing risks /
+  multi-state models). `ped_info()` output is unchanged. `intlen` is
+  reconstructed on demand by downstream functions (`add_cumu_hazard()`,
+  `add_surv_prob()`, `add_cif()`, `add_trans_prob()`) and dropped from
+  user-facing output.
+* `add_cif()` now uses the exact closed-form integral of the cumulative
+  incidence function under piecewise-exponential hazards instead of the previous
+  left-Riemann approximation. CIF estimates from existing user code change
+  numerically; results are now invariant to the time grid passed to
+  `make_newdata()`.
+* Simulation-based confidence intervals (`ci_type = "sim"`) now use type-6
+  empirical quantiles instead of the `stats::quantile()` default (type 7).
+  Type-7 quantiles made these intervals systematically too narrow for small
+  `nsim` (at the default `nsim = 100` the enclosed central mass is ~93% rather
+  than the nominal 95%); type-6 removes this inward bias (#288). As a result,
+  all simulation-based CI bounds change slightly (intervals widen at both ends)
+  relative to versions <= 0.7.4.
+
+## New features
 * Full support for shape-constrained additive models fit with `scam::scam()`
   (#286): the post-processing workflow (`add_hazard()`, `add_cumu_hazard()`,
   `add_surv_prob()`, `add_term()`, `add_cif()`, `add_trans_prob()`,
   `get_cumu_coef()`, `get_cumu_eff()`, `tidy_fixed()`, `tidy_smooth()`,
   `gg_smooth()`, ...) now works for `scam` fits exactly as for `gam` fits,
-  including delta-method and simulation-based confidence intervals. All
+  including delta-method and simulation-based confidence intervals. The
   calculations correctly use the re-parametrized coefficients
-  (`$coefficients.t`) and their covariance (`$Vp.t`); previously, some
-  functions silently used the unconstrained-scale coefficients/covariance
-  (`coef()`/`$Vp`), which yields incorrect results for `scam` objects.
-  `pamm()` gained `engine = "scam"`. See the new article
-  ["Shape-constrained effects (scam)"](https://adibender.github.io/pammtools/articles/shape-constraints.html).
-
-## New features
+  (`$coefficients.t`) and their covariance (`$Vp.t`). `pamm()` gained
+  `engine = "scam"`. See the new "Shape-constrained effects (scam)" article.
 * Interval-censored time-to-event data are now supported via a multiple-
   imputation (MI) workflow. Data specified with `Surv(L, R, type = "interval2")`
   are detected automatically by `as_ped()`. The new `pamm_ic()` (single event)
@@ -25,48 +44,18 @@
   `add_cif()` gain `pamm_ic` methods that combine per-imputation posterior draws
   (within- plus between-imputation variance). The `iter` argument enables
   chained (refit-and-reimpute) imputation, recommended for sparsely inspected
-  data; numerically degenerate imputation chains are flagged with a warning.
-  `add_inspections()` turns exact simulated times (e.g. from `sim_pexp()`) into
-  interval-censored panel data for testing and coverage studies.
-  `print()`/`summary()` of a `pamm_ic` report the *pooled* fit (Rubin-combined
-  coefficients and covariances, median-p term tests, fraction-of-missing-
-  information diagnostic); the object exposes a `pooled` entry and stores the
-  per-imputation fits in slimmed form so memory does not scale with the number
-  of imputations. See the new "Interval-Censored Data" vignette.
-
-## Bug fixes
-* Simulation-based confidence intervals (`ci_type = "sim"` in `add_hazard()`,
-  `add_cumu_hazard()`, `add_surv_prob()`, as well as `add_cif()`,
-  `add_trans_prob()`/`add_trans_ci()` and the cumulative hazard differences
-  in `get_cumu_coef()`) now use type-6 empirical quantiles instead of the
-  `stats::quantile()` default (type 7). Type-7 quantiles made these intervals
-  systematically too narrow for small `nsim`: at the default `nsim = 100`,
-  the expected central mass of the draws enclosed by the bounds is ~93%
-  instead of the nominal 95%. Type-6 quantiles remove this systematic
-  inward bias (#288). As a consequence, all simulation-based CI bounds
-  change slightly (intervals widen at both ends) relative to versions
-  <= 0.7.5.
-* `add_trans_prob()` and `add_trans_ci()` no longer require the input data to
-  be pre-sorted; the internal `arrange` call is now handled automatically,
-  fixing the user-facing sorting dependency reported in #255 and related to
-  #227.
-* Fixed transition probability matrix dimensions when transitions start from
-  state 0 (off-by-one in state indexing).
-* `add_trans_prob()` / `add_trans_ci()` / `get_trans_prob()` now consistently
-  thread `time_var` and `interval_length`, removing hardcoded `tend` paths and
-  fixing argument forwarding when `add_trans_prob()` calls `add_cumu_hazard()`
-  with nonstandard column names.
-* `add_counterfactual_transitions()` now fully honors `from_col`, `to_col`,
-  and `transition_col`.
-* `get_trans_prob()` now supports non-integer (categorical) state labels
-  (e.g. `"healthy->ill"`) in addition to integer-coded transitions.
-* `gg_smooth()` / `get_terms()` now select smooth terms via the model's `mgcv`
-  smooth metadata instead of unanchored `grep()`, fixing two errors reported in
-  #283: passing a variable name matched by several smooths (e.g. `terms = "tend"`
-  in a time-varying-effects model) no longer fails with
-  `` `eff` must be size 100 or 1 ``, and factor terms no longer trigger
-  `'range' not meaningful for factors`. Names that match no smooth (e.g.
-  parametric factor effects) are now skipped with a warning rather than erroring.
+  data. `add_inspections()` turns exact simulated times (e.g. from `sim_pexp()`)
+  into interval-censored panel data for testing and coverage studies.
+  `print()`/`summary()` of a `pamm_ic` report the *pooled* (Rubin-combined) fit.
+  See the new "Interval-Censored Data" vignette.
+* The post-processing / confidence-interval machinery is now backend-pluggable:
+  all `add_*()` quantities and their delta-method and simulation-based CIs are
+  derived from two internal S3 primitives, `get_hazard()` and `sim_hazard()`, so
+  an alternative estimation backend only needs to provide methods for those two.
+  The new "Defining a new backend: gradient boosting with xgboost" vignette
+  demonstrates this end-to-end (and the Bayesian vignette was reworked to use
+  the same unified interface).
+* `gg_state_occupation()` is now exported.
 
 ## Enhancements
 * `gg_smooth()` is now fully general across univariate smooth terms: a bare
@@ -74,37 +63,58 @@
   `by`-variable or factor-smooth interaction term), `terms` is optional
   (defaulting to all univariate smooths), and 1d `ti()` as well as factor-smooth
   interactions (`bs = "fs"`, `bs = "sz"`) are supported. Factor-indexed smooths
-  are drawn in a single facet with one coloured/filled curve per factor level,
-  identified by a new `level` column in the `get_terms()` output. Random-effect
-  smooths (`bs = "re"`, `bs = "mrf"`) and multivariate/tensor smooths are
-  excluded (use `gg_re()` / `gg_tensor()`).
-* Transition probability calculation is faster due to a base R refactor
-  (previously used dplyr internally).
-* `gg_state_occupation()` is now exported. Dead parameters `group_labels` and
-  `nrow` have been removed; user-supplied `ncol` is now respected.
-* `add_surv_prob()`, `add_cif()`, and `add_trans_prob()` now include plotting
-  boundary rows at `tend = 0` (or the selected `time_var`). Boundary values are
-  set to their known limits, `S(0) = 1`, `CIF(0) = 0`, and off-diagonal
-  transition probabilities `P_rs(0) = 0`, with collapsed confidence interval
-  bounds when requested. `add_cumu_hazard()` keeps the original prediction grid.
+  are drawn in a single facet with one curve per factor level, identified by a
+  new `level` column in the `get_terms()` output. Random-effect smooths
+  (`bs = "re"`, `bs = "mrf"`) and multivariate/tensor smooths are excluded
+  (use `gg_re()` / `gg_tensor()`).
+* `add_cif()` now supports arbitrary time points in `make_newdata()` (parity
+  with `add_cumu_hazard()`); missing breakpoints are inserted internally so CIF
+  estimates are independent of the chosen prediction grid.
+* `add_surv_prob()`, `add_cif()`, `add_trans_prob()` and `add_cumu_hazard()` now
+  include plotting boundary rows at `tend = 0` (or the selected `time_var`).
+  Boundary values are set to their known limits, `S(0) = 1`, `CIF(0) = 0`,
+  off-diagonal transition probabilities `P_rs(0) = 0`, and `cumu_hazard = 0`,
+  with collapsed confidence-interval bounds when requested. Boundary rows are
+  added only for continuous-time models (`gam`/`scam`/`pamm`).
+* Simulation-based CIs now draw a single shared posterior coefficient sample
+  across groups (consistent with `add_cif()` / `add_trans_ci()`); single-group
+  results are unchanged.
+* `get_trans_prob()` now supports non-integer (categorical) state labels
+  (e.g. `"healthy->ill"`) in addition to integer-coded transitions.
+* Transition probability calculation is faster due to a base R refactor.
+* `expand_df()` preserves the `cause` column when `make_newdata()` is called with
+  only `tend` and `cause`, fixing a competing-risks edge case.
+* `predictSurvProb.pamm()` now respects non-default `id` column names and works
+  when `trafo_args` are not attached to the fitted object.
 
-# pammtools 0.7.5
-
-## Breaking changes
-* `make_newdata()` output no longer contains internal PED columns (`tstart`, `intlen`, `interval`, `offset`, `ped_status`). Output now contains `tend` + `id` + user covariates (plus `cause`/`transition` for competing risks / multi-state models). `ped_info()` output is unchanged.
-* `intlen` is now reconstructed on demand by downstream functions (`add_cumu_hazard`, `add_surv_prob`, `add_cif`, `add_trans_prob`) via the new internal helper `reconstruct_intlen()`, and dropped from user-facing output.
-* `add_cif()` now uses the exact closed-form integral of the cumulative incidence function under piecewise-exponential hazards (`(h_j / Σh) · S(t_{i-1}) · (1 - exp(-Σh · Δt))`) instead of the previous left-Riemann approximation. CIF estimates from existing user code will change numerically; results are now invariant to the time grid passed to `make_newdata()`.
-
-## Enhancements
-* `add_cif()` now supports arbitrary time points in `make_newdata()` (parity with `add_cumu_hazard()`); missing breakpoints are inserted internally so CIF estimates are independent of the chosen prediction grid.
-* `expand_df()` preserves the `cause` column when `make_newdata()` is called with only `tend` and `cause`, fixing a competing-risks edge case.
-* `predictSurvProb.pamm()` now respects non-default `id` column names and works when `trafo_args` are not attached to the fitted object.
+## Bug fixes
+* `add_trans_prob()` and `add_trans_ci()` no longer require the input data to be
+  pre-sorted (#255, related to #227).
+* Fixed transition probability matrix dimensions when transitions start from
+  state 0 (off-by-one in state indexing).
+* `add_trans_prob()` / `add_trans_ci()` / `get_trans_prob()` now consistently
+  thread `time_var` and `interval_length`, fixing argument forwarding for
+  nonstandard column names.
+* `add_counterfactual_transitions()` now fully honors `from_col`, `to_col`,
+  and `transition_col`.
+* `gg_smooth()` / `get_terms()` now select smooth terms via the model's `mgcv`
+  smooth metadata instead of unanchored `grep()`, fixing two errors reported in
+  #283 (variable names matched by several smooths, and factor terms). Names that
+  match no smooth are skipped with a warning rather than erroring.
+* Fixed CIF cause mislabeling under non-alphabetical factor levels.
+* Fixed interval-censored pooling regressions (backend-aware prediction,
+  boundary rows, and a survival-probability length mismatch).
+* Registered the `.glm`/`.pamm` methods for the internal
+  `warn_about_new_time_points()` generic (previously "no applicable method").
+* Pooled `pamm_ic` adders now warn when given under-grouped `newdata`.
 
 ## Deprecations
-* The `trafo_args` argument of `pamm()` is deprecated; convert data with `as_ped()` before calling `pamm()`.
+* The `trafo_args` argument of `pamm()` is deprecated; convert data with
+  `as_ped()` before calling `pamm()`.
 
 ## Documentation
-* Added derivation of the piecewise-exponential CIF integral to the competing-risks vignette.
+* Added derivation of the piecewise-exponential CIF integral to the
+  competing-risks vignette.
 
 # pammtools 0.7.4
 

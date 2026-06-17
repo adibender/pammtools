@@ -40,7 +40,7 @@
 #' @seealso \code{\link{pamm_ic}}, \code{\link{sim_pexp}}
 #' @importFrom stats rexp runif
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' set.seed(1)
 #' df <- data.frame(x = runif(100, -1, 1))
 #' sdf <- sim_pexp(~ -2 + 0.4 * x, df, cut = seq(0, 10, by = 0.5))

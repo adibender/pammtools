@@ -48,7 +48,14 @@ Ignored for exact and right-censored rows.}
 \item{warn}{Logical; emit a one-time warning when rows are dropped.}
 
 \item{...}{Further arguments passed to the \code{data.frame} method and
-eventually to \code{\link[survival]{survSplit}}.}
+eventually to \code{\link[survival]{survSplit}}. Notably, \code{id}
+(character string) sets the name of the subject identifier variable in
+\code{data}, and, for competing risks data, \code{combine} (logical, default
+\code{TRUE}) controls whether cause-specific data sets are stacked into a
+single data frame with an additional \code{cause} column (\code{TRUE}) or
+returned as a list of cause-specific data sets (\code{FALSE}); see the
+\href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
+vignette for details.}
 }
 \description{
 Interval-censored (IC) data record the event time of subject \eqn{i} only up

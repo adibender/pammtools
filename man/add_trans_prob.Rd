@@ -72,7 +72,7 @@ requested, \code{trans_lower = trans_upper = 0}. If an interval-length
 column is present, it is set to \code{0} on the boundary row.
 }
 \examples{
-\dontshow{if (require("mstate")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (require("mstate")) withAutoprint(\{ # examplesIf}
   data("prothr", package = "mstate")
   prothr <- prothr |>
     mutate(transition = as.factor(paste0(from, "->", to))

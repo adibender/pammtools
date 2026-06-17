@@ -72,15 +72,6 @@
 #' \code{formula} for concurrent and/or cumulative effects.
 #' @param censor_code Specifies the value of the status variable that indicates
 #' censoring. Often this will be \code{0}, which is the default.
-#' @param combine Logical. Only relevant for competing risks data. If
-#' \code{TRUE} (the default), cause-specific data sets are stacked into a
-#' single data frame with an additional \code{cause} column, using split points
-#' common to all event types. If \code{FALSE}, a list of cause-specific data
-#' sets is returned. See the
-#' \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
-#' vignette for details.
-#' @param id Character string. Name of the subject identifier variable in
-#' \code{data}.
 #' @param transition Character string. Name of the column in \code{data} that
 #' identifies the transition type in multi-state models. When supplied,
 #' \code{as_ped} performs the multi-state PED transformation, stacking
@@ -89,7 +80,14 @@
 #' last transition) or \code{"calendar"} (time since study entry, not reset
 #' after each transition).
 #' @param ... Further arguments passed to the \code{data.frame} method and
-#' eventually to \code{\link[survival]{survSplit}}.
+#' eventually to \code{\link[survival]{survSplit}}. Notably, \code{id}
+#' (character string) sets the name of the subject identifier variable in
+#' \code{data}, and, for competing risks data, \code{combine} (logical, default
+#' \code{TRUE}) controls whether cause-specific data sets are stacked into a
+#' single data frame with an additional \code{cause} column (\code{TRUE}) or
+#' returned as a list of cause-specific data sets (\code{FALSE}); see the
+#' \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}
+#' vignette for details.
 #' @importFrom Formula Formula
 #' @examples
 #' # Standard single-event transformation
@@ -368,6 +366,10 @@ as_ped.pamm <- function(data, newdata, ...) {
 #' Competing risks trafo
 #'
 #' @inherit as_ped
+#' @param combine Logical. If \code{TRUE} (the default), cause-specific data
+#'   sets are stacked into a single data frame with an additional \code{cause}
+#'   column, using split points common to all event types. If \code{FALSE}, a
+#'   list of cause-specific data sets is returned.
 #' @importFrom rlang .env
 #'
 #' @keywords internal
