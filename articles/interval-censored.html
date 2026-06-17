@@ -113,6 +113,9 @@
     <li>
       <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
     </li>
+    <li>
+      <a href="../articles/xgboost-backend.html">Defining a new backend (xgboost)</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -431,8 +434,8 @@ so values above one mean that proper MI gives wider intervals:</p>
 <code class="sourceCode R"><span><span class="co"># MI-CI-width / midpoint-CI-width</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">(</span><span class="va">surv_mi</span><span class="op">$</span><span class="va">surv_upper</span>  <span class="op">-</span> <span class="va">surv_mi</span><span class="op">$</span><span class="va">surv_lower</span><span class="op">)</span> <span class="op">/</span> </span>
 <span>        <span class="op">(</span><span class="va">surv_mid</span><span class="op">$</span><span class="va">surv_upper</span> <span class="op">-</span> <span class="va">surv_mid</span><span class="op">$</span><span class="va">surv_lower</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">##  0.2120  0.9835  1.0375     Inf  1.1492     Inf</span></span></code></pre>
+<pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs </span></span>
+<span><span class="co">##  0.9452  0.9981  1.0474  1.0401  1.0583  1.2835       2</span></span></code></pre>
 <p>The effect is more visible on the <strong>hazard</strong> scale,
 which depends directly on exact event timing which interval censoring
 leaves more uncertain. Overlaying the two methods within each group

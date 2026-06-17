@@ -107,6 +107,9 @@ the standard errors reported by scam itself."><meta property="og:image" content=
     <li>
       <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
     </li>
+    <li>
+      <a href="../articles/xgboost-backend.html">Defining a new backend (xgboost)</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -167,6 +170,8 @@ the standard errors reported by <code>scam</code> itself.</p>
 <span>  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"delta"</span>, <span class="st">"sim"</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">100L</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -280,6 +285,15 @@ the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with
 to <code>"tend"</code>.</p></dd>
 
 
+<dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
+<dd><p>Total number of pooled posterior draws used for the interval.</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>Significance level for pooled confidence intervals (a
+\((1-\alpha)\) interval).</p></dd>
+
+
 <dt id="arg-interval-length">interval_length<a class="anchor" aria-label="anchor" href="#arg-interval-length"></a></dt>
 <dd><p>The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></dd>
@@ -291,15 +305,6 @@ Can be either bare unquoted variable name or character. Defaults to <code>"intle
 so that cumulative hazards start at the natural origin (consistent with
 <code><a href="add_surv_prob.html">add_surv_prob</a></code>, <code><a href="add_cif.html">add_cif</a></code> and
 <code><a href="add_trans_prob.html">add_trans_prob</a></code>).</p></dd>
-
-
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>Significance level for pooled confidence intervals (a
-\((1-\alpha)\) interval).</p></dd>
-
-
-<dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
-<dd><p>Total number of pooled posterior draws used for the interval.</p></dd>
 
 </dl></div>
     <div id="details">

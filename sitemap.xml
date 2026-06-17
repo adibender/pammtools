@@ -22,6 +22,7 @@
 <url><loc>https://adibender.github.io/pammtools/articles/strata.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/tdcovar.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/articles/tveffects.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/articles/xgboost-backend.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/authors.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/index.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/news/index.html</loc></url>
@@ -63,7 +64,6 @@
 <url><loc>https://adibender.github.io/pammtools/reference/get_ped_form.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_plotinfo.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_sim_ci.html</loc></url>
-<url><loc>https://adibender.github.io/pammtools/reference/get_sim_cumu.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_smooth_terms.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_surv_prob.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/get_tdc_form.html</loc></url>
@@ -80,6 +80,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/gg_state_occupation.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/gg_tensor.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/has_tdc.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/hazard_ci.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/ic_pred_cache.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/impute_ic_cr.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/impute_ic_times.html</loc></url>
@@ -111,6 +112,7 @@
 <url><loc>https://adibender.github.io/pammtools/reference/sample_coefs.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/sample_info.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/seq_range.html</loc></url>
+<url><loc>https://adibender.github.io/pammtools/reference/sim_hazard.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/sim_pexp.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/sim_pexp_cr.html</loc></url>
 <url><loc>https://adibender.github.io/pammtools/reference/simdf_elra.html</loc></url>

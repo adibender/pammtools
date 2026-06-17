@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bayesian Baseline PAMMs: `mgcv`, `jagam`, and `brms` • pammtools</title>
+<title>Bayesian Baseline PAMMs: mgcv, jagam, and brms • pammtools</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -13,7 +13,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><!-- docsearch --><script src="../docsearch.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous">
 <link href="../docsearch.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Bayesian Baseline PAMMs: `mgcv`, `jagam`, and `brms`">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script><meta property="og:title" content="Bayesian Baseline PAMMs: mgcv, jagam, and brms">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -113,6 +113,9 @@
     <li>
       <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
     </li>
+    <li>
+      <a href="../articles/xgboost-backend.html">Defining a new backend (xgboost)</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -145,9 +148,8 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Bayesian Baseline PAMMs: <code>mgcv</code>,
-<code>jagam</code>, and <code>brms</code>
-</h1>
+      <h1 data-toc-skip>Bayesian Baseline PAMMs: mgcv, jagam, and
+brms</h1>
             
             <h4 data-toc-skip class="date">2026-06-17</h4>
       
@@ -158,30 +160,42 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<details><summary>
+Show package setup
+</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://adibender.github.io/pammtools/">pammtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span><span class="co"># Bayesian back-ends. These are hard dependencies of this article: loading them</span></span>
-<span><span class="co"># here makes the build fail loudly (instead of silently skipping comparisons) if</span></span>
-<span><span class="co"># `rjags`/JAGS or `brms`/Stan are not available in the rendering environment.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mcmc-jags.sourceforge.io" class="external-link">rjags</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This vignette compares baseline cumulative hazard estimates from:</p>
+</details><p>This vignette compares baseline cumulative hazard estimates from:</p>
 <ol style="list-style-type: decimal">
 <li>a default frequentist PAMM fit with <code>mgcv</code>,</li>
-<li>a Bayesian PAMM fit via <code><a href="https://rdrr.io/pkg/mgcv/man/jagam.html" class="external-link">mgcv::jagam</a></code> +
-<code>rjags</code>,</li>
-<li>a Bayesian PAMM fit via <code>brms</code>.</li>
+<li>a Bayesian PAMM fit via <code><a href="https://rdrr.io/pkg/mgcv/man/jagam.html" class="external-link">mgcv::jagam</a></code> <span class="citation">(<a href="#ref-Wood2016jagam">Wood 2016</a>)</span>,
+which generates JAGS <span class="citation">(<a href="#ref-Plummer2003">Plummer 2003</a>)</span> code from the GAM
+specification and samples it with <code>rjags</code>,</li>
+<li>a Bayesian PAMM fit via <code>brms</code> <span class="citation">(<a href="#ref-Burkner2017">Bürkner 2017</a>)</span> (which compiles the
+model to Stan).</li>
 </ol>
 <p>All models use the same spline basis for the baseline hazard, and we
 compare them against the Nelson-Aalen estimate and against each other on
 a common time grid.</p>
+<blockquote>
+<p><strong>Build note.</strong> The JAGS and Stan fits run on an
+~11,600-row piece-wise exponential data set and take 15–20 minutes
+combined – too slow to evaluate on every build. The model-fitting and
+prediction code below is therefore shown but not executed
+(<code>eval = FALSE</code>); it is run once by <a href="https://github.com/adibender/pammtools/blob/master/vignettes/precompute_bayesian.R" class="external-link"><code>vignettes/precompute_bayesian.R</code></a>,
+which saves the resulting <code>pred_df</code> to
+<code>bayesian_results.rds</code>. The plots and tables below are
+rendered live from that saved data frame. Running <code>rjags</code>
+additionally needs a JAGS installation, and <code>brms</code> needs a
+working Stan toolchain.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h2>
@@ -228,25 +242,17 @@ a common time grid.</p>
 <span>  diagonalize <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mcmc-jags.sourceforge.io" class="external-link">rjags</a></span><span class="op">)</span></span>
 <span><span class="fu">rjags</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rjags/man/jags.module.html" class="external-link">load.module</a></span><span class="op">(</span><span class="st">"glm"</span><span class="op">)</span></span>
 <span><span class="va">jagam_sampler</span> <span class="op">&lt;-</span> <span class="fu">rjags</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rjags/man/jags.model.html" class="external-link">jags.model</a></span><span class="op">(</span></span>
 <span>  file <span class="op">=</span> <span class="va">jagam_file</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">pam_jagam_prep</span><span class="op">$</span><span class="va">jags.data</span>,</span>
-<span>  inits <span class="op">=</span> <span class="va">pam_jagam_prep</span><span class="op">$</span><span class="va">jags.ini</span>,</span>
+<span>  inits <span class="op">=</span> <span class="va">pam_jagam_prep</span><span class="op">$</span><span class="va">jags.ini</span>, <span class="co"># data-driven starts from the penalised GAM</span></span>
 <span>  n.chains <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Compiling model graph</span></span>
-<span><span class="co">##    Resolving undeclared variables</span></span>
-<span><span class="co">##    Allocating nodes</span></span>
-<span><span class="co">## Graph information:</span></span>
-<span><span class="co">##    Observed stochastic nodes: 11619</span></span>
-<span><span class="co">##    Unobserved stochastic nodes: 22</span></span>
-<span><span class="co">##    Total graph size: 278890</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Initializing model</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">jagam_post</span> <span class="op">&lt;-</span> <span class="fu">rjags</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rjags/man/jags.samples.html" class="external-link">jags.samples</a></span><span class="op">(</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">jagam_post</span> <span class="op">&lt;-</span> <span class="fu">rjags</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rjags/man/jags.samples.html" class="external-link">jags.samples</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">jagam_sampler</span>,</span>
 <span>  variable.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="st">"lambda"</span><span class="op">)</span>,</span>
 <span>  n.iter <span class="op">=</span> <span class="fl">4000</span>,</span>
@@ -258,84 +264,100 @@ a common time grid.</p>
 <div class="section level3">
 <h3 id="bayesian-pamm-via-brms">3) Bayesian PAMM via <code>brms</code><a class="anchor" aria-label="anchor" href="#bayesian-pamm-via-brms"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># The PED has many rows, so each Stan iteration is comparatively expensive;</span></span>
+<span><span class="co"># running the two chains on separate cores and starting from `init = 0`</span></span>
+<span><span class="co"># (a hazard of ~1 before the offset) gives a stable, reasonably quick fit.</span></span>
 <span><span class="va">pam_brms</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://paulbuerkner.com/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, k <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="va">offset</span><span class="op">)</span>,</span>
+<span>  formula <span class="op">=</span> <span class="va">ped_status</span> <span class="op">~</span> <span class="fu"><a href="https://paulbuerkner.com/brms/reference/s.html" class="external-link">s</a></span><span class="op">(</span><span class="va">tend</span>, k <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html" class="external-link">offset</a></span><span class="op">(</span><span class="va">offset</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">ped</span>,</span>
 <span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">3000</span>,</span>
 <span>  warmup <span class="op">=</span> <span class="fl">750</span>,</span>
+<span>  init <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">101</span>,</span>
 <span>  refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam_brms</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  Family: poisson </span></span>
-<span><span class="co">##   Links: mu = log </span></span>
-<span><span class="co">## Formula: ped_status ~ s(tend, k = 20) + offset(offset) </span></span>
-<span><span class="co">##    Data: ped (Number of observations: 11619) </span></span>
-<span><span class="co">##   Draws: 2 chains, each with iter = 3000; warmup = 750; thin = 1;</span></span>
-<span><span class="co">##          total post-warmup draws = 4500</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Smoothing Spline Hyperparameters:</span></span>
-<span><span class="co">##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">## sds(stend_1)     0.42      0.31     0.04     1.32 1.00      601      285</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Regression Coefficients:</span></span>
-<span><span class="co">##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">## Intercept    -7.41      0.12    -7.64    -7.19 1.00     1816      571</span></span>
-<span><span class="co">## stend_1      -0.64      1.15    -3.16     2.06 1.00      842      271</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">## and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">## scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/pp_check.html" class="external-link">pp_check</a></span><span class="op">(</span><span class="va">pam_brms</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pam_brms</span><span class="op">)</span></span>
+<span><span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/pp_check.html" class="external-link">pp_check</a></span><span class="op">(</span><span class="va">pam_brms</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Posterior predictive check"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="bayesian_files/figure-html/fit-brms-1.png" class="r-plt" alt="" width="700" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="common-prediction-pipeline">Common prediction pipeline<a class="anchor" aria-label="anchor" href="#common-prediction-pipeline"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>All three models are now driven through the <em>same</em>
+<code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code> call. For <code>mgcv</code> and
+<code>jagam</code> this uses the analytic (coefficient-based) confidence
+intervals as before. For <code>brms</code> we make the fit a first-class
+pammtools backend by defining the two primitives of the unified
+inference interface – <code><a href="../reference/get_hazard.html">get_hazard()</a></code> (point hazard) and
+<code><a href="../reference/sim_hazard.html">sim_hazard()</a></code> (matrix of posterior hazard draws). Once those
+exist, <code>add_cumu_hazard(ci_type = "sim")</code> builds the
+cumulative hazard and its posterior credible interval from them, so no
+manual <code>cumsum</code>/quantile bookkeeping is needed. This is
+exactly the mechanism the <a href="xgboost-backend.html">xgboost backend
+vignette</a> uses for a tree ensemble.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conf_level</span> <span class="op">&lt;-</span> <span class="fl">0.95</span></span>
 <span></span>
 <span><span class="va">newdata_base</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/newdata.html">make_newdata</a></span><span class="op">(</span><span class="va">ped</span>, tend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ped</span><span class="op">$</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">arrange</a></span><span class="op">(</span><span class="va">tend</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># `mgcv`/`jagam` predictions go through `add_cumu_hazard()`, which reconstructs</span></span>
-<span><span class="co"># the interval lengths from the fitted object. The `brms` predictions, however,</span></span>
-<span><span class="co"># are produced directly via `posterior_epred()` and therefore need the model</span></span>
-<span><span class="co"># offset (the log interval length) to be present in the prediction data.</span></span>
-<span><span class="va">newdata_brms</span> <span class="op">&lt;-</span> <span class="va">newdata_base</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/dplyr_verbs.html">left_join</a></span><span class="op">(</span><span class="fu"><a href="../reference/int_info.html">int_info</a></span><span class="op">(</span><span class="va">ped</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dplyr_verbs.html">transmute</a></span><span class="op">(</span><span class="va">tend</span>, offset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">intlen</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"tend"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">method_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  mgcv <span class="op">=</span> <span class="st">"PAMM (mgcv)"</span>,</span>
 <span>  jagam <span class="op">=</span> <span class="st">"Bayesian PAMM (jagam)"</span>,</span>
 <span>  brms <span class="op">=</span> <span class="st">"Bayesian PAMM (brms)"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">get_cumu_from_pamm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">method_id</span>, <span class="va">newdata</span>, <span class="va">conf_level</span> <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">se_mult</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">conf_level</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="va">add_model</span> <span class="op">&lt;-</span> <span class="va">model</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">add_model</span>, <span class="st">"jam"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">add_model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">add_model</span><span class="op">)</span>, <span class="st">"gam"</span>, <span class="st">"glm"</span>, <span class="st">"lm"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span><span class="op">(</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># brms as a pammtools backend: the two primitives the unified inference</span></span>
+<span><span class="co"># interface needs. `sim_hazard()` returns one column per posterior draw; setting</span></span>
+<span><span class="co"># the offset to 0 yields the bare hazard rate (exp(eta) without the</span></span>
+<span><span class="co"># log-interval-length term), which `add_cumu_hazard()` then multiplies by the</span></span>
+<span><span class="co"># interval length itself.</span></span>
+<span><span class="va">sim_hazard.brmsfit</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span>, <span class="va">nsim</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">newdata</span><span class="op">$</span><span class="va">offset</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="va">ep</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstantools/reference/posterior_epred.html" class="external-link">posterior_epred</a></span><span class="op">(</span></span>
+<span>    <span class="va">object</span>,</span>
 <span>    newdata <span class="op">=</span> <span class="va">newdata</span>,</span>
-<span>    object <span class="op">=</span> <span class="va">add_model</span>,</span>
+<span>    summary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    re_formula <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">ep</span><span class="op">)</span><span class="op">)</span> <span class="co"># rows = time points, cols = posterior draws</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">get_hazard.brmsfit</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="fu">sim_hazard.brmsfit</span><span class="op">(</span><span class="va">object</span>, <span class="va">newdata</span>, <span class="va">...</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">get_cumu</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">method_id</span>, <span class="va">newdata</span>, <span class="va">conf_level</span> <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># jam (jagam posterior) objects need to advertise the gam/glm/lm classes so</span></span>
+<span>  <span class="co"># that the analytic CI machinery and design-matrix extraction dispatch.</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">model</span>, <span class="st">"jam"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, <span class="st">"gam"</span>, <span class="st">"glm"</span>, <span class="st">"lm"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="co"># brms has no coefficient covariance -&gt; simulation CIs from posterior draws;</span></span>
+<span>  <span class="co"># mgcv/jagam keep their analytic (coefficient-based) CIs.</span></span>
+<span>  <span class="va">ci_type</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">model</span>, <span class="st">"brmsfit"</span><span class="op">)</span><span class="op">)</span> <span class="st">"sim"</span> <span class="kw">else</span> <span class="st">"default"</span></span>
+<span>  <span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/add_hazard.html">add_cumu_hazard</a></span><span class="op">(</span></span>
+<span>    <span class="va">newdata</span>,</span>
+<span>    <span class="va">model</span>,</span>
 <span>    ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    se_mult <span class="op">=</span> <span class="va">se_mult</span>,</span>
-<span>    <span class="co"># keep the original prediction grid (no tend == 0 boundary row) so the</span></span>
-<span>    <span class="co"># curves align with the brms predictions and the Nelson-Aalen reference</span></span>
+<span>    ci_type <span class="op">=</span> <span class="va">ci_type</span>,</span>
+<span>    se_mult <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">conf_level</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">conf_level</span>,</span>
+<span>    <span class="co"># boundary = FALSE keeps all methods on the identical `tend` grid: the</span></span>
+<span>    <span class="co"># default would prepend a t = 0 row for gam/jagam but not for brms, which</span></span>
+<span>    <span class="co"># would misalign the curves and the downstream comparison join.</span></span>
 <span>    boundary <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>    tend <span class="op">=</span> <span class="va">pred</span><span class="op">$</span><span class="va">tend</span>,</span>
 <span>    method_id <span class="op">=</span> <span class="va">method_id</span>,</span>
 <span>    method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">method_labels</span><span class="op">[</span><span class="va">method_id</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -345,41 +367,21 @@ a common time grid.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">get_cumu_from_brms</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">method_id</span>, <span class="va">newdata</span>, <span class="va">conf_level</span> <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">conf_level</span></span>
-<span>  <span class="va">epred</span> <span class="op">&lt;-</span> <span class="fu">brms</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/rstantools/reference/posterior_epred.html" class="external-link">posterior_epred</a></span><span class="op">(</span></span>
-<span>    <span class="va">model</span>,</span>
-<span>    newdata <span class="op">=</span> <span class="va">newdata</span>,</span>
-<span>    summary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    re_formula <span class="op">=</span> <span class="cn">NA</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">epred</span><span class="op">)</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">2L</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Expected a 2D draws-by-time matrix from brms::posterior_epred()."</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="va">epred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">epred</span><span class="op">)</span></span>
-<span>  <span class="va">cumu_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">epred</span>, <span class="fl">1</span>, <span class="va">cumsum</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span></span>
-<span>    <span class="va">cumu_draws</span>,</span>
-<span>    <span class="fl">2</span>,</span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span>,</span>
-<span>    probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">alpha</span> <span class="op">/</span> <span class="fl">2</span>, <span class="fl">1</span> <span class="op">-</span> <span class="va">alpha</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>    tend <span class="op">=</span> <span class="va">newdata</span><span class="op">$</span><span class="va">tend</span>,</span>
-<span>    method_id <span class="op">=</span> <span class="va">method_id</span>,</span>
-<span>    method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">method_labels</span><span class="op">[</span><span class="va">method_id</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    cumu_hazard <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">cumu_draws</span><span class="op">)</span>,</span>
-<span>    cumu_lower <span class="op">=</span> <span class="va">bounds</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
-<span>    cumu_upper <span class="op">=</span> <span class="va">bounds</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pred_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
-<span>  <span class="fu">get_cumu_from_pamm</span><span class="op">(</span><span class="va">pam_mgcv</span>, <span class="st">"mgcv"</span>, <span class="va">newdata_base</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span>,</span>
-<span>  <span class="fu">get_cumu_from_pamm</span><span class="op">(</span><span class="va">pam_jagam</span>, <span class="st">"jagam"</span>, <span class="va">newdata_base</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span>,</span>
-<span>  <span class="fu">get_cumu_from_brms</span><span class="op">(</span><span class="va">pam_brms</span>, <span class="st">"brms"</span>, <span class="va">newdata_brms</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">pred_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="fu">get_cumu</span><span class="op">(</span><span class="va">pam_mgcv</span>, <span class="st">"mgcv"</span>, <span class="va">newdata_base</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span>,</span>
+<span>  <span class="fu">get_cumu</span><span class="op">(</span><span class="va">pam_jagam</span>, <span class="st">"jagam"</span>, <span class="va">newdata_base</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span>,</span>
+<span>  <span class="fu">get_cumu</span><span class="op">(</span><span class="va">pam_brms</span>, <span class="st">"brms"</span>, <span class="va">newdata_base</span>, conf_level <span class="op">=</span> <span class="va">conf_level</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<details><summary>
+Reshape for comparison
+</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Guard against a stale `bayesian_results.rds`: the comparison below joins the</span></span>
+<span><span class="co"># precomputed `pred_df` to the live `newdata_base` grid by position, so the two</span></span>
+<span><span class="co"># grids must match. Fail loudly if the precompute is out of sync with the Rmd.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">pred_df</span><span class="op">$</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">newdata_base</span><span class="op">$</span><span class="va">tend</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">na_on_grid</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="va">base_df</span><span class="op">$</span><span class="va">time</span>,</span>
@@ -397,11 +399,14 @@ a common time grid.</p>
 <span></span>
 <span><span class="va">method_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mgcv"</span>, <span class="st">"jagam"</span>, <span class="st">"brms"</span><span class="op">)</span></span>
 <span><span class="va">pairwise_combos</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/combn.html" class="external-link">combn</a></span><span class="op">(</span><span class="va">method_ids</span>, <span class="fl">2</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="visual-comparison-to-nelson-aalen">Visual comparison to Nelson-Aalen<a class="anchor" aria-label="anchor" href="#visual-comparison-to-nelson-aalen"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<details><summary>
+Plotting code
+</summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">pred_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cumu_hazard</span>, color <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span>, linetype <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">cumu_lower</span>, ymax <span class="op">=</span> <span class="va">cumu_upper</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.18</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -419,12 +424,14 @@ a common time grid.</p>
 <span>    subtitle <span class="op">=</span> <span class="st">"Dashed black curve: Nelson-Aalen reference"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="bayesian_files/figure-html/comparison-plot-1.png" class="r-plt" alt="" width="691.2" style="display: block; margin: auto;"></p>
+</details><p><img src="bayesian_files/figure-html/comparison-plot-1.png" class="r-plt" alt="" width="691.2" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="numeric-comparisons">Numeric comparisons<a class="anchor" aria-label="anchor" href="#numeric-comparisons"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<details><summary>
+Table code
+</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmp_na_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">method_ids</span>, <span class="kw">function</span><span class="op">(</span><span class="va">method_id</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">diff</span> <span class="op">&lt;-</span> <span class="va">pred_wide</span><span class="op">[[</span><span class="va">method_id</span><span class="op">]</span><span class="op">]</span> <span class="op">-</span> <span class="va">pred_wide</span><span class="op">$</span><span class="va">nelson_aalen</span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -435,7 +442,7 @@ a common time grid.</p>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp_na_tbl</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+</details><table class="table">
 <colgroup>
 <col width="30%">
 <col width="29%">
@@ -454,17 +461,19 @@ a common time grid.</p>
 </tr>
 <tr class="even">
 <td align="left">Bayesian PAMM (jagam)</td>
-<td align="right">0.0635</td>
-<td align="right">0.1263</td>
+<td align="right">0.0765</td>
+<td align="right">0.1572</td>
 </tr>
 <tr class="odd">
 <td align="left">Bayesian PAMM (brms)</td>
-<td align="right">0.0191</td>
-<td align="right">0.0575</td>
+<td align="right">0.0190</td>
+<td align="right">0.0637</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<details><summary>
+Table code
+</summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmp_pairwise_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">pairwise_combos</span>, <span class="kw">function</span><span class="op">(</span><span class="va">ids</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">lhs</span> <span class="op">&lt;-</span> <span class="va">ids</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span>  <span class="va">rhs</span> <span class="op">&lt;-</span> <span class="va">ids</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span>
@@ -476,7 +485,7 @@ a common time grid.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp_pairwise_tbl</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+</details><table class="table">
 <thead><tr class="header">
 <th align="left">contrast</th>
 <th align="right">rmse</th>
@@ -485,21 +494,45 @@ a common time grid.</p>
 <tbody>
 <tr class="odd">
 <td align="left">PAMM (mgcv) - Bayesian PAMM (jagam)</td>
-<td align="right">0.0614</td>
-<td align="right">0.0925</td>
+<td align="right">0.0738</td>
+<td align="right">0.1090</td>
 </tr>
 <tr class="even">
 <td align="left">PAMM (mgcv) - Bayesian PAMM (brms)</td>
-<td align="right">0.0046</td>
-<td align="right">0.0110</td>
+<td align="right">0.0029</td>
+<td align="right">0.0062</td>
 </tr>
 <tr class="odd">
 <td align="left">Bayesian PAMM (jagam) - Bayesian PAMM (brms)</td>
-<td align="right">0.0580</td>
-<td align="right">0.0837</td>
+<td align="right">0.0737</td>
+<td align="right">0.1128</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Burkner2017" class="csl-entry">
+Bürkner, Paul-Christian. 2017. <span>“<span class="nocase">brms</span>:
+An <span>R</span> Package for <span>Bayesian</span> Multilevel Models
+Using <span>Stan</span>.”</span> <em>Journal of Statistical
+Software</em> 80 (1): 1–28. <a href="https://doi.org/10.18637/jss.v080.i01" class="external-link">https://doi.org/10.18637/jss.v080.i01</a>.
+</div>
+<div id="ref-Plummer2003" class="csl-entry">
+Plummer, Martyn. 2003. <span>“<span>JAGS</span>: A Program for Analysis
+of <span>Bayesian</span> Graphical Models Using <span>Gibbs</span>
+Sampling.”</span> In <em>Proceedings of the 3rd International Workshop
+on Distributed Statistical Computing (DSC 2003)</em>, edited by Kurt
+Hornik, Friedrich Leisch, and Achim Zeileis. Vienna, Austria. <a href="https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf" class="external-link">https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf</a>.
+</div>
+<div id="ref-Wood2016jagam" class="csl-entry">
+Wood, Simon N. 2016. <span>“Just Another <span>Gibbs</span> Additive
+Modeler: Interfacing <span>JAGS</span> and <span class="nocase">mgcv</span>.”</span> <em>Journal of Statistical
+Software</em> 75 (7): 1–15. <a href="https://doi.org/10.18637/jss.v075.i07" class="external-link">https://doi.org/10.18637/jss.v075.i07</a>.
+</div>
+</div>
 </div>
   </div>
 

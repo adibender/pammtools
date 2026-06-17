@@ -100,6 +100,9 @@ preprocessing building blocks of that workflow."><meta property="og:image" conte
     <li>
       <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
     </li>
+    <li>
+      <a href="../articles/xgboost-backend.html">Defining a new backend (xgboost)</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">News</a>
@@ -239,9 +242,9 @@ absent, an <code>id</code> column.</p></li>
 for the IC transformation. When <code>cut</code> is supplied it is sorted and
 de-duplicated; otherwise the unique finite interval endpoints (the
 inspection times) are used, capped at <code>max_time</code>. The resolved
-<code>cut</code> <em>must</em> be shared across all imputations so that the spline
-bases - and hence the design matrices - are identical across the refits
-that are later pooled.</p></li>
+<code>cut</code> <em>must</em> be shared across all imputations so that the PED
+interval structure is consistent across refits. Note that <code>mgcv</code>'s
+centering constraints can still make the <code>lpmatrix</code> differ by fit.</p></li>
 <li><p><code>ic_event_data()</code>: Build the subject-level data frame of (exact)
 event times implied by an imputation. Exact observations keep their event
 time; right-censored observations are censored at <code>ic_L</code>; left- and

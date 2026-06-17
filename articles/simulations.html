@@ -113,6 +113,9 @@
     <li>
       <a href="../articles/bayesian.html">Bayesian Baseline PAMMs</a>
     </li>
+    <li>
+      <a href="../articles/xgboost-backend.html">Defining a new backend (xgboost)</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -209,7 +212,7 @@ are assumed to be piece-wise constant between two time-points in
 <span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, by<span class="op">=</span><span class="fl">.01</span><span class="op">)</span></span>
 <span><span class="va">wb_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>t <span class="op">=</span> <span class="va">t</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">mutate</a></span><span class="op">(</span></span>
-<span>    hazard   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/eha/man/Weibull.html" class="external-link">hweibull</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">alpha</span>, <span class="va">lambda</span><span class="op">)</span>,</span>
+<span>    hazard   <span class="op">=</span> <span class="fu"><a href="https://ehar.se/r/eha/reference/Weibull.html" class="external-link">hweibull</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">alpha</span>, <span class="va">lambda</span><span class="op">)</span>,</span>
 <span>    survival <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Weibull.html" class="external-link">pweibull</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">alpha</span>, <span class="va">lambda</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The figure below depicts the hazard rate and survivor function of a
 Weibull distribution with
