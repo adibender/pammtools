@@ -31,6 +31,29 @@ pooled_point <- function(object, newdata, adder, value_col, ...) {
   rowMeans(do.call(cbind, preds))
 }
 
+# Pooled cumulative quantities (cumulative hazard, survival, CIF) are
+# accumulated *within* each group of `newdata`. If a group still contains
+# repeated time points, distinct covariate (or cause) combinations are being
+# pooled together -- almost always a forgotten group_by() -- which silently
+# produces wrong results. Warn so the problem is visible (the default add_*
+# methods share the same group_by() requirement).
+warn_if_pooled_undergrouped <- function(newdata, time_var) {
+  if (!time_var %in% names(newdata)) {
+    return(invisible(NULL))
+  }
+  by_group <- split(newdata[[time_var]], group_indices(newdata))
+  if (any(vapply(by_group, anyDuplicated, integer(1)) > 0L)) {
+    warning(
+      "`newdata` has repeated '", time_var, "' values within a group, so ",
+      "distinct covariate/cause combinations are pooled together when ",
+      "accumulating cumulative quantities. Separate them with group_by() to ",
+      "avoid incorrect results.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
 ic_prediction_grid <- function(object, newdata, time_var, interval_length) {
   fit1 <- object[["fits"]][[1]]
   tv <- resolve_time_var(time_var, fit1, newdata)
@@ -181,6 +204,9 @@ add_cumu_hazard.pamm_ic <- function(
   interval_length = "intlen",
   ...
 ) {
+  time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
   time_var <- grid[["time_var"]]
@@ -208,7 +234,14 @@ add_cumu_hazard.pamm_ic <- function(
     joindata[["cumu_lower"]] <- d[["lower"]]
     joindata[["cumu_upper"]] <- d[["upper"]]
   }
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cumu_hazard = 0, cumu_lower = 0, cumu_upper = 0),
+    interval_length = interval_length
+  )
 }
 
 #' @rdname add_surv_prob
@@ -225,6 +258,9 @@ add_surv_prob.pamm_ic <- function(
   interval_length = "intlen",
   ...
 ) {
+  time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
   time_var <- grid[["time_var"]]
@@ -252,7 +288,14 @@ add_surv_prob.pamm_ic <- function(
     joindata[["surv_lower"]] <- d[["lower"]]
     joindata[["surv_upper"]] <- d[["upper"]]
   }
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(surv_prob = 1, surv_lower = 1, surv_upper = 1),
+    interval_length = interval_length
+  )
 }
 
 # CIF values for one cause-by-covariate group and one fit. `coef_mat` has one
@@ -276,7 +319,7 @@ ic_cif_fit_group <- function(
   hazards <- lapply(cause_levels, function(cl) {
     dfc <- group_df
     dfc[[cause_var]] <- factor(cl, levels = cause_levels)
-    X <- predict(fit, dfc, type = "lpmatrix")
+    X <- make_X(fit, dfc)
     exp(X %*% t(coef_mat))
   })
   names(hazards) <- as.character(cause_levels)
@@ -381,6 +424,8 @@ add_cif.pamm_ic <- function(
   m <- length(object[["fits"]])
   per <- ceiling(nsim / m)
   time_var <- resolve_time_var(time_var, fit1, newdata)
+  warn_if_pooled_undergrouped(newdata, time_var)
+  newdata <- drop_cumulative_boundary(newdata, time_var)
   joindata <- reconstruct_cutpoints(newdata, fit1, time_var, interval_length)
 
   joindata <- map_dfr(
@@ -415,5 +460,12 @@ add_cif.pamm_ic <- function(
     }
   )
 
-  suppressMessages(newdata %>% left_join(joindata))
+  out <- suppressMessages(newdata %>% left_join(joindata))
+  out <- restore_prediction_attrs(out, newdata)
+  add_cumulative_boundary(
+    out,
+    time_var = time_var,
+    values = c(cif = 0, cif_lower = 0, cif_upper = 0),
+    interval_length = interval_length
+  )
 }

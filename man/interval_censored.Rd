@@ -88,9 +88,9 @@ absent, an \code{id} column.
 for the IC transformation. When \code{cut} is supplied it is sorted and
 de-duplicated; otherwise the unique finite interval endpoints (the
 inspection times) are used, capped at \code{max_time}. The resolved
-\code{cut} \emph{must} be shared across all imputations so that the spline
-bases - and hence the design matrices - are identical across the refits
-that are later pooled.
+\code{cut} \emph{must} be shared across all imputations so that the PED
+interval structure is consistent across refits. Note that \code{mgcv}'s
+centering constraints can still make the \code{lpmatrix} differ by fit.
 
 \item \code{ic_event_data()}: Build the subject-level data frame of (exact)
 event times implied by an imputation. Exact observations keep their event

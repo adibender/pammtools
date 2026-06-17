@@ -94,3 +94,73 @@ sample_coefs <- function(object, nsim, ...) {
 sample_coefs.default <- function(object, nsim, ...) {
   mvtnorm::rmvnorm(nsim, mean = get_coefs(object), sigma = get_Vp(object))
 }
+
+#' Point hazard predictor (backend primitive)
+#'
+#' Returns the predicted hazard (response scale) as a plain numeric vector, one
+#' value per row of \code{newdata}. Together with \code{\link{sim_hazard}} this
+#' is the only primitive a new estimation backend must provide: every derived
+#' quantity (cumulative hazard, survival probability, CIF, transition
+#' probabilities) and its simulation-based confidence intervals are built from
+#' these two. Analytic (\code{"default"}/\code{"delta"}) confidence intervals
+#' additionally use \code{\link{make_X}}/\code{\link{get_coefs}}/\code{\link{get_Vp}}.
+#'
+#' @inheritParams get_coefs
+#' @param newdata A data frame for which the hazard is predicted.
+#' @return A numeric vector of hazards on the response scale.
+#' @seealso The package website (\url{https://adibender.github.io/pammtools/})
+#'   has worked examples of implementing \code{get_hazard} and
+#'   \code{\link{sim_hazard}} for new estimation backends: the articles
+#'   \dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+#'   tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+#'   drawing from the posterior).
+#' @keywords internal
+get_hazard <- function(object, newdata, ...) {
+  UseMethod("get_hazard", object)
+}
+
+#' @rdname get_hazard
+#' @keywords internal
+get_hazard.default <- function(object, newdata, ...) {
+  unname(exp(drop(make_X(object, newdata, ...) %*% get_coefs(object))))
+}
+
+#' Draw hazard trajectories from a model's sampling distribution
+#'
+#' Internal seam used by the simulation-based confidence interval helpers
+#' (\code{\link{get_sim_ci}}, \code{get_sim_ci_cumu}, \code{get_sim_ci_surv}).
+#' It returns a matrix of \code{nsim} draws of the (response-scale) hazard, one
+#' column per draw and one row per row of \code{newdata}. The default method
+#' draws coefficient vectors via \code{\link{sample_coefs}} and evaluates the
+#' linear predictor \code{make_X(object, newdata) \%*\% z}; other backends (e.g.
+#' a bootstrap ensemble that has no coefficient covariance) can provide their own
+#' method to obtain simulation-based intervals from the same machinery.
+#'
+#' @inheritParams get_coefs
+#' @param newdata A data frame for which hazards are predicted.
+#' @param nsim Number of draws.
+#' @return A numeric matrix with \code{nrow(newdata)} rows and \code{nsim}
+#' columns of hazard draws on the response scale. The draws are produced once for
+#' the whole \code{newdata}, so the callers can share one set of draws across
+#' groups by passing the full (grouped) data.
+#' @seealso The package website (\url{https://adibender.github.io/pammtools/})
+#'   has worked examples of implementing \code{\link{get_hazard}} and
+#'   \code{sim_hazard} for new estimation backends: the articles
+#'   \dQuote{Defining a new backend: gradient boosting with xgboost} (a bootstrap
+#'   tree ensemble) and \dQuote{Bayesian Baseline PAMMs} (a \code{brms} model,
+#'   drawing from the posterior).
+#' @keywords internal
+sim_hazard <- function(object, newdata, nsim = 100L, ...) {
+  UseMethod("sim_hazard", object)
+}
+
+#' @rdname sim_hazard
+#' @keywords internal
+sim_hazard.default <- function(object, newdata, nsim = 100L, ...) {
+  X <- make_X(object, newdata, ...)
+  sim_coef_mat <- sample_coefs(object, nsim)
+  matrix(
+    apply(sim_coef_mat, 1, function(z) exp(drop(X %*% z))),
+    nrow = nrow(newdata)
+  )
+}

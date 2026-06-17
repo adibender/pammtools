@@ -104,6 +104,7 @@ articles:
     - multi-state
     - simulations
     - bayesian
+    - xgboost-backend
 
 navbar:
   type: default
@@ -149,7 +150,9 @@ navbar:
     - text: Simulating Time-To-Event Data
       href: articles/simulations.html
     - text: Bayesian Baseline PAMMs
-      href: articles/bayesian.html  
+      href: articles/bayesian.html
+    - text: Defining a new backend (xgboost)
+      href: articles/xgboost-backend.html
   - text: News
     href: news/index.html
   right:

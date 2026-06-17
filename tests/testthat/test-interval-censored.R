@@ -553,3 +553,29 @@ test_that("add_inspections right-censoring is non-informative", {
   sdf_na$status[1] <- NA
   expect_error(add_inspections(sdf_na, rate = 1), "missing")
 })
+
+test_that("pooled pamm_ic adders warn on undergrouped newdata", {
+  set.seed(11)
+  df <- data.frame(z = c(rep(0, 200), rep(1, 200)))
+  sdf <- sim_pexp(~ -2 + 1.0 * z, df, cut = seq(0, 8, by = 0.25))
+  icd <- add_inspections(sdf, rate = 1, max_time = 8)
+  cut <- seq(0, 8, by = 0.5)
+  fit <- pamm_ic(Surv(L, R, type = "interval2") ~ s(tend) + z, icd, cut = cut, m = 2)
+  ped <- as_ped(icd, Surv(L, R, type = "interval2") ~ z, cut = cut)
+
+  # multiple covariate groups but no group_by() -> distinct curves get pooled
+  nd_multi <- make_newdata(ped, tend = unique(tend), z = c(0, 1))
+  expect_warning(add_surv_prob(nd_multi, fit, ci = FALSE), "group_by")
+  expect_warning(add_cumu_hazard(nd_multi, fit, ci = FALSE), "group_by")
+
+  # group_by() silences the warning and yields correct per-group curves
+  nd_g <- dplyr::group_by(nd_multi, z)
+  expect_warning(s <- add_surv_prob(nd_g, fit, ci = TRUE, nsim = 40), regexp = NA)
+  s <- dplyr::ungroup(s)
+  expect_true(all(tapply(s$surv_prob, s$z, function(v) all(diff(v) <= 1e-8))))
+  expect_true(all(s$surv_lower <= s$surv_prob + 1e-8 & s$surv_prob <= s$surv_upper + 1e-8))
+
+  # a single-curve prediction grid must not warn
+  nd1 <- make_newdata(ped, tend = unique(tend))
+  expect_warning(add_surv_prob(nd1, fit, ci = FALSE), regexp = NA)
+})

@@ -16,9 +16,6 @@ get_cif(newdata, object, ...)
   alpha,
   nsim,
   cause_var,
-  coefs,
-  V,
-  sim_coef_mat,
   ...
 )
 }

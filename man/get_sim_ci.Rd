@@ -4,16 +4,13 @@
 \alias{get_sim_ci}
 \title{Calculate simulation based confidence intervals}
 \usage{
-get_sim_ci(
-  newdata,
-  object,
-  alpha = 0.05,
-  nsim = 100L,
-  sim_coef_mat = NULL,
-  ...
-)
+get_sim_ci(newdata, object, alpha = 0.05, nsim = 100L, ...)
 }
 \description{
-Calculate simulation based confidence intervals
+These helpers draw the simulated hazard trajectories once for the whole
+(possibly grouped) \code{newdata} via \code{\link{sim_hazard}} -- so one set
+of draws is shared across groups -- and then summarise them into pointwise
+quantile intervals. Cumulative quantities are accumulated within each group
+of \code{newdata}.
 }
 \keyword{internal}

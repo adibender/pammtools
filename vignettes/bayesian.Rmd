@@ -1,9 +1,11 @@
 ---
-title: "Bayesian Baseline PAMMs: `mgcv`, `jagam`, and `brms`"
+title: "Bayesian Baseline PAMMs: mgcv, jagam, and brms"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: Remote.bib
+link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{Bayesian Baseline PAMMs}
+  %\VignetteIndexEntry{Bayesian Baseline PAMMs: mgcv, jagam, and brms}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
@@ -11,24 +13,34 @@ vignette: >
 library(knitr)
 opts_chunk$set(
   fig.align = "center",
-  cache = TRUE,
   message = FALSE,
   warning = FALSE
 )
+# Collapse non-didactic chunks (package setup, plotting, table code) behind a
+# <details> toggle so they don't distract from the modelling code. Set the
+# chunk option `fold = "<label>"` to fold a chunk's source; output (plots,
+# tables) is shown normally.
+local({
+  default_source <- knit_hooks$get("source")
+  knit_hooks$set(source = function(x, options) {
+    out <- default_source(x, options)
+    if (is.null(options$fold)) {
+      return(out)
+    }
+    summary <- if (is.character(options$fold)) options$fold else "Show code"
+    paste0("<details>\n<summary>", summary, "</summary>\n\n", out, "\n\n</details>")
+  })
+})
 ```
 
-```{r libraries}
+```{r libraries, fold = "Show package setup"}
 library(dplyr)
 library(ggplot2)
 library(mgcv)
 library(pammtools)
 library(survival)
 library(tidyr)
-# Bayesian back-ends. These are hard dependencies of this article: loading them
-# here makes the build fail loudly (instead of silently skipping comparisons) if
-# `rjags`/JAGS or `brms`/Stan are not available in the rendering environment.
-library(rjags)
-library(brms)
+library(tibble)
 
 theme_set(theme_bw())
 ```
@@ -36,12 +48,24 @@ theme_set(theme_bw())
 This vignette compares baseline cumulative hazard estimates from:
 
 1. a default frequentist PAMM fit with `mgcv`,
-2. a Bayesian PAMM fit via `mgcv::jagam` + `rjags`,
-3. a Bayesian PAMM fit via `brms`.
+2. a Bayesian PAMM fit via `mgcv::jagam` [@Wood2016jagam], which generates JAGS
+   [@Plummer2003] code from the GAM specification and samples it with `rjags`,
+3. a Bayesian PAMM fit via `brms` [@Burkner2017] (which compiles the model to
+   Stan).
 
 All models use the same spline basis for the baseline hazard, and we compare
 them against the Nelson-Aalen estimate and against each other on a common time
 grid.
+
+> **Build note.** The JAGS and Stan fits run on an ~11,600-row piece-wise
+> exponential data set and take 15--20 minutes combined -- too slow to evaluate
+> on every build. The model-fitting and prediction code below is therefore shown
+> but not executed (`eval = FALSE`); it is run once by
+> [`vignettes/precompute_bayesian.R`](https://github.com/adibender/pammtools/blob/master/vignettes/precompute_bayesian.R),
+> which saves the resulting `pred_df` to `bayesian_results.rds`. The plots and
+> tables below are rendered live from that saved data frame. Running `rjags`
+> additionally needs a JAGS installation, and `brms` needs a working Stan
+> toolchain.
 
 ## Data preparation
 
@@ -61,7 +85,7 @@ ped <- as_ped(tumor, Surv(days, status) ~ 1, id = "id")
 
 ### 1) Default PAMM (`mgcv`)
 
-```{r fit-mgcv}
+```{r fit-mgcv, eval = FALSE}
 pam_mgcv <- mgcv::gam(
   formula = ped_status ~ s(tend, k = 20),
   data = ped,
@@ -73,7 +97,7 @@ pam_mgcv <- mgcv::gam(
 
 ### 2) Bayesian PAMM via `jagam` + `rjags`
 
-```{r fit-jagam}
+```{r fit-jagam, eval = FALSE}
 set.seed(101)
 
 jagam_file <- tempfile(fileext = ".jags")
@@ -87,11 +111,12 @@ pam_jagam_prep <- mgcv::jagam(
   diagonalize = TRUE
 )
 
+library(rjags)
 rjags::load.module("glm")
 jagam_sampler <- rjags::jags.model(
   file = jagam_file,
   data = pam_jagam_prep$jags.data,
-  inits = pam_jagam_prep$jags.ini,
+  inits = pam_jagam_prep$jags.ini, # data-driven starts from the penalised GAM
   n.chains = 2,
   quiet = FALSE
 )
@@ -108,16 +133,22 @@ pam_jagam <- mgcv::sim2jam(jagam_post, pam_jagam_prep$pregam)
 
 ### 3) Bayesian PAMM via `brms`
 
-```{r fit-brms}
+```{r fit-brms, eval = FALSE}
+library(brms)
 set.seed(101)
 
+# The PED has many rows, so each Stan iteration is comparatively expensive;
+# running the two chains on separate cores and starting from `init = 0`
+# (a hazard of ~1 before the offset) gives a stable, reasonably quick fit.
 pam_brms <- brms::brm(
   formula = ped_status ~ s(tend, k = 20) + offset(offset),
   data = ped,
   family = poisson(),
   chains = 2,
+  cores = 2,
   iter = 3000,
   warmup = 750,
+  init = 0,
   seed = 101,
   refresh = 0,
   silent = 1
@@ -129,41 +160,72 @@ brms::pp_check(pam_brms) +
 
 ## Common prediction pipeline
 
-```{r prediction-helpers}
+All three models are now driven through the *same* `add_cumu_hazard()` call.
+For `mgcv` and `jagam` this uses the analytic (coefficient-based) confidence
+intervals as before. For `brms` we make the fit a first-class pammtools backend
+by defining the two primitives of the unified inference interface --
+`get_hazard()` (point hazard) and `sim_hazard()` (matrix of posterior hazard
+draws). Once those exist, `add_cumu_hazard(ci_type = "sim")` builds the
+cumulative hazard and its posterior credible interval from them, so no manual
+`cumsum`/quantile bookkeeping is needed. This is exactly the mechanism the
+[xgboost backend vignette](xgboost-backend.html) uses for a tree ensemble.
+
+```{r prediction-setup}
 conf_level <- 0.95
 
 newdata_base <- make_newdata(ped, tend = sort(unique(ped$tend))) %>%
   arrange(tend)
-
-# `mgcv`/`jagam` predictions go through `add_cumu_hazard()`, which reconstructs
-# the interval lengths from the fitted object. The `brms` predictions, however,
-# are produced directly via `posterior_epred()` and therefore need the model
-# offset (the log interval length) to be present in the prediction data.
-newdata_brms <- newdata_base %>%
-  left_join(int_info(ped) %>% transmute(tend, offset = log(intlen)), by = "tend")
 
 method_labels <- c(
   mgcv = "PAMM (mgcv)",
   jagam = "Bayesian PAMM (jagam)",
   brms = "Bayesian PAMM (brms)"
 )
-get_cumu_from_pamm <- function(model, method_id, newdata, conf_level = 0.95) {
-  se_mult <- stats::qnorm((1 + conf_level) / 2)
-  add_model <- model
-  if (inherits(add_model, "jam")) {
-    class(add_model) <- unique(c(class(add_model), "gam", "glm", "lm"))
-  }
-  pred <- add_cumu_hazard(
+```
+
+```{r prediction-code, eval = FALSE}
+# brms as a pammtools backend: the two primitives the unified inference
+# interface needs. `sim_hazard()` returns one column per posterior draw; setting
+# the offset to 0 yields the bare hazard rate (exp(eta) without the
+# log-interval-length term), which `add_cumu_hazard()` then multiplies by the
+# interval length itself.
+sim_hazard.brmsfit <- function(object, newdata, nsim = NULL, ...) {
+  newdata$offset <- 0
+  ep <- brms::posterior_epred(
+    object,
     newdata = newdata,
-    object = add_model,
+    summary = FALSE,
+    re_formula = NA
+  )
+  t(as.matrix(ep)) # rows = time points, cols = posterior draws
+}
+get_hazard.brmsfit <- function(object, newdata, ...) {
+  rowMeans(sim_hazard.brmsfit(object, newdata, ...))
+}
+
+get_cumu <- function(model, method_id, newdata, conf_level = 0.95) {
+  # jam (jagam posterior) objects need to advertise the gam/glm/lm classes so
+  # that the analytic CI machinery and design-matrix extraction dispatch.
+  if (inherits(model, "jam")) {
+    class(model) <- unique(c(class(model), "gam", "glm", "lm"))
+  }
+  # brms has no coefficient covariance -> simulation CIs from posterior draws;
+  # mgcv/jagam keep their analytic (coefficient-based) CIs.
+  ci_type <- if (inherits(model, "brmsfit")) "sim" else "default"
+  pred <- add_cumu_hazard(
+    newdata,
+    model,
     ci = TRUE,
-    se_mult = se_mult,
-    # keep the original prediction grid (no tend == 0 boundary row) so the
-    # curves align with the brms predictions and the Nelson-Aalen reference
+    ci_type = ci_type,
+    se_mult = stats::qnorm((1 + conf_level) / 2),
+    alpha = 1 - conf_level,
+    # boundary = FALSE keeps all methods on the identical `tend` grid: the
+    # default would prepend a t = 0 row for gam/jagam but not for brms, which
+    # would misalign the curves and the downstream comparison join.
     boundary = FALSE
   )
 
-  tibble(
+  tibble::tibble(
     tend = pred$tend,
     method_id = method_id,
     method = unname(method_labels[method_id]),
@@ -173,43 +235,26 @@ get_cumu_from_pamm <- function(model, method_id, newdata, conf_level = 0.95) {
   )
 }
 
-get_cumu_from_brms <- function(model, method_id, newdata, conf_level = 0.95) {
-  alpha <- 1 - conf_level
-  epred <- brms::posterior_epred(
-    model,
-    newdata = newdata,
-    summary = FALSE,
-    re_formula = NA
-  )
-  if (length(dim(epred)) != 2L) {
-    stop("Expected a 2D draws-by-time matrix from brms::posterior_epred().")
-  }
-  epred <- as.matrix(epred)
-  cumu_draws <- t(apply(epred, 1, cumsum))
-  bounds <- apply(
-    cumu_draws,
-    2,
-    stats::quantile,
-    probs = c(alpha / 2, 1 - alpha / 2)
-  )
-
-  tibble(
-    tend = newdata$tend,
-    method_id = method_id,
-    method = unname(method_labels[method_id]),
-    cumu_hazard = colMeans(cumu_draws),
-    cumu_lower = bounds[1, ],
-    cumu_upper = bounds[2, ]
-  )
-}
+pred_df <- bind_rows(
+  get_cumu(pam_mgcv, "mgcv", newdata_base, conf_level = conf_level),
+  get_cumu(pam_jagam, "jagam", newdata_base, conf_level = conf_level),
+  get_cumu(pam_brms, "brms", newdata_base, conf_level = conf_level)
+)
 ```
 
-```{r prediction-curves}
-pred_df <- bind_rows(
-  get_cumu_from_pamm(pam_mgcv, "mgcv", newdata_base, conf_level = conf_level),
-  get_cumu_from_pamm(pam_jagam, "jagam", newdata_base, conf_level = conf_level),
-  get_cumu_from_brms(pam_brms, "brms", newdata_brms, conf_level = conf_level)
-)
+```{r load-results, include = FALSE}
+# Precomputed by vignettes/precompute_bayesian.R (see the build note above).
+pred_df <- readRDS("bayesian_results.rds")
+```
+
+```{r prediction-curves, fold = "Reshape for comparison"}
+# Guard against a stale `bayesian_results.rds`: the comparison below joins the
+# precomputed `pred_df` to the live `newdata_base` grid by position, so the two
+# grids must match. Fail loudly if the precompute is out of sync with the Rmd.
+stopifnot(identical(
+  sort(unique(pred_df$tend)),
+  sort(unique(newdata_base$tend))
+))
 
 na_on_grid <- stats::approx(
   x = base_df$time,
@@ -231,7 +276,7 @@ pairwise_combos <- utils::combn(method_ids, 2, simplify = FALSE)
 
 ## Visual comparison to Nelson-Aalen
 
-```{r comparison-plot, fig.width = 7.2, fig.height = 4.8}
+```{r comparison-plot, fig.width = 7.2, fig.height = 4.8, fold = "Plotting code"}
 ggplot(pred_df, aes(x = tend, y = cumu_hazard, color = method, fill = method, linetype = method)) +
   geom_ribbon(aes(ymin = cumu_lower, ymax = cumu_upper), alpha = 0.18, color = NA) +
   geom_line(linewidth = 0.75) +
@@ -254,7 +299,7 @@ ggplot(pred_df, aes(x = tend, y = cumu_hazard, color = method, fill = method, li
 
 ## Numeric comparisons
 
-```{r comparison-na-table}
+```{r comparison-na-table, fold = "Table code"}
 cmp_na_tbl <- bind_rows(lapply(method_ids, function(method_id) {
   diff <- pred_wide[[method_id]] - pred_wide$nelson_aalen
   tibble(
@@ -267,7 +312,7 @@ cmp_na_tbl <- bind_rows(lapply(method_ids, function(method_id) {
 knitr::kable(cmp_na_tbl, digits = 4)
 ```
 
-```{r comparison-pairwise-table}
+```{r comparison-pairwise-table, fold = "Table code"}
 cmp_pairwise_tbl <- bind_rows(lapply(pairwise_combos, function(ids) {
   lhs <- ids[[1]]
   rhs <- ids[[2]]
@@ -280,3 +325,5 @@ cmp_pairwise_tbl <- bind_rows(lapply(pairwise_combos, function(ids) {
 }))
 knitr::kable(cmp_pairwise_tbl, digits = 4)
 ```
+
+## References
