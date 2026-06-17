@@ -121,10 +121,11 @@ ic_ci_draws <- function(
   }
 
   pieces <- lapply(fits, function(f) {
-    X <- make_X(f, nd)
-    B <- rmvnorm(per, mean = coef(f), sigma = f[["Vp"]])
+    X <- make_X(f, newdata = nd)
+    B <- sample_coefs(f, per)
     H <- exp(X %*% t(B)) # nrow x per hazard draws
-    h0 <- as.numeric(exp(X %*% coef(f)))
+    coefs <- get_coefs(f)
+    h0 <- as.numeric(exp(X %*% coefs))
     if (kind == "hazard") {
       return(list(draws = H, estimate = h0))
     }
@@ -144,8 +145,8 @@ ic_ci_draws <- function(
     )
   )
 
-  lower <- apply(M, 1, quantile, probs = alpha / 2, na.rm = TRUE)
-  upper <- apply(M, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
+  lower <- apply(M, 1, quantile, probs = alpha / 2, na.rm = TRUE, type = 6)
+  upper <- apply(M, 1, quantile, probs = 1 - alpha / 2, na.rm = TRUE, type = 6)
   if (kind %in% c("hazard", "cumu")) {
     lower <- pmax(lower, 0)
     upper <- pmax(upper, 0)
@@ -348,7 +349,7 @@ ic_cif_point_group <- function(group_df, object, cause_var, interval_length) {
     ic_cif_fit_group(
       group_df,
       f,
-      matrix(coef(f), nrow = 1),
+      matrix(get_coefs(f), nrow = 1),
       object[["cause_levels"]],
       cause_var,
       interval_length
@@ -442,14 +443,14 @@ add_cif.pamm_ic <- function(
         cif <- ic_cif_draws_group(.x, object, per, cause_var, interval_length)
         .x[["cif_lower"]] <- pmin(
           pmax(
-            apply(cif, 1, quantile, alpha / 2, na.rm = TRUE),
+            apply(cif, 1, quantile, alpha / 2, na.rm = TRUE, type = 6),
             0
           ),
           1
         )
         .x[["cif_upper"]] <- pmin(
           pmax(
-            apply(cif, 1, quantile, 1 - alpha / 2, na.rm = TRUE),
+            apply(cif, 1, quantile, 1 - alpha / 2, na.rm = TRUE, type = 6),
             0
           ),
           1

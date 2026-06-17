@@ -188,8 +188,10 @@ simulation-based intervals for the survival probability:
 ```{r}
 ndf %>%
   add_surv_prob(mpam, ci_type = "sim") %>%
+  # drop the tend == 0 boundary row so the table shows the interval estimates
+  filter(tend != 0) %>%
   select(tend, surv_prob, surv_lower, surv_upper) %>%
-  slice(c(1:3, 18:20))
+  slice(c(1:3, (n() - 2):n()))
 ```
 
 Note that for terms whose estimate lies on the boundary of the constraint

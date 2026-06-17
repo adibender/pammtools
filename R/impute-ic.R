@@ -39,14 +39,14 @@ ic_pred_cache <- function(
   grid[["interval"]] <- rep(ii[["interval"]], times = n_sub)
 
   if (is.null(cause_levels)) {
-    X <- make_X(object, grid)
+    X <- make_X(object, newdata = grid)
     return(list(ii = ii, n_int = n_int, n_sub = n_sub, X = X, grid = grid))
   }
 
   X_list <- lapply(cause_levels, function(cl) {
     g <- grid
     g[[cause_var]] <- factor(cl, levels = cause_levels)
-    make_X(object, g)
+    make_X(object, newdata = g)
   })
   names(X_list) <- cause_levels
   list(
@@ -105,7 +105,7 @@ impute_ic_times <- function(object, ic, cut, beta = NULL, cache = NULL) {
   n_int <- cache[["n_int"]]
   n_sub <- nrow(ic)
   if (is.null(beta)) {
-    beta <- coef(object)
+    beta <- get_coefs(object)
   }
 
   h <- pmax(as.numeric(exp(X %*% beta)), .Machine$double.xmin)
