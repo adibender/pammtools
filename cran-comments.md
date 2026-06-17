@@ -33,11 +33,10 @@ check infrastructure.
 
 ## Reverse dependencies
 
-Reverse dependencies on CRAN: adjustedCurves, autoReg, contsurvplot, KMunicate,
-relsurv, robber, weightedsurv (pammtools is a Suggested dependency for all).
+We checked all 7 reverse dependencies (adjustedCurves, autoReg, contsurvplot,
+KMunicate, relsurv, robber, weightedsurv; pammtools is a Suggested dependency
+for all), comparing R CMD check results across the CRAN (0.7.4) and dev (0.8.0)
+versions with `revdepcheck::revdep_check()`.
 
-<!-- Fill in once `revdepcheck::revdep_check()` completes:
-We checked N reverse dependencies, comparing R CMD check results across CRAN and
-the development version. No new problems were found.
--->
-</content>
+* 0 new problems
+* 0 packages failed to check
