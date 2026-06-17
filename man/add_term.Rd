@@ -35,6 +35,8 @@ Adds the contribution of a specific term to the
 linear predictor to the data specified by \code{newdata}.
 Essentially a wrapper to \code{\link[mgcv]{predict.gam}}, with \code{type="terms"}.
 Thus most arguments and their documentation below is from \code{\link[mgcv]{predict.gam}}.
+Shape-constrained additive models fit with \code{\link[scam]{scam}} are
+supported as well.
 }
 \examples{
 library(ggplot2)

@@ -3,12 +3,15 @@
 \name{tidy_fixed}
 \alias{tidy_fixed}
 \alias{tidy_fixed.gam}
+\alias{tidy_fixed.scam}
 \alias{tidy_fixed.coxph}
 \title{Extract fixed coefficient table from model object}
 \usage{
 tidy_fixed(x, ...)
 
 \method{tidy_fixed}{gam}(x, intercept = FALSE, ...)
+
+\method{tidy_fixed}{scam}(x, intercept = FALSE, ...)
 
 \method{tidy_fixed}{coxph}(x, ...)
 }

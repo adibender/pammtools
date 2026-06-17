@@ -1,6 +1,51 @@
 # pammtools 0.7.6
 
+## Enhancements
+* Full support for shape-constrained additive models fit with `scam::scam()`
+  (#286): the post-processing workflow (`add_hazard()`, `add_cumu_hazard()`,
+  `add_surv_prob()`, `add_term()`, `add_cif()`, `add_trans_prob()`,
+  `get_cumu_coef()`, `get_cumu_eff()`, `tidy_fixed()`, `tidy_smooth()`,
+  `gg_smooth()`, ...) now works for `scam` fits exactly as for `gam` fits,
+  including delta-method and simulation-based confidence intervals. All
+  calculations correctly use the re-parametrized coefficients
+  (`$coefficients.t`) and their covariance (`$Vp.t`); previously, some
+  functions silently used the unconstrained-scale coefficients/covariance
+  (`coef()`/`$Vp`), which yields incorrect results for `scam` objects.
+  `pamm()` gained `engine = "scam"`. See the new article
+  ["Shape-constrained effects (scam)"](https://adibender.github.io/pammtools/articles/shape-constraints.html).
+
+## New features
+* Interval-censored time-to-event data are now supported via a multiple-
+  imputation (MI) workflow. Data specified with `Surv(L, R, type = "interval2")`
+  are detected automatically by `as_ped()`. The new `pamm_ic()` (single event)
+  and `pamm_ic_cr()` (competing risks) fit a PAMM by repeatedly drawing exact
+  event times from the model-based conditional hazard distribution on `(L, R]`
+  and re-fitting the standard right-censored pipeline. Inference pools the
+  imputations: `add_hazard()`, `add_cumu_hazard()`, `add_surv_prob()` and
+  `add_cif()` gain `pamm_ic` methods that combine per-imputation posterior draws
+  (within- plus between-imputation variance). The `iter` argument enables
+  chained (refit-and-reimpute) imputation, recommended for sparsely inspected
+  data; numerically degenerate imputation chains are flagged with a warning.
+  `add_inspections()` turns exact simulated times (e.g. from `sim_pexp()`) into
+  interval-censored panel data for testing and coverage studies.
+  `print()`/`summary()` of a `pamm_ic` report the *pooled* fit (Rubin-combined
+  coefficients and covariances, median-p term tests, fraction-of-missing-
+  information diagnostic); the object exposes a `pooled` entry and stores the
+  per-imputation fits in slimmed form so memory does not scale with the number
+  of imputations. See the new "Interval-Censored Data" vignette.
+
 ## Bug fixes
+* Simulation-based confidence intervals (`ci_type = "sim"` in `add_hazard()`,
+  `add_cumu_hazard()`, `add_surv_prob()`, as well as `add_cif()`,
+  `add_trans_prob()`/`add_trans_ci()` and the cumulative hazard differences
+  in `get_cumu_coef()`) now use type-6 empirical quantiles instead of the
+  `stats::quantile()` default (type 7). Type-7 quantiles made these intervals
+  systematically too narrow for small `nsim`: at the default `nsim = 100`,
+  the expected central mass of the draws enclosed by the bounds is ~93%
+  instead of the nominal 95%. Type-6 quantiles remove this systematic
+  inward bias (#288). As a consequence, all simulation-based CI bounds
+  change slightly (intervals widen at both ends) relative to versions
+  <= 0.7.5.
 * `add_trans_prob()` and `add_trans_ci()` no longer require the input data to
   be pre-sorted; the internal `arrange` call is now handled automatically,
   fixing the user-facing sorting dependency reported in #255 and related to
@@ -15,12 +60,33 @@
   and `transition_col`.
 * `get_trans_prob()` now supports non-integer (categorical) state labels
   (e.g. `"healthy->ill"`) in addition to integer-coded transitions.
+* `gg_smooth()` / `get_terms()` now select smooth terms via the model's `mgcv`
+  smooth metadata instead of unanchored `grep()`, fixing two errors reported in
+  #283: passing a variable name matched by several smooths (e.g. `terms = "tend"`
+  in a time-varying-effects model) no longer fails with
+  `` `eff` must be size 100 or 1 ``, and factor terms no longer trigger
+  `'range' not meaningful for factors`. Names that match no smooth (e.g.
+  parametric factor effects) are now skipped with a warning rather than erroring.
 
 ## Enhancements
+* `gg_smooth()` is now fully general across univariate smooth terms: a bare
+  variable name selects every 1d smooth over that variable (main effect plus any
+  `by`-variable or factor-smooth interaction term), `terms` is optional
+  (defaulting to all univariate smooths), and 1d `ti()` as well as factor-smooth
+  interactions (`bs = "fs"`, `bs = "sz"`) are supported. Factor-indexed smooths
+  are drawn in a single facet with one coloured/filled curve per factor level,
+  identified by a new `level` column in the `get_terms()` output. Random-effect
+  smooths (`bs = "re"`, `bs = "mrf"`) and multivariate/tensor smooths are
+  excluded (use `gg_re()` / `gg_tensor()`).
 * Transition probability calculation is faster due to a base R refactor
   (previously used dplyr internally).
 * `gg_state_occupation()` is now exported. Dead parameters `group_labels` and
   `nrow` have been removed; user-supplied `ncol` is now respected.
+* `add_surv_prob()`, `add_cif()`, and `add_trans_prob()` now include plotting
+  boundary rows at `tend = 0` (or the selected `time_var`). Boundary values are
+  set to their known limits, `S(0) = 1`, `CIF(0) = 0`, and off-diagonal
+  transition probabilities `P_rs(0) = 0`, with collapsed confidence interval
+  bounds when requested. `add_cumu_hazard()` keeps the original prediction grid.
 
 # pammtools 0.7.5
 

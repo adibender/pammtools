@@ -2,21 +2,28 @@
 % Please edit documentation in R/get-terms.R
 \name{get_term}
 \alias{get_term}
-\title{Extract partial effects for specified model terms}
+\title{Extract the partial effect of a single smooth curve}
 \usage{
-get_term(data, fit, term, n = 100, ...)
+get_term(data, fit, spec, n = 100, conf_level = 0.95, ...)
 }
 \arguments{
-\item{data}{A data frame containing variables used to fit the model. Only
-first row will be used.}
+\item{data}{A data frame containing variables used to fit the model. The first
+row is used as the basis for all covariates other than the one being varied
+(their values are irrelevant for the term-wise contribution).}
 
 \item{fit}{A fitted object of class \code{\link[mgcv]{gam}}.}
 
-\item{term}{The (non-linear) model term of interest.}
+\item{spec}{A single-row tibble (one row of \code{\link{get_smooth_terms}})
+describing the curve to extract.}
 
-\item{...}{Further arguments passed to \code{\link{seq_range}}.}
+\item{n}{Number of points at which to evaluate the smooth over the range of
+its covariate.}
+
+\item{conf_level}{The confidence level for the pointwise confidence interval.}
+
+\item{...}{Further arguments (currently unused).}
 }
 \description{
-Extract partial effects for specified model terms
+Extract the partial effect of a single smooth curve
 }
 \keyword{internal}

@@ -50,6 +50,27 @@ test_that("Simulation function works", {
   )
 })
 
+test_that("sim_pexp handles factor covariates without silent coercion", {
+  set.seed(1)
+  df <- data.frame(trt = as.factor(rbinom(50, 1, 0.5)))
+
+  # explicit numeric encoding works and leaves `trt` a factor in the output
+  sim_df <- sim_pexp(
+    ~ -2 + 0.2 * (t - 5) * (trt == 1),
+    df,
+    cut = seq(0, 10, 0.5)
+  )
+  expect_s3_class(sim_df$trt, "factor")
+  expect_true(all(is.finite(sim_df$time)))
+
+  # bare factor arithmetic errors loudly (rather than silently coercing to NA),
+  # even when the Ops.factor warning is suppressed
+  expect_error(
+    suppressWarnings(sim_pexp(~ -2 + 0.5 * trt, df, cut = seq(0, 10, 0.5))),
+    "factor/character covariate"
+  )
+})
+
 test_that("Competing risks simulation creates valid output", {
   set.seed(1202)
   sim_df <- pammtools:::sim_pexp_cr(

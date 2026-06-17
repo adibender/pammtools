@@ -8,12 +8,10 @@ repam <- function(x) {
 }
 
 append_ped_attr <- function(pamm, ped) {
-
   attr_ped <- ped_attr(ped)
   pamm[["attr_ped"]] <- attr_ped
 
   pamm
-
 }
 
 
@@ -31,8 +29,9 @@ append_ped_attr <- function(pamm, ped) {
 #' for inline data transformation. Convert your data with \code{as_ped()} before
 #' calling \code{pamm()} instead.
 #' @param engine Character name of the function that will be called to fit the
-#' model. The intended entries are either \code{"gam"} or \code{"bam"}
-#' (both from package \code{mgcv}).
+#' model. The intended entries are \code{"gam"} or \code{"bam"}
+#' (both from package \code{mgcv}) or \code{"scam"} (from package \code{scam},
+#' for shape-constrained PAMMs, e.g. monotone baseline hazards).
 #' @import mgcv
 #' @importFrom stats poisson
 #' @rdname pamm
@@ -48,14 +47,14 @@ append_ped_attr <- function(pamm, ped) {
 #' @export
 pamm <- function(
   formula,
-  data       = list(),
+  data = list(),
   ...,
   trafo_args = NULL,
-  engine     = "gam") {
-
+  engine = "gam"
+) {
   dots <- list(...)
   dots$formula <- formula
-  dots$family  <- poisson()
+  dots$family <- poisson()
   if (!is.null(trafo_args)) {
     .Deprecated(
       msg = paste0(
@@ -69,15 +68,25 @@ pamm <- function(
     trafo_args$data <- data
     data <- do.call(split_data, trafo_args)
   }
-  
-  dots$data   <- data
+
+  dots$data <- data
   dots$offset <- data$offset
-  
+
   if (is.null(data$offset)) {
-    warning(paste0(deparse(substitute(data)), " does not contain an offset. PAMM assumes a risk time of 1 for all subjects"))
+    warning(paste0(
+      deparse(substitute(data)),
+      " does not contain an offset. PAMM assumes a risk time of 1 for all subjects"
+    ))
   }
 
-  pamm_fit        <- do.call(engine, dots)
+  engine_fun <- switch(
+    engine,
+    gam = mgcv::gam,
+    bam = mgcv::bam,
+    scam = scam::scam,
+    match.fun(engine)
+  )
+  pamm_fit <- do.call(engine_fun, dots)
   class(pamm_fit) <- c("pamm", class(pamm_fit))
   # pamm_fit        <- append_ped_attr(pamm_fit, data)
   pamm_fit[["trafo_args"]] <- attr(data, "trafo_args")
@@ -86,7 +95,6 @@ pamm <- function(
   pamm_fit[["attr_ped"]] <- attributes(data)[ind_attr_keep]
 
   pamm_fit
-
 }
 
 
@@ -103,9 +111,7 @@ is.pamm <- function(x) inherits(x, "pamm")
 #' @keywords internal
 #' @export
 print.pamm <- function(x, ...) {
-
   print(unpam(x), ...)
-
 }
 
 #' @rdname pamm
@@ -113,16 +119,12 @@ print.pamm <- function(x, ...) {
 #' @keywords internal
 #' @export
 summary.pamm <- function(object, ...) {
-
   summary(unpam(object), ...)
-
 }
 
 #' @rdname pamm
 #' @keywords internal
 #' @export
 plot.pamm <- function(x, ...) {
-
   plot(unpam(x), ...)
-
 }

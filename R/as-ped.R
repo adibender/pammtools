@@ -27,7 +27,7 @@
 #'  causes, estimated via interaction terms (e.g.,
 #'  \code{s(tend, by = cause)}).
 #' }
-#' 
+#'
 #' For multi-state data, \code{as_ped} extends the standard PED transformation
 #' to each transition type. The follow-up of each subject is split at all
 #' observed transition times across the entire dataset, and a row is added for
@@ -114,7 +114,7 @@
 #' # ped_list[[2]]: data for cause 2 (death from other causes)
 #' head(ped_list[[1]])
 #' head(ped_list[[2]])
-#' 
+#'
 #' # Multi-state: illness-death model on calendar timescale
 #' # Uses the prothr data (liver cirrhosis patients, n = 488) from mstate.
 #' # Patients can transition between normal (1) and abnormal (2) prothrombin
@@ -151,47 +151,77 @@ as_ped <- function(data, ...) {
 as_ped.data.frame <- function(
   data,
   formula,
-  cut          = NULL,
-  max_time     = NULL,
+  cut = NULL,
+  max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  transition   = character(),
-  timescale    = c("gap", "calendar"),
-  min_events   = 1L,
-  ...) {
+  censor_code = 0L,
+  transition = character(),
+  timescale = c("gap", "calendar"),
+  min_events = 1L,
+  ...
+) {
+  # interval-censored data are detected before status_error(), which assumes a
+  # 0/1 (or competing) status column and would choke on survival's interval
+  # status codes. Right-censored and left-truncated (counting-process) responses
+  # both return "none" here and fall through to the standard pipeline unchanged.
+  if (detect_ic(formula, data) != "none") {
+    ped <- as_ped_ic(
+      data = data,
+      formula = formula,
+      cut = cut,
+      max_time = max_time,
+      ...
+    )
+    return(ped)
+  }
 
   status_error(data, formula, censor_code)
   assert_subset(tdc_specials, c("concurrent", "cumulative"))
 
   if (test_character(transition, min.chars = 1L, min.len = 1L)) {
-    ped <- as_ped_multistate(data = data, formula = formula, cut = cut,
-      max_time = max_time, tdc_specials = tdc_specials, censor_code = censor_code,
-      transition = transition, timescale = timescale, min_events = min_events, ... )
+    ped <- as_ped_multistate(
+      data = data,
+      formula = formula,
+      cut = cut,
+      max_time = max_time,
+      tdc_specials = tdc_specials,
+      censor_code = censor_code,
+      transition = transition,
+      timescale = timescale,
+      min_events = min_events,
+      ...
+    )
     return(ped)
   }
 
   event_types <- get_event_types(data, formula, censor_code)
   if (length(event_types) > 1) {
-
-    ped <- as_ped_cr(data = data, formula = formula, cut = cut, max_time = max_time,
-      tdc_specials = tdc_specials, censor_code = censor_code, ...)
-
+    ped <- as_ped_cr(
+      data = data,
+      formula = formula,
+      cut = cut,
+      max_time = max_time,
+      tdc_specials = tdc_specials,
+      censor_code = censor_code,
+      ...
+    )
   } else {
-
-    dots          <- list(...)
-    dots$data     <- data
-    dots$formula  <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-    dots$cut      <- cut
+    dots <- list(...)
+    dots$data <- data
+    dots$formula <- get_ped_form(
+      formula,
+      data = data,
+      tdc_specials = tdc_specials
+    )
+    dots$cut <- cut
     dots$max_time <- max_time
 
     ped <- do.call(split_data, dots)
     attr(ped, "time_var") <- get_lhs_vars(dots$formula)[1]
     attr(ped, "status_var") <- get_lhs_vars(dots$formula)[2]
-
   }
 
   ped
-
 }
 
 #' @rdname as_ped
@@ -199,8 +229,8 @@ as_ped.data.frame <- function(
 as_ped.nested_fdf <- function(
   data,
   formula,
-  ...) {
-
+  ...
+) {
   dots <- list(...)
   # update interval break points (if necessary)
   cut <- dots$cut
@@ -220,18 +250,26 @@ as_ped.nested_fdf <- function(
   #     max_time = dots$max_time,
   #     ...)
   dots$formula <- formula
-  dots$data    <- as.data.frame(select_if(data, is.atomic))
-  dots$cut     <- cut
-  ped          <- do.call(as_ped, dots)
+  dots$data <- as.data.frame(select_if(data, is.atomic))
+  dots$cut <- cut
+  ped <- do.call(as_ped, dots)
 
   # replace updated attributes
   attr(data, "breaks") <- attr(ped, "breaks")
-  attr(data, "id_n") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
-    summarize(id_n = n()) %>% pull("id_n") %>% as_vector()
-  attr(data, "id_tseq") <- ped %>% group_by(!!sym(attr(data, "id_var"))) %>%
-    transmute(id_tseq = row_number()) %>% pull("id_tseq") %>% as_vector()
-  attr(data, "id_tz_seq") <- rep(seq_len(nrow(data)),
-    times = attr(data, "id_n"))
+  attr(data, "id_n") <- ped %>%
+    group_by(!!sym(attr(data, "id_var"))) %>%
+    summarize(id_n = n()) %>%
+    pull("id_n") %>%
+    as_vector()
+  attr(data, "id_tseq") <- ped %>%
+    group_by(!!sym(attr(data, "id_var"))) %>%
+    transmute(id_tseq = row_number()) %>%
+    pull("id_tseq") %>%
+    as_vector()
+  attr(data, "id_tz_seq") <- rep(
+    seq_len(nrow(data)),
+    times = attr(data, "id_n")
+  )
 
   if (has_special(formula, "concurrent")) {
     ped <- ped %>% add_concurrent(data = data, id_var = dots$id)
@@ -239,17 +277,19 @@ as_ped.nested_fdf <- function(
 
   if (has_special(formula, "cumulative")) {
     ped <- add_cumulative(ped, data = data, formula = formula)
-    attr(ped, "ll_weights") <- imap(attr(ped, "tz"),
-      ~bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x)))))
+    attr(ped, "ll_weights") <- imap(
+      attr(ped, "tz"),
+      ~ bind_cols(!!.y := .x, ll_weight = c(mean(abs(diff(.x))), abs(diff(.x))))
+    )
     class(ped) <- c("fped", class(ped))
   }
   attr(ped, "time_var") <- get_lhs_vars(formula)[1]
   attr(ped, "func_mat_names") <- make_mat_names(
-  attr(ped, "func"),
-  attr(ped, "time_var"))
+    attr(ped, "func"),
+    attr(ped, "time_var")
+  )
 
   ped
-
 }
 
 #' @rdname as_ped
@@ -259,28 +299,29 @@ as_ped.list <- function(
   formula,
   tdc_specials = c("concurrent", "cumulative"),
   censor_code = 0L,
-  ...) {
-
+  ...
+) {
   assert_class(data, "list")
   assert_class(formula, "formula")
 
   status_error(data[[1]], formula, censor_code)
 
-  nl    <- length(data)
+  nl <- length(data)
   # form  <- Formula(formula)
   has_tdc <- has_tdc_form(formula, tdc_specials = tdc_specials)
 
   if (nl == 1 && !has_tdc) {
-    ped <- data[[1]] %>% as_ped(formula = formula, tdc_specials = tdc_specials, ...)
+    ped <- data[[1]] %>%
+      as_ped(formula = formula, tdc_specials = tdc_specials, ...)
   } else {
     if (nl == 2 && !has_tdc) {
-    stop("Two data sets provided in 'data' but no specification of
-      time-dependent covariate effects in 'formula'")
+      stop(
+        "Two data sets provided in 'data' but no specification of
+      time-dependent covariate effects in 'formula'"
+      )
     } else {
-
       nested_fdf <- nest_tdc(data, formula, ...)
       ped <- as_ped(nested_fdf, formula, ...)
-
     }
   }
   lhs_vars <- get_lhs_vars(formula)
@@ -288,7 +329,6 @@ as_ped.list <- function(
   attr(ped, "trafo_args")$formula <- formula
 
   ped
-
 }
 
 #' @rdname as_ped
@@ -302,30 +342,25 @@ is.ped <- function(x) inherits(x, "ped")
 #' variables that were used to create the PED object (\code{data}).
 #' @export
 as_ped.ped <- function(data, newdata, ...) {
-
   if (is.ped(newdata)) {
     stop("newdata already in ped format.")
   }
 
   trafo_args <- attr(data, "trafo_args")
   trafo_args[["data"]] <- newdata
-  do.call(as_ped,  trafo_args)
-
+  do.call(as_ped, trafo_args)
 }
-
 
 
 #' @rdname as_ped
 #' @export
 as_ped.pamm <- function(data, newdata, ...) {
-
   if (is.ped(newdata)) {
     stop("newdata already in ped format.")
   }
-  trafo_args      <- data[["trafo_args"]]
+  trafo_args <- data[["trafo_args"]]
   trafo_args$data <- newdata
   do.call(split_data, trafo_args)
-
 }
 
 ## Competing risks
@@ -339,49 +374,61 @@ as_ped.pamm <- function(data, newdata, ...) {
 as_ped_cr <- function(
   data,
   formula,
-  cut          = NULL,
-  max_time     = NULL,
+  cut = NULL,
+  max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  combine      = TRUE,
-  ...) {
-
+  censor_code = 0L,
+  combine = TRUE,
+  ...
+) {
   lhs_vars <- get_lhs_vars(formula)
   n_lhs <- length(lhs_vars)
   event_types <- get_event_types(data, formula, censor_code)
 
   cut <- map2(
     event_types,
-    if(is.list(cut)) cut else list(cut),
+    if (is.list(cut)) cut else list(cut),
     function(.event, .cut) {
-      get_cut(data, formula = formula, cut = .cut, max_time = NULL, event = .event)
+      get_cut(
+        data,
+        formula = formula,
+        cut = .cut,
+        max_time = NULL,
+        event = .event
+      )
     }
   )
   if (length(cut) > 1 && combine) {
     cut <- list(reduce(cut, union))
   }
-  
+
   ped <- map2(
     event_types,
     cut,
     function(.event, .cut) {
       ped_i <- data %>%
-        mutate(!!lhs_vars[n_lhs] := 1L * (as.character(.data[[lhs_vars[n_lhs]]]) == as.character(.env[[".event"]]))) %>%
+        mutate(
+          !!lhs_vars[n_lhs] := 1L *
+            (as.character(.data[[lhs_vars[n_lhs]]]) ==
+              as.character(.env[[".event"]]))
+        ) %>%
         as_ped(
-          formula      = formula,
-          cut          = .cut,
-          max_time     = max_time,
+          formula = formula,
+          cut = .cut,
+          max_time = max_time,
           tdc_specials = tdc_specials,
-          ...)
+          ...
+        )
       ped_i$cause <- as.factor(.event)
       ped_i
-    })
+    }
+  )
 
   if (combine) {
     ped <- do.call(rbind, ped)
     class(ped) <- c("ped_cr_union", "ped_cr", class(ped))
     attr(ped, "intvars") <- c(attr(ped, "intvars"), "cause")
-    attr(ped, "breaks") <- if (length(cut) ==1) unlist(cut) else cut
+    attr(ped, "breaks") <- if (length(cut) == 1) unlist(cut) else cut
   } else {
     class(ped) <- c("ped_cr_list", "ped_cr", "ped", class(ped))
     names(ped) <- paste0("cause = ", event_types)
@@ -389,13 +436,12 @@ as_ped_cr <- function(
     attributes(ped)$trafo_args$formula <- formula
   }
 
-  attr(ped, "trafo_args")[["cut"]] <- if (length(cut) ==1) unlist(cut) else cut
+  attr(ped, "trafo_args")[["cut"]] <- if (length(cut) == 1) unlist(cut) else cut
   attr(ped, "trafo_args")[["combine"]] <- combine
   attr(ped, "trafo_args")[["censor_code"]] <- censor_code
   attr(ped, "risks") <- event_types
 
   ped
-
 }
 
 #' Exctract event types
@@ -408,7 +454,6 @@ as_ped_cr <- function(
 #'
 #' @keywords internal
 get_event_types <- function(data, formula, censor_code) {
-
   lhs_vars <- get_lhs_vars(formula)
   status_values <- unique(data[[lhs_vars[length(lhs_vars)]]]) %>% sort()
   status_values <- status_values[status_values != censor_code]
@@ -417,9 +462,7 @@ get_event_types <- function(data, formula, censor_code) {
   } else {
     status_values
   }
-  
 }
-
 
 
 #' Recurrent events trafo
@@ -442,18 +485,22 @@ get_event_types <- function(data, formula, censor_code) {
 as_ped_multistate <- function(
   data,
   formula,
-  cut          = NULL,
-  max_time     = NULL,
+  cut = NULL,
+  max_time = NULL,
   tdc_specials = c("concurrent", "cumulative"),
-  censor_code  = 0L,
-  transition  = character(),
-  timescale    = c("gap", "calendar"),
-  min_events   = 1L,
+  censor_code = 0L,
+  transition = character(),
+  timescale = c("gap", "calendar"),
+  min_events = 1L,
   ...
 ) {
-
-  assert_character(transition, min.chars = 1L, min.len = 1L, any.missing = FALSE,
-    len = 1L)
+  assert_character(
+    transition,
+    min.chars = 1L,
+    min.len = 1L,
+    any.missing = FALSE,
+    len = 1L
+  )
   assert_integer(min_events, lower = 1L, len = 1L)
 
   status_error(data, formula, censor_code)
@@ -464,18 +511,21 @@ as_ped_multistate <- function(
     formula <- add_to_rhs(formula, transition)
   }
 
-  dots            <- list(...)
-  dots$data       <- data
-  dots$formula    <- get_ped_form(formula, data = data, tdc_specials = tdc_specials)
-  dots$cut        <- sort(unique(cut))
-  dots$max_time   <- max_time
+  dots <- list(...)
+  dots$data <- data
+  dots$formula <- get_ped_form(
+    formula,
+    data = data,
+    tdc_specials = tdc_specials
+  )
+  dots$cut <- sort(unique(cut))
+  dots$max_time <- max_time
   dots$transition <- transition
   dots$min_events <- min_events
-  dots$timescale  <- timescale
-  
+  dots$timescale <- timescale
+
   ped <- do.call(split_data_multistate, dots)
-  attr(ped, "time_var")   <- get_lhs_vars(dots$formula)[1]
+  attr(ped, "time_var") <- get_lhs_vars(dots$formula)[1]
 
   return(ped)
-
 }

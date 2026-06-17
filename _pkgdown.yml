@@ -40,6 +40,13 @@ reference:
       - add_surv_prob
       - add_cif
       - add_trans_prob
+  - title: "Interval-censored data (multiple imputation)"
+    desc: "Fit PAMMs to interval-censored time-to-event data via multiple
+    imputation, and create interval-censored data for testing/simulation."
+    contents:
+      - pamm_ic
+      - pamm_ic_cr
+      - add_inspections
   - title: "Convenience functions for visualization of model outputs."
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
@@ -83,10 +90,12 @@ articles:
     - basics
     - strata
     - splines
+    - shape-constraints
     - tveffects
     - frailty
     - tdcovar
     - left-truncation
+    - interval-censored
     - model-evaluation
     - cumulative-effects
     - convenience
@@ -111,6 +120,8 @@ navbar:
       href: articles/basics.html
     - text: Non-linear effects (penalized splines)
       href: articles/splines.html
+    - text: Shape-constrained effects (scam)
+      href: articles/shape-constraints.html
     - text: Workflow and convenience functions
       href: articles/convenience.html
     - text: Stratified models
@@ -123,6 +134,8 @@ navbar:
       href: articles/tdcovar.html
     - text: Left-truncated data
       href: articles/left-truncation.html
+    - text: Interval-censored data
+      href: articles/interval-censored.html
     - text: Model evaluation
       href: articles/model-evaluation.html
     - text: Cumulative effects/Exposure-Lag-Response Associations
