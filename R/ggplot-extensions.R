@@ -166,7 +166,7 @@ gg_state_occupation <- function(
     # Iterate over groups
     df_all <- mat_df %>%
       mutate(
-        df_long = map(trans_prob_matrix, function(x) {
+        df_long = map(.data[["trans_prob_matrix"]], function(x) {
           # x is a 4 × 4 × T array for ONE group
           
           res <- apply(x, 3, function(mat) init_state %*% mat)
@@ -183,11 +183,11 @@ gg_state_occupation <- function(
             )
         })
       ) %>%
-      select(-trans_prob_matrix) %>%
-      unnest(df_long)
+      select(-dplyr::all_of("trans_prob_matrix")) %>%
+      unnest(cols = "df_long")
     
     # plot
-    p <- ggplot(df_all, aes(x = time, y = prob, fill = state)) +
+    p <- ggplot(df_all, aes(x = .data[["time"]], y = .data[["prob"]], fill = .data[["state"]])) +
       geom_area(color = "black", alpha = 0.8) +
       facet_wrap(vars(.data[[group_var]]), ncol = ncol) +
       labs(
@@ -210,7 +210,7 @@ gg_state_occupation <- function(
       values_to = "prob"
     )
     
-    p <- ggplot(df_all, aes(x = time, y = prob, fill = state)) +
+    p <- ggplot(df_all, aes(x = .data[["time"]], y = .data[["prob"]], fill = .data[["state"]])) +
       geom_area(color = "black", alpha = 0.8) +
       labs(
         x = "Time",
