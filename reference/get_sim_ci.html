@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -122,7 +128,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_sim_ci</span><span class="op">(</span><span class="va">newdata</span>, <span class="va">object</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, nsim <span class="op">=</span> <span class="fl">100L</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_sim_ci</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">100L</span>,</span>
+<span>  sim_coef_mat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
 

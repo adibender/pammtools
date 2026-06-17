@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -163,7 +169,16 @@ respective intervals. <code>"delta"</code> calculates CIs based on the standard
 error calculated by the Delta method. <code>"sim"</code> draws the
 property of interest from its posterior based on the normal distribution of
 the estimated coefficients. See <a href="https://adibender.github.io/simpamm/confidence-intervals.html" class="external-link">here</a>
-for details and empirical evaluation.</p></dd>
+for details and empirical evaluation. For <code>ci_type = "sim"</code>, interval
+bounds are empirical quantiles (type 6, see <code><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></code>)
+of <code>nsim</code> posterior draws (default <code>nsim = 100L</code>, passed via
+<code>...</code>). Type-6 quantiles avoid the systematic inward bias that the
+<code><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></code> default (type 7) exhibits for small
+<code>nsim</code>, but at the default <code>nsim = 100</code> the bounds are estimated
+from few tail draws and thus noisy; increase <code>nsim</code> (e.g., to 500 or
+more) for more stable interval bounds. Very small <code>nsim</code>
+(<code>nsim &lt; 2 / alpha - 1</code>, i.e., below 39 for <code>alpha = 0.05</code>)
+cannot achieve the nominal level at all.</p></dd>
 
 
 <dt id="arg-time-var">time_var<a class="anchor" aria-label="anchor" href="#arg-time-var"></a></dt>
@@ -179,6 +194,10 @@ the confidence intervals.</p></dd>
 <dt id="arg-interval-length">interval_length<a class="anchor" aria-label="anchor" href="#arg-interval-length"></a></dt>
 <dd><p>The variable in newdata containing the interval lengths.
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></dd>
+
+
+<dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
+<dd><p>Total number of pooled posterior draws used for the interval.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

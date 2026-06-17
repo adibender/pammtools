@@ -58,6 +58,9 @@ errors are calculated using the delta method."><meta property="og:image" content
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -74,6 +77,9 @@ errors are calculated using the delta method."><meta property="og:image" content
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -141,6 +147,16 @@ errors are calculated using the delta method.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_cumu_coef</span><span class="op">(</span><span class="va">model</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">terms</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'gam'</span></span>
+<span><span class="fu">get_cumu_coef</span><span class="op">(</span></span>
+<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">terms</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="st">"tend"</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'scam'</span></span>
 <span><span class="fu">get_cumu_coef</span><span class="op">(</span></span>
 <span>  <span class="va">model</span>,</span>
 <span>  <span class="va">data</span>,</span>

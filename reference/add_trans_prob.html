@@ -52,6 +52,9 @@ The function builds on cumulative hazards cumu_hazard and mgcv::gam models."><me
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -68,6 +71,9 @@ The function builds on cumulative hazards cumu_hazard and mgcv::gam models."><me
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -175,7 +181,9 @@ intervals for transition probabilities are calculated.</p></dd>
 
 <dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
 <dd><p>Sets the number of iterations for simulated confidence intervals.
-Defaults to <code>100L</code></p></dd>
+Defaults to <code>100L</code>. Interval bounds are empirical type-6 quantiles of
+the <code>nsim</code> draws; larger values of <code>nsim</code> yield more stable
+interval bounds.</p></dd>
 
 
 <dt id="arg-time-var">time_var<a class="anchor" aria-label="anchor" href="#arg-time-var"></a></dt>
@@ -204,6 +212,11 @@ be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> before cal
 <code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
 silently incorrect results, as the transition probability will be accumulated
 over the entire dataset rather than within each group.</p>
+<p>The returned data contains one boundary row per group and transition at
+<code>time_var = 0</code> for plotting transition probabilities from the time
+origin. On this row, <code>trans_prob = 0</code>; if confidence intervals are
+requested, <code>trans_lower = trans_upper = 0</code>. If an interval-length
+column is present, it is set to <code>0</code> on the boundary row.</p>
     </div>
 
     <div id="ref-examples">

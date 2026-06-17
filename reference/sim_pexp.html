@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -135,7 +141,10 @@ If you want to include a smooth baseline
 or time-varying effects, use <code>t</code> within your formula as
 if it was a covariate in the data, although it is not and should not
 be included in the <code>data</code> provided to <code>sim_pexp</code>. See examples
-below.</p></dd>
+below. Covariates enter the (numeric) linear predictor directly, so
+<code>factor</code>/<code>character</code> covariates must be encoded explicitly, e.g.\
+as an indicator <code>(trt == "1")</code>; using a factor in arithmetic (<code>b *
+trt</code>) is an error rather than a silent coercion.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>

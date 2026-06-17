@@ -69,6 +69,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -85,6 +88,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -143,7 +149,7 @@
                         <h4 data-toc-skip class="author">Andreas
 Bender</h4>
             
-            <h4 data-toc-skip class="date">2026-06-02</h4>
+            <h4 data-toc-skip class="date">2026-06-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/competing-risks.Rmd" class="external-link"><code>vignettes/competing-risks.Rmd</code></a></small>
       <div class="hidden name"><code>competing-risks.Rmd</code></div>
@@ -468,12 +474,12 @@ F_q(t) \;=\; \sum_{j=1}^{j(t)} \frac{h_{q,j}}{h_{\cdot,j}}\; S_{j-1}\; \bigl(1 -
 <span><span class="co">## <span style="color: #949494;"># Groups:   cause [2]</span></span></span>
 <span><span class="co">##      tend cause      cif cif_lower cif_upper</span></span>
 <span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0.008<span style="text-decoration: underline;">21</span> 1     0.000<span style="text-decoration: underline;">882</span>  0.000<span style="text-decoration: underline;">688</span>  0.001<span style="text-decoration: underline;">11</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.030<span style="text-decoration: underline;">1</span>  1     0.003<span style="text-decoration: underline;">24</span>   0.002<span style="text-decoration: underline;">53</span>   0.004<span style="text-decoration: underline;">07</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.060<span style="text-decoration: underline;">2</span>  1     0.006<span style="text-decoration: underline;">47</span>   0.005<span style="text-decoration: underline;">06</span>   0.008<span style="text-decoration: underline;">13</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0.008<span style="text-decoration: underline;">21</span> 2     0.000<span style="text-decoration: underline;">428</span>  0.000<span style="text-decoration: underline;">294</span>  0.000<span style="text-decoration: underline;">602</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.030<span style="text-decoration: underline;">1</span>  2     0.001<span style="text-decoration: underline;">57</span>   0.001<span style="text-decoration: underline;">08</span>   0.002<span style="text-decoration: underline;">21</span> </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.060<span style="text-decoration: underline;">2</span>  2     0.003<span style="text-decoration: underline;">15</span>   0.002<span style="text-decoration: underline;">18</span>   0.004<span style="text-decoration: underline;">42</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 0       1     0         0         0       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 0.008<span style="text-decoration: underline;">21</span> 1     0.000<span style="text-decoration: underline;">882</span>  0.000<span style="text-decoration: underline;">687</span>  0.001<span style="text-decoration: underline;">11</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 0.030<span style="text-decoration: underline;">1</span>  1     0.003<span style="text-decoration: underline;">24</span>   0.002<span style="text-decoration: underline;">52</span>   0.004<span style="text-decoration: underline;">08</span> </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 0       2     0         0         0       </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 0.008<span style="text-decoration: underline;">21</span> 2     0.000<span style="text-decoration: underline;">428</span>  0.000<span style="text-decoration: underline;">294</span>  0.000<span style="text-decoration: underline;">604</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 0.030<span style="text-decoration: underline;">1</span>  2     0.001<span style="text-decoration: underline;">57</span>   0.001<span style="text-decoration: underline;">08</span>   0.002<span style="text-decoration: underline;">22</span></span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ndf</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tend</span>, y <span class="op">=</span> <span class="va">cif</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">cause</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -531,16 +537,18 @@ internally if necessary).</p>
 <span><span class="va">ndf_custom</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">select</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span>, <span class="va">cif</span>, <span class="va">cif_lower</span>, <span class="va">cif_upper</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/dplyr_verbs.html">arrange</a></span><span class="op">(</span><span class="va">tend</span>, <span class="va">cause</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 5</span></span></span>
 <span><span class="co">## <span style="color: #949494;"># Groups:   cause [2]</span></span></span>
 <span><span class="co">##    tend cause    cif cif_lower cif_upper</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>   1   1     0.106     0.085<span style="text-decoration: underline;">2</span>    0.129 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>   1   2     0.052<span style="text-decoration: underline;">8</span>    0.038<span style="text-decoration: underline;">8</span>    0.070<span style="text-decoration: underline;">2</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>   2.5 1     0.253     0.215     0.295 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>   2.5 2     0.133     0.105     0.171 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>   4   1     0.380     0.327     0.434 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span>   4   2     0.209     0.170     0.259</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>   0   1     0         0         0     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>   0   2     0         0         0     </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>   1   1     0.106     0.085<span style="text-decoration: underline;">0</span>    0.129 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>   1   2     0.052<span style="text-decoration: underline;">8</span>    0.038<span style="text-decoration: underline;">5</span>    0.070<span style="text-decoration: underline;">6</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>   2.5 1     0.253     0.214     0.295 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>   2.5 2     0.133     0.104     0.171 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span>   4   1     0.380     0.326     0.434 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">8</span>   4   2     0.209     0.170     0.260</span></span></code></pre>
 <p>Note that the confidence intervals are stochastic, as they are
 obtained from a Monte Carlo simulation of the model coefficients.</p>
 <!-- Zaehlmarke VGWort -->

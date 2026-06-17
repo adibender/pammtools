@@ -52,6 +52,9 @@ are obtained by the 2.5\"><meta property="og:image" content="https://adibender.g
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -68,6 +71,9 @@ are obtained by the 2.5\"><meta property="og:image" content="https://adibender.g
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -122,7 +128,7 @@ are obtained by the 2.5\"><meta property="og:image" content="https://adibender.g
     <div class="ref-description">
     <p>CIs are calculated by sampling coefficients from their posterior and
 calculating the cumulative hazard difference <code>nsim</code> times. The CI
-are obtained by the 2.5\<!-- % and 97.5\\% quantiles. --></p>
+are obtained by the 2.5\<!-- % and 97.5\\% empirical (type-6) quantiles. --></p>
     </div>
 
     <div id="ref-usage">
@@ -142,7 +148,7 @@ are obtained by the 2.5\<!-- % and 97.5\\% quantiles. --></p>
 
 
 <dl><dt id="arg-d-">d1<a class="anchor" aria-label="anchor" href="#arg-d-"></a></dt>
-<dd><p>A data set used as <code>newdata</code> in <code>predict.gam</code></p></dd>
+<dd><p>A data set used as <code>newdata</code> in <code><a href="make_X.html">make_X</a></code></p></dd>
 
 
 <dt id="arg-d-">d2<a class="anchor" aria-label="anchor" href="#arg-d-"></a></dt>

@@ -53,6 +53,9 @@ surv_lower, surv_upper if ci=TRUE)."><meta property="og:image" content="https://
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -69,6 +72,9 @@ surv_lower, surv_upper if ci=TRUE)."><meta property="og:image" content="https://
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -116,7 +122,7 @@ surv_lower, surv_upper if ci=TRUE)."><meta property="og:image" content="https://
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add survival probability estimates</h1>
-    <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/R/add-functions.R" class="external-link"><code>R/add-functions.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/R/add-functions.R" class="external-link"><code>R/add-functions.R</code></a>, <a href="https://github.com/adibender/pammtools/blob/master/R/pool-ic.R" class="external-link"><code>R/pool-ic.R</code></a></small>
     <div class="hidden name"><code>add_surv_prob.Rd</code></div>
     </div>
 
@@ -128,12 +134,28 @@ for the specified covariate and follow-up information (and CIs
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_surv_prob</span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_surv_prob</span><span class="op">(</span><span class="va">newdata</span>, <span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Default S3 method</span></span>
+<span><span class="fu">add_surv_prob</span><span class="op">(</span></span>
 <span>  <span class="va">newdata</span>,</span>
 <span>  <span class="va">object</span>,</span>
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  se_mult <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  boundary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'pamm_ic'</span></span>
+<span><span class="fu">add_surv_prob</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -154,6 +176,11 @@ for the specified covariate and follow-up information (and CIs
 
 <dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>a fitted <code>gam</code> object as produced by <code>gam()</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code> and
+<code><a href="get_hazard.html">get_hazard</a></code></p></dd>
 
 
 <dt id="arg-ci">ci<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
@@ -182,9 +209,20 @@ to <code>"tend"</code>.</p></dd>
 Can be either bare unquoted variable name or character. Defaults to <code>"intlen"</code>.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further arguments passed to <code><a href="https://rdrr.io/pkg/mgcv/man/predict.gam.html" class="external-link">predict.gam</a></code> and
-<code><a href="get_hazard.html">get_hazard</a></code></p></dd>
+<dt id="arg-boundary">boundary<a class="anchor" aria-label="anchor" href="#arg-boundary"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), a boundary row at
+<code>time = 0</code> with cumulative hazard <code>0</code> is prepended (per group),
+so that cumulative hazards start at the natural origin (consistent with
+<code>add_surv_prob</code>, <code><a href="add_cif.html">add_cif</a></code> and
+<code><a href="add_trans_prob.html">add_trans_prob</a></code>).</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>Significance level for pooled confidence intervals.</p></dd>
+
+
+<dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
+<dd><p>Total number of pooled posterior draws used for the interval.</p></dd>
 
 </dl></div>
     <div id="details">
@@ -197,6 +235,11 @@ silently incorrect results, as the cumulative hazard will be accumulated
 over the entire dataset rather than within each group.
 See the <a href="https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard">workflow vignette</a>
 for a worked example.</p>
+<p>The returned data contains one boundary row per group at <code>time_var = 0</code>
+for plotting cumulative quantities from the time origin. On this row,
+<code>surv_prob = 1</code>; if confidence intervals are requested,
+<code>surv_lower = surv_upper = 1</code>. If an interval-length column is present,
+it is set to <code>0</code> on the boundary row.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -209,20 +252,20 @@ for a worked example.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ped</span> <span class="op">&lt;-</span> <span class="va">tumor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,<span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="as_ped.html">as_ped</a></span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">days</span>, <span class="va">status</span><span class="op">)</span><span class="op">~</span> <span class="va">age</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pam</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">ped_status</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tend</span><span class="op">)</span><span class="op">+</span><span class="va">age</span>, data<span class="op">=</span><span class="va">ped</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>, offset<span class="op">=</span><span class="va">offset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ped_info.html">ped_info</a></span><span class="op">(</span><span class="va">ped</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">add_surv_prob</span><span class="op">(</span><span class="va">pam</span>, ci<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 23 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    tstart  tend intlen intmid interval    age surv_prob surv_upper surv_lower</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    304   308      4  306   (304,308]  59.7     0.803      0.888      0.665</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 12 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>      0     0      0    0   <span style="color: #BB0000;">NA</span>         59.7     1          1          1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>      0    27     27   13.5 (0,27]     59.7     0.977      0.989      0.950</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     27    33      6   30   (27,33]    59.7     0.972      0.987      0.939</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     33    55     22   44   (33,55]    59.7     0.954      0.978      0.904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     55    62      7   58.5 (55,62]    59.7     0.949      0.976      0.893</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     62   139     77  100.  (62,139]   59.7     0.896      0.946      0.803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>    139   209     70  174   (139,209]  59.7     0.854      0.920      0.739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>    209   214      5  212.  (209,214]  59.7     0.851      0.919      0.734</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>    214   257     43  236.  (214,257]  59.7     0.828      0.904      0.700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    257   304     47  280.  (257,304]  59.7     0.805      0.889      0.667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 13 more rows</span></span>
 </code></pre></div>
     </div>
   </div>

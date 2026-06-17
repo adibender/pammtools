@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -119,8 +125,17 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.7.6" id="pammtools-076">pammtools 0.7.6<a class="anchor" aria-label="anchor" href="#pammtools-076"></a></h2>
 <div class="section level3">
+<h3 id="enhancements-0-7-6">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-6"></a></h3>
+<ul><li>Full support for shape-constrained additive models fit with <code><a href="https://rdrr.io/pkg/scam/man/scam.html" class="external-link">scam::scam()</a></code> (<a href="https://github.com/adibender/pammtools/issues/286" class="external-link">#286</a>): the post-processing workflow (<code><a href="../reference/add_hazard.html">add_hazard()</a></code>, <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>, <code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code>, <code><a href="../reference/add_term.html">add_term()</a></code>, <code><a href="../reference/add_cif.html">add_cif()</a></code>, <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code>, <code><a href="../reference/cumulative_coefficient.html">get_cumu_coef()</a></code>, <code><a href="../reference/get_cumu_eff.html">get_cumu_eff()</a></code>, <code><a href="../reference/tidy_fixed.html">tidy_fixed()</a></code>, <code><a href="../reference/tidiers.html">tidy_smooth()</a></code>, <code><a href="../reference/gg_smooth.html">gg_smooth()</a></code>, …) now works for <code>scam</code> fits exactly as for <code>gam</code> fits, including delta-method and simulation-based confidence intervals. All calculations correctly use the re-parametrized coefficients (<code>$coefficients.t</code>) and their covariance (<code>$Vp.t</code>); previously, some functions silently used the unconstrained-scale coefficients/covariance (<code><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef()</a></code>/<code>$Vp</code>), which yields incorrect results for <code>scam</code> objects. <code><a href="../reference/pamm.html">pamm()</a></code> gained <code>engine = "scam"</code>. See the new article <a href="https://adibender.github.io/pammtools/articles/shape-constraints.html">“Shape-constrained effects (scam)”</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-7-6">New features<a class="anchor" aria-label="anchor" href="#new-features-0-7-6"></a></h3>
+<ul><li>Interval-censored time-to-event data are now supported via a multiple- imputation (MI) workflow. Data specified with <code>Surv(L, R, type = "interval2")</code> are detected automatically by <code><a href="../reference/as_ped.html">as_ped()</a></code>. The new <code><a href="../reference/pamm_ic.html">pamm_ic()</a></code> (single event) and <code><a href="../reference/pamm_ic_cr.html">pamm_ic_cr()</a></code> (competing risks) fit a PAMM by repeatedly drawing exact event times from the model-based conditional hazard distribution on <code>(L, R]</code> and re-fitting the standard right-censored pipeline. Inference pools the imputations: <code><a href="../reference/add_hazard.html">add_hazard()</a></code>, <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>, <code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code> and <code><a href="../reference/add_cif.html">add_cif()</a></code> gain <code>pamm_ic</code> methods that combine per-imputation posterior draws (within- plus between-imputation variance). The <code>iter</code> argument enables chained (refit-and-reimpute) imputation, recommended for sparsely inspected data; numerically degenerate imputation chains are flagged with a warning. <code><a href="../reference/add_inspections.html">add_inspections()</a></code> turns exact simulated times (e.g. from <code><a href="../reference/sim_pexp.html">sim_pexp()</a></code>) into interval-censored panel data for testing and coverage studies. <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>/<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> of a <code>pamm_ic</code> report the <em>pooled</em> fit (Rubin-combined coefficients and covariances, median-p term tests, fraction-of-missing- information diagnostic); the object exposes a <code>pooled</code> entry and stores the per-imputation fits in slimmed form so memory does not scale with the number of imputations. See the new “Interval-Censored Data” vignette.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="bug-fixes-0-7-6">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-7-6"></a></h3>
-<ul><li>
+<ul><li>Simulation-based confidence intervals (<code>ci_type = "sim"</code> in <code><a href="../reference/add_hazard.html">add_hazard()</a></code>, <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>, <code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code>, as well as <code><a href="../reference/add_cif.html">add_cif()</a></code>, <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code>/<code><a href="../reference/add_trans_ci.html">add_trans_ci()</a></code> and the cumulative hazard differences in <code><a href="../reference/cumulative_coefficient.html">get_cumu_coef()</a></code>) now use type-6 empirical quantiles instead of the <code><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">stats::quantile()</a></code> default (type 7). Type-7 quantiles made these intervals systematically too narrow for small <code>nsim</code>: at the default <code>nsim = 100</code>, the expected central mass of the draws enclosed by the bounds is ~93% instead of the nominal 95%. Type-6 quantiles remove this systematic inward bias (<a href="https://github.com/adibender/pammtools/issues/288" class="external-link">#288</a>). As a consequence, all simulation-based CI bounds change slightly (intervals widen at both ends) relative to versions &lt;= 0.7.5.</li>
+<li>
 <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code> and <code><a href="../reference/add_trans_ci.html">add_trans_ci()</a></code> no longer require the input data to be pre-sorted; the internal <code>arrange</code> call is now handled automatically, fixing the user-facing sorting dependency reported in <a href="https://github.com/adibender/pammtools/issues/255" class="external-link">#255</a> and related to <a href="https://github.com/adibender/pammtools/issues/227" class="external-link">#227</a>.</li>
 <li>Fixed transition probability matrix dimensions when transitions start from state 0 (off-by-one in state indexing).</li>
 <li>
@@ -129,12 +144,18 @@
 <code><a href="../reference/add_counterfactual_transitions.html">add_counterfactual_transitions()</a></code> now fully honors <code>from_col</code>, <code>to_col</code>, and <code>transition_col</code>.</li>
 <li>
 <code>get_trans_prob()</code> now supports non-integer (categorical) state labels (e.g. <code>"healthy-&gt;ill"</code>) in addition to integer-coded transitions.</li>
+<li>
+<code><a href="../reference/gg_smooth.html">gg_smooth()</a></code> / <code><a href="../reference/get_terms.html">get_terms()</a></code> now select smooth terms via the model’s <code>mgcv</code> smooth metadata instead of unanchored <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>, fixing two errors reported in <a href="https://github.com/adibender/pammtools/issues/283" class="external-link">#283</a>: passing a variable name matched by several smooths (e.g. <code>terms = "tend"</code> in a time-varying-effects model) no longer fails with <code>`eff` must be size 100 or 1</code>, and factor terms no longer trigger <code>'range' not meaningful for factors</code>. Names that match no smooth (e.g. parametric factor effects) are now skipped with a warning rather than erroring.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="enhancements-0-7-6">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-6"></a></h3>
-<ul><li>Transition probability calculation is faster due to a base R refactor (previously used dplyr internally).</li>
+<h3 id="enhancements-0-7-6-1">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-7-6-1"></a></h3>
+<ul><li>
+<code><a href="../reference/gg_smooth.html">gg_smooth()</a></code> is now fully general across univariate smooth terms: a bare variable name selects every 1d smooth over that variable (main effect plus any <code>by</code>-variable or factor-smooth interaction term), <code>terms</code> is optional (defaulting to all univariate smooths), and 1d <code><a href="https://rdrr.io/pkg/mgcv/man/te.html" class="external-link">ti()</a></code> as well as factor-smooth interactions (<code>bs = "fs"</code>, <code>bs = "sz"</code>) are supported. Factor-indexed smooths are drawn in a single facet with one coloured/filled curve per factor level, identified by a new <code>level</code> column in the <code><a href="../reference/get_terms.html">get_terms()</a></code> output. Random-effect smooths (<code>bs = "re"</code>, <code>bs = "mrf"</code>) and multivariate/tensor smooths are excluded (use <code><a href="../reference/gg_re.html">gg_re()</a></code> / <code><a href="../reference/gg_tensor.html">gg_tensor()</a></code>).</li>
+<li>Transition probability calculation is faster due to a base R refactor (previously used dplyr internally).</li>
 <li>
 <code><a href="../reference/gg_state_occupation.html">gg_state_occupation()</a></code> is now exported. Dead parameters <code>group_labels</code> and <code>nrow</code> have been removed; user-supplied <code>ncol</code> is now respected.</li>
+<li>
+<code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code>, <code><a href="../reference/add_cif.html">add_cif()</a></code>, and <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code> now include plotting boundary rows at <code>tend = 0</code> (or the selected <code>time_var</code>). Boundary values are set to their known limits, <code>S(0) = 1</code>, <code>CIF(0) = 0</code>, and off-diagonal transition probabilities <code>P_rs(0) = 0</code>, with collapsed confidence interval bounds when requested. <code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code> keeps the original prediction grid.</li>
 </ul></div>
 </div>
     <div class="section level2">

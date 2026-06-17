@@ -69,6 +69,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -85,6 +88,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -143,7 +149,7 @@
 <code>jagam</code>, and <code>brms</code>
 </h1>
             
-            <h4 data-toc-skip class="date">2026-06-02</h4>
+            <h4 data-toc-skip class="date">2026-06-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/bayesian.Rmd" class="external-link"><code>vignettes/bayesian.Rmd</code></a></small>
       <div class="hidden name"><code>bayesian.Rmd</code></div>
@@ -323,7 +329,10 @@ a common time grid.</p>
 <span>    newdata <span class="op">=</span> <span class="va">newdata</span>,</span>
 <span>    object <span class="op">=</span> <span class="va">add_model</span>,</span>
 <span>    ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    se_mult <span class="op">=</span> <span class="va">se_mult</span></span>
+<span>    se_mult <span class="op">=</span> <span class="va">se_mult</span>,</span>
+<span>    <span class="co"># keep the original prediction grid (no tend == 0 boundary row) so the</span></span>
+<span>    <span class="co"># curves align with the brms predictions and the Nelson-Aalen reference</span></span>
+<span>    boundary <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -445,8 +454,8 @@ a common time grid.</p>
 </tr>
 <tr class="even">
 <td align="left">Bayesian PAMM (jagam)</td>
-<td align="right">0.0361</td>
-<td align="right">0.0965</td>
+<td align="right">0.0635</td>
+<td align="right">0.1263</td>
 </tr>
 <tr class="odd">
 <td align="left">Bayesian PAMM (brms)</td>
@@ -476,8 +485,8 @@ a common time grid.</p>
 <tbody>
 <tr class="odd">
 <td align="left">PAMM (mgcv) - Bayesian PAMM (jagam)</td>
-<td align="right">0.0275</td>
-<td align="right">0.0458</td>
+<td align="right">0.0614</td>
+<td align="right">0.0925</td>
 </tr>
 <tr class="even">
 <td align="left">PAMM (mgcv) - Bayesian PAMM (brms)</td>
@@ -486,8 +495,8 @@ a common time grid.</p>
 </tr>
 <tr class="odd">
 <td align="left">Bayesian PAMM (jagam) - Bayesian PAMM (brms)</td>
-<td align="right">0.0254</td>
-<td align="right">0.0482</td>
+<td align="right">0.0580</td>
+<td align="right">0.0837</td>
 </tr>
 </tbody>
 </table>

@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -204,6 +210,22 @@
         </td>
         <td><p>Add transition probabilities</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="interval-censored-data-multiple-imputation-">Interval-censored data (multiple imputation) <a href="#interval-censored-data-multiple-imputation-" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Fit PAMMs to interval-censored time-to-event data via multiple imputation, and create interval-censored data for testing/simulation.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="pamm_ic.html">print(<i>&lt;pamm_ic&gt;</i>)</a></code> <code><a href="pamm_ic.html">summary(<i>&lt;pamm_ic&gt;</i>)</a></code> <code><a href="pamm_ic.html">print(<i>&lt;summary.pamm_ic&gt;</i>)</a></code> <code><a href="pamm_ic.html">pamm_ic()</a></code> </p>
+        </td>
+        <td><p>Fit a PAMM to interval-censored data via multiple imputation</p></td>
+      </tr><tr><td>
+          <p><code><a href="pamm_ic_cr.html">pamm_ic_cr()</a></code> </p>
+        </td>
+        <td><p>Fit a competing-risks PAMM to interval-censored data via multiple imputation</p></td>
+      </tr><tr><td>
+          <p><code><a href="add_inspections.html">add_inspections()</a></code> </p>
+        </td>
+        <td><p>Turn exact event times into interval-censored observations</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="convenience-functions-for-visualization-of-model-outputs-">Convenience functions for visualization of model outputs. <a href="#convenience-functions-for-visualization-of-model-outputs-" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions that facilitate effect plots (smooth effects, etc.)</p>
         </th>
@@ -310,7 +332,7 @@
       </tr><tr><td>
           <p><code><a href="get_terms.html">get_terms()</a></code> </p>
         </td>
-        <td><p>Extract the partial effects of non-linear model terms</p></td>
+        <td><p>Extract the partial effects of univariate smooth model terms</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

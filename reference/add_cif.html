@@ -50,6 +50,9 @@
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -66,6 +69,9 @@
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -113,7 +119,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add cumulative incidence function to data</h1>
-    <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/R/add-functions.R" class="external-link"><code>R/add-functions.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/R/add-functions.R" class="external-link"><code>R/add-functions.R</code></a>, <a href="https://github.com/adibender/pammtools/blob/master/R/pool-ic.R" class="external-link"><code>R/pool-ic.R</code></a></small>
     <div class="hidden name"><code>add_cif.Rd</code></div>
     </div>
 
@@ -130,6 +136,19 @@
 <span>  <span class="va">object</span>,</span>
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>  cause_var <span class="op">=</span> <span class="st">"cause"</span>,</span>
+<span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'pamm_ic'</span></span>
+<span><span class="fu">add_cif</span><span class="op">(</span></span>
+<span>  <span class="va">newdata</span>,</span>
+<span>  <span class="va">object</span>,</span>
+<span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  nsim <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  cause_var <span class="op">=</span> <span class="st">"cause"</span>,</span>
@@ -172,13 +191,14 @@ the data set? Defaults to <code>FALSE</code>. If <code>TRUE</code>, columns with
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha level for confidence/credible intervals.</p></dd>
+<dd><p>Significance level for pooled confidence intervals.</p></dd>
 
 
 <dt id="arg-nsim">nsim<a class="anchor" aria-label="anchor" href="#arg-nsim"></a></dt>
-<dd><p>Number of simulations (draws from posterior of estimated coefficients)
-on which estimation of CIFs and their confidence/credible intervals will be
-based on.</p></dd>
+<dd><p>Total number of pooled posterior draws used for the interval.
+For simulation-based intervals, the bounds are empirical type-6 quantiles of
+the <code>nsim</code> draws; larger values of <code>nsim</code> yield more stable interval
+bounds.</p></dd>
 
 
 <dt id="arg-cause-var">cause_var<a class="anchor" aria-label="anchor" href="#arg-cause-var"></a></dt>
@@ -202,6 +222,15 @@ be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> before cal
 <code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
 silently incorrect results, as the cumulative incidence will be accumulated
 over the entire dataset rather than within each group.</p>
+<p>The returned data contains one boundary row per group at <code>time_var = 0</code>
+for plotting cumulative incidence from the time origin. On this row,
+<code>cif = 0</code>; if confidence intervals are requested,
+<code>cif_lower = cif_upper = 0</code>. If an interval-length column is present,
+it is set to <code>0</code> on the boundary row. <code><a href="add_hazard.html">add_cumu_hazard()</a></code> adds an
+analogous boundary row (with <code>cumu_hazard = 0</code>) for continuous-time
+models (GAM/SCAM/PAMM), controllable via its <code>boundary</code> argument;
+interval-factor models (e.g. PEM via <code>glm</code>) keep the original prediction
+grid without a boundary row.</p>
     </div>
 
     <div id="ref-examples">
@@ -222,23 +251,23 @@ over the entire dataset rather than within each group.</p>
 <span class="r-in"><span>    <span class="fu">add_cif</span><span class="op">(</span><span class="va">pam</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: etm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 656 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 658 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Groups:   cause [2]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       tend    id sex     age cause  intlen      cif cif_lower cif_upper</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 0.008<span style="text-decoration: underline;">21</span> <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.000<span style="text-decoration: underline;">884</span>  0.000<span style="text-decoration: underline;">662</span>   0.001<span style="text-decoration: underline;">16</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 0.030<span style="text-decoration: underline;">1</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.021<span style="text-decoration: underline;">9</span>  0.003<span style="text-decoration: underline;">24</span>   0.002<span style="text-decoration: underline;">43</span>    0.004<span style="text-decoration: underline;">26</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 0.052<span style="text-decoration: underline;">0</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.021<span style="text-decoration: underline;">9</span>  0.005<span style="text-decoration: underline;">60</span>   0.004<span style="text-decoration: underline;">21</span>    0.007<span style="text-decoration: underline;">34</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 0.060<span style="text-decoration: underline;">2</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.006<span style="text-decoration: underline;">48</span>   0.004<span style="text-decoration: underline;">88</span>    0.008<span style="text-decoration: underline;">49</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 0.068<span style="text-decoration: underline;">4</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.007<span style="text-decoration: underline;">36</span>   0.005<span style="text-decoration: underline;">54</span>    0.009<span style="text-decoration: underline;">65</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 0.076<span style="text-decoration: underline;">7</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.008<span style="text-decoration: underline;">24</span>   0.006<span style="text-decoration: underline;">21</span>    0.010<span style="text-decoration: underline;">8</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 0.110   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.032<span style="text-decoration: underline;">9</span>  0.011<span style="text-decoration: underline;">8</span>    0.008<span style="text-decoration: underline;">89</span>    0.015<span style="text-decoration: underline;">4</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 0.156   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.046<span style="text-decoration: underline;">5</span>  0.016<span style="text-decoration: underline;">8</span>    0.012<span style="text-decoration: underline;">7</span>     0.021<span style="text-decoration: underline;">9</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 0.164   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.017<span style="text-decoration: underline;">6</span>    0.013<span style="text-decoration: underline;">4</span>     0.023<span style="text-decoration: underline;">0</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 0.175   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.011<span style="text-decoration: underline;">0</span>  0.018<span style="text-decoration: underline;">8</span>    0.014<span style="text-decoration: underline;">3</span>     0.024<span style="text-decoration: underline;">5</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 646 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 0       <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0       0         0          0      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 0.008<span style="text-decoration: underline;">21</span> <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.000<span style="text-decoration: underline;">884</span>  0.000<span style="text-decoration: underline;">660</span>   0.001<span style="text-decoration: underline;">17</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 0.030<span style="text-decoration: underline;">1</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.021<span style="text-decoration: underline;">9</span>  0.003<span style="text-decoration: underline;">24</span>   0.002<span style="text-decoration: underline;">43</span>    0.004<span style="text-decoration: underline;">29</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 0.052<span style="text-decoration: underline;">0</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.021<span style="text-decoration: underline;">9</span>  0.005<span style="text-decoration: underline;">60</span>   0.004<span style="text-decoration: underline;">20</span>    0.007<span style="text-decoration: underline;">40</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 0.060<span style="text-decoration: underline;">2</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.006<span style="text-decoration: underline;">48</span>   0.004<span style="text-decoration: underline;">86</span>    0.008<span style="text-decoration: underline;">56</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 0.068<span style="text-decoration: underline;">4</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.007<span style="text-decoration: underline;">36</span>   0.005<span style="text-decoration: underline;">52</span>    0.009<span style="text-decoration: underline;">72</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 0.076<span style="text-decoration: underline;">7</span>  <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.008<span style="text-decoration: underline;">24</span>   0.006<span style="text-decoration: underline;">19</span>    0.010<span style="text-decoration: underline;">9</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 0.110   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.032<span style="text-decoration: underline;">9</span>  0.011<span style="text-decoration: underline;">8</span>    0.008<span style="text-decoration: underline;">86</span>    0.015<span style="text-decoration: underline;">5</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 0.156   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.046<span style="text-decoration: underline;">5</span>  0.016<span style="text-decoration: underline;">8</span>    0.012<span style="text-decoration: underline;">7</span>     0.022<span style="text-decoration: underline;">0</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 0.164   <span style="text-decoration: underline;">5</span>889. Male   65.2 1     0.008<span style="text-decoration: underline;">21</span> 0.017<span style="text-decoration: underline;">6</span>    0.013<span style="text-decoration: underline;">3</span>     0.023<span style="text-decoration: underline;">2</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 648 more rows</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span>   </span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

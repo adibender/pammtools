@@ -54,6 +54,9 @@ set method="REML".'><meta property="og:image" content="https://adibender.github.
       <a href="../articles/splines.html">Non-linear effects (penalized splines)</a>
     </li>
     <li>
+      <a href="../articles/shape-constraints.html">Shape-constrained effects (scam)</a>
+    </li>
+    <li>
       <a href="../articles/convenience.html">Workflow and convenience functions</a>
     </li>
     <li>
@@ -70,6 +73,9 @@ set method="REML".'><meta property="og:image" content="https://adibender.github.
     </li>
     <li>
       <a href="../articles/left-truncation.html">Left-truncated data</a>
+    </li>
+    <li>
+      <a href="../articles/interval-censored.html">Interval-censored data</a>
     </li>
     <li>
       <a href="../articles/model-evaluation.html">Model evaluation</a>
@@ -173,8 +179,9 @@ calling <code>pamm()</code> instead.</p></dd>
 
 <dt id="arg-engine">engine<a class="anchor" aria-label="anchor" href="#arg-engine"></a></dt>
 <dd><p>Character name of the function that will be called to fit the
-model. The intended entries are either <code>"gam"</code> or <code>"bam"</code>
-(both from package <code>mgcv</code>).</p></dd>
+model. The intended entries are <code>"gam"</code> or <code>"bam"</code>
+(both from package <code>mgcv</code>) or <code>"scam"</code> (from package <code>scam</code>,
+for shape-constrained PAMMs, e.g. monotone baseline hazards).</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
