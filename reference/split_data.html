@@ -24,7 +24,7 @@ exponential data format"><meta property="og:image" content="https://adibender.gi
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
       </span>
     </div>
 
@@ -185,7 +185,14 @@ multi-state models with back transitions.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to the <code>data.frame</code> method and
-eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code>.</p></dd>
+eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code>. Notably, <code>id</code>
+(character string) sets the name of the subject identifier variable in
+<code>data</code>, and, for competing risks data, <code>combine</code> (logical, default
+<code>TRUE</code>) controls whether cause-specific data sets are stacked into a
+single data frame with an additional <code>cause</code> column (<code>TRUE</code>) or
+returned as a list of cause-specific data sets (<code>FALSE</code>); see the
+<a href="https://adibender.github.io/pammtools/articles/competing-risks.html">competing-risks</a>
+vignette for details.</p></dd>
 
 </dl></div>
     <div id="see-also">

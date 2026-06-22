@@ -33,7 +33,7 @@ concurrent and cumulative."><meta property="og:image" content="https://adibender
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
       </span>
     </div>
 
@@ -207,18 +207,22 @@ censoring. Often this will be <code>0</code>, which is the default.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Logical. Only relevant for competing risks data. If
-<code>TRUE</code> (the default), cause-specific data sets are stacked into a
-single data frame with an additional <code>cause</code> column, using split points
-common to all event types. If <code>FALSE</code>, a list of cause-specific data
-sets is returned. See the
-<a href="https://adibender.github.io/pammtools/articles/competing-risks.html">competing-risks</a>
-vignette for details.</p></dd>
+<dd><p>Logical. If <code>TRUE</code> (the default), cause-specific data
+sets are stacked into a single data frame with an additional <code>cause</code>
+column, using split points common to all event types. If <code>FALSE</code>, a
+list of cause-specific data sets is returned.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to the <code>data.frame</code> method and
-eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code>.</p></dd>
+eventually to <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit</a></code>. Notably, <code>id</code>
+(character string) sets the name of the subject identifier variable in
+<code>data</code>, and, for competing risks data, <code>combine</code> (logical, default
+<code>TRUE</code>) controls whether cause-specific data sets are stacked into a
+single data frame with an additional <code>cause</code> column (<code>TRUE</code>) or
+returned as a list of cause-specific data sets (<code>FALSE</code>); see the
+<a href="https://adibender.github.io/pammtools/articles/competing-risks.html">competing-risks</a>
+vignette for details.</p></dd>
 
 </dl></div>
     <div id="value">
