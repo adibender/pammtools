@@ -46,6 +46,7 @@ Suggests:
     etm,
     xgboost
 Config/Needs/website:
+  carData,
   coxme,
   eha,
   etm,

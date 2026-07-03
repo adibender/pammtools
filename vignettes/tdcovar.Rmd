@@ -39,16 +39,14 @@ The R-Code of the original analysis using the extended Cox model can be found
 the respective vignette [here](https://socserv.socsci.mcmaster.ca/jfox/Books/Companion-1E/appendix-cox-regression.pdf).
 
 ```{r}
-# raw data
+# raw data, as distributed with the carData package (Fox & Weisberg)
 # https://socserv.mcmaster.ca/jfox/Books/Companion/scripts/appendix-cox.R
-recidivism <- if (requireNamespace("carData", quietly = TRUE)) {
-  carData::Rossi
-} else {
-  read.table(
-    file   = "https://math.unm.edu/~james/Rossi.txt",
-    header = TRUE
-  )
-} %>%
+# carData stores the binary covariates and the weekly employment indicators
+# (emp1-emp52) as "no"/"yes" factors. Convert them back to the 0/1 coding used
+# in the original analysis so the downstream lag() and model code behave as
+# before (the data used to be read from a plain-text file with numeric columns).
+recidivism <- carData::Rossi %>%
+  mutate(across(where(is.factor), ~ as.integer(.x) - 1L)) %>%
   mutate(subject = row_number())
 ```
 
