@@ -1,3 +1,21 @@
+# pammtools 0.8.1
+
+## Enhancements
+* The cumulative post-processing functions (`add_cumu_hazard()`,
+  `add_surv_prob()`, `add_cif()` -- for both their default and `pamm_ic`
+  methods -- and `add_trans_prob()`) now **error** when `newdata` is not grouped
+  so that the time variable is unique within each group (typically a forgotten
+  `group_by()`), instead of silently accumulating cumulative quantities across
+  distinct covariate profiles / causes / transitions and returning wrong
+  curves. This generalises the guard already used for the interval-censoring
+  pooling path (and mirrors the `stopifnot()` guard in the RMST example). All
+  of these functions accept `check_grouping = FALSE` to opt out (e.g. for
+  advanced workflows that intentionally accumulate over rows with varying
+  covariates). The guard detects mis-grouping via repeated time values within
+  a group: grids built with `make_newdata()` are always caught, but hand-built
+  grids stacking profiles with *disjoint* time grids are indistinguishable
+  from a single profile with time-varying covariates and pass undetected.
+
 # pammtools 0.8.0
 
 This release collects all changes since the last CRAN version (0.7.4),

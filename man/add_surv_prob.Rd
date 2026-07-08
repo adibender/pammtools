@@ -17,6 +17,7 @@ add_surv_prob(newdata, object, ...)
   time_var = NULL,
   interval_length = "intlen",
   boundary = TRUE,
+  check_grouping = TRUE,
   ...
 )
 
@@ -28,6 +29,7 @@ add_surv_prob(newdata, object, ...)
   nsim = 500L,
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 )
 }
@@ -66,6 +68,13 @@ so that cumulative hazards start at the natural origin (consistent with
 \code{\link{add_surv_prob}}, \code{\link{add_cif}} and
 \code{\link{add_trans_prob}}).}
 
+\item{check_grouping}{Logical. If \code{TRUE} (default), the function checks
+that \code{newdata} is grouped so that the time variable is unique within
+each group and \code{\link[base]{stop}}s otherwise, guarding against
+silently accumulating cumulative quantities across distinct covariate
+profiles (a forgotten \code{group_by()}). Set to \code{FALSE} to skip the
+check (e.g.\ for internal calls on already-validated data).}
+
 \item{alpha}{Significance level for pooled confidence intervals.}
 
 \item{nsim}{Total number of pooled posterior draws used for the interval.}
@@ -79,10 +88,17 @@ for the specified covariate and follow-up information (and CIs
 \details{
 When computing cumulative hazards or survival probabilities across groups,
 the input data must be grouped via \code{group_by()} prior to calling
-\code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
-\code{group_by()} will not produce an error or warning but will return
-silently incorrect results, as the cumulative hazard will be accumulated
-over the entire dataset rather than within each group.
+\code{add_cumu_hazard()} or \code{add_surv_prob()}, so that the cumulative
+quantity is accumulated within each covariate profile rather than across the
+whole dataset. If \code{newdata} still contains several profiles per group
+(i.e.\ repeated \code{time_var} values within a group, typically a forgotten
+\code{group_by()}), the functions now \strong{stop with an error} rather than
+returning silently incorrect results. Set \code{check_grouping = FALSE} to
+skip this safeguard. Note the check detects the \emph{common} mis-grouping
+cases -- in particular any grid built with \code{\link{make_newdata}}, where
+profiles share time values -- but cannot catch hand-built grids that stack
+profiles with disjoint time grids, as these are indistinguishable from a
+single profile with time-varying covariates.
 See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 for a worked example.
 

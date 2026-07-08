@@ -244,7 +244,8 @@ get_cumu_coef_baseline <- function(
       model,
       time_var = time_var,
       interval_length = interval_length,
-      boundary = FALSE
+      boundary = FALSE,
+      check_grouping = FALSE
     ) %>%
     mutate(
       method = class(model)[1],

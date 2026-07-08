@@ -24,34 +24,14 @@ NULL
 
 # Average a per-fit point estimate (the value column produced by an `add_*`
 # default with ci = FALSE) across the imputation fits -> MI point estimate.
+# Cumulative adders pass check_grouping = FALSE through `...`: the grouping
+# guard already ran on the pooled method's input, so the per-fit calls skip
+# the (redundant) re-check.
 pooled_point <- function(object, newdata, adder, value_col, ...) {
   preds <- lapply(object[["fits"]], function(f) {
     adder(newdata, f, ci = FALSE, ...)[[value_col]]
   })
   rowMeans(do.call(cbind, preds))
-}
-
-# Pooled cumulative quantities (cumulative hazard, survival, CIF) are
-# accumulated *within* each group of `newdata`. If a group still contains
-# repeated time points, distinct covariate (or cause) combinations are being
-# pooled together -- almost always a forgotten group_by() -- which silently
-# produces wrong results. Warn so the problem is visible (the default add_*
-# methods share the same group_by() requirement).
-warn_if_pooled_undergrouped <- function(newdata, time_var) {
-  if (!time_var %in% names(newdata)) {
-    return(invisible(NULL))
-  }
-  by_group <- split(newdata[[time_var]], group_indices(newdata))
-  if (any(vapply(by_group, anyDuplicated, integer(1)) > 0L)) {
-    warning(
-      "`newdata` has repeated '", time_var, "' values within a group, so ",
-      "distinct covariate/cause combinations are pooled together when ",
-      "accumulating cumulative quantities. Separate them with group_by() to ",
-      "avoid incorrect results.",
-      call. = FALSE
-    )
-  }
-  invisible(NULL)
 }
 
 ic_prediction_grid <- function(object, newdata, time_var, interval_length) {
@@ -202,10 +182,13 @@ add_cumu_hazard.pamm_ic <- function(
   nsim = 500L,
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 ) {
   time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
-  warn_if_pooled_undergrouped(newdata, time_var)
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_cumu_hazard")
+  }
   newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
@@ -218,6 +201,7 @@ add_cumu_hazard.pamm_ic <- function(
     time_var = time_var,
     interval_length = interval_length,
     boundary = FALSE,
+    check_grouping = FALSE,
     ...
   )
   if (ci) {
@@ -256,10 +240,13 @@ add_surv_prob.pamm_ic <- function(
   nsim = 500L,
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 ) {
   time_var <- resolve_time_var(time_var, object[["fits"]][[1]], newdata)
-  warn_if_pooled_undergrouped(newdata, time_var)
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_surv_prob")
+  }
   newdata <- drop_cumulative_boundary(newdata, time_var)
   grid <- ic_prediction_grid(object, newdata, time_var, interval_length)
   joindata <- grid[["data"]]
@@ -272,6 +259,7 @@ add_surv_prob.pamm_ic <- function(
     time_var = time_var,
     interval_length = interval_length,
     boundary = FALSE,
+    check_grouping = FALSE,
     ...
   )
   if (ci) {
@@ -412,6 +400,7 @@ add_cif.pamm_ic <- function(
   cause_var = "cause",
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 ) {
   if (!identical(object[["type"]], "cr")) {
@@ -424,7 +413,9 @@ add_cif.pamm_ic <- function(
   m <- length(object[["fits"]])
   per <- ceiling(nsim / m)
   time_var <- resolve_time_var(time_var, fit1, newdata)
-  warn_if_pooled_undergrouped(newdata, time_var)
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_cif")
+  }
   newdata <- drop_cumulative_boundary(newdata, time_var)
   joindata <- reconstruct_cutpoints(newdata, fit1, time_var, interval_length)
 

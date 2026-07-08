@@ -14,6 +14,7 @@ add_trans_prob(
   time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
+  check_grouping = TRUE,
   ...
 )
 }
@@ -51,6 +52,16 @@ contains the interval length in \code{newdata}.}
 \item{transition}{\code{Character}, defaults to \code{"transition"}.
 contains the transition labels in \code{newdata}.}
 
+\item{check_grouping}{Logical. If \code{TRUE} (default), the function checks
+that \code{newdata} is grouped so that the time variable is unique within
+each group once \code{transition} is part of the grouping, and
+\code{\link[base]{stop}}s otherwise, guarding against silently accumulating
+transition probabilities across distinct covariate profiles (a forgotten
+\code{group_by()}). Set to \code{FALSE} to skip the check. As for the
+other cumulative \code{add_*} functions, hand-built grids stacking
+profiles with disjoint time grids cannot be detected (see
+\code{\link{add_cumu_hazard}}).}
+
 \item{...}{Further arguments passed to underlying methods.}
 }
 \description{
@@ -60,10 +71,13 @@ The function builds on cumulative hazards \code{cumu_hazard} and \code{mgcv::gam
 }
 \details{
 When computing transition probabilities for multiple groups, the input data must
-be grouped via \code{group_by()} before calling this function. Omitting
-\code{group_by()} will not produce an error or warning but will return
-silently incorrect results, as the transition probability will be accumulated
-over the entire dataset rather than within each group.
+be grouped via \code{group_by()} before calling this function. If \code{newdata}
+still contains several covariate profiles per (group, transition) -- i.e.\
+repeated \code{time_var} values within a group once \code{transition} is added
+to the grouping, typically a forgotten \code{group_by()} -- the function now
+\strong{stops with an error} rather than returning silently incorrect results,
+as the transition probability would otherwise be accumulated across profiles
+rather than within each group.
 
 The returned data contains one boundary row per group and transition at
 \code{time_var = 0} for plotting transition probabilities from the time

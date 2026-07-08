@@ -329,7 +329,7 @@ test_that("competing-risks IC pipeline yields valid pooled CIFs", {
   cif2 <- add_cif(nd, fcr, ci = FALSE, nsim = 120)
   expect_equal(cif1$cif, cif2$cif, tolerance = 1e-12)
   expect_false(any(c("cif_lower", "cif_upper") %in% names(cif1)))
-  expect_error(add_cif(dplyr::ungroup(nd), fcr, ci = FALSE), "group by cause")
+  expect_error(add_cif(dplyr::ungroup(nd), fcr, ci = FALSE), "group_by")
 })
 
 test_that("competing-risks imputation samples exact unknown causes", {
@@ -554,26 +554,47 @@ test_that("add_inspections right-censoring is non-informative", {
   expect_error(add_inspections(sdf_na, rate = 1), "missing")
 })
 
-test_that("pooled pamm_ic adders warn on undergrouped newdata", {
+test_that("pooled pamm_ic adders error on undergrouped newdata", {
   set.seed(11)
   df <- data.frame(z = c(rep(0, 200), rep(1, 200)))
   sdf <- sim_pexp(~ -2 + 1.0 * z, df, cut = seq(0, 8, by = 0.25))
   icd <- add_inspections(sdf, rate = 1, max_time = 8)
   cut <- seq(0, 8, by = 0.5)
-  fit <- pamm_ic(Surv(L, R, type = "interval2") ~ s(tend) + z, icd, cut = cut, m = 2)
+  fit <- pamm_ic(
+    Surv(L, R, type = "interval2") ~ s(tend) + z,
+    icd,
+    cut = cut,
+    m = 2
+  )
   ped <- as_ped(icd, Surv(L, R, type = "interval2") ~ z, cut = cut)
 
-  # multiple covariate groups but no group_by() -> distinct curves get pooled
+  # multiple covariate groups but no group_by() -> distinct curves would get
+  # pooled; the safeguard now errors instead of silently returning wrong curves
   nd_multi <- make_newdata(ped, tend = unique(tend), z = c(0, 1))
-  expect_warning(add_surv_prob(nd_multi, fit, ci = FALSE), "group_by")
-  expect_warning(add_cumu_hazard(nd_multi, fit, ci = FALSE), "group_by")
+  expect_error(add_surv_prob(nd_multi, fit, ci = FALSE), "group_by")
+  expect_error(add_cumu_hazard(nd_multi, fit, ci = FALSE), "group_by")
 
-  # group_by() silences the warning and yields correct per-group curves
+  # check_grouping = FALSE opts out for the pooled methods as well
+  expect_error(
+    add_surv_prob(nd_multi, fit, ci = FALSE, check_grouping = FALSE),
+    NA
+  )
+  expect_error(
+    add_cumu_hazard(nd_multi, fit, ci = FALSE, check_grouping = FALSE),
+    NA
+  )
+
+  # group_by() silences the error and yields correct per-group curves
   nd_g <- dplyr::group_by(nd_multi, z)
-  expect_warning(s <- add_surv_prob(nd_g, fit, ci = TRUE, nsim = 40), regexp = NA)
+  expect_warning(
+    s <- add_surv_prob(nd_g, fit, ci = TRUE, nsim = 40),
+    regexp = NA
+  )
   s <- dplyr::ungroup(s)
   expect_true(all(tapply(s$surv_prob, s$z, function(v) all(diff(v) <= 1e-8))))
-  expect_true(all(s$surv_lower <= s$surv_prob + 1e-8 & s$surv_prob <= s$surv_upper + 1e-8))
+  expect_true(all(
+    s$surv_lower <= s$surv_prob + 1e-8 & s$surv_prob <= s$surv_upper + 1e-8
+  ))
 
   # a single-curve prediction grid must not warn
   nd1 <- make_newdata(ped, tend = unique(tend))

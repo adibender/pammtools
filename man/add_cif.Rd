@@ -18,6 +18,7 @@ add_cif(newdata, object, ...)
   cause_var = "cause",
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 )
 
@@ -30,6 +31,7 @@ add_cif(newdata, object, ...)
   cause_var = "cause",
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 )
 }
@@ -64,16 +66,26 @@ to \code{"tend"}.}
 
 \item{interval_length}{\code{Character}, defaults to \code{"intlen"}.
 contains the interval length in \code{newdata}.}
+
+\item{check_grouping}{Logical. If \code{TRUE} (default), \code{stop} if
+\code{newdata} is not grouped so that the time variable is unique within
+each group, guarding against silently accumulating the cumulative
+incidence across distinct covariate profiles or causes. Note that
+\code{check_grouping = FALSE} only skips this profile-level safeguard;
+the independent check that \code{newdata} is grouped by \code{cause}
+(inside \code{get_cif()}) still applies.}
 }
 \description{
 Add cumulative incidence function to data
 }
 \details{
 When computing cumulative incidence for multiple groups, the input data must
-be grouped via \code{group_by()} before calling this function. Omitting
-\code{group_by()} will not produce an error or warning but will return
-silently incorrect results, as the cumulative incidence will be accumulated
-over the entire dataset rather than within each group.
+be grouped via \code{group_by()} (by cause and any covariates) before calling
+this function. If \code{newdata} still contains several profiles per group
+(repeated \code{time_var} values within a group, typically a forgotten
+\code{group_by()}), the function now \strong{stops with an error} rather than
+returning silently incorrect results, as the cumulative incidence would
+otherwise be accumulated across profiles rather than within each group.
 
 The returned data contains one boundary row per group at \code{time_var = 0}
 for plotting cumulative incidence from the time origin. On this row,
