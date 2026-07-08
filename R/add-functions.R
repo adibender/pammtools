@@ -158,7 +158,9 @@ preproc_reference <- function(reference, cnames, n_rows) {
 assert_ci_supported <- function(object, ci, ci_type) {
   if (ci && ci_type %in% c("default", "delta") && !inherits(object, "lm")) {
     stop(
-      "ci_type = \"", ci_type, "\" needs analytic (coefficient-based) ",
+      "ci_type = \"",
+      ci_type,
+      "\" needs analytic (coefficient-based) ",
       "confidence intervals, which this model does not provide. ",
       "Use ci_type = \"sim\".",
       call. = FALSE
@@ -173,7 +175,8 @@ resolve_time_var <- function(time_var, object, newdata) {
     # prefer the interval end point "tend" whenever it is available (as in
     # make_newdata grids); this also covers alternative backends that are
     # neither gam nor scam. Fall back to the "interval" factor otherwise.
-    time_var <- if (is_gam || "tend" %in% colnames(newdata)) "tend" else "interval"
+    time_var <- if (is_gam || "tend" %in% colnames(newdata)) "tend" else
+      "interval"
   } else {
     assert_string(time_var)
   }
@@ -233,10 +236,17 @@ resolve_time_var <- function(time_var, object, newdata) {
 #' @details
 #' When computing cumulative hazards or survival probabilities across groups,
 #' the input data must be grouped via \code{group_by()} prior to calling
-#' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
-#' \code{group_by()} will not produce an error or warning but will return
-#' silently incorrect results, as the cumulative hazard will be accumulated
-#' over the entire dataset rather than within each group.
+#' \code{add_cumu_hazard()} or \code{add_surv_prob()}, so that the cumulative
+#' quantity is accumulated within each covariate profile rather than across the
+#' whole dataset. If \code{newdata} still contains several profiles per group
+#' (i.e.\ repeated \code{time_var} values within a group, typically a forgotten
+#' \code{group_by()}), the functions now \strong{stop with an error} rather than
+#' returning silently incorrect results. Set \code{check_grouping = FALSE} to
+#' skip this safeguard. Note the check detects the \emph{common} mis-grouping
+#' cases -- in particular any grid built with \code{\link{make_newdata}}, where
+#' profiles share time values -- but cannot catch hand-built grids that stack
+#' profiles with disjoint time grids, as these are indistinguishable from a
+#' single profile with time-varying covariates.
 #' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 #' for a worked example.
 #'
@@ -292,20 +302,33 @@ add_hazard.default <- function(
   # make_X/get_coefs/get_Vp triplet.
   if (!is.null(reference) || type == "link") {
     if (!inherits(object, c("glm", "scam"))) {
-      stop("`reference` and `type = \"link\"` require a coefficient-based model.")
+      stop(
+        "`reference` and `type = \"link\"` require a coefficient-based model."
+      )
     }
     return(hazard_ci(
-      object, newdata,
-      reference = reference, ci = ci, type = type, ci_type = ci_type,
-      time_var = time_var, se_mult = se_mult, ...
+      object,
+      newdata,
+      reference = reference,
+      ci = ci,
+      type = type,
+      ci_type = ci_type,
+      time_var = time_var,
+      se_mult = se_mult,
+      ...
     ))
   }
   if (ci && ci_type %in% c("default", "delta")) {
     assert_ci_supported(object, ci, ci_type)
     return(hazard_ci(
-      object, newdata,
-      ci = ci, type = type, ci_type = ci_type,
-      time_var = time_var, se_mult = se_mult, ...
+      object,
+      newdata,
+      ci = ci,
+      type = type,
+      ci_type = ci_type,
+      time_var = time_var,
+      se_mult = se_mult,
+      ...
     ))
   }
 
@@ -366,6 +389,54 @@ hazard_ci <- function(
 }
 
 
+#' Guard against silently-wrong cumulative results from mis-grouped `newdata`
+#'
+#' The cumulative post-processing functions (`add_cumu_hazard`,
+#' `add_surv_prob`, `add_cif`, `add_trans_prob`) accumulate hazards over the
+#' rows of each group of `newdata`. If several covariate profiles (or causes /
+#' transitions) share a group -- typically a forgotten `group_by()` -- the
+#' accumulation silently runs across them and returns wrong curves. A correctly
+#' grouped prediction grid has a unique `time_var` value per group, so a
+#' duplicate within a group signals this situation. (The converse does not
+#' hold: profiles stacked with *disjoint* time grids have unique `time_var`
+#' values and pass undetected -- such input is indistinguishable from a
+#' legitimate single profile with time-varying covariates, so it cannot be
+#' guarded against. Grids built with `make_newdata()` always share time values
+#' across profiles and are therefore always caught.) This generalises
+#' the `stopifnot()` guard used for the RMST helper to the whole `add_*`
+#' family, turning a silent numerical error into an explicit one.
+#' @keywords internal
+stop_if_undergrouped_for_cumulation <- function(
+  newdata,
+  time_var,
+  fun = "add_*"
+) {
+  if (is.null(time_var) || !time_var %in% names(newdata)) {
+    return(invisible(newdata))
+  }
+  by_group <- split(newdata[[time_var]], group_indices(newdata))
+  if (any(vapply(by_group, anyDuplicated, integer(1)) > 0L)) {
+    stop(
+      "`",
+      fun,
+      "()` received `newdata` with repeated '",
+      time_var,
+      "' values within a group, so distinct covariate profiles (or ",
+      "causes/transitions) would be accumulated together, producing silently ",
+      "incorrect cumulative estimates. Group `newdata` so that '",
+      time_var,
+      "' is unique within each group before calling `",
+      fun,
+      "()`, e.g. ",
+      "`newdata |> group_by(<profile columns>) |> ",
+      fun,
+      "(...)`.",
+      call. = FALSE
+    )
+  }
+  invisible(newdata)
+}
+
 #' @rdname add_hazard
 #' @export
 add_cumu_hazard <- function(newdata, object, ...) {
@@ -381,6 +452,12 @@ add_cumu_hazard <- function(newdata, object, ...) {
 #'   so that cumulative hazards start at the natural origin (consistent with
 #'   \code{\link{add_surv_prob}}, \code{\link{add_cif}} and
 #'   \code{\link{add_trans_prob}}).
+#' @param check_grouping Logical. If \code{TRUE} (default), the function checks
+#'   that \code{newdata} is grouped so that the time variable is unique within
+#'   each group and \code{\link[base]{stop}}s otherwise, guarding against
+#'   silently accumulating cumulative quantities across distinct covariate
+#'   profiles (a forgotten \code{group_by()}). Set to \code{FALSE} to skip the
+#'   check (e.g.\ for internal calls on already-validated data).
 #' @importFrom dplyr bind_cols
 #' @seealso \code{\link[mgcv]{predict.gam}},
 #' \code{\link[pammtools]{add_surv_prob}}
@@ -394,9 +471,18 @@ add_cumu_hazard.default <- function(
   time_var = NULL,
   interval_length = "intlen",
   boundary = TRUE,
+  check_grouping = TRUE,
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
+
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(
+      newdata,
+      resolve_time_var(time_var, object, newdata),
+      "add_cumu_hazard"
+    )
+  }
 
   if (!overwrite) {
     if ("cumu_hazard" %in% names(newdata)) {
@@ -505,9 +591,14 @@ get_cumu_hazard <- function(
     # analytic CI on the hazard, then propagate to the cumulative hazard
     vars_exclude <- c(vars_exclude, "se", "ci_lower", "ci_upper")
     newdata <- hazard_ci(
-      object, newdata,
-      type = "response", ci = TRUE, ci_type = ci_type,
-      time_var = time_var, se_mult = se_mult, ...
+      object,
+      newdata,
+      type = "response",
+      ci = TRUE,
+      ci_type = ci_type,
+      time_var = time_var,
+      se_mult = se_mult,
+      ...
     )
     if (ci_type == "default") {
       mutate_args <- mutate_args %>%
@@ -560,10 +651,17 @@ get_cumu_hazard <- function(
 #' @details
 #' When computing cumulative hazards or survival probabilities across groups,
 #' the input data must be grouped via \code{group_by()} prior to calling
-#' \code{add_cumu_hazard()} or \code{add_surv_prob()}. Omitting
-#' \code{group_by()} will not produce an error or warning but will return
-#' silently incorrect results, as the cumulative hazard will be accumulated
-#' over the entire dataset rather than within each group.
+#' \code{add_cumu_hazard()} or \code{add_surv_prob()}, so that the cumulative
+#' quantity is accumulated within each covariate profile rather than across the
+#' whole dataset. If \code{newdata} still contains several profiles per group
+#' (i.e.\ repeated \code{time_var} values within a group, typically a forgotten
+#' \code{group_by()}), the functions now \strong{stop with an error} rather than
+#' returning silently incorrect results. Set \code{check_grouping = FALSE} to
+#' skip this safeguard. Note the check detects the \emph{common} mis-grouping
+#' cases -- in particular any grid built with \code{\link{make_newdata}}, where
+#' profiles share time values -- but cannot catch hand-built grids that stack
+#' profiles with disjoint time grids, as these are indistinguishable from a
+#' single profile with time-varying covariates.
 #' See the \href{https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard}{workflow vignette}
 #' for a worked example.
 #'
@@ -594,10 +692,14 @@ add_surv_prob.default <- function(
   time_var = NULL,
   interval_length = "intlen",
   boundary = TRUE,
+  check_grouping = TRUE,
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_surv_prob")
+  }
   # The boundary is a continuous-time row at time == 0 (survival 1); see
   # add_cumu_hazard(). Only added for models predicted on the continuous time
   # axis (gam/scam/pamm), not for interval-factor models (glm/PEM).
@@ -703,9 +805,14 @@ get_surv_prob <- function(
   if (ci && ci_type %in% c("default", "delta")) {
     vars_exclude <- c(vars_exclude, "se", "ci_lower", "ci_upper")
     newdata <- hazard_ci(
-      object, newdata,
-      type = "response", ci = TRUE, ci_type = ci_type,
-      time_var = time_var, se_mult = se_mult, ...
+      object,
+      newdata,
+      type = "response",
+      ci = TRUE,
+      ci_type = ci_type,
+      time_var = time_var,
+      se_mult = se_mult,
+      ...
     )
     if (ci_type == "default") {
       mutate_args <- mutate_args %>%
@@ -966,7 +1073,7 @@ get_sim_ci <- function(
 ) {
   H <- sim_hazard(object, newdata, nsim, ...)
 
-  newdata$se       <- apply(H, 1, sd)
+  newdata$se <- apply(H, 1, sd)
   newdata$ci_lower <- row_quantile(H, alpha / 2)
   newdata$ci_upper <- row_quantile(H, 1 - alpha / 2)
 
@@ -987,7 +1094,7 @@ sim_cumulative_ci <- function(
   ...
 ) {
   intlen <- newdata[[interval_length]]
-  grp    <- dplyr::group_indices(newdata)
+  grp <- dplyr::group_indices(newdata)
 
   H <- sim_hazard(object, newdata, nsim, ...)
   draws <- matrix(
@@ -1003,17 +1110,21 @@ sim_cumulative_ci <- function(
 
 get_sim_ci_cumu <- function(newdata, object, ...) {
   sim_cumulative_ci(
-    newdata, object,
+    newdata,
+    object,
     accumulate = function(w, g) ave(w, g, FUN = cumsum),
-    names = c("cumu_lower", "cumu_upper"), ...
+    names = c("cumu_lower", "cumu_upper"),
+    ...
   )
 }
 
 get_sim_ci_surv <- function(newdata, object, ...) {
   sim_cumulative_ci(
-    newdata, object,
+    newdata,
+    object,
     accumulate = function(w, g) exp(-ave(w, g, FUN = cumsum)),
-    names = c("surv_lower", "surv_upper"), ...
+    names = c("surv_lower", "surv_upper"),
+    ...
   )
 }
 
@@ -1031,13 +1142,22 @@ get_sim_ci_surv <- function(newdata, object, ...) {
 #' @param cause_var Character. Column name of the 'cause' variable.
 #' @param interval_length \code{Character}, defaults to \code{"intlen"}.
 #'   contains the interval length in `newdata`.
+#' @param check_grouping Logical. If \code{TRUE} (default), \code{stop} if
+#'   \code{newdata} is not grouped so that the time variable is unique within
+#'   each group, guarding against silently accumulating the cumulative
+#'   incidence across distinct covariate profiles or causes. Note that
+#'   \code{check_grouping = FALSE} only skips this profile-level safeguard;
+#'   the independent check that \code{newdata} is grouped by \code{cause}
+#'   (inside \code{get_cif()}) still applies.
 #'
 #' @details
 #' When computing cumulative incidence for multiple groups, the input data must
-#' be grouped via \code{group_by()} before calling this function. Omitting
-#' \code{group_by()} will not produce an error or warning but will return
-#' silently incorrect results, as the cumulative incidence will be accumulated
-#' over the entire dataset rather than within each group.
+#' be grouped via \code{group_by()} (by cause and any covariates) before calling
+#' this function. If \code{newdata} still contains several profiles per group
+#' (repeated \code{time_var} values within a group, typically a forgotten
+#' \code{group_by()}), the function now \strong{stops with an error} rather than
+#' returning silently incorrect results, as the cumulative incidence would
+#' otherwise be accumulated across profiles rather than within each group.
 #'
 #' The returned data contains one boundary row per group at \code{time_var = 0}
 #' for plotting cumulative incidence from the time origin. On this row,
@@ -1089,10 +1209,15 @@ add_cif.default <- function(
   cause_var = "cause",
   time_var = NULL,
   interval_length = "intlen",
+  check_grouping = TRUE,
   ...
 ) {
   interval_length <- quo_name(enquo(interval_length))
   time_var <- resolve_time_var(time_var, object, newdata)
+
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_cif")
+  }
 
   if (!overwrite) {
     if ("cif" %in% names(newdata)) {
@@ -1176,13 +1301,13 @@ get_cif.default <- function(
   assert_choice(interval_length, colnames(newdata))
 
   newdata <- arrange(newdata, .data[[time_var]], .by_group = TRUE)
-  causes     <- levels(newdata[[cause_var]])
+  causes <- levels(newdata[[cause_var]])
   cause_data <- as.character(unique(newdata[[cause_var]]))
   if (length(cause_data) > 1) {
     stop("Did you forget to group by cause?")
   }
   dt <- newdata[[interval_length]]
-  n  <- nrow(newdata)
+  n <- nrow(newdata)
 
   # Stack the rows once per cause (same covariates/time, only `cause` changes) so
   # that a single hazard prediction supplies all cause-specific hazards -- and,
@@ -1199,8 +1324,8 @@ get_cif.default <- function(
   #   dCIF_k = (h_k / h.) * S(t-) * (1 - exp(-h. * dt)),   S via all-cause hazard.
   cif_from_hazards <- function(haz_by_cause) {
     total <- Reduce(`+`, haz_by_cause)
-    surv  <- c(1, utils::head(exp(-cumsum(total * dt)), -1))
-    incr  <- ifelse(
+    surv <- c(1, utils::head(exp(-cumsum(total * dt)), -1))
+    incr <- ifelse(
       total > 0,
       (haz_by_cause[[cause_data]] / total) * surv * (1 - exp(-total * dt)),
       0
@@ -1213,8 +1338,13 @@ get_cif.default <- function(
   split_by_cause <- function(h) lapply(idx, function(ix) h[ix])
 
   # point: plug-in at the point hazards
-  newdata[["cif"]] <- pmin(pmax(
-    cif_from_hazards(split_by_cause(get_hazard(object, stacked))), 0), 1)
+  newdata[["cif"]] <- pmin(
+    pmax(
+      cif_from_hazards(split_by_cause(get_hazard(object, stacked))),
+      0
+    ),
+    1
+  )
 
   if (ci) {
     H <- sim_hazard(object, stacked, nsim)
@@ -1451,14 +1581,26 @@ transition_state_table <- function(transitions, sep = "->") {
 #'   contains the interval length in `newdata`.
 #' @param transition \code{Character}, defaults to \code{"transition"}.
 #'   contains the transition labels in `newdata`.
+#' @param check_grouping Logical. If \code{TRUE} (default), the function checks
+#'   that \code{newdata} is grouped so that the time variable is unique within
+#'   each group once \code{transition} is part of the grouping, and
+#'   \code{\link[base]{stop}}s otherwise, guarding against silently accumulating
+#'   transition probabilities across distinct covariate profiles (a forgotten
+#'   \code{group_by()}). Set to \code{FALSE} to skip the check. As for the
+#'   other cumulative \code{add_*} functions, hand-built grids stacking
+#'   profiles with disjoint time grids cannot be detected (see
+#'   \code{\link{add_cumu_hazard}}).
 #' @param ... Further arguments passed to underlying methods.
 #'
 #' @details
 #' When computing transition probabilities for multiple groups, the input data must
-#' be grouped via \code{group_by()} before calling this function. Omitting
-#' \code{group_by()} will not produce an error or warning but will return
-#' silently incorrect results, as the transition probability will be accumulated
-#' over the entire dataset rather than within each group.
+#' be grouped via \code{group_by()} before calling this function. If \code{newdata}
+#' still contains several covariate profiles per (group, transition) -- i.e.\
+#' repeated \code{time_var} values within a group once \code{transition} is added
+#' to the grouping, typically a forgotten \code{group_by()} -- the function now
+#' \strong{stops with an error} rather than returning silently incorrect results,
+#' as the transition probability would otherwise be accumulated across profiles
+#' rather than within each group.
 #'
 #' The returned data contains one boundary row per group and transition at
 #' \code{time_var = 0} for plotting transition probabilities from the time
@@ -1493,6 +1635,7 @@ add_trans_prob <- function(
   time_var = "tend",
   interval_length = "intlen",
   transition = "transition",
+  check_grouping = TRUE,
   ...
 ) {
   orig_names <- names(newdata)
@@ -1539,6 +1682,14 @@ add_trans_prob <- function(
     old_groups <- group_vars(newdata)
   }
 
+  # Transition probabilities accumulate per (covariate profile x transition).
+  # Once `transition` is part of the grouping, `time_var` must be unique within
+  # each group; a duplicate means covariate profiles were not separated (a
+  # forgotten `group_by()`), which would silently mix them.
+  if (check_grouping) {
+    stop_if_undergrouped_for_cumulation(newdata, time_var, "add_trans_prob")
+  }
+
   split_groups <- setdiff(old_groups, transition_var)
   ordering_vars <- c(split_groups, transition_var, time_var)
   newdata <- newdata[
@@ -1556,7 +1707,8 @@ add_trans_prob <- function(
         ci = FALSE,
         time_var = time_var,
         interval_length = interval_length,
-        boundary = FALSE
+        boundary = FALSE,
+        check_grouping = FALSE
       )
     )
   }
