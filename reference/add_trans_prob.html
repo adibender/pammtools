@@ -25,7 +25,7 @@ The function builds on cumulative hazards cumu_hazard and mgcv::gam models."><me
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -145,6 +145,7 @@ The function builds on cumulative hazards <code>cumu_hazard</code> and <code><a 
 <span>  time_var <span class="op">=</span> <span class="st">"tend"</span>,</span>
 <span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
 <span>  transition <span class="op">=</span> <span class="st">"transition"</span>,</span>
+<span>  check_grouping <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -204,6 +205,18 @@ contains the interval length in <code>newdata</code>.</p></dd>
 contains the transition labels in <code>newdata</code>.</p></dd>
 
 
+<dt id="arg-check-grouping">check_grouping<a class="anchor" aria-label="anchor" href="#arg-check-grouping"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), the function checks
+that <code>newdata</code> is grouped so that the time variable is unique within
+each group once <code>transition</code> is part of the grouping, and
+<code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></code>s otherwise, guarding against silently accumulating
+transition probabilities across distinct covariate profiles (a forgotten
+<code><a href="dplyr_verbs.html">group_by()</a></code>). Set to <code>FALSE</code> to skip the check. As for the
+other cumulative <code>add_*</code> functions, hand-built grids stacking
+profiles with disjoint time grids cannot be detected (see
+<code><a href="add_hazard.html">add_cumu_hazard</a></code>).</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to underlying methods.</p></dd>
 
@@ -211,10 +224,13 @@ contains the transition labels in <code>newdata</code>.</p></dd>
     <div id="details">
     <h2>Details</h2>
     <p>When computing transition probabilities for multiple groups, the input data must
-be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> before calling this function. Omitting
-<code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
-silently incorrect results, as the transition probability will be accumulated
-over the entire dataset rather than within each group.</p>
+be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> before calling this function. If <code>newdata</code>
+still contains several covariate profiles per (group, transition) – i.e.\
+repeated <code>time_var</code> values within a group once <code>transition</code> is added
+to the grouping, typically a forgotten <code><a href="dplyr_verbs.html">group_by()</a></code> – the function now
+<strong>stops with an error</strong> rather than returning silently incorrect results,
+as the transition probability would otherwise be accumulated across profiles
+rather than within each group.</p>
 <p>The returned data contains one boundary row per group and transition at
 <code>time_var = 0</code> for plotting transition probabilities from the time
 origin. On this row, <code>trans_prob = 0</code>; if confidence intervals are
@@ -253,7 +269,7 @@ column is present, it is set to <code>0</code> on the boundary row.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

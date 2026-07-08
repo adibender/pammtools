@@ -26,7 +26,7 @@ surv_lower, surv_upper if ci=TRUE)."><meta property="og:image" content="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -149,6 +149,7 @@ for the specified covariate and follow-up information (and CIs
 <span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
 <span>  boundary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check_grouping <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -161,6 +162,7 @@ for the specified covariate and follow-up information (and CIs
 <span>  nsim <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  time_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  interval_length <span class="op">=</span> <span class="st">"intlen"</span>,</span>
+<span>  check_grouping <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -220,6 +222,15 @@ so that cumulative hazards start at the natural origin (consistent with
 <code><a href="add_trans_prob.html">add_trans_prob</a></code>).</p></dd>
 
 
+<dt id="arg-check-grouping">check_grouping<a class="anchor" aria-label="anchor" href="#arg-check-grouping"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), the function checks
+that <code>newdata</code> is grouped so that the time variable is unique within
+each group and <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></code>s otherwise, guarding against
+silently accumulating cumulative quantities across distinct covariate
+profiles (a forgotten <code><a href="dplyr_verbs.html">group_by()</a></code>). Set to <code>FALSE</code> to skip the
+check (e.g.\ for internal calls on already-validated data).</p></dd>
+
+
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Significance level for pooled confidence intervals.</p></dd>
 
@@ -232,10 +243,17 @@ so that cumulative hazards start at the natural origin (consistent with
     <h2>Details</h2>
     <p>When computing cumulative hazards or survival probabilities across groups,
 the input data must be grouped via <code><a href="dplyr_verbs.html">group_by()</a></code> prior to calling
-<code><a href="add_hazard.html">add_cumu_hazard()</a></code> or <code>add_surv_prob()</code>. Omitting
-<code><a href="dplyr_verbs.html">group_by()</a></code> will not produce an error or warning but will return
-silently incorrect results, as the cumulative hazard will be accumulated
-over the entire dataset rather than within each group.
+<code><a href="add_hazard.html">add_cumu_hazard()</a></code> or <code>add_surv_prob()</code>, so that the cumulative
+quantity is accumulated within each covariate profile rather than across the
+whole dataset. If <code>newdata</code> still contains several profiles per group
+(i.e.\ repeated <code>time_var</code> values within a group, typically a forgotten
+<code><a href="dplyr_verbs.html">group_by()</a></code>), the functions now <strong>stop with an error</strong> rather than
+returning silently incorrect results. Set <code>check_grouping = FALSE</code> to
+skip this safeguard. Note the check detects the <em>common</em> mis-grouping
+cases – in particular any grid built with <code><a href="newdata.html">make_newdata</a></code>, where
+profiles share time values – but cannot catch hand-built grids that stack
+profiles with disjoint time grids, as these are indistinguishable from a
+single profile with time-varying covariates.
 See the <a href="https://adibender.github.io/pammtools/articles/convenience.html#cumulative-hazard">workflow vignette</a>
 for a worked example.</p>
 <p>The returned data contains one boundary row per group at <code>time_var = 0</code>
@@ -283,7 +301,7 @@ it is set to <code>0</code> on the boundary row.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

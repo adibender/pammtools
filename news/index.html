@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pammtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -125,6 +125,13 @@
       <small>Source: <a href="https://github.com/adibender/pammtools/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.8.1" id="pammtools-081">pammtools 0.8.1<a class="anchor" aria-label="anchor" href="#pammtools-081"></a></h2>
+<div class="section level3">
+<h3 id="enhancements-0-8-1">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-8-1"></a></h3>
+<ul><li>The cumulative post-processing functions (<code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>, <code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code>, <code><a href="../reference/add_cif.html">add_cif()</a></code> – for both their default and <code>pamm_ic</code> methods – and <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code>) now <strong>error</strong> when <code>newdata</code> is not grouped so that the time variable is unique within each group (typically a forgotten <code><a href="../reference/dplyr_verbs.html">group_by()</a></code>), instead of silently accumulating cumulative quantities across distinct covariate profiles / causes / transitions and returning wrong curves. This generalises the guard already used for the interval-censoring pooling path (and mirrors the <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> guard in the RMST example). All of these functions accept <code>check_grouping = FALSE</code> to opt out (e.g. for advanced workflows that intentionally accumulate over rows with varying covariates). The guard detects mis-grouping via repeated time values within a group: grids built with <code><a href="../reference/newdata.html">make_newdata()</a></code> are always caught, but hand-built grids stacking profiles with <em>disjoint</em> time grids are indistinguishable from a single profile with time-varying covariates and pass undetected.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.8.0" id="pammtools-080">pammtools 0.8.0<small>2026-06-22</small><a class="anchor" aria-label="anchor" href="#pammtools-080"></a></h2>
 <p>This release collects all changes since the last CRAN version (0.7.4), including the previously GitHub-only 0.7.5 and 0.7.6 development versions.</p>
@@ -434,7 +441,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

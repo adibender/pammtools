@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   baseline: baseline.html
@@ -22,7 +22,7 @@ articles:
   tdcovar: tdcovar.html
   tveffects: tveffects.html
   xgboost-backend: xgboost-backend.html
-last_built: 2026-07-03T11:16Z
+last_built: 2026-07-08T13:23Z
 urls:
   reference: https://adibender.github.io/pammtools/reference
   article: https://adibender.github.io/pammtools/articles
