@@ -131,6 +131,10 @@
 <h3 id="enhancements-0-8-1">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-0-8-1"></a></h3>
 <ul><li>The cumulative post-processing functions (<code><a href="../reference/add_hazard.html">add_cumu_hazard()</a></code>, <code><a href="../reference/add_surv_prob.html">add_surv_prob()</a></code>, <code><a href="../reference/add_cif.html">add_cif()</a></code> – for both their default and <code>pamm_ic</code> methods – and <code><a href="../reference/add_trans_prob.html">add_trans_prob()</a></code>) now <strong>error</strong> when <code>newdata</code> is not grouped so that the time variable is unique within each group (typically a forgotten <code><a href="../reference/dplyr_verbs.html">group_by()</a></code>), instead of silently accumulating cumulative quantities across distinct covariate profiles / causes / transitions and returning wrong curves. This generalises the guard already used for the interval-censoring pooling path (and mirrors the <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> guard in the RMST example). All of these functions accept <code>check_grouping = FALSE</code> to opt out (e.g. for advanced workflows that intentionally accumulate over rows with varying covariates). The guard detects mis-grouping via repeated time values within a group: grids built with <code><a href="../reference/newdata.html">make_newdata()</a></code> are always caught, but hand-built grids stacking profiles with <em>disjoint</em> time grids are indistinguishable from a single profile with time-varying covariates and pass undetected.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="documentation-0-8-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-8-1"></a></h3>
+<ul><li>Standardized the headings and subheadings in the package vignettes to sentence-style capitalization for consistency and readability.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.8.0" id="pammtools-080">pammtools 0.8.0<small>2026-06-22</small><a class="anchor" aria-label="anchor" href="#pammtools-080"></a></h2>

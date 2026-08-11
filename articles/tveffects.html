@@ -150,7 +150,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Time-varying effects</h1>
             
-            <h4 data-toc-skip class="date">2026-07-08</h4>
+            <h4 data-toc-skip class="date">2026-08-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/tveffects.Rmd" class="external-link"><code>vignettes/tveffects.Rmd</code></a></small>
       <div class="hidden name"><code>tveffects.Rmd</code></div>
@@ -231,7 +231,7 @@ that varies non-linearly over time
 </ul>
 </div>
 <div class="section level2">
-<h2 id="veteran-data-example">Veteran Data example<a class="anchor" aria-label="anchor" href="#veteran-data-example"></a>
+<h2 id="veteran-data-example">Veteran data example<a class="anchor" aria-label="anchor" href="#veteran-data-example"></a>
 </h2>
 <p>For illustration and comparison we use the <code>veteran</code> data
 presented in the vignette of the <code>survival</code> package
@@ -258,7 +258,7 @@ details:</p>
 <span><span class="co">## 6   0 squamous   10      1    20        5  49     0</span></span>
 <span><span class="co">## 7   0 squamous   82      1    40       10  69     1</span></span></code></pre>
 <div class="section level3">
-<h3 id="extended-cox-model-with-known-shape-of-time-variation-function">Extended Cox Model (with known shape of time-variation
+<h3 id="extended-cox-model-with-known-shape-of-time-variation-function">Extended Cox model (with known shape of time-variation
 function)<a class="anchor" aria-label="anchor" href="#extended-cox-model-with-known-shape-of-time-variation-function"></a>
 </h3>
 <p>To fit a time-varying effect of <code>karno</code> the authors
@@ -287,7 +287,7 @@ time-variation function” case above with
 <p><img src="tveffects_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="pam-with-known-shape-of-time-variation-function">PAM (with known shape of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-with-known-shape-of-time-variation-function"></a>
+<h3 id="pam-with-known-shape-of-time-variation-function">Pam (with known shape of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-with-known-shape-of-time-variation-function"></a>
 </h3>
 <p>To fit a PAM with equivalent model specification (except for the
 baseline hazard) we can use</p>
@@ -331,7 +331,7 @@ into an increased hazard for higher-scoring patients after about day
 150.</p>
 </div>
 <div class="section level3">
-<h3 id="pam-penalized-estimation-of-time-variation-function">PAM (penalized estimation of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-penalized-estimation-of-time-variation-function"></a>
+<h3 id="pam-penalized-estimation-of-time-variation-function">Pam (penalized estimation of time-variation function)<a class="anchor" aria-label="anchor" href="#pam-penalized-estimation-of-time-variation-function"></a>
 </h3>
 <p>In case we don’t want to pre-specify which shape the time-dependency
 should have, we can specify the effect of <code>karno</code> as
@@ -378,7 +378,7 @@ increases fairly linearly up to day 150 and flattens out at about 0
 </div>
 <div class="section level3">
 <h3 id="pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score">PAM with smooth, smoothly time-varying effect of the Karnofsky
-Score<a class="anchor" aria-label="anchor" href="#pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score"></a>
+score<a class="anchor" aria-label="anchor" href="#pam-with-smooth-smoothly-time-varying-effect-of-the-karnofsky-score"></a>
 </h3>
 <p>To fit a non-linear, non-linearly time-varying effect we can specify
 a two-dimensional interaction between the covariate of interest (here
