@@ -16,6 +16,10 @@
   grids stacking profiles with *disjoint* time grids are indistinguishable
   from a single profile with time-varying covariates and pass undetected.
 
+## Documentation
+* Standardized the headings and subheadings in the package vignettes to
+  sentence-style capitalization for consistency and readability.
+
 # pammtools 0.8.0
 
 This release collects all changes since the last CRAN version (0.7.4),
