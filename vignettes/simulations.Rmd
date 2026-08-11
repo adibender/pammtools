@@ -322,7 +322,7 @@ simdf_wce <- sim_pexp(
   )
 ```
 
-### Bivariate, smooth partial effects
+### Bivariate, Smooth partial effects
 In this section, we illustrate an extension of the previous simulation, where
 the exposure $z(t_z)$ affects the hazard non-linearly
 $$

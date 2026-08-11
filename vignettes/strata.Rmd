@@ -103,7 +103,7 @@ baseline_gg +	aes(col="Nelson-Aalen") +
   theme(legend.position = "bottom")
 ```
 
-### Stratified Proportional Hazards Model
+### Stratified proportional hazards model
 
 Both models can be easily extended to incorporate further covariates.
 If we assume that the covariate effects are not time-varying, this extension

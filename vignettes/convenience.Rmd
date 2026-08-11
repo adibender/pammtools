@@ -98,7 +98,7 @@ ggplot(ped_df, aes(x = tend, group = age)) +
 	ylab(expression(hat(lambda)(t))) + xlab(expression(t))
 ```
 
-### Hazard Ratio
+### Hazard ratio
 The hazard ratio can be calculated by specifying the `reference`
 argument:
 

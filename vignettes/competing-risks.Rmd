@@ -104,7 +104,7 @@ The results indicate that cause specific terms (interactions) are necessary in t
 - cause2:  `r coef_csh2["age"]` (`pamm_csh2`) vs. `r coef_shared["age"]` + `r coef_shared["age:cause2"]`= `r sum(coef_shared[c("age", "age:cause2")])` (`pamm_csh_shared`)
 
 
-## Cumulative Incidence Function (CIF)
+## Cumulative incidence function (CIF)
 
 For competing risks with $Q$ causes ($q = 1,\ldots,Q$), let $h_q(t)$ denote the cause-specific hazard for cause $q$ and $S(t) = \exp\left(-\int_0^t \sum_{q=1}^Q h_q(u)\, du\right)$ the all-cause survival. The cumulative incidence for cause $q$ is
 

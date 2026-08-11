@@ -29,7 +29,7 @@ library(survival)
 Set1 <- RColorBrewer::brewer.pal(9, "Set1")
 ```
 
-## Veteran's data
+## Veteran's Data
 
 We first illustrate the estimation on non-linear smooth effects using
 the `veteran` data from the survival package:
@@ -149,7 +149,7 @@ plot(pamfit, select = 2, se = TRUE, ylim = c(-4, 3.5))
 In this example the PAM approach estimates a linear effect of age, which is
 consistent with the estimation using `coxph`, as there is only weak non-linearity.
 
-### MGUS data: Hemoglobin example
+### MGUS data: hemoglobin example
 Another example from the same vignette shows that estimated effects
 are very similar if the effect of the covariate is in fact strongly non-linear:
 

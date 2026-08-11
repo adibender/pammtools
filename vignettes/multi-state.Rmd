@@ -29,7 +29,7 @@ cumulative hazards transition probabilities, and their simulated  [confidence in
 Since we fit a baseline model stratified by treatment effect without additional covariates, both approaches should yield identical results up to 
 numerical approximation from the piecewise-constant hazard assumption in PAMMs.
 
-## Example multi-state analysis: Time to abnormal prothrombin levels in liver cirrhosis using the `prothr` data
+## Example multi-state analysis: time to abnormal prothrombin levels in liver cirrhosis using the `prothr` data
 
 For illustration, we use the `prothr` data set from the **`mstate`** package. 
 - 488 liver cirrhosis patients
@@ -67,7 +67,7 @@ In general, one has to follow three steps to derive transition probabilities fro
 - Second, we need to estimate the log hazard structure using PAM objects. 
 - Third, we need to post-process the data to include all relevant objects of interest in our data set. 
 
-## Data transformation: From raw `prothr` data to piecewise exponential data
+## Data transformation: from raw `prothr` data to piecewise exponential data
 
 The data transformation required to fit PAMMs to multi-state data extends the standard 
 single-event piecewise exponential data (PED) transformation (see the [data transformation vignette](https://adibender.github.io/pammtools/articles/data-transformation.html) for details) to each transition type. The follow-up of each subject 
@@ -118,7 +118,7 @@ on overall disease duration rather than time spent in the current state. We ther
 use the calendar time scale (`timescale = "calendar"`), where time runs continuously 
 from study entry and is not reset after each transition.
 
-## Model estimation: Fitting a baseline multi-state model
+## Model estimation: fitting a baseline multi-state model
 
 Estimating the log hazard structure using PAM objects, we can use
 ```{r ms-prothr-pam, echo = TRUE}
@@ -213,7 +213,7 @@ gg_state_occupation(
   )
 ```
 
-## Model Comparisons: Comparison of ``pammtools`` results with the ``mstate`` Aalen-Johannsen estimator
+## Model comparisons: comparison of ``pammtools`` results with the ``mstate`` Aalen-Johannsen estimator
 To validate that the PAMM baseline hazards are correctly specified, we compare
 cumulative hazards and transition probabilities estimated by `pammtools` against
 the non-parametric Aalen-Johannsen estimator from `mstate`. Since we fit a
