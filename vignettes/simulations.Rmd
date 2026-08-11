@@ -1,10 +1,10 @@
 ---
-title: "Simulating Time-To-Event Data"
+title: "Simulating time-to-event data"
 date: "`r Sys.Date()`"
 author: "Andreas Bender, Johannes Piller"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulating Time-To-Event Data}
+  %\VignetteIndexEntry{Simulating time-to-event data}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -322,7 +322,7 @@ simdf_wce <- sim_pexp(
   )
 ```
 
-### Bivariate, smooth partial effects
+### Bivariate, Smooth partial effects
 In this section, we illustrate an extension of the previous simulation, where
 the exposure $z(t_z)$ affects the hazard non-linearly
 $$

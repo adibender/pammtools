@@ -1,9 +1,9 @@
 ---
-title: "Data Transformation"
+title: "Data transformation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data Transformation}
+  %\VignetteIndexEntry{Data transformation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---
@@ -128,7 +128,7 @@ tumor %>% slice(c(85, 112))
 ```
 
 
-## Left-truncated Data
+## Left-truncated data
 In left truncated data, subjects enter the risk set at some time-point unequal to zero. Such data usually ships in the so called start-stop notation, where for each subject the start time specifies the left-truncation time (can also be 0) and the
 stop time the time-to-event, which can be right-censored.
 

@@ -1,11 +1,11 @@
 ---
-title: "Interval-Censored Data"
+title: "Interval-censored data"
 author: "pammtools"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: Remote.bib
 vignette: >
-  %\VignetteIndexEntry{Interval-Censored Data}
+  %\VignetteIndexEntry{Interval-censored data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

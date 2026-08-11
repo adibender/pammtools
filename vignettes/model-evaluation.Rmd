@@ -45,7 +45,7 @@ be computed similar to any other model (see respective help pages `?pec::pec` an
 should not start at exact 0 (see `times` and `start` arguments below).
 
 
-## Prediction error curves (PEC) and Integrated Brier Score (IBS)
+## Prediction error curves (PEC) and integrated Brier score (IBS)
 
 ```{r, "pec-fit", message = FALSE}
 data(tumor)
