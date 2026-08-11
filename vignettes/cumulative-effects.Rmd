@@ -1,9 +1,9 @@
 ---
-title: "Cumulative Effects"
+title: "Cumulative effects"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Cumulative Effects}
+  %\VignetteIndexEntry{Cumulative effects}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

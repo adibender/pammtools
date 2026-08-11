@@ -1,9 +1,9 @@
 ---
-title: "Data Transformation"
+title: "Data transformation"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data Transformation}
+  %\VignetteIndexEntry{Data transformation}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---

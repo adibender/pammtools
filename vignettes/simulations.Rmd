@@ -1,10 +1,10 @@
 ---
-title: "Simulating Time-To-Event Data"
+title: "Simulating time-to-event data"
 date: "`r Sys.Date()`"
 author: "Andreas Bender, Johannes Piller"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulating Time-To-Event Data}
+  %\VignetteIndexEntry{Simulating time-to-event data}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 ---

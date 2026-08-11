@@ -1,11 +1,11 @@
 ---
-title: "Bayesian Baseline PAMMs: mgcv, jagam, and brms"
+title: "Bayesian baseline PAMMs: mgcv, jagam, and brms"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: Remote.bib
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{Bayesian Baseline PAMMs: mgcv, jagam, and brms}
+  %\VignetteIndexEntry{Bayesian baseline PAMMs: mgcv, jagam, and brms}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
