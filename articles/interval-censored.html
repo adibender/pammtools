@@ -151,7 +151,7 @@
       <h1 data-toc-skip>Interval-censored data</h1>
                         <h4 data-toc-skip class="author">pammtools</h4>
             
-            <h4 data-toc-skip class="date">2026-08-11</h4>
+            <h4 data-toc-skip class="date">2026-08-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/adibender/pammtools/blob/master/vignettes/interval-censored.Rmd" class="external-link"><code>vignettes/interval-censored.Rmd</code></a></small>
       <div class="hidden name"><code>interval-censored.Rmd</code></div>
@@ -285,19 +285,19 @@ interval censoring is reported as well.</p>
 <span><span class="co">## Family         : poisson </span></span>
 <span><span class="co">## Model          : ped_status ~ trt + s(tend, by = trt) </span></span>
 <span><span class="co">## Imputations    : 20 (proper) </span></span>
-<span><span class="co">## Subjects       : 1000 ( 809 interval/left-censored ); PED rows per fit: 11044 </span></span>
+<span><span class="co">## Subjects       : 1000 ( 809 interval/left-censored ); PED rows per fit: 11042 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Parametric coefficients (Rubin-pooled estimates &amp; SEs, median-p):</span></span>
 <span><span class="co">##             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">## (Intercept)  -2.1742     0.0559  -38.92  &lt; 2e-16 ***</span></span>
-<span><span class="co">## trt1          0.5358     0.0730    7.34  1.5e-13 ***</span></span>
+<span><span class="co">## (Intercept)  -2.1743     0.0559  -38.91  &lt; 2e-16 ***</span></span>
+<span><span class="co">## trt1          0.5358     0.0730    7.34  1.4e-13 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Approximate significance of smooth terms (mean edf, median-p over imputations):</span></span>
 <span><span class="co">##               edf Ref.df statistic p-value    </span></span>
-<span><span class="co">## s(tend):trt0 1.63   1.85      0.86    0.79    </span></span>
-<span><span class="co">## s(tend):trt1 1.00   1.00     82.20  &lt;2e-16 ***</span></span>
+<span><span class="co">## s(tend):trt0 1.72   1.98      0.96    0.79    </span></span>
+<span><span class="co">## s(tend):trt1 1.00   1.00     82.19  &lt;2e-16 ***</span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
@@ -309,8 +309,8 @@ interval censoring is reported as well.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Smooth terms (five-number summaries over training PED rows):</span></span>
 <span><span class="co">##                Min    Q1 Median    Q3   Max</span></span>
-<span><span class="co">## s(tend):trt0 0.014 0.014  0.030 0.165 0.613</span></span>
-<span><span class="co">## s(tend):trt1 0.024 0.024  0.038 0.038 0.038</span></span>
+<span><span class="co">## s(tend):trt0 0.013 0.013  0.029 0.171 0.591</span></span>
+<span><span class="co">## s(tend):trt1 0.024 0.024  0.039 0.039 0.039</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Standard errors include within- + between-imputation variance (Rubin's rules);</span></span>
 <span><span class="co">## p-values are medians over imputations.</span></span></code></pre>
@@ -435,7 +435,7 @@ so values above one mean that proper MI gives wider intervals:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">(</span><span class="va">surv_mi</span><span class="op">$</span><span class="va">surv_upper</span>  <span class="op">-</span> <span class="va">surv_mi</span><span class="op">$</span><span class="va">surv_lower</span><span class="op">)</span> <span class="op">/</span> </span>
 <span>        <span class="op">(</span><span class="va">surv_mid</span><span class="op">$</span><span class="va">surv_upper</span> <span class="op">-</span> <span class="va">surv_mid</span><span class="op">$</span><span class="va">surv_lower</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs </span></span>
-<span><span class="co">##  0.9509  0.9980  1.0398  1.0370  1.0600  1.2919       2</span></span></code></pre>
+<span><span class="co">##  0.9452  0.9981  1.0474  1.0401  1.0583  1.2835       2</span></span></code></pre>
 <p>The effect is more visible on the <strong>hazard</strong> scale,
 which depends directly on exact event timing which interval censoring
 leaves more uncertain. Overlaying the two methods within each group
@@ -520,7 +520,7 @@ calculation:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">(</span><span class="va">hazard_mi</span><span class="op">$</span><span class="va">ci_upper</span>  <span class="op">-</span> <span class="va">hazard_mi</span><span class="op">$</span><span class="va">ci_lower</span><span class="op">)</span> <span class="op">/</span></span>
 <span>        <span class="op">(</span><span class="va">hazard_mid</span><span class="op">$</span><span class="va">ci_upper</span> <span class="op">-</span> <span class="va">hazard_mid</span><span class="op">$</span><span class="va">ci_lower</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">##  0.9430  0.9869  1.0410  1.1365  1.2573  1.6937</span></span></code></pre>
+<span><span class="co">##  0.9479  0.9830  1.0498  1.1451  1.2659  1.7150</span></span></code></pre>
 <p>So the imputation uncertainty inflates the hazard intervals more than
 the survival intervals:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">S(t)</annotation></semantics></math>
