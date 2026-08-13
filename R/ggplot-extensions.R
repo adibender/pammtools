@@ -109,7 +109,7 @@ ggplot2_stairstep <- function(data, direction =  c("hv", "vh", "mid")) {
   cbind(data.frame(x = x, ymin = ymin, ymax = ymax), data_attr)
 }
 
-#' Plot State Occupation Probabilities
+#' Plot state occupation probabilities
 #'
 #' Creates a stacked area plot of state occupation probabilities over time,
 #' computed from transition probability matrices stored as an attribute of

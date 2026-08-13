@@ -1,4 +1,4 @@
-#' (Cumulative) (Step-) Hazard Plots.
+#' (Cumulative) (Step-) Hazard plots.
 #'
 #' \code{geom_hazard} is an extension of the \code{geom_line}, and
 #' is optimized for (cumulative) hazard plots. Essentially, it adds a (0,0)
