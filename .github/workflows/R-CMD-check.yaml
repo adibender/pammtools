@@ -3,10 +3,18 @@
 on:
   push:
     branches: [main, master]
+    paths-ignore: ['**.md', 'LICENSE', '.github/ISSUE_TEMPLATE/**']
   pull_request:
     branches: [main, master]
+    paths-ignore: ['**.md', 'LICENSE', '.github/ISSUE_TEMPLATE/**']
 
 name: R-CMD-check
+
+# Supersede in-flight runs on the same PR branch; never cancel a run on
+# main/master, so every merged commit keeps a check result.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   R-CMD-check:

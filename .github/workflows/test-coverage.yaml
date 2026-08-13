@@ -2,10 +2,15 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   pull_request:
+    paths-ignore: ['**.md', 'LICENSE', '.github/ISSUE_TEMPLATE/**']
 
 name: test-coverage.yaml
 
 permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test-coverage:
@@ -58,3 +63,4 @@ jobs:
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
+          retention-days: 7
