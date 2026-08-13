@@ -94,7 +94,7 @@ fped_attr <- function(fped) {
 
 
 #' @name dplyr_verbs
-#' @title \code{dplyr} Verbs for \code{ped}-Objects
+#' @title \code{dplyr} verbs for \code{ped}-objects
 #' @param .data an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @param tbl an  object of class \code{ped}, see \code{\link{as_ped}}.
 #' @param x an  object of class \code{ped}, see \code{\link{as_ped}}.

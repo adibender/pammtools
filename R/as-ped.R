@@ -1,4 +1,4 @@
-#' Transform data to Piece-wise Exponential Data (PED)
+#' Transform data to piece-wise exponential data (PED)
 #'
 #' This is the general data transformation function provided by the
 #' \code{pammtools} package. The following main applications must be distinguished:
@@ -446,7 +446,7 @@ as_ped_cr <- function(
   ped
 }
 
-#' Exctract event types
+#' Extract event types
 #'
 #' Given a formula that specifies the status variable of the outcome, this function
 #' extracts the different event types (except for censoring, specified by

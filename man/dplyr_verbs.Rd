@@ -37,7 +37,7 @@
 \alias{full_join.ped}
 \alias{left_join.ped}
 \alias{right_join.ped}
-\title{\code{dplyr} Verbs for \code{ped}-Objects}
+\title{\code{dplyr} verbs for \code{ped}-objects}
 \usage{
 \method{arrange}{ped}(.data, ...)
 

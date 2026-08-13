@@ -2,7 +2,7 @@
 % Please edit documentation in R/tdc-utils.R
 \name{has_tdc}
 \alias{has_tdc}
-\title{Checks if data contains timd-dependent covariates}
+\title{Checks if data contains time-dependent covariates}
 \usage{
 has_tdc(data, id_var)
 }
@@ -17,6 +17,6 @@ it will be checked if their values change within a group specified by
 Logical. \code{TRUE} if data contains time-dependent covariates, else \code{FALSE}.
 }
 \description{
-Checks if data contains timd-dependent covariates
+Checks if data contains time-dependent covariates
 }
 \keyword{internal}

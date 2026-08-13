@@ -2,7 +2,7 @@
 % Please edit documentation in R/as-ped.R
 \name{get_event_types}
 \alias{get_event_types}
-\title{Exctract event types}
+\title{Extract event types}
 \usage{
 get_event_types(data, formula, censor_code)
 }
