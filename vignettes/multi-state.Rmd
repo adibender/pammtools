@@ -1,10 +1,10 @@
 ---
-title: "Multi-State Modelling"
+title: "Multi-state modelling"
 author: "Johannes Piller"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Multi-State Modelling}
+  %\VignetteIndexEntry{Multi-state modelling}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
