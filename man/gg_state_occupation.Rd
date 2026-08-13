@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggplot-extensions.R
 \name{gg_state_occupation}
 \alias{gg_state_occupation}
-\title{Plot State Occupation Probabilities}
+\title{Plot state occupation probabilities}
 \usage{
 gg_state_occupation(
   newdata,

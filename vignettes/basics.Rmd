@@ -1,9 +1,9 @@
 ---
-title: "Basic Modeling"
+title: "Basic modeling"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Basic Modeling}
+  %\VignetteIndexEntry{Basic modeling}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: Remote.bib
 link-citations: yes

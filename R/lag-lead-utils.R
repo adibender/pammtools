@@ -55,7 +55,7 @@ get_laglead.data.frame <- function(x, ...) {
 }
 
 
-#' Plot Lag-Lead windows
+#' Plot lag-lead windows
 #'
 #' Given data defining a Lag-lead window, returns respective plot as a
 #' \code{ggplot2} object.

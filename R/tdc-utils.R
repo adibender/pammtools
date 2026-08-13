@@ -1,4 +1,4 @@
-#' Checks if data contains timd-dependent covariates
+#' Checks if data contains time-dependent covariates
 #'
 #' @param data A data frame (potentially) containing time-dependent covariates.
 #' @param id_var A character indicating the grouping variable. For each covariate

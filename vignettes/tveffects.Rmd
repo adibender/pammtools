@@ -61,7 +61,7 @@ see the [*strata* vignette](strata.html).
 
 - $f_{x,t}(x,t)$: A non-linear effect of $x$ that varies non-linearly over time $t$.
 
-## Veteran Data example
+## Veteran data example
 
 For illustration and comparison we use the `veteran` data presented in the
 vignette of the `survival` package (`vignette("timedep", package = "survival")`).
@@ -81,7 +81,7 @@ head(veteran)
 ```
 
 
-### Extended Cox Model (with known shape of time-variation function)
+### Extended Cox model (with known shape of time-variation function)
 
 To fit a time-varying effect of `karno` the authors suggest to use the function
 $$
@@ -113,7 +113,7 @@ plot(x = t, y = coef(vfit)["karno"] + coef(vfit)["tt(karno)"] * log(t + 20),
   col = Set1[1])
 ```
 
-### PAM (with known shape of time-variation function)
+### Pam (with known shape of time-variation function)
 
 To fit a PAM with equivalent model specification (except for the baseline hazard)
 we can use
@@ -140,7 +140,7 @@ lines(x = t_pem, y = coef(pam)["karno"] + coef(pam)["karno:logt20"] * log(t_pem 
 ```
 Both methods yield very similar estimates of the time-varying effect of the Karnofsky-Score, with a reduced hazard for higher-scoring patients at the beginning of the follow-up that diminishes over time and turns into an increased hazard for higher-scoring patients after about day 150.
 
-### PAM (penalized estimation of time-variation function)
+### Pam (penalized estimation of time-variation function)
 
 In case we don’t want to pre-specify which shape the time-dependency should have,
 we can specify the effect of `karno` as
@@ -182,7 +182,7 @@ gg_tv_karno
 The semi-parametric PAM model estimate for $f(t)$ increases fairly linearly up to day 150 and flattens out at about 0 (i.e., no effect of Karnofsky-Scores on the hazard) afterwards.
 
 
-### PAM with smooth, smoothly time-varying effect of the Karnofsky Score
+### PAM with smooth, smoothly time-varying effect of the Karnofsky score
 
 To fit a non-linear, non-linearly time-varying effect we can specify a
 two-dimensional interaction between the covariate of interest (here

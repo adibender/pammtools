@@ -1,4 +1,4 @@
-#' pammtools: Piece-wise exponential Additive Mixed Modeling tools.
+#' pammtools: Piece-wise exponential additive mixed modeling tools.
 #'
 #' \code{pammtools} provides functions and utilities that facilitate fitting
 #' Piece-wise Exponential Additive Mixed Models (PAMMs), including data
