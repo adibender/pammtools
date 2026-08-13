@@ -4,7 +4,7 @@
 \name{pammtools}
 \alias{pammtools-package}
 \alias{pammtools}
-\title{pammtools: Piece-wise exponential Additive Mixed Modeling tools.}
+\title{pammtools: Piece-wise exponential additive mixed modeling tools.}
 \description{
 \code{pammtools} provides functions and utilities that facilitate fitting
 Piece-wise Exponential Additive Mixed Models (PAMMs), including data

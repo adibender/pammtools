@@ -8,7 +8,7 @@
 \alias{GeomStepHazard}
 \alias{geom_surv}
 \alias{GeomSurv}
-\title{(Cumulative) (Step-) Hazard Plots.}
+\title{(Cumulative) (Step-) Hazard plots.}
 \usage{
 geom_hazard(
   mapping = NULL,

@@ -19,6 +19,10 @@
 ## Documentation
 * Standardized the headings and subheadings in the package vignettes to
   sentence-style capitalization for consistency and readability.
+* Fixed function help page titles to follow sentence-style capitalization
+  (`as_ped`, `dplyr_verbs`, `geom_hazard`, `geom_stepribbon`, `gg_laglead`,
+  `gg_state_occupation`, `pammtools`). Also corrected typos in
+  `get_event_types` (Exctract → Extract) and `has_tdc` (timd → time).
 
 # pammtools 0.8.0
 

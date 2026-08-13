@@ -9,7 +9,7 @@
 \alias{as_ped.ped}
 \alias{as_ped.pamm}
 \alias{as_ped_multistate}
-\title{Transform data to Piece-wise Exponential Data (PED)}
+\title{Transform data to piece-wise exponential data (PED)}
 \usage{
 as_ped(data, ...)
 

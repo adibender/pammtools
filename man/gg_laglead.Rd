@@ -5,7 +5,7 @@
 \alias{gg_laglead.default}
 \alias{gg_laglead.LL_df}
 \alias{gg_laglead.nested_fdf}
-\title{Plot Lag-Lead windows}
+\title{Plot lag-lead windows}
 \usage{
 gg_laglead(x, ...)
 
