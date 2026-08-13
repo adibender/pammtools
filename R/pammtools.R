@@ -16,12 +16,30 @@
 #' \item \href{https://adibender.github.io/pammtools/articles/baseline.html}{baseline}:
 #' Shows how to estimate and visualize baseline model (without covariates) and
 #' comparison to respective Cox-PH model.
+#' \item \href{https://adibender.github.io/pammtools/articles/bayesian.html}{bayesian}:
+#' Bayesian inference for PAMMs with posterior sampling and credible intervals.
 #' \item \href{https://adibender.github.io/pammtools/articles/convenience.html}{convenience}:
 #' Convenience functions for post-processing and plotting PAMMs.
+#' \item \href{https://adibender.github.io/pammtools/articles/cumulative-effects.html}{cumulative-effects}:
+#' Modeling cumulative effects of time-dependent exposures.
 #' \item \href{https://adibender.github.io/pammtools/articles/data-transformation.html}{data-transformation}:
 #' Transforming data into a format suitable to fit PAMMs.
 #' \item \href{https://adibender.github.io/pammtools/articles/frailty.html}{frailty}:
 #' Specifying "frailty" terms, i.e., random effects for PAMMs.
+#' \item \href{https://adibender.github.io/pammtools/articles/interval-censored.html}{interval-censored}:
+#' Analysis of interval-censored time-to-event data via multiple imputation.
+#' \item \href{https://adibender.github.io/pammtools/articles/left-truncation.html}{left-truncation}:
+#' Estimation for left-truncated data.
+#' \item \href{https://adibender.github.io/pammtools/articles/model-evaluation.html}{model-evaluation}:
+#' Model assessment and diagnostics for fitted PAMMs.
+#' \item \href{https://adibender.github.io/pammtools/articles/multi-state.html}{multi-state}:
+#' Multi-state and recurrent events modeling.
+#' \item \href{https://adibender.github.io/pammtools/articles/recurrent-events.html}{recurrent-events}:
+#' Recurrent events analysis with PAMMs.
+#' \item \href{https://adibender.github.io/pammtools/articles/shape-constraints.html}{shape-constraints}:
+#' Shape-constrained effects using scam backend.
+#' \item \href{https://adibender.github.io/pammtools/articles/simulations.html}{simulations}:
+#' Simulating survival data and validating model performance.
 #' \item \href{https://adibender.github.io/pammtools/articles/splines.html}{splines}:
 #' Specifying spline smooth terms for PAMMs.
 #' \item \href{https://adibender.github.io/pammtools/articles/strata.html}{strata}:
@@ -35,6 +53,8 @@
 #' Estimation for left-truncated data.
 #'\item \href{https://adibender.github.io/pammtools/articles/competing-risks.html}{competing-risks}:
 #' Competing risks analysis.
+#' \item \href{https://adibender.github.io/pammtools/articles/xgboost-backend.html}{xgboost-backend}:
+#' Defining alternative backends: gradient boosting with xgboost.
 #' }
 #'
 #' @name pammtools

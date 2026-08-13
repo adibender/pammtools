@@ -23,6 +23,12 @@
   (`as_ped`, `dplyr_verbs`, `geom_hazard`, `geom_stepribbon`, `gg_laglead`,
   `gg_state_occupation`, `pammtools`). Also corrected typos in
   `get_event_types` (Exctract → Extract) and `has_tdc` (timd → time).
+* Updated `pammtools.R` help page to include all available vignettes:
+  Bayesian, cumulative effects, interval-censored, model evaluation, multi-state,
+  recurrent events, shape constraints, simulations, and xgboost backend.
+* Updated website configuration (`_pkgdown.yml`) to align navbar and reference
+  section titles with vignette headlines and apply consistent sentence-style
+  capitalization throughout the documentation site.
 
 # pammtools 0.8.0
 

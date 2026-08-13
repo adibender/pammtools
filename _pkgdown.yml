@@ -6,7 +6,7 @@ template:
       api_key: c3726dcbf089f0b26f496305ed030c22
       index_name: pammtools
 reference:
-  - title: "Transform data to Piece-wise Exponential Data (PED) format"
+  - title: "Transform data to piece-wise exponential data (PED) format"
     desc: "Functions to transform data sets in different formats to PED format,
     suitable to be fit as PAMMs."
     contents:
@@ -47,7 +47,7 @@ reference:
       - pamm_ic
       - pamm_ic_cr
       - add_inspections
-  - title: "Convenience functions for visualization of model outputs."
+  - title: "Convenience functions for visualization of model outputs"
     desc: "Functions that facilitate effect plots (smooth effects, etc.)"
     contents:
       - gg_fixed
@@ -115,7 +115,7 @@ navbar:
     menu:
     - text: Data transformation
       href: articles/data-transformation.html
-    - text: Estimating the baseline hazard
+    - text: Baseline hazard
       href: articles/baseline.html
     - text: Basic modeling
       href: articles/basics.html
@@ -125,33 +125,33 @@ navbar:
       href: articles/shape-constraints.html
     - text: Workflow and convenience functions
       href: articles/convenience.html
-    - text: Stratified models
+    - text: Stratified baseline
       href: articles/strata.html
-    - text: Time-varying effects (TVEs)
+    - text: Time-varying effects
       href: articles/tveffects.html
-    - text: Frailties (random effects)
+    - text: Frailty and random effects
       href: articles/frailty.html
-    - text: Time-dependent covariates (TDCs)
+    - text: Time-dependent covariates
       href: articles/tdcovar.html
-    - text: Left-truncated data
+    - text: Left truncation
       href: articles/left-truncation.html
     - text: Interval-censored data
       href: articles/interval-censored.html
     - text: Model evaluation
       href: articles/model-evaluation.html
-    - text: Cumulative effects/Exposure-Lag-Response Associations
+    - text: Cumulative effects
       href: articles/cumulative-effects.html
-    - text: Competing Risks
+    - text: Competing risks
       href: articles/competing-risks.html
-    - text: Recurrent Events
+    - text: Recurrent events
       href: articles/recurrent-events.html
-    - text: Multi-State Modelling
+    - text: Multi-state modelling
       href: articles/multi-state.html
-    - text: Simulating Time-To-Event Data
+    - text: Simulating time-to-event data
       href: articles/simulations.html
-    - text: Bayesian Baseline PAMMs
+    - text: Bayesian baseline PAMMs
       href: articles/bayesian.html
-    - text: Defining a new backend (xgboost)
+    - text: Defining a new backend (gradient boosting with xgboost)
       href: articles/xgboost-backend.html
   - text: News
     href: news/index.html
