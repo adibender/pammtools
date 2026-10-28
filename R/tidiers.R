@@ -127,7 +127,6 @@ tidy_smooth <- function(
 #' Extract 2d smooth objects in tidy format.
 #'
 #' @inheritParams tidy_smooth
-#' @importFrom purrr cross_df
 #' @importFrom tibble as_tibble
 #' @import dplyr
 #' @export
@@ -158,7 +157,7 @@ tidy_smooth2d <- function(
   po <- lapply(po, function(sm) {
     sm[["fit"]] <- as.vector(sm[["fit"]])
     p1 <- as_tibble(sm[setdiff(keep, c("x", "y"))])
-    xy <- cross_df(sm[c("x", "y")])
+    xy <- expand_grid(y = sm[["y"]], x = sm[["x"]])[c("x", "y")]
     xy <- bind_cols(xy, p1)
     if (ci) {
       xy <- xy %>%
