@@ -156,7 +156,7 @@ In general, each interval has to be constructed such that only subjects already 
 
 ```{r, eval = has_eha}
 infants_ped <- as_ped(Surv(enter, exit, event) ~ mother + age, data = infants)
-infants_ped %>% filter(id == 4)
+pammtools::filter(infants_ped, id == 4)
 ```
 
 For analysis of such data refer to the [Left-truncation vignette](left-truncation.html)
