@@ -51,8 +51,10 @@ jobs:
         run: pkgdown::build_site_github_pages(install = FALSE)
         shell: Rscript {0}
 
+      # Deploy only from the default branch and from releases, so that a manual
+      # workflow_dispatch on a feature branch builds the site without publishing it.
       - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'release'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           clean: false
