@@ -1,3 +1,11 @@
+# pammtools (development version)
+
+## Enhancements
+* `gg_slice()` gains a `geom` argument. `geom = "line"` keeps the previous
+  behaviour (line plus ribbon); `geom = "point"` draws points and error bars,
+  which is readable when the variable on the x axis takes only a few distinct
+  values (#257).
+
 # pammtools 0.8.1
 
 ## Enhancements
