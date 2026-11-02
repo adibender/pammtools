@@ -133,8 +133,18 @@ gg_partial_ll <- function(
 #'  ci = FALSE)
 #' gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complications),
 #'   reference=list(age = 50))
+#' # discrete x axis: points with error bars instead of a line with a ribbon
+#' gg_slice(ped, model, "age", age = c(40, 60, 80),
+#'   complications = levels(complications), geom = "point")
+#' @param geom Geometry used for the estimate. `"line"` (the default) draws a
+#'   line and, if `ci = TRUE`, a ribbon; `"point"` draws points and error bars,
+#'   which is the readable choice when the variable on the x axis takes only a
+#'   few distinct values.
 #' @export
-gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
+gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE,
+                     geom = c("line", "point")) {
+
+  geom <- match.arg(geom)
 
   expressions <- quos(...)
   vars        <- names(expressions)
@@ -147,20 +157,26 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE) {
   ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
+  draw_estimate <- if (geom == "line") geom_line else geom_point
+
   gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = .data[["fit"]]))
   if (ci) {
-    gg_out <- gg_out +
-      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]), alpha = 0.3)
-  }
-  gg_out <- gg_out + geom_line()
-  if (n_vars > 1) {
-    if(ci) {
-      gg_out <- gg_out + aes(group = .data[[vars[2]]], fill = .data[[vars[2]]]) +
-      geom_line(aes(col = .data[[vars[2]]]))
+    gg_out <- gg_out + if (geom == "line") {
+      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
+        alpha = 0.3)
     } else {
-      gg_out <- gg_out + aes(group = .data[[vars[2]]]) +
-        geom_line(aes(col = .data[[vars[2]]]))
+      geom_errorbar(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
+        width = 0)
     }
+  }
+  gg_out <- gg_out + draw_estimate()
+  if (n_vars > 1) {
+    gg_out <- gg_out + aes(group = .data[[vars[2]]])
+    # `fill` only matters for the ribbon drawn by the line geometry
+    if (ci && geom == "line") {
+      gg_out <- gg_out + aes(fill = .data[[vars[2]]])
+    }
+    gg_out <- gg_out + draw_estimate(aes(col = .data[[vars[2]]]))
     if (n_vars > 2) {
       form   <- as.formula(paste0("~", vars[-1:-2], collapse = "+"))
       gg_out <- gg_out + facet_wrap(form, labeller = label_both)

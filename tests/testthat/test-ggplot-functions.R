@@ -163,3 +163,32 @@ test_that("state occupation group labels from attributes are applied correctly",
   expect_setequal(levels(p$data[["treat"]]), c("Placebo", "Prednisone"))
 })
 
+
+test_that("gg_slice honours the geom argument", {
+  ped <- tumor[1:200, ] %>% as_ped(Surv(days, status) ~ .)
+  model <- mgcv::gam(ped_status ~ s(tend) + s(age, by = complications),
+    data = ped, family = poisson(), offset = offset)
+
+  layers_of <- function(p) vapply(p$layers, function(l) class(l$geom)[1], "")
+
+  p_line <- gg_slice(ped, model, "age", age = seq_range(age, 20),
+    complications = levels(complications))
+  expect_s3_class(p_line, "ggplot")
+  expect_true("GeomRibbon" %in% layers_of(p_line))
+  expect_true("GeomLine" %in% layers_of(p_line))
+
+  p_point <- gg_slice(ped, model, "age", age = c(40, 60, 80),
+    complications = levels(complications), geom = "point")
+  expect_s3_class(p_point, "ggplot")
+  expect_true("GeomErrorbar" %in% layers_of(p_point))
+  expect_true("GeomPoint" %in% layers_of(p_point))
+  expect_false("GeomRibbon" %in% layers_of(p_point))
+
+  # without CI neither the ribbon nor the error bars are drawn
+  p_point_noci <- gg_slice(ped, model, "age", age = c(40, 60, 80),
+    complications = levels(complications), ci = FALSE, geom = "point")
+  expect_false(any(c("GeomErrorbar", "GeomRibbon") %in% layers_of(p_point_noci)))
+
+  expect_error(gg_slice(ped, model, "age", age = c(40, 60),
+    complications = levels(complications), geom = "bar"), "should be one of")
+})
