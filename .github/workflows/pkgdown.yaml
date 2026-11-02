@@ -1,9 +1,11 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Not run on pull_request: the site is only deployed from main/master, and
+# R-CMD-check already builds the vignettes on PRs. Building the full site
+# (JAGS + a brms/Stan compile) for an artifact that is thrown away doubled
+# the CI time of every PR that was merged shortly after.
 on:
   push:
-    branches: [main, master]
-  pull_request:
     branches: [main, master]
   release:
     types: [published]
@@ -11,12 +13,13 @@ on:
 
 name: pkgdown
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
-    concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     permissions:
