@@ -16,6 +16,16 @@
   grids stacking profiles with *disjoint* time grids are indistinguishable
   from a single profile with time-varying covariates and pass undetected.
 
+## Bug fixes
+* `as_ped()` failed with `no applicable method for 'group_by'` when competing
+  risks data with time-dependent covariates were transformed with
+  `combine = FALSE` (#219). The post-processing of the `concurrent()` and
+  `cumulative()` specials assumed a single data frame, while `combine = FALSE`
+  returns one data frame per cause. The specials are now expanded for each
+  cause-specific data set. Note that the interval break points are still
+  derived once for all causes in this case, because they have to contain the
+  change points of the covariates.
+
 ## Documentation
 * Standardized the headings and subheadings in the package vignettes to
   sentence-style capitalization for consistency and readability.
