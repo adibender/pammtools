@@ -16,6 +16,15 @@
   grids stacking profiles with *disjoint* time grids are indistinguishable
   from a single profile with time-varying covariates and pass undetected.
 
+## Bug fixes
+* `as_ped()` returned wrong values for concurrent time-dependent covariates on
+  competing risks data (#219). The covariate values were merged into the
+  transformed data by row position, but the rows of a competing risks `ped` are
+  ordered by cause, while the values were looked up per subject. Values are now
+  matched by subject and interval end, so they no longer depend on the row
+  order and are identical across causes, as the covariate path of a subject
+  must be.
+
 ## Documentation
 * Standardized the headings and subheadings in the package vignettes to
   sentence-style capitalization for consistency and readability.
