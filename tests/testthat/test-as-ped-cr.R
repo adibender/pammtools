@@ -93,3 +93,41 @@ test_that("Trafo works for status as factor.", {
   expect_is(attr(ped, "risks"), "factor")
   expect_equal(levels(ped$cause), c("1", "2"))
 })
+
+test_that("TDC can be transformed for cause-specific data sets (combine = FALSE)", {
+
+  set.seed(1)
+  event_df <- data.frame(
+    id     = factor(1:10),
+    status = c(0L, 1L, 2L, 0L, 1L, 2L, 1L, 0L, 0L, 2L),
+    time   = seq(from = 10, to = 100, by = 10))
+  tdc_df <- data.frame(
+    id  = factor(c(1:10, 1:10)),
+    var = rbinom(20, 1, 0.3),
+    tt  = c(rep(0, 10), seq(5, 23, 2)))
+
+  ped_list <- as_ped(
+    data    = list(event_df, tdc_df),
+    formula = Surv(time, status) ~ concurrent(var, tz_var = "tt"),
+    id      = "id",
+    combine = FALSE)
+
+  expect_class(ped_list, "ped_cr_list")
+  expect_identical(names(ped_list), c("cause = 1", "cause = 2"))
+  expect_identical(attr(ped_list, "trafo_args")$combine, FALSE)
+
+  for (ped_i in ped_list) {
+    expect_true("var" %in% names(ped_i))
+    # the covariate value in an interval is the last one observed strictly
+    # before the interval end (lag-lead function of concurrent(), lag = 0)
+    expected <- vapply(
+      seq_len(nrow(ped_i)),
+      function(i) {
+        tdc_i <- tdc_df[tdc_df$id == ped_i$id[i] & tdc_df$tt < ped_i$tend[i], ]
+        if (nrow(tdc_i) == 0) NA_integer_ else tdc_i$var[which.max(tdc_i$tt)]
+      },
+      integer(1))
+    expect_equal(ped_i$var, expected)
+  }
+
+})
