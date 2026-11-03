@@ -7,6 +7,15 @@
   values; `geom = "step"` draws a step function and a step ribbon for
   piece-wise constant quantities such as the (log-)hazard over `tend` (#257).
 
+## Bug fixes
+* `as_ped()` returned wrong values for concurrent time-dependent covariates on
+  competing risks data (#219). The covariate values were merged into the
+  transformed data by row position, but the rows of a competing risks `ped` are
+  ordered by cause, while the values were looked up per subject. Values are now
+  matched by subject and interval end, so they no longer depend on the row
+  order and are identical across causes, as the covariate path of a subject
+  must be.
+
 # pammtools 0.8.1
 
 ## Enhancements

@@ -98,3 +98,50 @@ test_that("Covariate matrices are created correctly", {
   expect_equal(max(ped$tz2_latency * ped$LL), 5)
 
 })
+
+test_that("Concurrent TDC are matched by id and interval, not by row position", {
+
+  set.seed(1)
+  event_df <- data.frame(
+    id     = factor(1:10),
+    status = c(0L, 1L, 2L, 0L, 1L, 2L, 1L, 0L, 0L, 2L),
+    time   = seq(from = 10, to = 100, by = 10))
+  tdc_df <- data.frame(
+    id  = factor(c(1:10, 1:10)),
+    var = rbinom(20, 1, 0.3),
+    tt  = c(rep(0, 10), seq(5, 23, 2)))
+
+  # expected value in an interval: the last covariate value observed strictly
+  # before the interval end (lag-lead function of concurrent(), lag = 0)
+  expected_var <- function(ped) {
+    vapply(
+      seq_len(nrow(ped)),
+      function(i) {
+        tdc_i <- tdc_df[tdc_df$id == ped$id[i] & tdc_df$tt < ped$tend[i], ]
+        if (nrow(tdc_i) == 0) NA_integer_ else tdc_i$var[which.max(tdc_i$tt)]
+      },
+      integer(1))
+  }
+
+  # single event: row order is id-major, so this worked before as well
+  single_df <- transform(event_df, status = 1L * (status == 1L))
+  ped_single <- as_ped(
+    data    = list(single_df, tdc_df),
+    formula = Surv(time, status) ~ concurrent(var, tz_var = "tt"),
+    id      = "id")
+  expect_equal(ped_single$var, expected_var(ped_single))
+
+  # competing risks, stacked by cause: rows are cause-major (#219)
+  ped_cr <- as_ped(
+    data    = list(event_df, tdc_df),
+    formula = Surv(time, status) ~ concurrent(var, tz_var = "tt"),
+    id      = "id")
+  expect_equal(ped_cr$var, expected_var(ped_cr))
+
+  # the covariate path belongs to the subject, so it cannot differ by cause
+  by_cause <- split(
+    ped_cr[order(ped_cr$cause, ped_cr$id, ped_cr$tend), c("id", "tend", "var")],
+    ped_cr$cause[order(ped_cr$cause, ped_cr$id, ped_cr$tend)])
+  expect_equal(by_cause[[1]]$var, by_cause[[2]]$var)
+
+})
