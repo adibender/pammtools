@@ -16,6 +16,14 @@
   grids stacking profiles with *disjoint* time grids are indistinguishable
   from a single profile with time-varying covariates and pass undetected.
 
+## Bug fixes
+* The interval split points of competing risks data with time-dependent
+  covariates were derived from the event times of the first cause only
+  (#306). Events of the other causes were shifted to the next interval end,
+  and events after the last split point were dropped. The split points are now
+  derived for each event type and combined, as they already were for competing
+  risks data without time-dependent covariates.
+
 ## Documentation
 * Standardized the headings and subheadings in the package vignettes to
   sentence-style capitalization for consistency and readability.

@@ -106,7 +106,28 @@ nest_tdc.list <- function(data, formula, ...) {
     )
 
   ## add atrributes
-  cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
+  # for competing risks data the status variable still holds the cause here, so
+  # the split points have to be derived for each event type. Otherwise only the
+  # event times of the first cause become interval breaks, and events of the
+  # other causes are shifted to the next break or dropped entirely (#306).
+  censor_code <- if (is.null(dots$censor_code)) 0L else dots$censor_code
+  event_types <- get_event_types(nested_df, formula, censor_code)
+  if (length(event_types) > 1) {
+    cut <- map(
+      event_types,
+      ~ get_cut(
+        nested_df,
+        formula  = formula,
+        cut      = dots$cut,
+        max_time = dots$max_time,
+        event    = .x
+      )
+    ) %>%
+      reduce(union) %>%
+      sort()
+  } else {
+    cut <- get_cut(nested_df, formula, cut = dots$cut, max_time = dots$max_time)
+  }
 
   id_n <- nested_df %>%
     pull(time_var) %>%
