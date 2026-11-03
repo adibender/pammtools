@@ -93,3 +93,34 @@ test_that("Trafo works for status as factor.", {
   expect_is(attr(ped, "risks"), "factor")
   expect_equal(levels(ped$cause), c("1", "2"))
 })
+
+test_that("Interval breaks cover all causes when TDCs are present", {
+
+  set.seed(1)
+  event_df <- data.frame(
+    id     = factor(1:10),
+    status = c(0L, 1L, 2L, 0L, 1L, 2L, 1L, 0L, 0L, 2L),
+    time   = seq(from = 10, to = 100, by = 10))
+  tdc_df <- data.frame(
+    id  = factor(c(1:10, 1:10)),
+    var = rbinom(20, 1, 0.3),
+    tt  = c(rep(0, 10), seq(5, 23, 2)))
+
+  ped <- as_ped(
+    data    = list(event_df, tdc_df),
+    formula = Surv(time, status) ~ concurrent(var, tz_var = "tt"),
+    id      = "id")
+
+  # cause 1 has events at 20, 50, 70, cause 2 at 30, 60, 100
+  event_times <- sort(event_df$time[event_df$status != 0])
+  expect_true(all(event_times %in% attr(ped, "breaks")))
+  expect_equal(max(attr(ped, "breaks")), max(event_times))
+
+  # every event of every cause is retained, at its own time
+  events <- ped[ped$ped_status == 1, ]
+  expect_equal(sort(events$tend), event_times)
+  expect_equal(
+    as.vector(table(events$cause)),
+    as.vector(table(event_df$status[event_df$status != 0])))
+
+})
