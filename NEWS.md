@@ -15,6 +15,14 @@
   matched by subject and interval end, so they no longer depend on the row
   order and are identical across causes, as the covariate path of a subject
   must be.
+* `as_ped()` failed with `no applicable method for 'group_by'` when competing
+  risks data with time-dependent covariates were transformed with
+  `combine = FALSE` (#219). The post-processing of the `concurrent()` and
+  `cumulative()` specials assumed a single data frame, while `combine = FALSE`
+  returns one data frame per cause. The specials are now expanded for each
+  cause-specific data set. Note that the interval break points are still
+  derived once for all causes in this case, because they have to contain the
+  change points of the covariates.
 
 # pammtools 0.8.1
 

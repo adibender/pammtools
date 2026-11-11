@@ -238,19 +238,44 @@ as_ped.nested_fdf <- function(
   ccr_breaks <- attr(data, "ccr_breaks")
   cut <- union(cut, ccr_breaks[ccr_breaks <= max(cut)]) %>% sort()
 
-  # ped <- data %>%
-  #   select_if(is.atomic) %>%
-  #   as.data.frame() %>%
-  #   as_ped(
-  #     formula  = formula,
-  #     id       = dots$id,
-  #     cut      = cut,
-  #     max_time = dots$max_time,
-  #     ...)
   dots$formula <- formula
   dots$data <- as.data.frame(select_if(data, is.atomic))
   dots$cut <- cut
   ped <- do.call(as_ped, dots)
+
+  # for competing risks data with combine = FALSE, as_ped() returns one ped per
+  # cause, each with its own interval break points, so each of them needs its
+  # own transformation of the time-dependent covariates
+  if (inherits(ped, "ped_cr_list")) {
+    list_attributes <- attributes(ped)
+    ped <- map(
+      ped,
+      add_tdc_specials,
+      data = data,
+      dots = dots,
+      formula = formula
+    )
+    attributes(ped) <- list_attributes
+
+    return(ped)
+  }
+
+  add_tdc_specials(ped, data = data, dots = dots, formula = formula)
+}
+
+#' Add the time-dependent covariate specials to a transformed data set
+#'
+#' Expands the \code{concurrent} and \code{cumulative} specials of
+#' \code{formula} for one \code{ped} data frame. Kept separate from
+#' \code{as_ped.nested_fdf} because competing risks data transformed with
+#' \code{combine = FALSE} yield one such data frame per cause.
+#'
+#' @inheritParams as_ped
+#' @param dots The arguments \code{as_ped.nested_fdf} was called with.
+#' @param ped A \code{ped} data frame.
+#'
+#' @keywords internal
+add_tdc_specials <- function(ped, data, dots, formula) {
 
   # replace updated attributes
   attr(data, "breaks") <- attr(ped, "breaks")
