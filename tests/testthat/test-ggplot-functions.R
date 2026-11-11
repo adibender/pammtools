@@ -192,3 +192,44 @@ test_that("gg_slice honours the geom argument", {
   expect_error(gg_slice(ped, model, "age", age = c(40, 60),
     complications = levels(complications), geom = "bar"), "should be one of")
 })
+
+test_that("gg_slice draws steps over the interval ending at each x", {
+  ped <- tumor[1:200, ] %>%
+    as_ped(Surv(days, status) ~ ., cut = c(0, 500, 1000, 2000, 3000))
+  model <- mgcv::gam(ped_status ~ s(tend, k = 4) + complications,
+    data = ped, family = poisson(), offset = offset)
+  ndf <- make_newdata(ped, tend = unique(tend),
+    complications = levels(complications)) %>%
+    add_term(model, "tend")
+
+  p <- gg_slice(ped, model, "tend", tend = unique(tend),
+    complications = levels(complications), geom = "step")
+  layers_of <- vapply(p$layers, function(l) class(l$geom)[1], "")
+  expect_true(all(c("GeomStep", "GeomStepribbon") %in% layers_of))
+
+  # value of the drawn stairs at x0, i.e. of the horizontal segment covering x0
+  stair_at <- function(x, y, x0) {
+    vapply(x0, function(v) {
+      i <- which(x[-length(x)] <= v & x[-1] >= v & diff(y) == 0)[1]
+      y[i]
+    }, numeric(1))
+  }
+  mids <- c(250, 750, 1500, 2500)
+  i_rib   <- which(layers_of == "GeomStepribbon")
+  i_est   <- which(layers_of == "GeomStep")[1]
+  rib     <- layer_data(p, i_rib)
+  est     <- layer_data(p, i_est)
+  dir_rib <- p$layers[[i_rib]]$geom_params$direction
+  dir_est <- p$layers[[i_est]]$geom_params$direction
+  for (g in unique(rib$group)) {
+    truth <- ndf[ndf$complications == sort(unique(ndf$complications))[g], ]
+    r <- rib[rib$group == g, ]
+    # duplicated rows as in GeomStepribbon$draw_group()
+    r <- pammtools:::ggplot2_stairstep(rbind(r, r)[order(c(r$x, r$x)), ],
+      dir_rib)
+    e <- ggplot2:::stairstep(est[est$group == g, ], dir_est)
+    expect_equal(stair_at(r$x, r$ymin, mids), truth$ci_lower)
+    expect_equal(stair_at(r$x, r$ymax, mids), truth$ci_upper)
+    expect_equal(stair_at(e$x, e$y, mids), truth$fit)
+  }
+})

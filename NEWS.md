@@ -4,7 +4,8 @@
 * `gg_slice()` gains a `geom` argument. `geom = "line"` keeps the previous
   behaviour (line plus ribbon); `geom = "point"` draws points and error bars,
   which is readable when the variable on the x axis takes only a few distinct
-  values (#257).
+  values; `geom = "step"` draws a step function and a step ribbon for
+  piece-wise constant quantities such as the (log-)hazard over `tend` (#257).
 
 # pammtools 0.8.1
 

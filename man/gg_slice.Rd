@@ -11,7 +11,7 @@ gg_slice(
   ...,
   reference = NULL,
   ci = TRUE,
-  geom = c("line", "point")
+  geom = c("line", "point", "step")
 )
 }
 \arguments{
@@ -41,7 +41,9 @@ of interest should be calculated/plotted. Defaults to \code{TRUE}.}
 \item{geom}{Geometry used for the estimate. \code{"line"} (the default) draws a
 line and, if \code{ci = TRUE}, a ribbon; \code{"point"} draws points and error bars,
 which is the readable choice when the variable on the x axis takes only a
-few distinct values.}
+few distinct values; \code{"step"} draws a step function and a step ribbon,
+where the value at x applies to the interval that ends at x and the first
+interval starts at 0, as for the piece-wise constant hazard over \code{tend}.}
 }
 \description{
 Flexible, high-level plotting function for (non-linear) effects conditional
@@ -61,4 +63,6 @@ gg_slice(ped, model, "age", age=seq_range(age, 20), complications=levels(complic
 # discrete x axis: points with error bars instead of a line with a ribbon
 gg_slice(ped, model, "age", age = c(40, 60, 80),
   complications = levels(complications), geom = "point")
+# step function over time, e.g. for the (log-)hazard
+gg_slice(ped, model, "tend", tend = unique(tend), geom = "step")
 }

@@ -136,13 +136,17 @@ gg_partial_ll <- function(
 #' # discrete x axis: points with error bars instead of a line with a ribbon
 #' gg_slice(ped, model, "age", age = c(40, 60, 80),
 #'   complications = levels(complications), geom = "point")
+#' # step function over time, e.g. for the (log-)hazard
+#' gg_slice(ped, model, "tend", tend = unique(tend), geom = "step")
 #' @param geom Geometry used for the estimate. `"line"` (the default) draws a
 #'   line and, if `ci = TRUE`, a ribbon; `"point"` draws points and error bars,
 #'   which is the readable choice when the variable on the x axis takes only a
-#'   few distinct values.
+#'   few distinct values; `"step"` draws a step function and a step ribbon,
+#'   where the value at x applies to the interval that ends at x and the first
+#'   interval starts at 0, as for the piece-wise constant hazard over `tend`.
 #' @export
 gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE,
-                     geom = c("line", "point")) {
+                     geom = c("line", "point", "step")) {
 
   geom <- match.arg(geom)
 
@@ -157,23 +161,33 @@ gg_slice <- function(data, model, term, ..., reference = NULL, ci = TRUE,
   ndf      <- ndf %>% mutate_at(vars[-1], ~as.factor(.x))
   n_vars   <- length(vars)
 
-  draw_estimate <- if (geom == "line") geom_line else geom_point
+  if (geom == "step") {
+    # the value at x holds on the interval ending at x ("vh"); a row at x = 0
+    # per curve lets the first interval be drawn, as in geom_stephazard()
+    ndf_start <- ndf %>% group_by(across(all_of(vars[-1]))) %>% slice(1) %>%
+      ungroup()
+    ndf_start[[vars[1]]] <- 0
+    ndf <- bind_rows(ndf_start, ndf)
+  }
+
+  draw_estimate <- switch(geom,
+    line  = geom_line,
+    point = geom_point,
+    step  = function(...) geom_step(..., direction = "vh"))
 
   gg_out <- ggplot(ndf, aes(x = .data[[vars[1]]], y = .data[["fit"]]))
   if (ci) {
-    gg_out <- gg_out + if (geom == "line") {
-      geom_ribbon(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
-        alpha = 0.3)
-    } else {
-      geom_errorbar(aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]]),
-        width = 0)
-    }
+    ci_aes <- aes(ymin = .data[["ci_lower"]], ymax = .data[["ci_upper"]])
+    gg_out <- gg_out + switch(geom,
+      line  = geom_ribbon(ci_aes, alpha = 0.3),
+      point = geom_errorbar(ci_aes, width = 0),
+      step  = geom_stepribbon(ci_aes, direction = "vh", alpha = 0.3))
   }
   gg_out <- gg_out + draw_estimate()
   if (n_vars > 1) {
     gg_out <- gg_out + aes(group = .data[[vars[2]]])
-    # `fill` only matters for the ribbon drawn by the line geometry
-    if (ci && geom == "line") {
+    # `fill` only matters for the ribbons, not for the error bars
+    if (ci && geom != "point") {
       gg_out <- gg_out + aes(fill = .data[[vars[2]]])
     }
     gg_out <- gg_out + draw_estimate(aes(col = .data[[vars[2]]]))
