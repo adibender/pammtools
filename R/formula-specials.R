@@ -260,7 +260,16 @@ add_concurrent <- function(ped, data, id_var) {
 
   ccr <- attr(data, "ccr")
 
-  ped_split <- split(ped$tend, f = ped[[id_var]])
+  # Look up the covariate values for each (id, interval end) combination and
+  # match them back by that key. The row order of \code{ped} depends on the
+  # type of data (single event, competing risks stacked by cause, multi-state),
+  # so a positional merge is not safe here.
+  key       <- unique(as.data.frame(ped)[, c(id_var, "tend"), drop = FALSE])
+  key       <- key[order(key[[id_var]], key[["tend"]]), , drop = FALSE]
+  key_split <- split(key[["tend"]], f = key[[id_var]])
+  ped_key   <- paste(ped[[id_var]], ped[["tend"]], sep = "\r")
+  key_key   <- paste(key[[id_var]], key[["tend"]], sep = "\r")
+  ind       <- match(ped_key, key_key)
 
   for (ccr_i in ccr[["ccr_list"]]) {
     tdc_vars_i <- ccr_i[["col_vars"]]
@@ -270,13 +279,18 @@ add_concurrent <- function(ped, data, id_var) {
       select(one_of(c(id_var, ccr_vars_i)))
     ccr_i_df <- ccr_i_df %>% unnest(cols = -one_of(id_var))
 
-    li <- map2(ped_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
+    li <- map2(key_split, split(ccr_i_df, f = ccr_i_df[[id_var]]),
       function(.x, .y) {
         ll_ind <- rowSums(outer(.x, .y[[tz_var_i]], ccr_i$ll_fun))
+        # no exposure time fulfills the lag-lead condition -> NA instead of a
+        # dropped row, which would shift all subsequent values
+        ll_ind[ll_ind == 0] <- NA_integer_
         .y[ll_ind, tdc_vars_i]
       }) %>% bind_rows() %>% as.data.frame()
 
-    ped <- ped %>% bind_cols(li)
+    for (tdc_var_i in tdc_vars_i) {
+      ped[[tdc_var_i]] <- li[[tdc_var_i]][ind]
+    }
 
   }
 
