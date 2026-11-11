@@ -33,6 +33,12 @@
   (`Surv(start, stop, event)`) without an id column. Recent versions of
   **survival** no longer add it in `survSplit()` for start-stop data, so it is
   now created before the data are split.
+* `as_ped()` returned wrong values for `cumulative()` covariates on competing
+  risks data with `combine = TRUE` (#308): almost every row carried the
+  exposure history of another subject, and `latency()` terms failed with
+  `subscript out of bounds`. The intervals are now counted within subject and
+  cause and the subject is matched by id, instead of both being derived from
+  the row order, which differs because the data are stacked by cause.
 
 # pammtools 0.8.1
 

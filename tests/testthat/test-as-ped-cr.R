@@ -162,3 +162,42 @@ test_that("Interval breaks cover all causes when TDCs are present", {
     as.vector(table(event_df$status[event_df$status != 0])))
 
 })
+
+test_that("Cumulative TDCs are matched to the subject for combine = TRUE", {
+
+  set.seed(1)
+  event_df <- data.frame(
+    id     = 1:10,
+    status = c(0L, 1L, 2L, 0L, 1L, 2L, 1L, 0L, 0L, 2L),
+    time   = seq(from = 10, to = 100, by = 10))
+  tdc_df <- data.frame(
+    id = rep(1:10, each = 3),
+    tt = rep(c(0, 20, 50), 10),
+    z  = rnorm(30))
+  z_true <- do.call(rbind, split(tdc_df$z, tdc_df$id))
+
+  # every row carries the exposure history of its own subject
+  ped <- as_ped(list(event_df, tdc_df),
+    Surv(time, status) ~ cumulative(z, tz_var = "tt"), id = "id")
+  expect_equal(unname(ped$z), unname(z_true[ped$id, ]))
+
+  formula <- Surv(time, status) ~ cumulative(latency(tt), z, tz_var = "tt")
+  ped  <- as_ped(list(event_df, tdc_df), formula, id = "id")
+  ped_list <- as_ped(list(event_df, tdc_df), formula, id = "id",
+    combine = FALSE)
+
+  expect_equal(unname(ped$z), unname(z_true[ped$id, ]))
+  # the latency of each row refers to its own interval end
+  expect_equal(unname(ped$tt_latency),
+    unname(pmax(outer(ped$tend, c(0, 20, 50), "-"), 0)))
+
+  # combine = TRUE stacks the cause-specific data sets of combine = FALSE
+  for (k in seq_along(ped_list)) {
+    cols  <- setdiff(names(ped_list[[k]]), "cause")
+    ped_k <- as.data.frame(ped)[ped$cause == k, cols]
+    rownames(ped_k) <- NULL
+    expect_equal(ped_k, as.data.frame(ped_list[[k]])[, cols],
+      check.attributes = FALSE)
+  }
+
+})
