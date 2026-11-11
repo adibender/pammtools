@@ -93,6 +93,14 @@ split_data <- function(
     dots$id <- id_var
   }
 
+  # recent versions of survival no longer create the id variable in
+  # survSplit() for start-stop data, so create it here if it is missing
+  if (!(id_var %in% names(dots$data))) {
+    dots$data[[id_var]] <- seq_len(nrow(dots$data))
+    # with "." in the formula, survSplit() keeps the new column anyway
+    if ("." %in% all.vars(formula)) vars <- c(vars, id_var)
+  }
+
   if (id_var %in% names(dots$data)) {
     if (length(unique(dots$data[[id_var]])) != nrow(dots$data) & !multiple_id) {
       stop(paste0(
