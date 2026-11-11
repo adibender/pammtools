@@ -1,21 +1,35 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
-# Not run on pull_request: the site is only deployed from main/master, and
-# R-CMD-check already builds the vignettes on PRs. Building the full site
-# (JAGS + a brms/Stan compile) for an artifact that is thrown away doubled
-# the CI time of every PR that was merged shortly after.
+# This is the only workflow that renders the vignettes: they are excluded in
+# .Rbuildignore, so R-CMD-check does not build them. On pull requests the
+# site is built but not deployed, and only if code, vignettes or the site
+# configuration change, as the build (JAGS + a brms/Stan compile) is slow.
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'R/**'
+      - 'vignettes/**'
+      - 'man/**'
+      - 'data/**'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '_pkgdown.yml'
+      - 'pkgdown/**'
+      - '.github/workflows/pkgdown.yaml'
   release:
     types: [published]
   workflow_dispatch:
 
 name: pkgdown
 
+# Supersede in-flight runs on the same PR branch; never cancel a run on
+# main/master or a release.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pkgdown:
