@@ -100,6 +100,22 @@ test_that("Trafo works for left truncated data", {
   )
 })
 
+test_that("Trafo creates the id variable for left truncated data", {
+  lt_df <- data.frame(
+    enter = c(0, 2, 1),
+    exit  = c(5, 7, 4),
+    event = c(1, 0, 1),
+    x     = c(10, 20, 30))
+
+  for (formula in list(Surv(enter, exit, event) ~ x,
+                       Surv(enter, exit, event) ~ .)) {
+    lt_ped <- as_ped(formula, data = lt_df)
+    expect_identical(names(lt_ped)[1], "id")
+    expect_equal(lt_ped$id, rep(1:3, times = c(4, 3, 2)))
+    expect_equal(lt_ped$x, lt_df$x[lt_ped$id])
+  }
+})
+
 
 test_that("Trafo works for recurrent events data", {
   test_df <- data.frame(
