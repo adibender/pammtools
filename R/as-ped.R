@@ -284,14 +284,19 @@ add_tdc_specials <- function(ped, data, dots, formula) {
     summarize(id_n = n()) %>%
     pull("id_n") %>%
     as_vector()
+  # Interval index and subject of each row of ped. Competing risks data with
+  # combine = TRUE stack the rows by cause, so the rows of a subject are not
+  # contiguous: count the intervals within subject and cause, and match the
+  # subject by id instead of relying on the row order.
+  id_groups <- intersect(c(attr(data, "id_var"), "cause"), names(ped))
   attr(data, "id_tseq") <- ped %>%
-    group_by(!!sym(attr(data, "id_var"))) %>%
+    group_by(across(all_of(id_groups))) %>%
     transmute(id_tseq = row_number()) %>%
     pull("id_tseq") %>%
     as_vector()
-  attr(data, "id_tz_seq") <- rep(
-    seq_len(nrow(data)),
-    times = attr(data, "id_n")
+  attr(data, "id_tz_seq") <- match(
+    ped[[attr(data, "id_var")]],
+    data[[attr(data, "id_var")]]
   )
 
   if (has_special(formula, "concurrent")) {

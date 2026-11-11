@@ -29,6 +29,12 @@
   and events after the last split point were dropped. The split points are now
   derived for each event type and combined, as they already were for competing
   risks data without time-dependent covariates.
+* `as_ped()` returned wrong values for `cumulative()` covariates on competing
+  risks data with `combine = TRUE` (#308): almost every row carried the
+  exposure history of another subject, and `latency()` terms failed with
+  `subscript out of bounds`. The rows of a subject and their intervals are now
+  matched by subject and interval end instead of being derived from the row
+  order, which differs because the data are stacked by cause.
 
 # pammtools 0.8.1
 
