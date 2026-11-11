@@ -23,6 +23,12 @@
   cause-specific data set. Note that the interval break points are still
   derived once for all causes in this case, because they have to contain the
   change points of the covariates.
+* The interval split points of competing risks data with time-dependent
+  covariates were derived from the event times of the first cause only
+  (#221). Events of the other causes were shifted to the next interval end,
+  and events after the last split point were dropped. The split points are now
+  derived for each event type and combined, as they already were for competing
+  risks data without time-dependent covariates.
 
 # pammtools 0.8.1
 
