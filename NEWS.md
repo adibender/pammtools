@@ -29,6 +29,10 @@
   and events after the last split point were dropped. The split points are now
   derived for each event type and combined, as they already were for competing
   risks data without time-dependent covariates.
+* `as_ped()` again creates the `id` variable for left-truncated data
+  (`Surv(start, stop, event)`) without an id column. Recent versions of
+  **survival** no longer add it in `survSplit()` for start-stop data, so it is
+  now created before the data are split.
 
 # pammtools 0.8.1
 
