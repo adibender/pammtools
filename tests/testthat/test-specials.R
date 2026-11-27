@@ -72,3 +72,55 @@ test_that("Covariate to matrix Transformation works", {
   expect_list(f2$func_mats, types=c(rep("numeric", 3), "integer", "numeric"),
     any.missing = FALSE, len=5, names="named")
 })
+
+test_that("concurrent() and cumulative() can be combined in one formula", {
+  set.seed(1)
+  event_df <- data.frame(
+    id = 1:10,
+    status = rep(c(0L, 1L), 5),
+    time = seq(10, 100, by = 10),
+    x = rnorm(10)
+  )
+  tdc_df <- data.frame(
+    id = rep(1:10, each = 3),
+    tt = rep(c(0, 20, 50), 10),
+    z = rnorm(30),
+    w = rnorm(30)
+  )
+
+  f_both <- Surv(time, status) ~ x +
+    concurrent(w, tz_var = "tt") +
+    cumulative(time, latency(tt), z, tz_var = "tt")
+  f_rev <- Surv(time, status) ~ x +
+    cumulative(time, latency(tt), z, tz_var = "tt") +
+    concurrent(w, tz_var = "tt")
+
+  ccr_only <- eval_special(f_both, special = "concurrent")
+  cumu_only <- eval_special(f_both, special = "cumulative")
+  expect_length(ccr_only, 1L)
+  expect_identical(ccr_only[[1]]$col_vars, "w")
+  expect_length(cumu_only, 1L)
+  expect_identical(cumu_only[[1]]$col_vars, c("time", "tt", "z"))
+
+  ped_both <- as_ped(list(event_df, tdc_df), f_both, id = "id")
+  ped_rev <- as_ped(list(event_df, tdc_df), f_rev, id = "id")
+  ped_ccr <- as_ped(
+    list(event_df, tdc_df),
+    Surv(time, status) ~ x + concurrent(w, tz_var = "tt"),
+    id = "id"
+  )
+  ped_cumu <- as_ped(
+    list(event_df, tdc_df),
+    Surv(time, status) ~ x + cumulative(time, latency(tt), z, tz_var = "tt"),
+    id = "id",
+    cut = attr(ped_both, "breaks")
+  )
+
+  expect_s3_class(ped_both, "fped")
+  expect_identical(ped_both$w, ped_ccr$w)
+  expect_identical(ped_both$z, ped_cumu$z)
+  expect_identical(ped_both$tt_latency, ped_cumu$tt_latency)
+  expect_identical(ped_both$LL, ped_cumu$LL)
+  expect_identical(ped_both$w, ped_rev$w)
+  expect_identical(ped_both$z, ped_rev$z)
+})
