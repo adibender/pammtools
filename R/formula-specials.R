@@ -130,8 +130,8 @@ eval_special <- function(formula, special="cumulative", data = NULL) {
   ind_special <- attr(tf, "specials")[[special]]
   # extract components
   if (!is.null(ind_special)) {
-    terms_vec <- attr(tf, "term.labels")
-    map(terms_vec, ~eval(expr = parse(text = .x)))
+    vars <- as.list(attr(tf, "variables"))[-1]
+    map(vars[ind_special], ~eval(expr = .x))
   } else {
     NULL
   }
