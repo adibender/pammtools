@@ -141,6 +141,8 @@
 <li>The interval split points of competing risks data with time-dependent covariates were derived from the event times of the first cause only (<a href="https://github.com/adibender/pammtools/issues/221" class="external-link">#221</a>). Events of the other causes were shifted to the next interval end, and events after the last split point were dropped. The split points are now derived for each event type and combined, as they already were for competing risks data without time-dependent covariates.</li>
 <li>
 <code><a href="../reference/as_ped.html">as_ped()</a></code> again creates the <code>id</code> variable for left-truncated data (<code>Surv(start, stop, event)</code>) without an id column. Recent versions of <strong>survival</strong> no longer add it in <code><a href="https://rdrr.io/pkg/survival/man/survSplit.html" class="external-link">survSplit()</a></code> for start-stop data, so it is now created before the data are split.</li>
+<li>
+<code><a href="../reference/as_ped.html">as_ped()</a></code> returned wrong values for <code><a href="../reference/specials.html">cumulative()</a></code> covariates on competing risks data with <code>combine = TRUE</code> (<a href="https://github.com/adibender/pammtools/issues/308" class="external-link">#308</a>): almost every row carried the exposure history of another subject, and <code>latency()</code> terms failed with <code>subscript out of bounds</code>. The intervals are now counted within subject and cause and the subject is matched by id, instead of both being derived from the row order, which differs because the data are stacked by cause.</li>
 </ul></div>
 </div>
     <div class="section level2">
